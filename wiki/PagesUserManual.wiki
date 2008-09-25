@@ -1,0 +1,12 @@
+#summary The user manual for the pages application.
+
+= Introduction =
+
+Pages was designed to allow multiple applications to run simultaneously on a single monome device.  One page (application) is in focus at any given time and will receive input from the monome and output led changes to the monome.  The focused page can be changed by holding down the page change button (the bottom right button on the monome) and pushing another button on the bottom row.
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
