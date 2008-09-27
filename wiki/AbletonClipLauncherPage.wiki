@@ -50,13 +50,13 @@ Each column represents one track in Ableton Live's session view.  The clip butto
 
 = LiveOSC Setup =
 
-1) Download and install Python 2.3.3 to c:\Python22.  Other versions may work as well, this just happens to be the version I'm using.
+1) Download and install Python 2.3.3 to {{{C:\Python22}}}.  Other versions may work as well, this just happens to be the version I'm using.
 
 http://www.python.org/download/releases/2.2.3/
 
 2) Download the LiveAPI package from http://code.google.com/p/liveapi.  Extract it to a temporary folder.
 
-3) Copy the _LiveAPICore folder from the LiveAPI package to c:\Python22\Lib
+3) Copy the {{{_LiveAPICore}}} folder from the LiveAPI package to {{{C:\Python22\Lib}}}
 
 4) Create a file called __init__.py in the c:\Python22\Lib\_LiveAPICore that contains exactly this one line:
 
