@@ -605,32 +605,16 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 		
 		JPanel panel = new JPanel();
-		GroupLayout panelLayout = new GroupLayout((JComponent)panel);
+		AnchorLayout panelLayout = new AnchorLayout();
 		panel.setLayout(panelLayout);
 		panel.setPreferredSize(new java.awt.Dimension(490, 175));
+		panel.add(getJPanel1(), new AnchorConstraint(117, 947, 700, 15, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Sequencer");
-		panelLayout.setHorizontalGroup(panelLayout.createParallelGroup()
-			.add(panelLayout.createSequentialGroup()
-			    .add(getUpdatePrefsButton(), GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
-			    .add(18)
-			    .add(getAddMidiOutButton(), GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
-			    .addContainerGap(134, 134))
-			.add(panelLayout.createSequentialGroup()
-			    .add(7)
-			    .add(panelLayout.createParallelGroup()
-			        .add(GroupLayout.LEADING, getJPanel1(), GroupLayout.PREFERRED_SIZE, 457, GroupLayout.PREFERRED_SIZE)
-			        .add(GroupLayout.LEADING, label, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-			    .addContainerGap(26, 26)));
-		panelLayout.setVerticalGroup(panelLayout.createSequentialGroup()
-			.add(label, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-			.addPreferredGap(LayoutStyle.RELATED)
-			.add(getJPanel1(), GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
-			.add(12)
-			.add(panelLayout.createParallelGroup()
-			    .add(GroupLayout.BASELINE, getUpdatePrefsButton(), GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-			    .add(GroupLayout.BASELINE, getAddMidiOutButton(), GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-			.addContainerGap(20, 20));
+		panel.add(label, new AnchorConstraint(2, 241, 82, 15, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getUpdatePrefsButton(), new AnchorConstraint(768, 345, 888, 1, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getAddMidiOutButton(), new AnchorConstraint(768, 727, 888, 382, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		label.setPreferredSize(new java.awt.Dimension(111, 14));
 
 		this.getAddMidiOutButton().addActionListener(this);
 		this.getUpdatePrefsButton().addActionListener(this);
@@ -786,6 +770,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		if(updatePrefsButton == null) {
 			updatePrefsButton = new JButton();
 			updatePrefsButton.setText("Update Preferences");
+			updatePrefsButton.setPreferredSize(new java.awt.Dimension(169, 21));
 		}
 		return updatePrefsButton;
 	}
@@ -848,6 +833,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		if(addMidiOutButton == null) {
 			addMidiOutButton = new JButton();
 			addMidiOutButton.setText("Add MIDI Output");
+			addMidiOutButton.setPreferredSize(new java.awt.Dimension(169, 21));
 		}
 		return addMidiOutButton;
 	}
@@ -1055,7 +1041,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 			jPanel1 = new JPanel();
 			AnchorLayout jPanel1Layout = new AnchorLayout();
 			jPanel1.setLayout(jPanel1Layout);
-			jPanel1.setPreferredSize(new java.awt.Dimension(10, 10));
+			jPanel1.setPreferredSize(new java.awt.Dimension(457, 102));
 			jPanel1.add(getRow4tf(), new AnchorConstraint(799, 184, 1004, 101, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 			jPanel1.add(getRow4l(), new AnchorConstraint(828, 101, 965, 1, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 			jPanel1.add(getRow8l(), new AnchorConstraint(828, 324, 965, 224, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));

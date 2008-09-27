@@ -142,88 +142,49 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 		
 		JPanel panel = new JPanel();
-		GroupLayout panelLayout = new GroupLayout((JComponent)panel);
-		panel.setLayout(panelLayout);
+		panel.setLayout(null);
 		panel.setPreferredSize(new java.awt.Dimension(490, 175));
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": External Application");
-		{
 			prefixLabel = new JLabel();
 			prefixLabel.setText("OSC Prefix");
-		}
-		{
 			hostnameLabel = new JLabel();
 			hostnameLabel.setText("OSC Hostname");
-		}
-		{
 			oscInLabel = new JLabel();
 			oscInLabel.setText("OSC In Port");
-		}
-		{
 			oscOutLabel = new JLabel();
 			oscOutLabel.setText("OSC Out Port");
-		}
-		{
 			oscInTF = new JTextField();
 			oscInTF.setText(String.valueOf(this.inPort));
-		}
-		{
 			oscOutTF = new JTextField();
+			panel.add(oscOutTF);
+			panel.add(oscOutLabel);
+			panel.add(oscInTF);
+			panel.add(oscInLabel);
+			oscInLabel.setBounds(12, 65, 85, 14);
+			oscInTF.setBounds(97, 62, 100, 21);
+			oscOutLabel.setBounds(12, 86, 85, 14);
 			oscOutTF.setText(String.valueOf(this.outPort));
-		}
-		{
+			oscOutTF.setBounds(97, 83, 100, 21);
 			updatePrefsButton = new JButton();
 			updatePrefsButton.setText("Update Preferences");
 			updatePrefsButton.addActionListener(this);
-		}
-		{
 			prefixTF = new JTextField();
 			prefixTF.setText(this.prefix);
-		}
-		{
 			hostnameTF = new JTextField();
+			panel.add(hostnameTF);
+			panel.add(hostnameLabel);
+			panel.add(prefixTF);
+			panel.add(prefixLabel);
+			panel.add(label);
+			panel.add(updatePrefsButton);
+			updatePrefsButton.setBounds(12, 110, 169, 21);
+			label.setBounds(0, 0, 129, 14);
+			prefixLabel.setBounds(12, 23, 85, 14);
+			prefixTF.setBounds(97, 20, 100, 21);
+			hostnameLabel.setBounds(12, 44, 85, 14);
 			hostnameTF.setText(this.hostname);
-		}
-		panelLayout.setVerticalGroup(panelLayout.createSequentialGroup()
-			.addComponent(label, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-			.addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-			    .addComponent(prefixTF, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			    .addComponent(prefixLabel, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-			.addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-			    .addComponent(hostnameTF, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			    .addComponent(hostnameLabel, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-			.addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-			    .addComponent(oscInTF, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			    .addComponent(oscInLabel, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-			.addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-			    .addComponent(oscOutTF, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			    .addComponent(oscOutLabel, GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-			.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-			.addComponent(updatePrefsButton, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			.addContainerGap(44, 44));
-		panelLayout.setHorizontalGroup(panelLayout.createParallelGroup()
-			.addGroup(GroupLayout.Alignment.LEADING, panelLayout.createSequentialGroup()
-			    .addComponent(label, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			    .addContainerGap(361, 361))
-			.addGroup(panelLayout.createSequentialGroup()
-			    .addPreferredGap(label, oscOutLabel, LayoutStyle.ComponentPlacement.INDENT)
-			    .addGroup(panelLayout.createParallelGroup()
-			        .addGroup(panelLayout.createSequentialGroup()
-			            .addGroup(panelLayout.createParallelGroup()
-			                .addComponent(oscOutLabel, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-			                .addComponent(oscInLabel, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-			                .addComponent(hostnameLabel, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE)
-			                .addComponent(prefixLabel, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 85, GroupLayout.PREFERRED_SIZE))
-			            .addGroup(panelLayout.createParallelGroup()
-			                .addComponent(oscOutTF, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-			                .addComponent(oscInTF, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-			                .addComponent(hostnameTF, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
-			                .addComponent(prefixTF, GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)))
-			        .addGroup(GroupLayout.Alignment.LEADING, panelLayout.createSequentialGroup()
-			            .addComponent(updatePrefsButton, GroupLayout.PREFERRED_SIZE, 169, GroupLayout.PREFERRED_SIZE)
-			            .addGap(53)))
-			    .addContainerGap(261, 261)));
+			hostnameTF.setBounds(97, 41, 100, 21);
 
 		this.panel = panel;
 		return panel;
