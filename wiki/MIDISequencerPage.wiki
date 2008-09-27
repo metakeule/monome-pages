@@ -1,0 +1,14 @@
+#summary Detailed information about the MIDI Sequencer page.
+
+= Page Description =
+
+The MIDI Sequencer page is a basic MIDI clock driven step sequencer.
+
+|| grid || grid || grid || grid || grid || grid || grid || grid ||
+|| grid || grid || grid || grid || grid || grid || grid || grid ||
+|| grid || grid || grid || grid || grid || grid || grid || grid ||
+|| grid || grid || grid || grid || grid || grid || grid || grid ||
+|| grid || grid || grid || grid || grid || grid || grid || grid ||
+|| grid || grid || grid || grid || grid || grid || grid || grid ||
+|| grid || grid || grid || grid || grid || grid || grid || grid ||
+|| pat1 || pat2 || pat3 || pat4 || copy || clr  || bank || page ||
