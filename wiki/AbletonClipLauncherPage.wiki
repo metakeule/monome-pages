@@ -50,7 +50,7 @@ Each column represents one track in Ableton Live's session view.  The clip butto
 
 = LiveOSC Setup =
 
-1) Download and install Python 2.3.3 to {{{C:\Python22}}}.  Other versions may work as well, this just happens to be the version I'm using.
+1) Download and install Python 2.2.3 to {{{C:\Python22}}}.  Other versions may work as well, this just happens to be the version I'm using.
 
 http://www.python.org/download/releases/2.2.3/
 
