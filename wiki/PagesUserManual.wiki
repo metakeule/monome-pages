@@ -1,12 +1,29 @@
 #summary The user manual for the pages application.
 
-= Introduction =
+= Project Summary =
 
 Pages was designed to allow multiple applications to run simultaneously on a single monome device.  One page (application) is in focus at any given time and will receive input from the monome and output led changes to the monome.  The focused page can be changed by holding down the page change button (the bottom right button on the monome) and pushing another button on the bottom row.
 
-= Details =
+Pages doesn't make any sound on its own; it is intended to run alongside applications like Ableton Live and Max/MSP.  It is not limited to these two applications and should work with any applications capable of sending/receiving MIDI and/or OSC.  Think of it as a somewhat general purpose MIDI/OSC router for interfacing monome(s) with other audio applications.
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+There are currently 5 pages available, and any number of monomes can be configured with any combination of these 5 pages.  The pages adapt to the size of the monome you are using.  Each page supports 8x8 (40h/64), 16x8 (128), and 16x16 (256) sized monomes and will automatically adapt based on your configuration.
+
+= Summary of Available Pages =
+
+* MIDI Sequencer
+
+The MIDI Sequencer page turns a monome into a MIDI clock-driven step sequencer that sends MIDI note on/off messages.  It has approximately 240 banks of 32x15 steps each (that's 32 steps wide, 15 instruments deep).  Basic features such as copy and clear pattern/bank have been implemented, as well as a simple pattern generator and pattern alteration algorithm.
+
+* MIDI Keyboard
+
+The MIDI Keyboard is a basic keyboard interface that sends a MIDI note on message when a button is pressed and a MIDI note off message when a button is released.  The buttons are automatically mapped to musical keys/scales.  Up to 6 instruments can be controlled from a single instance of the MIDI Keyboard depending on the monome configuration size by sending on different MIDI channels.  The key and scale can be selected on the monome.  Currently 4 scales are implemented with 12 keys, for a total of 48 possible key/scale combinations.
+
+= Setup Guide =
+
+First, plug in your monome(s) and launch MonomeSerial.
+
+== MonomeSerial Setup ==
+
+MonomeSerial should be configured so that each monome device has a unique prefix.  The standard OSC ports will work, but using non-standard ports will make the external page configuration easier.  For example, ports 7000 and 7070 can be used to free up 8000 and 8080 for an external application (ie. mlr).
+
+==
