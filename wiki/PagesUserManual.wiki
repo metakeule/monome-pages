@@ -34,7 +34,9 @@ The Ableton Clip Launcher page is an interface to launch clips, stop tracks, or 
 
 == Downloading Pages ==
 
-plug in your monome(s) and launch Monome Serial.
+The latest version of pages can be downloaded from the Downloads page of this project:
+
+http://code.google.com/p/monome-pages/downloads/list
 
 == Monome Serial Setup ==
 
