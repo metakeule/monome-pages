@@ -15,6 +15,37 @@ The Ableton Clip Launcher page uses the LiveOSC project to communicate with Able
 || rec1 || rec2 || rec3 || rec4 || rec5 || rec6 || rec7 || rec8 ||
 || stp1 || stp2 || stp3 || stp4 || stp5 || stp6 || stp7 || stp8 ||
 
+== 128 Layout ==
+
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| rec1 || rec2 || rec3 || rec4 || rec5 || rec6 || rec7 || rec8 || rec9 || rc10 || rc11 || rc12 || rc13 || rc14 || rc15 || rc16 ||
+|| stp1 || stp2 || stp3 || stp4 || stp5 || stp6 || stp7 || stp8 || stp9 || st10 || st11 || st12 || st13 || st14 || st15 || st16 ||
+
+== 256 Layout ==
+
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip || clip ||
+|| rec1 || rec2 || rec3 || rec4 || rec5 || rec6 || rec7 || rec8 || rec9 || rc10 || rc11 || rc12 || rc13 || rc14 || rc15 || rc16 ||
+|| stp1 || stp2 || stp3 || stp4 || stp5 || stp6 || stp7 || stp8 || stp9 || st10 || st11 || st12 || st13 || st14 || st15 || st16 ||
+
+
 Each column represents one track in Ableton Live's session view.  The clip buttons trigger clips from top to bottom in the track.  The recX buttons arm or disarm their associated track for recording.  The stpX buttons send a stop signal to their associated track.
 
 = LiveOSC Setup =
