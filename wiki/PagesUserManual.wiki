@@ -103,3 +103,7 @@ Finally, go to the monome sub-window and click on the Page menu.  Select the 'Ne
 To test the MIDI clock sync, create a MIDI sequencer page.  It is currently the only page that receives MIDI clock sync.  When you press play in Ableton Live, you should see a vertical column move across the monome.  If you are not seeing the vertical bar, double check your MIDI settings in Ableton and in pages, and make sure that if you're on OS X you have installed the mmj.jar library correctly.  You may even try rebooting your computer if you're still having trouble.
 
 MIDI-related pages have an 'Add MIDI Output' button, you should click on this and select a MIDI device for the page to output on or it won't do much.  Make sure that Ableton Live is configured to receive MIDI on the device you select.
+
+You can save and load configurations from the File menu.  Configurations are stored in XML format.
+
+See the individual page wiki pages for button layout and functionality.
