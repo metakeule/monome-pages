@@ -38,8 +38,24 @@ The latest version of pages can be downloaded from the Downloads page of this pr
 
 http://code.google.com/p/monome-pages/downloads/list
 
+It has been compiled to run with Java version 1.5 or higher, so you may need to upgrade your version of Java to run the application.  You can run "java -version" from a command line to see what version of Java you currently have installed.
+
+== Virtual MIDI Devices ==
+
+You will need to install/enable a set of virtual MIDI devices if you wish to route pages MIDI applications to an audio application (ie. Ableton Live).  Most users will want to do this.
+
+=== Windows Virtual MIDI Devices Setup ===
+
+[http://www.midiox.com/myoke.htm MIDI Yoke] or [http://members.nextra.at/hubwin/midi.html Hubi's MIDI Loopback Device] should both work fine for Windows users.  Follow the instructions on the web sites to install.
+
+=== OS X Virtual MIDI Devices Setup ===
+
+The IAC driver comes standard with OS X and will work fine for OS X users.  A tutorial on enabling this driver can be found here: http://fox-gieg.com/tutorials/2007/inter-application-midi/
+
+OS X users will also need to install the mmj.jar file and associated files found here: http://www.humatic.de/htools/mmj.htm
+
 == Monome Serial Setup ==
 
 Monome Serial should be configured so that each monome device has a unique prefix.  The standard OSC ports will work, but using non-standard ports will make the external page configuration easier.  For example, ports 7000 and 7070 can be used to free up 8000 and 8080 for an external application (ie. mlr).
 
-==
+== Ableton Live Setup ==
