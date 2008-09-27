@@ -59,3 +59,27 @@ OS X users will also need to install the mmj.jar file and associated files found
 Monome Serial should be configured so that each monome device has a unique prefix.  The standard OSC ports will work, but using non-standard ports will make the external page configuration easier.  For example, ports 7000 and 7070 can be used to free up 8000 and 8080 for an external application (ie. mlr).
 
 == Ableton Live Setup ==
+
+Ableton Live should be configured to:
+
+# Send out MIDI Clock on exactly one virtual MIDI device
+# Receive MIDI Track and MIDI Remote messages from as many of the other virtual MIDI devices that you need
+
+* Setting up MIDI Clock Sync
+
+# Launch Ableton Live
+# Go to Options -> Preferences -> MIDI / Sync tab.
+# Verify that you can see your virtual MIDI devices, if you don't see them listed then double check your virtual MIDI device settings.
+# Choose one device for MIDI Clock Sync.  I generally use the first device (ie. MIDI Yoke 1, IAC Device 1, etc).
+# You will see two entries listed for the device, one labeled "Input:" and one labeled "Output:".  Notice that each device has 3 buttons, "Track", "Sync", and "Remote".
+# For the Input: device, make sure all 3 buttons are turned off.
+# For the Output: device, make sure just the Sync button is turned on.
+# On the Audio tab of the preferences pane you will see an "Overall Latency" value.  Make note of this value.
+# On the MIDI / Sync tab of the preferences pane click on the small gray arrow to the left of the Output: <virtual device> entry--the one that has Sync enabled.  This should expand the entry and give you a few configuration options.
+# Set the MIDI Clock Sync Delay value to be -negative- the "Overall Latency" value from the Audio page, or as close as you can get to it.  For example, if your Overall Latency is 24.7ms, you should set the MIDI Clock Sync Delay to -25ms.
+
+* Setting up MIDI Track and Remote
+
+# In the Preferences / MIDI tab, locate the devices you want Ableton to receive MIDI note and control change messages on.
+# Notice that there are two entries for each device, Input and Output.  Make sure that all 3 buttons are disabled on all Output entries for the devices you want to receive MIDI notes and control change messages on.
+# Enable Track and Remote on the Input entries of the devices you wish to use.  You can enable both Track and Remote for a device if you want both types of messages to go through it, or just one or the other.
