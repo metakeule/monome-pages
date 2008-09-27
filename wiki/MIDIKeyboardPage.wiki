@@ -39,3 +39,27 @@ Each not1, not2, not3, etc. row represents the notes of the selected scale in a 
 The c, c#, d, etc. buttons allow toggling between the selected key.
 
 The scl buttons allow selection of the scale.  scl1 = major, scl2 = minor, scl3 and scl4 are indian-sounding and blues-sounding scales.
+
+== 256 Layout ==
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| c    || c#   || d    || d#   || e    || f    || f#   || g    || g#   || a    || a#   || b    || scl1 || scl2 || scl3 || scl4 ||
+
+Each not1, not2, not3, etc. row represents the notes of the selected scale in a particular octave.  In the 128 version, each row is 2 octaves and there's an octave toggle on the far right.  Every 3 rows represents one MIDI channel, starting with MIDI channel 1.
+
+The c, c#, d, etc. buttons allow toggling between the selected key.
+
+The scl buttons allow selection of the scale.  scl1 = major, scl2 = minor, scl3 and scl4 are indian-sounding and blues-sounding scales.
