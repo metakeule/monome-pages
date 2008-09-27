@@ -15,7 +15,7 @@ The MIDI Sequencer page is a basic MIDI clock driven step sequencer.
 || grid || grid || grid || grid || grid || grid || grid || grid ||
 || grid || grid || grid || grid || grid || grid || grid || grid ||
 || grid || grid || grid || grid || grid || grid || grid || grid ||
-|| pat1 || pat2 || pat3 || pat4 || copy || clr  || bkmd || page ||
+|| pat1 || pat2 || pat3 || pat4 || copy || clr  || bkmd || null ||
 
 === 128 Layout ===
 
@@ -58,7 +58,7 @@ The clr button is used to clear a pattern.  Pushing it will enable clear mode, a
 
 The bkmd button toggles bank mode which changes the function of all the buttons when enabled.  Bank mode is described in the section below.
 
-The page button is used to switch pages and has no function in the sequencer.
+Null buttons don't do anything.  Sorry.
 
 == Bank Mode ==
 
