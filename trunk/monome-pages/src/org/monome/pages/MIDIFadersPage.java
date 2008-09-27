@@ -21,6 +21,8 @@
  */
 
 package org.monome.pages;
+import com.cloudgarden.layout.AnchorConstraint;
+import com.cloudgarden.layout.AnchorLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -121,41 +123,20 @@ public class MIDIFadersPage implements Page, ActionListener {
 			return this.panel;
 		}
 		JPanel panel = new JPanel();
-		GroupLayout panelLayout = new GroupLayout((JComponent)panel);
+		AnchorLayout panelLayout = new AnchorLayout();
 		panel.setLayout(panelLayout);
 		panel.setPreferredSize(new java.awt.Dimension(319, 97));
-		
+		panel.add(getAddMidiOutButton(), new AnchorConstraint(603, 963, 819, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getUpdatePrefsButton(), new AnchorConstraint(603, 487, 819, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getDelayTF(), new AnchorConstraint(335, 371, 541, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getDelayLabel(), new AnchorConstraint(365, 230, 510, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+
 		this.getUpdatePrefsButton().addActionListener(this);
 		this.getAddMidiOutButton().addActionListener(this);
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Faders");
-		panelLayout.setVerticalGroup(panelLayout.createSequentialGroup()
-			.addGap(6)
-			.addComponent(label, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-			.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-			.addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-			    .addComponent(getDelayTF(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
-			    .addComponent(getDelayLabel(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-			.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-			.addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-			    .addComponent(getAddMidiOutButton(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
-			    .addComponent(getUpdatePrefsButton(), GroupLayout.Alignment.BASELINE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE))
-			.addContainerGap(18, 18));
-		panelLayout.setHorizontalGroup(panelLayout.createSequentialGroup()
-			.addGap(6)
-			.addGroup(panelLayout.createParallelGroup()
-			    .addComponent(getUpdatePrefsButton(), GroupLayout.Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE)
-			    .addGroup(GroupLayout.Alignment.LEADING, panelLayout.createSequentialGroup()
-			        .addComponent(getDelayLabel(), GroupLayout.PREFERRED_SIZE, 67, GroupLayout.PREFERRED_SIZE)
-			        .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-			        .addComponent(getDelayTF(), GroupLayout.PREFERRED_SIZE, 33, GroupLayout.PREFERRED_SIZE)
-			        .addGap(37))
-			    .addGroup(GroupLayout.Alignment.LEADING, panelLayout.createSequentialGroup()
-			        .addComponent(label, GroupLayout.PREFERRED_SIZE, 105, GroupLayout.PREFERRED_SIZE)
-			        .addGap(44)))
-			.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-			.addComponent(getAddMidiOutButton(), GroupLayout.PREFERRED_SIZE, 141, GroupLayout.PREFERRED_SIZE)
-			.addContainerGap());
+		panel.add(label, new AnchorConstraint(67, 349, 273, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		label.setPreferredSize(new java.awt.Dimension(105, 20));
 
 		this.panel = panel;
 		return panel;
@@ -229,6 +210,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(delayLabel == null) {
 			delayLabel = new JLabel();
 			delayLabel.setText("Delay (ms)");
+			delayLabel.setPreferredSize(new java.awt.Dimension(67, 14));
 		}
 		return delayLabel;
 	}
@@ -237,6 +219,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(delayTF == null) {
 			delayTF = new JTextField();
 			delayTF.setText("6");
+			delayTF.setPreferredSize(new java.awt.Dimension(33, 20));
 		}
 		return delayTF;
 	}
@@ -245,6 +228,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(addMidiOutButton == null) {
 			addMidiOutButton = new JButton();
 			addMidiOutButton.setText("Add MIDI Output");
+			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 21));
 		}
 		return addMidiOutButton;
 	}
@@ -253,6 +237,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(updatePrefsButton == null) {
 			updatePrefsButton = new JButton();
 			updatePrefsButton.setText("Update Preferences");
+			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 21));
 		}
 		return updatePrefsButton;
 	}
