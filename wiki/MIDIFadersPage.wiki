@@ -1,1 +1,1 @@
-#summary A description of the MIDI Faders page.
+#summary Detailed information about the MIDI Faders page.
