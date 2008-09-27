@@ -24,7 +24,7 @@ The MIDI Faders page turns the monome into a set of virtual faders where each co
 
   * External Application
 
-The External Application page is used to route an external application (ie. mlr, bboingg, flin, dj64, etc.) through a page.  This allows you to run multiple applications simultaneously on a single monome device and switch between them.  For example, you could run mlr on page 1, bboingg on page 2, etc.  You could also run quadrants or hub configured with a few applications of their own through a page.
+The External Application page is used to route an external application (ie. mlr, bboingg, flin, dj64, etc.) through a page.  This allows you to run multiple applications simultaneously on a single monome device and switch between them.  For example, you could run mlr on page 1, boiingg on page 2, etc.  You could also run quadrants or hub configured with a few applications of their own through a page.
 
   * Ableton Clip Launcher
 
