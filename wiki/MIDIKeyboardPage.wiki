@@ -22,3 +22,22 @@ The chn1 buttons allow toggling between the midi channel that note messages will
 The c, c#, d, etc. buttons allow toggling between the selected key.
 
 The scl buttons allow selection of the scale.  scl1 = major, scl2 = minor, scl3 and scl4 are indian-sounding and blues-sounding scales.
+
+== 128 Layout ==
+
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || not1 || not2 || not3 || not4 || not5 || not6 || not7 || oup  || odwn ||
+
+
+Each not1, not2, not3, etc. row represents the notes of the selected scale in a particular octave.
+
+The chn1 buttons allow toggling between the midi channel that note messages will be sent on.
+
+The c, c#, d, etc. buttons allow toggling between the selected key.
+
+The scl buttons allow selection of the scale.  scl1 = major, scl2 = minor, scl3 and scl4 are indian-sounding and blues-sounding scales.
