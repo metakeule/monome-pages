@@ -60,7 +60,7 @@ Monome Serial should be configured so that each monome device has a unique prefi
 
 == Ableton Live Setup ==
 
-Ableton Live should be configured to:
+The Ableton Live setup described below can be adapted to other audio software if desired.  The same types of setup should be applied in the application you want to use.  Specifically, we want Ableton Live (or the chosen audio application) to:
 
   # Send out MIDI Clock on exactly one virtual MIDI device
   # Receive MIDI Track and MIDI Remote messages from as many of the other virtual MIDI devices that you need
