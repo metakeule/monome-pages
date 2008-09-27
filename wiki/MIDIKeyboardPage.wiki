@@ -1,0 +1,24 @@
+#summary Detailed information about the MIDI Keyboard page.
+
+= Page Description =
+
+The MIDI Keyboard page allows the monome to be played like a MIDI Keyboard.  All notes are mapped into the selected key/scale.
+
+== 64 Layout ==
+
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || chn1 ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || chn2 ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || chn3 ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || chn4 ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || chn5 ||
+|| not1 || not2 || not3 || not4 || not5 || not6 || not7 || chn6 ||
+|| c    || c#   || d    || d#   || e    || f    || f#   || g    ||
+|| g#   || a    || a#   || b    || scl1 || scl2 || scl3 || scl4 ||
+
+Each not1, not2, not3, etc. row represents the notes of the selected scale in a particular octave.
+
+The chn1 buttons allow toggling between the midi channel that note messages will be sent on.
+
+The c, c#, d, etc. buttons allow toggling between the selected key.
+
+The scl buttons allow selection of the scale.  scl1 = major, scl2 = minor, scl3 and scl4 are indian-sounding and blues-sounding scales.
