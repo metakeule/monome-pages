@@ -115,22 +115,22 @@ public class MIDISequencerPage implements Page, ActionListener {
 	public MIDISequencerPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		this.noteNumbers[0] = this.noteToMidiNumber("C-3");
-		this.noteNumbers[1] = this.noteToMidiNumber("D-3");
-		this.noteNumbers[2] = this.noteToMidiNumber("E-3");
-		this.noteNumbers[3] = this.noteToMidiNumber("F-3");
-		this.noteNumbers[4] = this.noteToMidiNumber("G-3");
-		this.noteNumbers[5] = this.noteToMidiNumber("A-3");
-		this.noteNumbers[6] = this.noteToMidiNumber("B-3");
-		this.noteNumbers[7] = this.noteToMidiNumber("C-4");
-		this.noteNumbers[8] = this.noteToMidiNumber("D-4");
-		this.noteNumbers[9] = this.noteToMidiNumber("E-4");
-		this.noteNumbers[10] = this.noteToMidiNumber("F-4");
-		this.noteNumbers[11] = this.noteToMidiNumber("G-4");
-		this.noteNumbers[12] = this.noteToMidiNumber("A-4");
-		this.noteNumbers[13] = this.noteToMidiNumber("B-4");
-		this.noteNumbers[14] = this.noteToMidiNumber("C-5");
-		this.noteNumbers[15] = this.noteToMidiNumber("D-5");
+		this.noteNumbers[0] = this.noteToMidiNumber("C-1");
+		this.noteNumbers[1] = this.noteToMidiNumber("D-1");
+		this.noteNumbers[2] = this.noteToMidiNumber("E-1");
+		this.noteNumbers[3] = this.noteToMidiNumber("F-1");
+		this.noteNumbers[4] = this.noteToMidiNumber("G-1");
+		this.noteNumbers[5] = this.noteToMidiNumber("A-1");
+		this.noteNumbers[6] = this.noteToMidiNumber("B-1");
+		this.noteNumbers[7] = this.noteToMidiNumber("C-2");
+		this.noteNumbers[8] = this.noteToMidiNumber("D-2");
+		this.noteNumbers[9] = this.noteToMidiNumber("E-2");
+		this.noteNumbers[10] = this.noteToMidiNumber("F-2");
+		this.noteNumbers[11] = this.noteToMidiNumber("G-2");
+		this.noteNumbers[12] = this.noteToMidiNumber("A-2");
+		this.noteNumbers[13] = this.noteToMidiNumber("B-2");
+		this.noteNumbers[14] = this.noteToMidiNumber("C-3");
+		this.noteNumbers[15] = this.noteToMidiNumber("D-3");
 	}
 
 	public void handlePress(int x, int y, int value) {
@@ -760,7 +760,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow1tf() {
 		if(row1tf == null) {
 			row1tf = new JTextField();
-			row1tf.setText("C-3");
+			row1tf.setText("C-1");
 			row1tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row1tf;
@@ -787,7 +787,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow2tf() {
 		if(row2tf == null) {
 			row2tf = new JTextField();
-			row2tf.setText("D-3");
+			row2tf.setText("D-1");
 			row2tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row2tf;
@@ -805,7 +805,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow3tf() {
 		if(row3tf == null) {
 			row3tf = new JTextField();
-			row3tf.setText("E-3");
+			row3tf.setText("E-1");
 			row3tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row3tf;
@@ -823,7 +823,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow4tf() {
 		if(row4tf == null) {
 			row4tf = new JTextField();
-			row4tf.setText("F-3");
+			row4tf.setText("F-1");
 			row4tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row4tf;
@@ -850,7 +850,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow5tf() {
 		if(row5tf == null) {
 			row5tf = new JTextField();
-			row5tf.setText("G-3");
+			row5tf.setText("G-1");
 			row5tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row5tf;
@@ -868,7 +868,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow6tf() {
 		if(row6tf == null) {
 			row6tf = new JTextField();
-			row6tf.setText("A-3");
+			row6tf.setText("A-1");
 			row6tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row6tf;
@@ -886,7 +886,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow7tf() {
 		if(row7tf == null) {
 			row7tf = new JTextField();
-			row7tf.setText("B-3");
+			row7tf.setText("B-1");
 			row7tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row7tf;
@@ -904,7 +904,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow8tf() {
 		if(row8tf == null) {
 			row8tf = new JTextField();
-			row8tf.setText("C-4");
+			row8tf.setText("C-2");
 			row8tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row8tf;
@@ -922,7 +922,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow9tf() {
 		if(row9tf == null) {
 			row9tf = new JTextField();
-			row9tf.setText("D-4");
+			row9tf.setText("D-2");
 			row9tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row9tf;
@@ -940,7 +940,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow10tf() {
 		if(row10tf == null) {
 			row10tf = new JTextField();
-			row10tf.setText("E-4");
+			row10tf.setText("E-2");
 			row10tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row10tf;
@@ -958,7 +958,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow11tf() {
 		if(row11tf == null) {
 			row11tf = new JTextField();
-			row11tf.setText("F-4");
+			row11tf.setText("F-2");
 			row11tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row11tf;
@@ -976,7 +976,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow12tf() {
 		if(row12tf == null) {
 			row12tf = new JTextField();
-			row12tf.setText("G-4");
+			row12tf.setText("G-2");
 			row12tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row12tf;
@@ -994,7 +994,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow13tf() {
 		if(row13tf == null) {
 			row13tf = new JTextField();
-			row13tf.setText("A-4");
+			row13tf.setText("A-2");
 			row13tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row13tf;
@@ -1012,7 +1012,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow14tf() {
 		if(row14tf == null) {
 			row14tf = new JTextField();
-			row14tf.setText("B-4");
+			row14tf.setText("B-2");
 			row14tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row14tf;
@@ -1030,7 +1030,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JTextField getRow15tf() {
 		if(row15tf == null) {
 			row15tf = new JTextField();
-			row15tf.setText("C-5");
+			row15tf.setText("C-3");
 			row15tf.setPreferredSize(new java.awt.Dimension(38, 21));
 		}
 		return row15tf;

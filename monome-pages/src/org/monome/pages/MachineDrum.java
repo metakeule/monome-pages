@@ -44,7 +44,6 @@ public class MachineDrum {
 		if (cc >= 64) {
 			cc += 8;
 		}
-		System.out.println("cc is " + cc + " for machine # " + machine_number + " on midi channel " + midi_channel);
 		int value = generator.nextInt(128);
         try {
             ctrl_out.setMessage(ShortMessage.CONTROL_CHANGE, midi_channel, cc, value);

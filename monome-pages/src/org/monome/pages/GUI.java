@@ -552,6 +552,17 @@ public class GUI implements ActionListener {
 										faderpage.setDelayAmount(Integer.parseInt(delayAmount));
 									}
 								}
+								
+								if (pageName.equals("Machine Drum Interface")) {
+									MachineDrumInterfacePage mdpage = (MachineDrumInterfacePage) page;
+									NodeList rowNL = pageElement.getElementsByTagName("speed");
+									el = (Element) rowNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String speed = ((Node) nl.item(0)).getNodeValue();
+										mdpage.setSpeed(Integer.parseInt(speed));
+									}
+								}
 
 							}
 						}

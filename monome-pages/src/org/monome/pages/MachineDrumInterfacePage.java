@@ -28,11 +28,16 @@ import java.util.Random;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import com.cloudgarden.layout.AnchorConstraint;
+import com.cloudgarden.layout.AnchorLayout;
 
 
 /**
@@ -51,7 +56,13 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	
 	MonomeConfiguration monome;
 	private int index;
+
 	private JPanel panel;
+	private JButton addMidiOutButton;
+	private JLabel speedLabel;
+	private JButton updatePrefsButton;
+	private JTextField speedTF;
+
 	private Receiver recv;
 	private String midiDeviceName;
 	
@@ -62,63 +73,17 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	private Random generator;
 	private MachineDrum machine_drum;
 	private int ticks;
+	private int speed = 100;
 
 	public MachineDrumInterfacePage(MonomeConfiguration monome, int index) {
-        machine_drum = new MachineDrum();
+        this.machine_drum = new MachineDrum();
 		this.monome = monome;
 		this.index = index;
-	}
-
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Add MIDI Output")) {
-			String[] midiOutOptions = this.monome.getMidiOutOptions();
-			String deviceName = (String)JOptionPane.showInputDialog(
-	                this.monome,
-	                "Choose a MIDI Output to add",
-	                "Add MIDI Output",
-	                JOptionPane.PLAIN_MESSAGE,
-	                null,
-	                midiOutOptions,
-	                "");
-			
-			if (deviceName == null) {
-				return;
-			}
-			
-			this.addMidiOutDevice(deviceName);	
-		}
-	}
-
-	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;
+		this.generator = new Random();
 	}
 
 	public String getName() {
 		return "Machine Drum Interface";
-	}
-
-	public JPanel getPanel() {
-		if (this.panel != null) {
-			return this.panel;
-		}
-		
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		
-		JPanel subPanel = new JPanel();
-		JLabel label = new JLabel((this.index + 1) + ": Machine Drum Interface");
-		subPanel.add(label);
-		panel.add(subPanel);
-		
-		subPanel = new JPanel();
-		JButton button = new JButton("Add MIDI Output");
-		button.addActionListener(this);
-		subPanel.add(button);
-		panel.add(subPanel);
-		
-		this.panel = panel;
-		return panel;
 	}
 
 	public void handlePress(int x, int y, int value) {
@@ -185,7 +150,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if (ticks == 6) {
 			ticks = 0;
 		}
-		if (auto_morph == true && generator.nextInt(100) == 1) {
+		if (auto_morph == true && generator.nextInt(this.speed) == 1) {
 			int machine_num = generator.nextInt(12) + 2;
 			int param_num = generator.nextInt(24);
 			int x_m = machine_num % 8;
@@ -235,13 +200,14 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 			for (int y = 0; y < 24; y++) {
 				if (morph_machines[x] == 1) {
 					if (morph_params[y] == 1) {
-						if (generator.nextInt(100) == 1) {
+						if (generator.nextInt(this.speed) == 1) {
 							machine_drum.sendRandomParamChange(recv, x, y);
 						}
 					}
 				}
 			}
 		}
+		
 		ticks++;
 	}
 
@@ -280,7 +246,22 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	}
 
 	public void send(MidiMessage message, long timeStamp) {
-
+		ShortMessage shortMessage;
+		if (message instanceof ShortMessage) {
+			shortMessage = (ShortMessage) message;
+			switch (shortMessage.getCommand()) {
+			case 0xF0:
+				if (shortMessage.getChannel() == 8) {
+					this.recv.send(message, timeStamp);
+				}
+				if (shortMessage.getChannel() == 0x0C) {
+					this.recv.send(message, timeStamp);
+				}
+				break;
+			default:
+				break;
+			}
+		}
 	}
 	
 	public String toXml() {
@@ -288,8 +269,108 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		xml += "    <page>\n";
 		xml += "      <name>Machine Drum Interface</name>\n";
 		xml += "      <selectedmidioutport>" + this.midiDeviceName + "</selectedmidioutport>\n";
+		xml += "      <speed>" + this.speed + "</speed>\n";
 		xml += "    </page>\n";
 		return xml;
 	}
+	
+	public JPanel getPanel() {
+		if (this.panel != null) {
+			return this.panel;
+		}
+		
+		if (this.panel != null) {
+			return this.panel;
+		}
+		JPanel panel = new JPanel();
+		AnchorLayout panelLayout = new AnchorLayout();
+		panel.setLayout(panelLayout);
+		panel.setPreferredSize(new java.awt.Dimension(319, 97));
+		panel.add(getAddMidiOutButton(), new AnchorConstraint(603, 963, 819, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getUpdatePrefsButton(), new AnchorConstraint(603, 487, 819, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getSpeedTF(), new AnchorConstraint(335, 371, 541, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getSpeedLabel(), new AnchorConstraint(365, 230, 510, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+
+		this.getUpdatePrefsButton().addActionListener(this);
+		this.getAddMidiOutButton().addActionListener(this);
+
+		JLabel label = new JLabel("Page " + (this.index + 1) + ": Machine Drum Interface");
+		panel.add(label, new AnchorConstraint(67, 349, 273, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		label.setPreferredSize(new java.awt.Dimension(160, 20));
+
+		this.panel = panel;
+		return panel;
+	}
+	
+	private JLabel getSpeedLabel() {
+		if(speedLabel == null) {
+			speedLabel = new JLabel();
+			speedLabel.setText("Speed");
+			speedLabel.setPreferredSize(new java.awt.Dimension(67, 14));
+		}
+		return speedLabel;
+	}
+	
+	private JTextField getSpeedTF() {
+		if(speedTF == null) {
+			speedTF = new JTextField();
+			speedTF.setText("100");
+			speedTF.setPreferredSize(new java.awt.Dimension(33, 20));
+		}
+		return speedTF;
+	}
+	
+	private JButton getAddMidiOutButton() {
+		if(addMidiOutButton == null) {
+			addMidiOutButton = new JButton();
+			addMidiOutButton.setText("Add MIDI Output");
+			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 21));
+		}
+		return addMidiOutButton;
+	}
+	
+	private JButton getUpdatePrefsButton() {
+		if(updatePrefsButton == null) {
+			updatePrefsButton = new JButton();
+			updatePrefsButton.setText("Update Preferences");
+			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 21));
+		}
+		return updatePrefsButton;
+	}
+
+	public void setSpeed(int speed) {
+		this.speed = speed;
+		this.getSpeedTF().setText(String.valueOf(speed));
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals("Add MIDI Output")) {
+			String[] midiOutOptions = this.monome.getMidiOutOptions();
+			String deviceName = (String)JOptionPane.showInputDialog(
+	                this.monome,
+	                "Choose a MIDI Output to add",
+	                "Add MIDI Output",
+	                JOptionPane.PLAIN_MESSAGE,
+	                null,
+	                midiOutOptions,
+	                "");
+			
+			if (deviceName == null) {
+				return;
+			}
+			
+			this.addMidiOutDevice(deviceName);	
+		}
+		
+		if (e.getActionCommand().equals("Update Preferences")) {
+			this.speed = Integer.parseInt(this.getSpeedTF().getText());
+		}
+	}
+
+	public void addMidiOutDevice(String deviceName) {
+		this.recv = this.monome.getMidiReceiver(deviceName);
+		this.midiDeviceName = deviceName;
+	}
+
 
 }
