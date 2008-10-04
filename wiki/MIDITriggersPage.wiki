@@ -8,6 +8,8 @@ Triggers send a note on message when a button is pressed.  They send a note off 
 
 Toggles send a note on and off message whenever they are pressed.  They will change led state from on to off each time they are pressed as well.  These are useful for triggering things that have an on/off state, for example, enabling/disabling plug-ins, arming/disarming tracks, etc--things that are toggled on and off.
 
+The first button in the row/column sends a C-1 note on the MIDI channel = the row/column number (row/column 1 = MIDI channel 1, row/column 2 = MIDI channel 2, etc.) The next button sends C#-1, then D-1, D#-1, etc.
+
 == 64 Layout ==
 
 === Rows ===
