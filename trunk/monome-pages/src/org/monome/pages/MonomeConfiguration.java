@@ -77,9 +77,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[0] = "MIDI Sequencer";
 		this.options[1] = "MIDI Keyboard";
 		this.options[2] = "MIDI Faders";
-		this.options[3] = "External Application";
-		this.options[4] = "Ableton Clip Launcher";
-		this.options[5] = "MIDI Triggers";
+		this.options[3] = "MIDI Triggers";
+		this.options[4] = "External Application";
+		this.options[5] = "Ableton Clip Launcher";
 		
 		this.configuration = configuration;
 		this.prefix = prefix;
@@ -120,10 +120,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		else {
 			return null;
 		}
-		this.curPage = this.numPages;
-		page.redrawMonome();
 		this.pages.add(this.numPages, page);
-		this.switchPage(page);
+		this.switchPage(page, this.numPages);
 		this.numPages++;
 		this.setJMenuBar(this.createMenuBar());
 		return page;
@@ -151,17 +149,19 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (e.getActionCommand().contains(": ")) {
 			String[] pieces = e.getActionCommand().split(":");
 			int index = Integer.parseInt(pieces[0]);
-			this.switchPage(this.pages.get(index - 1));
+			this.switchPage(this.pages.get(index - 1), index - 1);
 			System.out.println("switched page to " + index);
 		}
 	}
 
-	private void switchPage(Page page) {
+	private void switchPage(Page page, int pageIndex) {
+		this.curPage = pageIndex;
 		if (this.curPanel != null) {
 			this.curPanel.setVisible(false);
 			this.remove(this.curPanel);
 		}
 		this.curPanel = page.getPanel();
+		page.redrawMonome();
 		this.curPanel.setVisible(true);
 		this.add(this.curPanel);
 		this.validate();
@@ -197,8 +197,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			// if the page exists then change, otherwise ignore
 			if (this.pages.size() > x) {
 				this.curPage = x;
-				this.pages.get(curPage).redrawMonome();
-				this.switchPage(this.pages.get(curPage));
+				this.switchPage(this.pages.get(curPage), this.curPage);
 			}
 			this.pageChanged = true;
 			return;
@@ -219,6 +218,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			if (this.pageChanged == false) {
 				if (this.pages.get(curPage) != null) {
 					this.pages.get(curPage).handlePress(x, y, 1);
+					this.pages.get(curPage).handlePress(x, y, 0);
 				}
 			}
 			return;
