@@ -34,6 +34,10 @@ The External Application page is used to route an external application (ie. mlr,
 
 The Ableton Clip Launcher page is an interface to launch clips, stop tracks, or record enable/disable tracks in Ableton Live.  It is currently implemented to use the LiveOSC project to communicate with Ableton Live (so you'll need LiveOSC installed and configured for this to work).  It polls the state of Ableton Live and updates the page according to the state of the clips, so it is always in sync with the state of Ableton Live.
 
+  * Machine Drum Interface
+
+The Machine Drum Interface page is a set of controls for controling an Elektron Machine Drum (any version should work).  It has 4 kit save slots, 4 kit load slots, it can initialize a new kit with random machines in each slot, and it sends random parameter changes to machines and global effects.
+
 = Setup Guide =
 
 == Downloading Pages ==
