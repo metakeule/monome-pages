@@ -517,6 +517,31 @@ public class GUI implements ActionListener {
 									seqpage.redrawMonome();
 								}
 								
+								if (pageName.equals("MIDI Triggers")) {
+									// configure midi notes / rows
+									MIDITriggersPage trigpage = (MIDITriggersPage) page;
+									
+									NodeList modeNL = pageElement.getElementsByTagName("mode");
+									el = (Element) modeNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String mode = ((Node) nl.item(0)).getNodeValue();
+										trigpage.setMode(mode);
+									}
+									
+									NodeList seqNL = pageElement.getElementsByTagName("toggles");
+									for (int l=0; l < seqNL.getLength(); l++) {
+										el = (Element) seqNL.item(l);
+										nl = el.getChildNodes();
+										String mode = ((Node) nl.item(0)).getNodeValue();
+										if (mode.equals("on")) {
+											trigpage.enableToggle(l);
+										}
+									}
+									trigpage.redrawMonome();
+								}
+
+								
 								if (pageName.equals("MIDI Faders")) {
 									MIDIFadersPage faderpage = (MIDIFadersPage) page;
 									NodeList rowNL = pageElement.getElementsByTagName("delayamount");
