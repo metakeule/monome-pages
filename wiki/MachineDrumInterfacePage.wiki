@@ -6,4 +6,11 @@ The Machine Drum Interface page is useful for controlling an Elektron Machine Dr
 
 == 64 Layout ==
 
-Coming soon!
+|| mac1 || mac2 || mac3 || mac4 || mac5 || mac6 || mac7 || mac8 ||
+|| mac9 || ma10 || ma11 || ma12 || ma13 || ma14 || ma15 || ma16 ||
+|| prm1 || prm2 || prm3 || prm4 || prm5 || prm6 || prm7 || prm8 ||
+|| prm9 || pr10 || pr11 || pr12 || pr13 || pr14 || pr15 || pr16 ||
+|| pr17 || pr18 || pr19 || pr20 || pr21 || pr22 || pr23 || pr24 ||
+|| kgen || init || null || null || null || null || null || null ||
+|| lod1 || lod2 || lod3 || lod4 || sav1 || sav2 || sav3 || sav4 ||
+|| mrph || echo || gate || eq   || comp || null || null || null ||
