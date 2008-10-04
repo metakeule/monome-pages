@@ -3,6 +3,7 @@
 = 0.1.1 / 10-04-2008 =
 
   * Added MIDI Triggers page.
+  * Added Machine Drum Interface page.
   * Page menu -> switch page will now switch the page on the monome.
   * Page change button now sends both 1 and 0 press messages when button is released with no page change.  Previously it only sent the value=1 message.
 
