@@ -82,7 +82,7 @@ public class AbletonClipPage implements ActionListener, Page {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		
 		JPanel subPanel = new JPanel();
-		JLabel label = new JLabel((this.index + 1) + ": Ableton Clip Launcher");
+		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
 		subPanel.add(label);
 		panel.add(subPanel);
 				
