@@ -22,6 +22,10 @@ The MIDI Keyboard is a basic keyboard interface that sends a MIDI note on messag
 
 The MIDI Faders page turns the monome into a set of virtual faders where each column represents the MIDI CC value of one parameter.  There is a variable delay that controls how fast the faders move from value to value.
 
+  * MIDI Triggers
+
+The MIDI Triggers page is a simple grid of MIDI trigger buttons.  The buttons send MIDI notes when pressed.  The buttons are organized in either columns or rows, and each column/row sends on it's own MIDI channel.  Each row or column can be configured to act as toggle buttons instead of triggers.  In toggle mode, a row or column's buttons will switch from on to off whenever they are pressed.  In trigger mode, a row or column's buttons will stay lit while the buttons are held down.
+
   * External Application
 
 The External Application page is used to route an external application (ie. mlr, bboingg, flin, dj64, etc.) through a page.  This allows you to run multiple applications simultaneously on a single monome device and switch between them.  For example, you could run mlr on page 1, boiingg on page 2, etc.  You could also run quadrants or hub configured with a few applications of their own through a page.
