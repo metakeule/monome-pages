@@ -36,7 +36,7 @@ The Ableton Clip Launcher page is an interface to launch clips, stop tracks, or 
 
   * Machine Drum Interface
 
-The Machine Drum Interface page is a set of controls for controling an Elektron Machine Drum (any version should work).  It has 4 kit save slots, 4 kit load slots, it can initialize a new kit with random machines in each slot, and it sends random parameter changes to machines and global effects.
+The Machine Drum Interface page is a set of controls for controlling an Elektron Machine Drum (any version should work). It has 4 kit save slots, 4 kit load slots, it can initialize a new kit with random machines in each slot, and it sends random parameter changes to machines and global effects. Useful as a live performance tool or in the studio for crafting kits w/ randomness. This can generate some bizarre, other-worldly drum sounds. Other MIDI pages (like the sequencer) can be routed out to the Machine Drum as well (just select the appropriate MIDI output device in the page).
 
 = Setup Guide =
 
