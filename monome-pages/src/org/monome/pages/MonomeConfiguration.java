@@ -65,7 +65,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	private int numPages = 0;
 	public int curPage = 0;
 
-	private String options[] = new String[5];
+	private String options[] = new String[6];
 	private JPanel curPanel;
 	private int pageChangeMode = 0;
 	private boolean pageChanged = false;
@@ -79,6 +79,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[2] = "MIDI Faders";
 		this.options[3] = "External Application";
 		this.options[4] = "Ableton Clip Launcher";
+		this.options[5] = "MIDI Triggers";
 		
 		this.configuration = configuration;
 		this.prefix = prefix;
@@ -112,6 +113,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		else if (pageName.compareTo("Ableton Clip Launcher") == 0) {
 			page = new AbletonClipPage(this, this.numPages);
+		}
+		else if (pageName.compareTo("MIDI Triggers") == 0) {
+			page = new MIDITriggersPage(this, this.numPages);
 		}
 		else {
 			return null;
