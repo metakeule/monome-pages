@@ -1,0 +1,9 @@
+#summary Detailed information about the Machine Drum Interface page.
+
+= Page Description =
+
+The Machine Drum Interface page is useful for controlling an Elektron Machine Drum from a monome.  It can be used to wildly alter all parameters of the current kit, switch quickly between kits, or even to construct kits one machine at a time.  Currently only a 64 / 40h layout is available, but it will work on any sized monome.
+
+== 64 Layout ==
+
+Coming soon!
