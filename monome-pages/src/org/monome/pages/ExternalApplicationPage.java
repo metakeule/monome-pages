@@ -330,7 +330,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	}
 
 	public void setCacheEnabled(String cacheDisabled) {
-		if (cacheDisabled == "true") {
+		System.out.println("called setCacheEnabled with " + cacheDisabled);
+		if (cacheDisabled.equals("true")) {
 			this.getDisableCache().setSelected(true);
 		} else {
 			this.getDisableCache().setSelected(false);
