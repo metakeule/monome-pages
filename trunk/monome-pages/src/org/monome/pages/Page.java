@@ -53,4 +53,8 @@ public interface Page {
 	
 	public void addMidiOutDevice(String deviceName);
 
+	public boolean getCacheEnabled();
+
+	public void destroyPage();
+
 }

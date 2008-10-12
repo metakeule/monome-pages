@@ -491,6 +491,12 @@ public class GUI implements ActionListener {
 									String extHostname = ((Node) nl.item(0)).getNodeValue();
 									extpage.setHostname(extHostname);
 									
+									nl = pageElement.getElementsByTagName("disablecache");
+									el = (Element) nl.item(0);
+									nl = el.getChildNodes();
+									String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
+									extpage.setCacheEnabled(cacheDisabled);
+									
 									extpage.initOSC();
 								}
 
@@ -638,6 +644,7 @@ public class GUI implements ActionListener {
 		this.configuration.closeMidiDevices();
 		this.configuration.stopOSC();
 		this.configuration.stopAbletonOSC();
+		this.configuration.destroyPages();
 		this.frame.setTitle("Monome Pages");
 		this.frame.validate();		
 		this.configuration = null;

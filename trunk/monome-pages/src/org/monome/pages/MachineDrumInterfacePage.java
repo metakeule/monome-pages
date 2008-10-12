@@ -375,6 +375,13 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		this.recv = this.monome.getMidiReceiver(deviceName);
 		this.midiDeviceName = deviceName;
 	}
+	
+	public boolean getCacheEnabled() {
+		return true;
+	}
 
+	public void destroyPage() {
+		return;
+	}
 
 }

@@ -116,5 +116,13 @@ public class PageTemplate implements Page, ActionListener {
 		xml += "    </page>\n";
 		return xml;
 	}
+	
+	public boolean getCacheEnabled() {
+		return true;
+	}
+
+	public void destroyPage() {
+		return;
+	}
 
 }

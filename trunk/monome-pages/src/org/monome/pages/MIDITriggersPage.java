@@ -480,4 +480,13 @@ public class MIDITriggersPage implements Page, ActionListener {
 		this.toggles[l].doClick();
 	}
 	
+	public boolean getCacheEnabled() {
+		return true;
+	}
+	
+
+	public void destroyPage() {
+		return;
+	}
+
 }

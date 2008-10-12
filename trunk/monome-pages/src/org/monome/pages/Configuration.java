@@ -124,6 +124,12 @@ public class Configuration implements Receiver {
 			this.abletonOSCPortOut.close();
 		}
 	}
+	
+	public void destroyPages() {
+		for (int i = 0; i < this.numMonomeConfigurations; i++) {
+			this.monomeConfigurations.get(i).destroyPage();
+		}
+	}
 
 	public MonomeConfiguration getMonomeConfigurationFrame(int index) {
 		return monomeConfigurations.get(index);
@@ -303,6 +309,7 @@ public class Configuration implements Receiver {
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOscInPort);
 			this.abletonOSCPortIn.addListener("/live/clip/playing", oscListener);
 			this.abletonOSCPortIn.addListener("/live/clip/stopped", oscListener);
+			this.abletonOSCPortIn.addListener("/live/track/armed", oscListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
 			System.out.println("Socket exception");
@@ -315,6 +322,12 @@ public class Configuration implements Receiver {
 	public void updateClipState(int track, int clip, boolean state) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			monomeConfigurations.get(i).updateClipState(track, clip, state);
+		}
+	}
+	
+	public void updateTrackState(int track, int armed) {
+		for (int i=0; i < this.numMonomeConfigurations; i++) {
+			monomeConfigurations.get(i).updateTrackState(track, armed);
 		}
 	}
 	
@@ -341,4 +354,5 @@ public class Configuration implements Receiver {
 		xml += "</configuration>\n";
 		return xml;
 	}
+
 }

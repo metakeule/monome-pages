@@ -125,7 +125,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return null;
 		}
 		this.pages.add(this.numPages, page);
-		this.switchPage(page, this.numPages);
+		this.switchPage(page, this.numPages, true);
 		this.numPages++;
 		this.setJMenuBar(this.createMenuBar());
 		return page;
@@ -153,23 +153,26 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (e.getActionCommand().contains(": ")) {
 			String[] pieces = e.getActionCommand().split(":");
 			int index = Integer.parseInt(pieces[0]);
-			this.switchPage(this.pages.get(index - 1), index - 1);
+			this.switchPage(this.pages.get(index - 1), index - 1, true);
 			System.out.println("switched page to " + index);
 		}
 	}
 
-	private void switchPage(Page page, int pageIndex) {
+	private void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
-		if (this.curPanel != null) {
-			this.curPanel.setVisible(false);
-			this.remove(this.curPanel);
-		}
-		this.curPanel = page.getPanel();
 		page.redrawMonome();
-		this.curPanel.setVisible(true);
-		this.add(this.curPanel);
-		this.validate();
-		this.pack();
+
+		if (redrawPanel == true) {
+			if (this.curPanel != null) {
+				this.curPanel.setVisible(false);
+				this.remove(this.curPanel);
+			}
+			this.curPanel = page.getPanel();
+			this.curPanel.setVisible(true);
+			this.add(this.curPanel);
+			this.validate();
+			this.pack();
+		}
 	}
 	
 	public void updateClipState(int track, int clip, boolean state) {
@@ -184,6 +187,20 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			}
 		}
 	}
+	
+	public void updateTrackState(int track, int armed) {
+		if (this.pages.size() == 0) {
+			return;
+		}
+		
+		for (int i = 0; i < this.pages.size(); i++) {
+			if (pages.get(i) instanceof AbletonClipPage) {
+				AbletonClipPage page = (AbletonClipPage) pages.get(i);
+				page.updateTrackState(track, armed);
+			}
+		}
+	}
+
 
 	public void handlePress(int x, int y, int value) {
 		// if we have no pages then dont handle any button presses
@@ -201,7 +218,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			// if the page exists then change, otherwise ignore
 			if (this.pages.size() > x) {
 				this.curPage = x;
-				this.switchPage(this.pages.get(curPage), this.curPage);
+				this.switchPage(this.pages.get(curPage), this.curPage, false);
 			}
 			this.pageChanged = true;
 			return;
@@ -298,9 +315,15 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (index != this.curPage) {
 			return;
 		}
-
-		if (this.ledState[x][y] == value) {
+		
+		if (this.pages.get(index) == null) {
 			return;
+		}
+		
+		if (this.pages.get(index).getCacheEnabled() == true) {
+			if (this.ledState[x][y] == value) {
+				return;
+			}	
 		}
 		this.ledState[x][y] = value;
 		
@@ -335,7 +358,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	}
 
 	public void led_col(int col, int value1, int value2, int index) {
-		int fullvalue = (value1 << 8) + value2;
+		int fullvalue = (value2 << 8) + value1;
 		for (int y=0; y < this.sizeY; y++) {
 			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 			this.pageState[index][col][y] = bit;
@@ -375,11 +398,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return;
 		}
 		
-		fullvalue = (value1 << 8) + value2;
+		fullvalue = (value2 << 8) + value1;
 		for (int x=0; x < this.sizeX; x++) {
 			int bit = (fullvalue >> (this.sizeX - x - 1)) & 1;
 			this.ledState[x][row] = bit;
 		}
+		
 		
 		Object args[] = new Object[3];
 		args[0] = new Integer(row);
@@ -463,4 +487,11 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		return null;		
 	}
+
+	public void destroyPage() {
+		for (int i = 0; i < this.numPages; i++) {
+			this.pages.get(i).destroyPage();
+		}
+	}
+
 }

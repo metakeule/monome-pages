@@ -48,6 +48,12 @@ public class AbletonOSCListener implements OSCListener {
 	        int clip = ((Integer) args[1]).intValue();
 	        this.configuration.updateClipState(track, clip, false);
 		}
+		if (msg.getAddress().contains("/live/track/armed")) {
+			Object[] args = msg.getArguments();
+			int track = ((Integer) args[0]).intValue();
+			int armed = ((Integer) args[1]).intValue();
+			this.configuration.updateTrackState(track, armed);
+		}
 	}
 
 }

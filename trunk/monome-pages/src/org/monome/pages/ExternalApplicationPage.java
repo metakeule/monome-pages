@@ -34,6 +34,7 @@ import javax.sound.midi.MidiMessage;
 import javax.swing.BoxLayout;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -70,6 +71,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	private int inPort = 8080;
 	private int outPort = 8000;
 	private JPanel panel;
+	private JCheckBox disableCache;
 	private JLabel prefixLabel;
 	private JPanel jPanel1;
 	private JTextField oscOutTF;
@@ -178,7 +180,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			panel.add(prefixLabel);
 			panel.add(label);
 			panel.add(updatePrefsButton);
-			updatePrefsButton.setBounds(12, 110, 169, 21);
+			panel.add(getDisableCache());
+			updatePrefsButton.setBounds(12, 130, 169, 21);
 			label.setBounds(0, 0, 129, 14);
 			prefixLabel.setBounds(12, 23, 85, 14);
 			prefixTF.setBounds(97, 20, 100, 21);
@@ -231,6 +234,13 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	}
 
 	public String toXml() {
+		
+		String disableCache = "false";
+		
+		if (this.getDisableCache().isSelected()) {
+			disableCache = "true";
+		}
+		
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>External Application</name>\n";
@@ -238,6 +248,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		xml += "      <oscinport>" + this.inPort + "</oscinport>\n";
 		xml += "      <oscoutport>" + this.outPort + "</oscoutport>\n";
 		xml += "      <hostname>" + this.hostname + "</hostname>\n";
+		xml += "      <disablecache>" + disableCache + "</disablecache>\n";
 		xml += "    </page>\n";
 		return xml;
 	}
@@ -248,6 +259,9 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     	}
     	if (msg.getAddress().contains("clear")) {
     		Object[] args = msg.getArguments();
+			if (!(args[0] instanceof Integer)) {
+				return;
+			}
     		int int_arg = ((Integer) args[0]).intValue();
     		this.monome.clear(int_arg, this.index);
     	}
@@ -255,6 +269,9 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     		Object[] args = msg.getArguments();
     		int[] int_args = {0, 0, 0};
     		for (int i=0; i < args.length; i++) {
+    			if (!(args[i] instanceof Integer)) {
+    				return;
+    			}
     			int_args[i] = ((Integer) args[i]).intValue();
     		}
     		this.monome.led_col(int_args[0], int_args[1], int_args[2], this.index);
@@ -263,6 +280,9 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     		Object[] args = msg.getArguments();
     		int[] int_args = {0, 0, 0};
     		for (int i=0; i < args.length; i++) {
+    			if (!(args[i] instanceof Integer)) {
+    				return;
+    			}
     			int_args[i] = ((Integer) args[i]).intValue();
     		}
     		this.monome.led_row(int_args[0], int_args[1], int_args[2], this.index);
@@ -271,6 +291,9 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     		Object[] args = msg.getArguments();
     		int[] int_args = {0, 0, 0};
     		for (int i=0; i < args.length; i++) {
+    			if (!(args[i] instanceof Integer)) {
+    				return;
+    			}
     			int_args[i] = ((Integer) args[i]).intValue();
     		}
     		this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
@@ -297,5 +320,42 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		this.hostnameTF.setText(extHostname);
 	}
 	
+	public JCheckBox getDisableCache() {
+		if(disableCache == null) {
+			disableCache = new JCheckBox();
+			disableCache.setText("Disable LED Cache");
+			disableCache.setBounds(97, 106, 134, 18);
+		}
+		return disableCache;
+	}
+
+	public void setCacheEnabled(String cacheDisabled) {
+		if (cacheDisabled == "true") {
+			this.getDisableCache().setSelected(true);
+		} else {
+			this.getDisableCache().setSelected(false);
+		}
+	}
+	
+	public boolean getCacheEnabled() {
+		if (this.getDisableCache().isSelected()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	public void destroyPage() {
+		if (this.oscIn != null) {
+			if (this.oscIn.isListening()) {
+				this.oscIn.stopListening();				
+			}
+			this.oscIn.close();
+		}
+		
+		if (this.oscOut != null) {
+			this.oscOut.close();
+		}
+	}
 
 }
