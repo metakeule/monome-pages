@@ -245,5 +245,13 @@ public class MIDIFadersPage implements Page, ActionListener {
 	public void setDelayAmount(int delayAmount) {
 		this.delayAmount = delayAmount;
 	}
+	
+	public boolean getCacheEnabled() {
+		return true;
+	}
+
+	public void destroyPage() {
+		return;
+	}
 
 }

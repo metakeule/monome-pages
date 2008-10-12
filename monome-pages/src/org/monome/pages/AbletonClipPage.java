@@ -176,14 +176,29 @@ public class AbletonClipPage implements ActionListener, Page {
 	}
 
 	public void redrawMonome() {
+		// redraw clip state
 		for (int track = 0; track < this.monome.sizeX; track++) {
-			for (int clip = 0; clip < this.monome.sizeY; clip++) {
+			for (int clip = 0; clip < this.monome.sizeY - 2; clip++) {
 				if (this.clipState[track][clip] == false) {
 					this.monome.led(track, clip, 0, this.index);
 				} else {
 					this.monome.led(track, clip, 1, this.index);
 				}
 			}
+		}
+		
+		// redraw record enable state
+		for (int i = 0; i < this.monome.sizeX; i++) {
+			if (this.tracksArmed[i] == true) {
+				this.monome.led(i, this.monome.sizeY - 2, 1, this.index);
+			} else {
+				this.monome.led(i, this.monome.sizeY - 2, 0, this.index);
+			}
+		}
+		
+		// clear bottom row
+		for (int i=0; i < this.monome.sizeX; i++) {
+			this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
 		}
 	}
 
@@ -231,5 +246,28 @@ public class AbletonClipPage implements ActionListener, Page {
 		if (redrawNeeded) {
 			this.redrawMonome();
 		}
+	}
+
+	public void updateTrackState(int track, int armed) {
+		boolean redrawNeeded = false;
+		boolean state = (armed != 0);
+		
+		if (this.tracksArmed[track] != state) {
+			redrawNeeded = true;
+		}
+		
+		this.tracksArmed[track] = state;
+		
+		if (redrawNeeded) {
+			this.redrawMonome();
+		}
+	}
+	
+	public boolean getCacheEnabled() {
+		return true;
+	}
+
+	public void destroyPage() {
+		return;
 	}
 }

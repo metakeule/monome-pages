@@ -43,9 +43,11 @@ public class AbletonClipUpdater implements Runnable {
 			abletonOscOut = this.page.monome.configuration.getAbletonOSCPortOut();
 		}
 		OSCMessage msg = new OSCMessage("/live/clip/playing");
+		OSCMessage msg2 = new OSCMessage("/live/track/info");
 		while (running) {
 			try {
 				abletonOscOut.send(msg);
+				abletonOscOut.send(msg2);
 				Thread.sleep(100);
 			} catch (IOException e) {
 				e.printStackTrace();

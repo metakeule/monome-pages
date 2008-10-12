@@ -397,5 +397,14 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		this.midiDeviceNames.add(deviceName);
 		System.out.println("Got receiver for " + deviceName);
 	}
+	
+	public boolean getCacheEnabled() {
+		return true;
+	}
+	
+
+	public void destroyPage() {
+		return;
+	}
 
 }

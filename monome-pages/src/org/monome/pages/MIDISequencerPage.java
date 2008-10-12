@@ -1094,5 +1094,14 @@ public class MIDISequencerPage implements Page, ActionListener {
 			row++;
 		}
 	}
+	
+	public boolean getCacheEnabled() {
+		return true;
+	}
+	
+
+	public void destroyPage() {
+		return;
+	}
 
 }
