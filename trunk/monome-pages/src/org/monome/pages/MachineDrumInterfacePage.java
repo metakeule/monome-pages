@@ -246,6 +246,10 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	}
 
 	public void send(MidiMessage message, long timeStamp) {
+		if (this.recv == null) {
+			return;
+		}
+		
 		ShortMessage shortMessage;
 		if (message instanceof ShortMessage) {
 			shortMessage = (ShortMessage) message;

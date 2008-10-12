@@ -39,6 +39,10 @@ public class MachineDrum {
 	}
 
 	public void sendRandomParamChange(Receiver output_device, int machine_number, int param_number) {
+	    if (output_device == null) {
+	    	return;
+	    }
+
 		int midi_channel = (int) Math.floor(machine_number / 4);
 		int cc = (param_number + 16) + ((machine_number % 4) * 24);
 		if (cc >= 64) {
@@ -54,6 +58,10 @@ public class MachineDrum {
 	}
 
 	public void sendKitLoad(Receiver output_device, int kit_number) {
+	    if (output_device == null) {
+	    	return;
+	    }
+
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[9];
 		data[0] = (byte) 0xF0;
@@ -74,6 +82,10 @@ public class MachineDrum {
 	}
 
 	public void sendKitSave(Receiver output_device, int kit_number) {
+	    if (output_device == null) {
+	    	return;
+	    }
+
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[9];
 		data[0] = (byte) 0xF0;
@@ -94,6 +106,10 @@ public class MachineDrum {
 	}
 
 	public void sendAssignMachine(Receiver output_device, int track, byte machine) {
+	    if (output_device == null) {
+	    	return;
+	    }
+	    
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[12];
 		data[0] = (byte) 0xF0;
@@ -110,7 +126,6 @@ public class MachineDrum {
 		data[11] = (byte) 0x02;
 		try {
 		    msg.setMessage(data, 12);
-		    output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
 			System.out.println("InvalidMidiDataException in sendAssignMachine()");
 		}
@@ -118,6 +133,10 @@ public class MachineDrum {
 
 
 	public void sendFxParam(Receiver output_device, String fx, int param, int value) {
+	    if (output_device == null) {
+	    	return;
+	    }
+	    
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[10];
 		if (fx.equals("echo")) {
