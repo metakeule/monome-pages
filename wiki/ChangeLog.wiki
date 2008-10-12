@@ -1,5 +1,14 @@
 #summary List of changes for each version
 
+= 0.1.2 / 10-12-2008 =
+
+  * Fixed redraw bugs in Ableton Clip Page.
+  * Updated LiveAPI OSC bindings -- be sure to download the latest LiveAPI files from the Downloads tab!
+  * Fixed led cache errors with led_row and led_col.
+  * Added LED cache disable to External Application page.
+  * Properly releasing OSC ports with External Application page now.
+  * Fixed Machine Drum Interface / no MIDI port selected causes MIDI Sequencer to fail.
+
 = 0.1.1 / 10-04-2008 =
 
   * Added MIDI Triggers page.
