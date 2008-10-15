@@ -1,5 +1,10 @@
 #summary List of changes for each version
 
+= 0.1.3 / 10-15-2008 =
+
+  * Fixed MIDI Triggers page loading issue.
+  * Fixed configuration menu redraw issue on OS X.
+
 = 0.1.2 / 10-12-2008 =
 
   * Fixed redraw bugs in Ableton Clip Page.
