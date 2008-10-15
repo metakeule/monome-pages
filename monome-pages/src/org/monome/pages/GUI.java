@@ -229,6 +229,8 @@ public class GUI implements ActionListener {
 		menuBar.add(this.midiMenu);
 
 		this.frame.setJMenuBar(menuBar);
+		this.frame.pack();
+		this.frame.setSize(800, 600);
 	}
 	
 	public Container createContentPane() {
@@ -666,7 +668,9 @@ public class GUI implements ActionListener {
 		
 		this.newMonomeFrame = new NewMonomeFrame(this.configuration, this.frame);
 		this.newMonomeFrame.setVisible(true);
+		
 		this.frame.add(newMonomeFrame);
+		
 		this.frame.validate();
 	}
 
@@ -686,6 +690,8 @@ public class GUI implements ActionListener {
 		this.oscSettingsFrame = new OSCSettingsFrame(this.configuration, this.frame);
 		this.oscSettingsFrame.setVisible(true);
 		this.frame.add(oscSettingsFrame);
+		this.oscSettingsFrame.setFocusable(true);
+		this.oscSettingsFrame.grabFocus();
 		this.frame.validate();
 	}
 	

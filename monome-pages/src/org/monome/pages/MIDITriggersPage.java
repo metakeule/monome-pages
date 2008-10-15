@@ -30,9 +30,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
-import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -40,7 +38,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.LayoutStyle;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -96,6 +93,11 @@ public class MIDITriggersPage implements Page, ActionListener {
 	public MIDITriggersPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
+		
+		for (int i=0; i < 16; i++) {
+			toggles[i] = new JCheckBox();
+			toggles[i].setText("Toggles");
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -311,14 +313,6 @@ public class MIDITriggersPage implements Page, ActionListener {
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Triggers");
 
-		toggles[15] = new JCheckBox();
-		toggles[15].setText("Toggles");
-		toggles[14] = new JCheckBox();
-		toggles[14].setText("Toggles");
-		toggles[13] = new JCheckBox();
-		toggles[13].setText("Toggles");
-		toggles[12] = new JCheckBox();
-		toggles[12].setText("Toggles");
 		row16Label = new JLabel();
 		row16Label.setText("Row 16");
 		row15Label = new JLabel();
@@ -344,43 +338,23 @@ public class MIDITriggersPage implements Page, ActionListener {
 		colRB.setBounds(19, 123, 86, 18);
 		addMidiOutButton.setText("Add MIDI Output");
 		addMidiOutButton.setBounds(285, 120, 164, 21);
-		toggles[4] = new JCheckBox();
-		toggles[4].setText("Toggles");
 		row5Label = new JLabel();
 		row5Label.setText("Row 5");
-		toggles[5] = new JCheckBox();
-		toggles[5].setText("Toggles");
 		row6Label = new JLabel();
 		row6Label.setText("Row 6");
-		toggles[6] = new JCheckBox();
-		toggles[6].setText("Toggles");
 		row7Label = new JLabel();
 		row7Label.setText("Row 7");
-		toggles[7] = new JCheckBox();
-		toggles[7].setText("Toggles");
 		row8Label = new JLabel();
 		row8Label.setText("Row 8");
-		toggles[8] = new JCheckBox();
-		toggles[8].setText("Toggles");
 		row9Label = new JLabel();
 		row9Label.setText("Row 9");
-		toggles[9] = new JCheckBox();
-		toggles[9].setText("Toggles");
 		row10Label = new JLabel();
 		row10Label.setText("Row 10");
-		toggles[10] = new JCheckBox();
-		toggles[10].setText("Toggles");
 		row11Label = new JLabel();
 		row11Label.setText("Row 11");
-		toggles[11] = new JCheckBox();
-		toggles[11].setText("Toggles");
 		row12Label = new JLabel();
 		row12Label.setText("Row 12");
-		toggles[2] = new JCheckBox();
-		toggles[2].setText("Toggles");
-		toggles[3] = new JCheckBox();
 		panel.add(toggles[3]);
-		toggles[3].setText("Toggles");
 		toggles[3].setBounds(58, 78, 74, 18);
 		row3Label = new JLabel();
 		row3Label.setText("Row 3");
@@ -418,7 +392,6 @@ public class MIDITriggersPage implements Page, ActionListener {
 		row4Label.setBounds(12, 80, 46, 14);
 		row2Label = new JLabel();
 		row2Label.setText("Row 2");
-		toggles[1] = new JCheckBox();
 		panel.add(toggles[1]);
 		panel.add(row2Label);
 		panel.add(toggles[5]);
@@ -434,11 +407,9 @@ public class MIDITriggersPage implements Page, ActionListener {
 		row6Label.setBounds(143, 40, 46, 14);
 		toggles[5].setBounds(189, 38, 74, 18);
 		row2Label.setBounds(12, 40, 46, 14);
-		toggles[1].setText("Toggles");
 		toggles[1].setBounds(58, 38, 74, 18);
 		row1Label = new JLabel();
 		row1Label.setText("Row 1");
-		toggles[0] = new JCheckBox();
 		panel.add(toggles[0]);
 		panel.add(row1Label);
 		panel.add(toggles[4]);
@@ -456,7 +427,6 @@ public class MIDITriggersPage implements Page, ActionListener {
 		row5Label.setBounds(143, 20, 46, 14);
 		toggles[4].setBounds(189, 18, 74, 18);
 		row1Label.setBounds(12, 20, 63, 14);
-		toggles[0].setText("Toggles");
 		toggles[0].setBounds(58, 18, 74, 18);
 		rowRB.setSelected(true);
 		

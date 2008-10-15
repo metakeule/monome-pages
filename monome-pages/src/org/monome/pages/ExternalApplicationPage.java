@@ -324,7 +324,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		if(disableCache == null) {
 			disableCache = new JCheckBox();
 			disableCache.setText("Disable LED Cache");
-			disableCache.setBounds(97, 106, 134, 18);
+			disableCache.setBounds(97, 106, 180, 18);
 		}
 		return disableCache;
 	}
