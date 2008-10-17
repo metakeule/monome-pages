@@ -6,3 +6,4 @@
   * In the Ableton page, add an offset column.
   * In the Ableton page, add undo (and redo?).
   * Check into clipslot.fire() for recording audio clips, possibly integrate into Ableton page if it works.
+  * Make 2 velocity levels in midi sequencer ala sevenuplive
