@@ -234,7 +234,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 	 * Find out of toggle mode is enabled for a row/column.
 	 * 
 	 * @param index The index of the row/column
-	 * @return
+	 * @return The mode of the checkbox (toggles or triggers)
 	 */
 	private int getToggleMode(int index) {
 		if (this.toggles[index].isSelected()) {
