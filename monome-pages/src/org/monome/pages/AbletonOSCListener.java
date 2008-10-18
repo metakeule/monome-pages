@@ -1,7 +1,7 @@
 /*
  *  AbletonOSCListener.java
  * 
-  *  Copyright (c) 2008, Tom Dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
  *  This file is part of Pages.
  *
@@ -36,16 +36,16 @@ import com.illposed.osc.OSCMessage;
  *
  */
 public class AbletonOSCListener implements OSCListener {
-	
+
 	/**
 	 * The Configuration object
 	 */
 	private Configuration configuration;
 
-    /**
-     * @param config The Configuration object
-     */
-    AbletonOSCListener(Configuration config) {
+	/**
+	 * @param config The Configuration object
+	 */
+	AbletonOSCListener(Configuration config) {
 		this.configuration = config;
 	}
 
@@ -55,17 +55,17 @@ public class AbletonOSCListener implements OSCListener {
 	public void acceptMessage(Date arg0, OSCMessage msg) {
 		// received message from LiveOSC about a clip currently playing
 		if (msg.getAddress().contains("/live/clip/playing")) {
-	        Object[] args = msg.getArguments();
-	        int track = ((Integer) args[0]).intValue();
-	        int clip = ((Integer) args[1]).intValue();
-	        this.configuration.updateAbletonClipState(track, clip, true);
+			Object[] args = msg.getArguments();
+			int track = ((Integer) args[0]).intValue();
+			int clip = ((Integer) args[1]).intValue();
+			this.configuration.updateAbletonClipState(track, clip, true);
 		}
 		// received message from LiveOSC about a clip being stopped
 		if (msg.getAddress().contains("/live/clip/stopped")) {
-	        Object[] args = msg.getArguments();
-	        int track = ((Integer) args[0]).intValue();
-	        int clip = ((Integer) args[1]).intValue();
-	        this.configuration.updateAbletonClipState(track, clip, false);
+			Object[] args = msg.getArguments();
+			int track = ((Integer) args[0]).intValue();
+			int clip = ((Integer) args[1]).intValue();
+			this.configuration.updateAbletonClipState(track, clip, false);
 		}
 		// received message from LiveOSC about a track being armed
 		if (msg.getAddress().contains("/live/track/armed")) {

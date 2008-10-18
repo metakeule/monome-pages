@@ -52,47 +52,47 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * The monome's prefix (ie. "/40h")
 	 */
 	public String prefix;
-	
+
 	/**
 	 * The monome's width (ie. 8 or 16)
 	 */
 	public int sizeX;
-	
+
 	/**
 	 * The monome's height (ie. 8 or 16) 
 	 */
 	public int sizeY;
-	
+
 	/**
 	 * The main Configuration object 
 	 */
 	public Configuration configuration;
-	
+
 	/**
 	 * This monome's index 
 	 */
 	private int index;
-	
+
 	/**
 	 * ledState[x][y] - The LED state cache for the monome
 	 */
 	public int[][] ledState;
-	
+
 	/**
 	 * pageState[page_num][x][y] - The LED state cache for each page
 	 */
 	public int[][][] pageState = new int[16][32][32];
-	
+
 	/**
 	 * The pages that belong to this monome
 	 */
 	private ArrayList<Page> pages = new ArrayList<Page>();
-	
+
 	/**
 	 * The number of pages this monome has 
 	 */
 	private int numPages = 0;
-	
+
 	/**
 	 * The currently selected page
 	 */
@@ -102,22 +102,22 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
 	private String options[] = new String[7];
-	
+
 	/**
 	 * The current page panel being displayed 
 	 */
 	private JPanel curPanel;
-	
+
 	/**
 	 * 1 when the page change button is held down (bottom right button) 
 	 */
 	private int pageChangeMode = 0;
-	
+
 	/**
 	 * true if a page has been changed while the page change button was held down 
 	 */
 	private boolean pageChanged = false;
-	
+
 	/**
 	 * @param configuration The main Configuration object
 	 * @param index The index of this monome
@@ -137,21 +137,21 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[4] = "External Application";
 		this.options[5] = "Ableton Clip Launcher";
 		this.options[6] = "Machine Drum Interface";
-		
+
 		this.configuration = configuration;
 		this.prefix = prefix;
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
-		
+
 		this.ledState = new int[32][32];
-				
+
 		JPanel monomePanel = new JPanel();
 		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));		
 		this.setJMenuBar(this.createMenuBar());
 		this.pack();
 	}
-	
-	
+
+
 	/**
 	 * Adds a new page to this monome
 	 * 
@@ -191,7 +191,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.setJMenuBar(this.createMenuBar());
 		return page;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -199,13 +199,13 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		// create a new page
 		if (e.getActionCommand().equals("New Page")) {
 			String name = (String)JOptionPane.showInputDialog(
-	                this,
-	                "Select a new page type",
-	                "New Page",
-	                JOptionPane.PLAIN_MESSAGE,
-	                null,
-	                options,
-	                "");
+					this,
+					"Select a new page type",
+					"New Page",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					options,
+					"");
 			if (name == null) {
 				return;
 			}
@@ -246,7 +246,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pack();
 		}
 	}
-	
+
 	/**
 	 * Called by AbletonClipUpdater to update the state of Ableton clips.
 	 * 
@@ -258,7 +258,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (this.pages.size() == 0) {
 			return;
 		}
-		
+
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
@@ -266,7 +266,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			}
 		}
 	}
-	
+
 	/**
 	 * Update the record enabled/disabled state of an Ableton track.
 	 * 
@@ -277,7 +277,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (this.pages.size() == 0) {
 			return;
 		}
-		
+
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
@@ -298,7 +298,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (this.pages.size() == 0) {
 			return;
 		}
-				
+
 		// if the monome isn't configured to handle this button then don't handle it
 		// ie if you config a 256 as a 64 and hit a button out of range
 		if (y >= this.sizeY || x >= this.sizeX) {
@@ -314,7 +314,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pageChanged = true;
 			return;
 		}
-		
+
 		// if this is the bottom right button and we pressed the button (value == 1), turn page change mode on
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
 			System.out.println("Page change mode = " + value);
@@ -322,7 +322,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pageChanged = false;
 			return;
 		}
-		
+
 		// if this is the bottom right button and we let go turn it off
 		// and send the value == 1 press along to the page
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0) {
@@ -340,7 +340,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pages.get(curPage).handlePress(x, y, value);
 		}
 	}
-	
+
 	/**
 	 * Builds the monome configuration window's Page menu
 	 * 
@@ -350,22 +350,22 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		JMenuBar menuBar;
 		JMenu fileMenu;
 		JMenuItem menuItem;
-		
+
 		menuBar = new JMenuBar();
-		
+
 		fileMenu = new JMenu("Page");
 		fileMenu.setMnemonic(KeyEvent.VK_P);
 		fileMenu.getAccessibleContext().setAccessibleDescription("Page Menu");
-		
+
 		menuBar.add(fileMenu);
-		
+
 		menuItem = new JMenuItem("New Page", KeyEvent.VK_N);
 		menuItem.getAccessibleContext().setAccessibleDescription("Create a new page");
 		menuItem.addActionListener(this);
 		fileMenu.add(menuItem);
-		
+
 		JMenu subMenu = new JMenu("Show Page");
-		
+
 		if (this.numPages == 0) {
 			menuItem = new JMenuItem("No Pages Defined");
 			subMenu.add(menuItem);
@@ -377,12 +377,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			}
 		}
 		fileMenu.add(subMenu);
-		
+
 		menuItem = new JMenuItem("Remove Configuration", KeyEvent.VK_R);
 		menuItem.getAccessibleContext().setAccessibleDescription("Create a new configuration");
 		menuItem.addActionListener(this);
 		fileMenu.add(menuItem);
-		
+
 		return menuBar;
 	}
 
@@ -394,7 +394,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pages.get(i).handleTick();
 		}
 	}
-	
+
 	/**
 	 * Called every time a MIDI clock sync 'reset' is received, this triggers each page's handleReset() method.
 	 */
@@ -415,7 +415,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pages.get(i).send(message, timeStamp);
 		}
 	}
-	
+
 	/**
 	 * Sends a /led x y value command to the monome if index is the selected page.
 	 * 
@@ -426,22 +426,22 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 */
 	public void led(int x, int y, int value, int index) {
 		this.pageState[index][x][y] = value;
-		
+
 		if (index != this.curPage) {
 			return;
 		}
-		
+
 		if (this.pages.get(index) == null) {
 			return;
 		}
-		
+
 		if (this.pages.get(index).getCacheDisabled() == false) {
 			if (this.ledState[x][y] == value) {
 				return;
 			}	
 		}
 		this.ledState[x][y] = value;
-		
+
 		Object args[] = new Object[3];
 		args[0] = new Integer(x);
 		args[1] = new Integer(y);
@@ -453,7 +453,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Clear the monome.
 	 */
@@ -489,23 +489,23 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 			this.pageState[index][col][y] = bit;
 		}
-		
+
 		if (index != this.curPage) {
 			return;
 		}
-		
+
 		fullvalue = (value2 << 8) + value1;
 		for (int y=0; y < this.sizeY; y++) {
 			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 			this.ledState[col][y] = bit;
 		}
-		
+
 		Object args[] = new Object[3];
 		args[0] = new Integer(col);
 		args[1] = new Integer(value1);
 		args[2] = new Integer(value2);
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_col", args);
-		
+
 		try {
 			this.configuration.monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
@@ -527,31 +527,31 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
 			this.pageState[index][x][row] = bit;
 		}
-		
+
 		if (index != this.curPage) {
 			return;
 		}
-		
+
 		fullvalue = (value2 << 8) + value1;
 		for (int x=0; x < this.sizeX; x++) {
 			int bit = (fullvalue >> (this.sizeX - x - 1)) & 1;
 			this.ledState[x][row] = bit;
 		}
-		
-		
+
+
 		Object args[] = new Object[3];
 		args[0] = new Integer(row);
 		args[1] = new Integer(value1);
 		args[2] = new Integer(value2);
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_row", args);
-		
+
 		try {
 			this.configuration.monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends a frame message to the monome if index is the selected page
 	 * TODO: implement this method
@@ -565,7 +565,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		for (int i=0; i < values.length; i++) {
 		}
 	}
-	
+
 	/**
 	 * Sends a clear message to the monome if index is the selected page
 	 * 
@@ -583,7 +583,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			if (index != this.curPage) {
 				return;
 			}
-			
+
 			for (int x = 0; x < this.sizeX; x++) {
 				for (int y = 0; y < this.sizeY; y++) {
 					this.ledState[x][y] = state;
@@ -593,7 +593,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			Object args[] = new Object[1];
 			args[0] = new Integer(state);
 			OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
-			
+
 			try {
 				this.configuration.monomeSerialOSCPortOut.send(msg);
 			} catch (Exception e) {
@@ -633,7 +633,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		return midiOutOptions;
 	}
-	
+
 	/**
 	 * The Receiver object for the MIDI device named midiDeviceName. 
 	 * 

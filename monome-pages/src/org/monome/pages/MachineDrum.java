@@ -40,7 +40,7 @@ public class MachineDrum {
 	 * Random number generator
 	 */
 	Random generator;
-	
+
 	/**
 	 * Control out message.
 	 */
@@ -62,20 +62,20 @@ public class MachineDrum {
 	 * @param param_number The parameter number (0-7 = first page from upper left to bottom right, 8-15 = second page, 16-23 = third page)
 	 */
 	public void sendRandomParamChange(Receiver output_device, int machine_number, int param_number) {
-	    if (output_device == null) {
-	    	return;
-	    }
+		if (output_device == null) {
+			return;
+		}
 
-	    // see appendix of machinedrum manual
+		// see appendix of machinedrum manual
 		int midi_channel = (int) Math.floor(machine_number / 4);
 		int cc = (param_number + 16) + ((machine_number % 4) * 24);
 		if (cc >= 64) {
 			cc += 8;
 		}
 		int value = generator.nextInt(128);
-        try {
-            ctrl_out.setMessage(ShortMessage.CONTROL_CHANGE, midi_channel, cc, value);
-            output_device.send(ctrl_out, -1);
+		try {
+			ctrl_out.setMessage(ShortMessage.CONTROL_CHANGE, midi_channel, cc, value);
+			output_device.send(ctrl_out, -1);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -88,9 +88,9 @@ public class MachineDrum {
 	 * @param kit_number The kit number to load (0 = first kit, 63 = last kit)
 	 */
 	public void sendKitLoad(Receiver output_device, int kit_number) {
-	    if (output_device == null) {
-	    	return;
-	    }
+		if (output_device == null) {
+			return;
+		}
 
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[9];
@@ -104,8 +104,8 @@ public class MachineDrum {
 		data[7] = (byte) (kit_number);
 		data[8] = (byte) 0xF7;
 		try {
-		    msg.setMessage(data, 9);
-		    output_device.send(msg, -1);
+			msg.setMessage(data, 9);
+			output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -118,9 +118,9 @@ public class MachineDrum {
 	 * @param kit_number The kit number to save the current kit into
 	 */
 	public void sendKitSave(Receiver output_device, int kit_number) {
-	    if (output_device == null) {
-	    	return;
-	    }
+		if (output_device == null) {
+			return;
+		}
 
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[9];
@@ -134,8 +134,8 @@ public class MachineDrum {
 		data[7] = (byte) (kit_number);
 		data[8] = (byte) 0xF7;
 		try {
-		    msg.setMessage(data, 9);
-		    output_device.send(msg, -1);
+			msg.setMessage(data, 9);
+			output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -149,10 +149,10 @@ public class MachineDrum {
 	 * @param machine The machine number to assign, see the MachineDrum manual's appendix
 	 */
 	public void sendAssignMachine(Receiver output_device, int track, byte machine) {
-	    if (output_device == null) {
-	    	return;
-	    }
-	    
+		if (output_device == null) {
+			return;
+		}
+
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[12];
 		data[0] = (byte) 0xF0;
@@ -168,7 +168,7 @@ public class MachineDrum {
 		data[10] = (byte) 0x00;
 		data[11] = (byte) 0x02;
 		try {
-		    msg.setMessage(data, 12);
+			msg.setMessage(data, 12);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -183,10 +183,10 @@ public class MachineDrum {
 	 * @param value The new value (from 0-127)
 	 */
 	public void sendFxParam(Receiver output_device, String fx, int param, int value) {
-	    if (output_device == null) {
-	    	return;
-	    }
-	    
+		if (output_device == null) {
+			return;
+		}
+
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[10];
 		if (fx.equals("echo")) {
@@ -210,8 +210,8 @@ public class MachineDrum {
 		data[8] = (byte) (value);
 		data[9] = (byte) 0xF7;
 		try {
-		    msg.setMessage(data, 10);
-		    output_device.send(msg, -1);
+			msg.setMessage(data, 10);
+			output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -228,119 +228,119 @@ public class MachineDrum {
 
 		if (x == 0) {
 			String[] bd = {
-				"TRX-BD",
-				"TRX-B2",
-				"EFM-BD",
-				"P-I-BD",
-				"E12-BD"
+					"TRX-BD",
+					"TRX-B2",
+					"EFM-BD",
+					"P-I-BD",
+					"E12-BD"
 			};
 
 			String[] sd = {
-				"TRX-SD",
-				"EFM-SD",
-				"P-I-SD",
-				"E12-SD",
-				"E12-BR"
+					"TRX-SD",
+					"EFM-SD",
+					"P-I-SD",
+					"E12-SD",
+					"E12-BR"
 			};
 
 			String[] ht = {
-				"TRX-XT",
-				"TRX-XC",
-				"EFM-XT",
-				"E12-HT",
-				"E12-LT",
-				"E12-BC",
-				"P-I-XT"
+					"TRX-XT",
+					"TRX-XC",
+					"EFM-XT",
+					"E12-HT",
+					"E12-LT",
+					"E12-BC",
+					"P-I-XT"
 			};
 
 			String[] mt = {
-				"TRX-XT",
-				"TRX-XC",
-				"EFM-XT",
-				"E12-HT",
-				"E12-LT",
-				"E12-BC",
-				"P-I-XT"
+					"TRX-XT",
+					"TRX-XC",
+					"EFM-XT",
+					"E12-HT",
+					"E12-LT",
+					"E12-BC",
+					"P-I-XT"
 			};
 
 			String[] lt = {
-				"TRX-XT",
-				"TRX-XC",
-				"EFM-XT",
-				"E12-HT",
-				"E12-LT",
-				"E12-BC",
-				"P-I-XT"
+					"TRX-XT",
+					"TRX-XC",
+					"EFM-XT",
+					"E12-HT",
+					"E12-LT",
+					"E12-BC",
+					"P-I-XT"
 			};
 
 			String[] cp = {
-				"TRX-CP",
-				"EFM-CP",
-				"E12-CP",
-				"E12-TA",
-				"E12-SH"
+					"TRX-CP",
+					"EFM-CP",
+					"E12-CP",
+					"E12-TA",
+					"E12-SH"
 			};
 
 			String[] rs = {
-				"TRX-RS",
-				"EFM-RS",
-				"E12-RS",
-				"E12-BR",
-				"E12-SH",
-				"P-I-RS"
+					"TRX-RS",
+					"EFM-RS",
+					"E12-RS",
+					"E12-BR",
+					"E12-SH",
+					"P-I-RS"
 			};
 
 			String[] cb = {
-				"TRX-CB",
-				"TRX-CL",
-				"EFM-CB",
-				"E12-CB",
-				"E12-TR",
-				"P-I-ML"
+					"TRX-CB",
+					"TRX-CL",
+					"EFM-CB",
+					"E12-CB",
+					"E12-TR",
+					"P-I-ML"
 			};
 
 			String[] ch = {
-				"GND-NS",
-				"TRX-CH",
-				"EFM-HH",
-				"E12-CH",
-				"P-I-HH"
+					"GND-NS",
+					"TRX-CH",
+					"EFM-HH",
+					"E12-CH",
+					"P-I-HH"
 			};
 
 			String[] oh = {
-				"P-I-ML",
-				"TRX-OH",
-				"EFM-HH",
-				"E12-OH",
-				"P-I-HH"
+					"P-I-ML",
+					"TRX-OH",
+					"EFM-HH",
+					"E12-OH",
+					"P-I-HH"
 			};
 
 			String[] rc = {
-				"TRX-CY",
-				"EFM-CY",
-				"P-I-RC",
-				"P-I-ML",
-				"E12-RC"
+					"TRX-CY",
+					"EFM-CY",
+					"P-I-RC",
+					"P-I-ML",
+					"E12-RC"
 			};
 
 			String[] cc = {
-				"TRX-CY",
-				"EFM-CY",
-				"P-I-CC",
-				"P-I-ML",
-				"E12-CC"
+					"TRX-CY",
+					"EFM-CY",
+					"P-I-CC",
+					"P-I-ML",
+					"E12-CC"
 			};
 
 			String[] m1 = {
-				"TRX-MA",
-				"TRX-CL",
-				"TRX-XC"
+					"TRX-MA",
+					"TRX-CL",
+					"TRX-XC"
 			};
 
 			String[] m2 = {
-				"E12-TA",
-				"E12-BC",
-				"E12-TR"
+					"E12-TA",
+					"E12-BC",
+					"E12-TR"
 			};
 			choice[0] = getMachine(bd[generator.nextInt(bd.length)]);
 			choice[1] = getMachine(sd[generator.nextInt(sd.length)]);

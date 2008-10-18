@@ -47,67 +47,67 @@ import javax.swing.JRadioButton;
  *
  */
 public class MIDITriggersPage implements Page, ActionListener {
-	
+
 	/**
 	 * Toggles mode constant
 	 */
 	private static final int MODE_TOGGLES = 0;
-	
+
 	/**
 	 * Triggers mode constant
 	 */
 	private static final int MODE_TRIGGERS = 1;
-	
+
 	/**
 	 * Rows orientation constant
 	 */
 	private static final int ORIENTATION_ROWS = 2;
-	
+
 	/**
 	 * Columns orientation constant
 	 */
 	private static final int ORIENTATION_COLUMNS = 3;
-	
+
 	/**
 	 * Checkboxes to enable toggle mode on or off for each row/col
 	 */
 	private JCheckBox[] toggles = new JCheckBox[16];
-	
+
 	/**
 	 * The toggled state of each button (on or off)
 	 */
 	private int[][] toggleValues = new int[16][16];
-	
+
 	/**
 	 * The MonomeConfiguration object this page belongs to
 	 */
 	MonomeConfiguration monome;
-	
+
 	/**
 	 * The index of this page (the page number) 
 	 */
 	private int index;
-	
+
 	/**
 	 * The GUI for this page
 	 */
 	private JPanel panel;
-	
+
 	/**
 	 * the Add MIDI Output button 
 	 */
 	private JButton addMidiOutButton;
-	
+
 	/**
 	 * Columns mode radio button
 	 */
 	private JRadioButton colRB;
-	
+
 	/**
 	 * Rows mode radio button
 	 */
 	private JRadioButton rowRB;
-	
+
 	/**
 	 * Rows/columns radio button group 
 	 */
@@ -117,7 +117,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 	 * The selected MIDI output device
 	 */
 	private Receiver recv;
-	
+
 	/**
 	 * The name of the selected MIDI output device
 	 */
@@ -148,7 +148,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 	public MIDITriggersPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		
+
 		for (int i=0; i < 16; i++) {
 			toggles[i] = new JCheckBox();
 			toggles[i].setText("Toggles");
@@ -163,18 +163,18 @@ public class MIDITriggersPage implements Page, ActionListener {
 		if (e.getActionCommand().equals("Add MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-	                this.monome,
-	                "Choose a MIDI Output to add",
-	                "Add MIDI Output",
-	                JOptionPane.PLAIN_MESSAGE,
-	                null,
-	                midiOutOptions,
-	                "");
-			
+					this.monome,
+					"Choose a MIDI Output to add",
+					"Add MIDI Output",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					midiOutOptions,
+					"");
+
 			if (deviceName == null) {
 				return;
 			}
-			
+
 			this.addMidiOutDevice(deviceName);
 		} else if (e.getActionCommand().equals("Columns")) {
 			row1Label.setText("Col 1");
@@ -229,7 +229,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 	public String getName() {
 		return "MIDI Triggers";
 	}
-	
+
 	/**
 	 * Find out of toggle mode is enabled for a row/column.
 	 * 
@@ -243,7 +243,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 			return MODE_TRIGGERS;
 		}
 	}
-	
+
 	/**
 	 * Get the current orientation setting.
 	 * 
@@ -267,12 +267,12 @@ public class MIDITriggersPage implements Page, ActionListener {
 	public void handlePress(int x, int y, int value) {
 		int a = x;
 		int b = y;
-		
+
 		if (this.getOrientation() == ORIENTATION_COLUMNS) {
 			a = y;
 			b = x;
 		}
-		
+
 		if (this.getToggleMode(b) == MODE_TOGGLES) {
 			if (value == 1) {
 				if (this.toggleValues[a][b] == 1) {
@@ -294,7 +294,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 			// note off
 		}
 	}
-	
+
 	/**
 	 * Converts a button press into a MIDI note event
 	 * 
@@ -306,20 +306,20 @@ public class MIDITriggersPage implements Page, ActionListener {
 		int note_num = x + 12;
 		int channel = y;
 		int velocity = value * 127;
-        ShortMessage note_out = new ShortMessage();
-    	try {
-    		if (velocity == 0) {
+		ShortMessage note_out = new ShortMessage();
+		try {
+			if (velocity == 0) {
 				note_out.setMessage(ShortMessage.NOTE_OFF, channel, note_num, velocity);
-	        } else {
-	        	note_out.setMessage(ShortMessage.NOTE_ON, channel, note_num, velocity);
-	        }
+			} else {
+				note_out.setMessage(ShortMessage.NOTE_ON, channel, note_num, velocity);
+			}
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
 		if (this.recv != null) {
 			this.recv.send(note_out, -1);
 		}
-    }
+	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handleReset()
@@ -377,7 +377,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		} else {
 			mode = "columns";
 		}
-		
+
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>MIDI Triggers</name>\n";
@@ -396,7 +396,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		return xml;
 
 	}
-	
+
 	/**
 	 * @return The rows/columns radio button group
 	 */
@@ -406,7 +406,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 		return rowColBG;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
@@ -414,7 +414,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		if (this.panel != null) {
 			return this.panel;
 		}
-		
+
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
 		panel.setPreferredSize(new java.awt.Dimension(531, 156));
@@ -433,10 +433,10 @@ public class MIDITriggersPage implements Page, ActionListener {
 		rowRB.setText("Rows");
 		colRB = new JRadioButton();
 		colRB.setText("Columns");
-		
+
 		this.getRowColBG().add(rowRB);
 		this.getRowColBG().add(colRB);
-		
+
 		addMidiOutButton = new JButton();
 		addMidiOutButton.addActionListener(this);
 		panel.add(addMidiOutButton);
@@ -537,7 +537,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		row1Label.setBounds(12, 20, 63, 14);
 		toggles[0].setBounds(58, 18, 74, 18);
 		rowRB.setSelected(true);
-		
+
 		rowRB.addActionListener(this);
 		colRB.addActionListener(this);
 
@@ -556,7 +556,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		} else if (mode.equals("columns")) {
 			this.colRB.doClick();
 		}
-		
+
 	}
 
 	/**
@@ -567,14 +567,14 @@ public class MIDITriggersPage implements Page, ActionListener {
 	public void enableToggle(int l) {
 		this.toggles[l].doClick();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheDisabled()
 	 */
 	public boolean getCacheDisabled() {
 		return false;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#destroyPage()
 	 */

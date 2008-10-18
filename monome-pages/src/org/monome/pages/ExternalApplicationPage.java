@@ -51,97 +51,97 @@ import com.illposed.osc.OSCPortOut;
  *
  */
 public class ExternalApplicationPage implements Page, ActionListener, OSCListener {
-	
+
 	/**
 	 * The MonomeConfiguration this page belongs to
 	 */
 	private MonomeConfiguration monome;
-	
+
 	/**
 	 * This page's index (page number) 
 	 */
 	private int index;
-	
+
 	/**
 	 * The OSC prefix the external application uses
 	 */
 	private String prefix = "/mlr";
-	
+
 	/**
 	 * The hostname that the external application is bound to 
 	 */
 	private String hostname = "localhost";
-	
+
 	/**
 	 * The OSC input port number to receive messages from the external application 
 	 */
 	private int inPort = 8080;
-	
+
 	/**
 	 * The OSCPortIn object for communication with the external application
 	 */
 	private OSCPortIn oscIn;
-	
+
 	/**
 	 * The OSC output port number to send messages to the external application
 	 */
 	private int outPort = 8000;
-	
+
 	/**
 	 * The OSCPortOut object for communication with the external application 
 	 */
 	private OSCPortOut oscOut;
-	
+
 	/**
 	 * The page's GUI
 	 */
 	private JPanel panel;
-	
+
 	/**
 	 * The Disable LED Cache checkbox 
 	 */
 	private JCheckBox disableCache;
-	
+
 	/**
 	 * The OSC Prefix label
 	 */
 	private JLabel prefixLabel;
-	
+
 	/**
 	 * The OSC Prefix text field 
 	 */
 	private JTextField prefixTF;
-	
+
 	/**
 	 * The OSC Output Port label
 	 */
 	private JLabel oscOutLabel;
-	
+
 	/**
 	 * The OSC Output Port text field
 	 */
 	private JTextField oscOutTF;
-	
+
 	/**
 	 * The OSC Input Port text field
 	 */
 	private JLabel oscInLabel;
-	
+
 	/**
 	 * The OSC Input Port text field
 	 */
 	private JTextField oscInTF;
-	
+
 	/**
 	 * The OSC hostname label
 	 */
 	private JLabel hostnameLabel;
-	
+
 	/**
 	 * The OSC hostname text field
 	 */
 	private JTextField hostnameTF;
-	
+
 	/**
 	 * The update preferences button
 	 */
@@ -170,7 +170,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 		return;
 	}
-	
+
 	/**
 	 * Stops OSC communication with the external application
 	 */
@@ -181,12 +181,12 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			}
 			this.oscIn.close();
 		}
-		
+
 		if (this.oscOut != null) {
 			this.oscOut.close();
 		}
 	}
-	
+
 	/**
 	 * Initializes OSC communication with the external application
 	 */
@@ -227,54 +227,54 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		if (this.panel != null) {
 			return this.panel;
 		}
-		
+
 		// builds the page GUI
-		
+
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
 		panel.setPreferredSize(new java.awt.Dimension(490, 175));
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": External Application");
-			prefixLabel = new JLabel();
-			prefixLabel.setText("OSC Prefix");
-			hostnameLabel = new JLabel();
-			hostnameLabel.setText("OSC Hostname");
-			oscInLabel = new JLabel();
-			oscInLabel.setText("OSC In Port");
-			oscOutLabel = new JLabel();
-			oscOutLabel.setText("OSC Out Port");
-			oscInTF = new JTextField();
-			oscInTF.setText(String.valueOf(this.inPort));
-			oscOutTF = new JTextField();
-			panel.add(oscOutTF);
-			panel.add(oscOutLabel);
-			panel.add(oscInTF);
-			panel.add(oscInLabel);
-			oscInLabel.setBounds(12, 65, 85, 14);
-			oscInTF.setBounds(97, 62, 100, 21);
-			oscOutLabel.setBounds(12, 86, 85, 14);
-			oscOutTF.setText(String.valueOf(this.outPort));
-			oscOutTF.setBounds(97, 83, 100, 21);
-			updatePrefsButton = new JButton();
-			updatePrefsButton.setText("Update Preferences");
-			updatePrefsButton.addActionListener(this);
-			prefixTF = new JTextField();
-			prefixTF.setText(this.prefix);
-			hostnameTF = new JTextField();
-			panel.add(hostnameTF);
-			panel.add(hostnameLabel);
-			panel.add(prefixTF);
-			panel.add(prefixLabel);
-			panel.add(label);
-			panel.add(updatePrefsButton);
-			panel.add(getDisableCache());
-			updatePrefsButton.setBounds(12, 130, 169, 21);
-			label.setBounds(0, 0, 129, 14);
-			prefixLabel.setBounds(12, 23, 85, 14);
-			prefixTF.setBounds(97, 20, 100, 21);
-			hostnameLabel.setBounds(12, 44, 85, 14);
-			hostnameTF.setText(this.hostname);
-			hostnameTF.setBounds(97, 41, 100, 21);
+		prefixLabel = new JLabel();
+		prefixLabel.setText("OSC Prefix");
+		hostnameLabel = new JLabel();
+		hostnameLabel.setText("OSC Hostname");
+		oscInLabel = new JLabel();
+		oscInLabel.setText("OSC In Port");
+		oscOutLabel = new JLabel();
+		oscOutLabel.setText("OSC Out Port");
+		oscInTF = new JTextField();
+		oscInTF.setText(String.valueOf(this.inPort));
+		oscOutTF = new JTextField();
+		panel.add(oscOutTF);
+		panel.add(oscOutLabel);
+		panel.add(oscInTF);
+		panel.add(oscInLabel);
+		oscInLabel.setBounds(12, 65, 85, 14);
+		oscInTF.setBounds(97, 62, 100, 21);
+		oscOutLabel.setBounds(12, 86, 85, 14);
+		oscOutTF.setText(String.valueOf(this.outPort));
+		oscOutTF.setBounds(97, 83, 100, 21);
+		updatePrefsButton = new JButton();
+		updatePrefsButton.setText("Update Preferences");
+		updatePrefsButton.addActionListener(this);
+		prefixTF = new JTextField();
+		prefixTF.setText(this.prefix);
+		hostnameTF = new JTextField();
+		panel.add(hostnameTF);
+		panel.add(hostnameLabel);
+		panel.add(prefixTF);
+		panel.add(prefixLabel);
+		panel.add(label);
+		panel.add(updatePrefsButton);
+		panel.add(getDisableCache());
+		updatePrefsButton.setBounds(12, 130, 169, 21);
+		label.setBounds(0, 0, 129, 14);
+		prefixLabel.setBounds(12, 23, 85, 14);
+		prefixTF.setBounds(97, 20, 100, 21);
+		hostnameLabel.setBounds(12, 44, 85, 14);
+		hostnameTF.setText(this.hostname);
+		hostnameTF.setBounds(97, 41, 100, 21);
 
 		this.panel = panel;
 		return panel;
@@ -338,13 +338,13 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 * @see org.monome.pages.Page#toXml()
 	 */
 	public String toXml() {
-		
+
 		String disableCache = "false";
-		
+
 		if (this.getDisableCache().isSelected()) {
 			disableCache = "true";
 		}
-		
+
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>External Application</name>\n";
@@ -362,58 +362,58 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
 		// only process messages from the external application
-    	if (!msg.getAddress().contains(this.prefix)) {
-    		return;
-    	}
-    	
-    	// handle a monome clear request from the external application
-    	if (msg.getAddress().contains("clear")) {
-    		Object[] args = msg.getArguments();
+		if (!msg.getAddress().contains(this.prefix)) {
+			return;
+		}
+
+		// handle a monome clear request from the external application
+		if (msg.getAddress().contains("clear")) {
+			Object[] args = msg.getArguments();
 			if (!(args[0] instanceof Integer)) {
 				return;
 			}
-    		int int_arg = ((Integer) args[0]).intValue();
-    		this.monome.clear(int_arg, this.index);
-    	}
-    	
-    	// handle a monome led_col request from the external application
-    	if (msg.getAddress().contains("led_col")) {
-    		Object[] args = msg.getArguments();
-    		int[] int_args = {0, 0, 0};
-    		for (int i=0; i < args.length; i++) {
-    			if (!(args[i] instanceof Integer)) {
-    				return;
-    			}
-    			int_args[i] = ((Integer) args[i]).intValue();
-    		}
-    		this.monome.led_col(int_args[0], int_args[1], int_args[2], this.index);
-    	}
-    	
-    	// handle a monome led_row request from the external application
-    	if (msg.getAddress().contains("led_row")) {
-    		Object[] args = msg.getArguments();
-    		int[] int_args = {0, 0, 0};
-    		for (int i=0; i < args.length; i++) {
-    			if (!(args[i] instanceof Integer)) {
-    				return;
-    			}
-    			int_args[i] = ((Integer) args[i]).intValue();
-    		}
-    		this.monome.led_row(int_args[0], int_args[1], int_args[2], this.index);
-    	}
-    	
-    	// handle a monome led request from the external application
-    	else if (msg.getAddress().contains("led")) {
-    		Object[] args = msg.getArguments();
-    		int[] int_args = {0, 0, 0};
-    		for (int i=0; i < args.length; i++) {
-    			if (!(args[i] instanceof Integer)) {
-    				return;
-    			}
-    			int_args[i] = ((Integer) args[i]).intValue();
-    		}
-    		this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
-    	}
+			int int_arg = ((Integer) args[0]).intValue();
+			this.monome.clear(int_arg, this.index);
+		}
+
+		// handle a monome led_col request from the external application
+		if (msg.getAddress().contains("led_col")) {
+			Object[] args = msg.getArguments();
+			int[] int_args = {0, 0, 0};
+			for (int i=0; i < args.length; i++) {
+				if (!(args[i] instanceof Integer)) {
+					return;
+				}
+				int_args[i] = ((Integer) args[i]).intValue();
+			}
+			this.monome.led_col(int_args[0], int_args[1], int_args[2], this.index);
+		}
+
+		// handle a monome led_row request from the external application
+		if (msg.getAddress().contains("led_row")) {
+			Object[] args = msg.getArguments();
+			int[] int_args = {0, 0, 0};
+			for (int i=0; i < args.length; i++) {
+				if (!(args[i] instanceof Integer)) {
+					return;
+				}
+				int_args[i] = ((Integer) args[i]).intValue();
+			}
+			this.monome.led_row(int_args[0], int_args[1], int_args[2], this.index);
+		}
+
+		// handle a monome led request from the external application
+		else if (msg.getAddress().contains("led")) {
+			Object[] args = msg.getArguments();
+			int[] int_args = {0, 0, 0};
+			for (int i=0; i < args.length; i++) {
+				if (!(args[i] instanceof Integer)) {
+					return;
+				}
+				int_args[i] = ((Integer) args[i]).intValue();
+			}
+			this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
+		}
 	}
 
 	/**
@@ -447,7 +447,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		this.hostname = extHostname;
 		this.hostnameTF.setText(extHostname);
 	}
-	
+
 	/**
 	 * @return The Disable LED Cache checkbox
 	 */
@@ -470,7 +470,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			this.getDisableCache().setSelected(false);
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheDisabled()
 	 */
@@ -493,7 +493,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			}
 			this.oscIn.close();
 		}
-		
+
 		if (this.oscOut != null) {
 			this.oscOut.close();
 		}

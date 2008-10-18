@@ -42,44 +42,44 @@ import javax.swing.JTextField;
  */
 @SuppressWarnings("serial")
 public class OSCSettingsFrame extends JInternalFrame implements ActionListener {
-		
+
 	/**
 	 * The main Configuration object
 	 */
 	private Configuration configuration;
-	
+
 	/**
 	 * Text field to store the OSC in port from MonomeSerial 
 	 */
 	private JTextField inport;
-	
+
 	/**
 	 * Text field to store the OSC out port to MonomeSerial
 	 */
 	private JTextField outport;
-	
+
 	/**
 	 * Text field to store the OSC hostname MonomeSerial is bound to 
 	 */
 	private JTextField hostname;
-	
+
 	/**
 	 * @param configuration The main Configuration object
 	 * @param frame The main application GUI
 	 */
 	public OSCSettingsFrame(Configuration configuration, JFrame frame) {
-		
+
 		super("OSC Settings", true, true);
-		
+
 		this.configuration = configuration;
-		
+
 		JLabel label;
 		JPanel subPanel;
 		JButton button;
-		
+
 		JPanel monomePanel = new JPanel();
 		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));
-			
+
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
 		label = new JLabel("Hostname");
@@ -97,7 +97,7 @@ public class OSCSettingsFrame extends JInternalFrame implements ActionListener {
 		this.inport.setEditable(true);
 		subPanel.add(this.inport);
 		monomePanel.add(subPanel);
-		
+
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
 		label = new JLabel("OSC Out Port");
@@ -111,12 +111,12 @@ public class OSCSettingsFrame extends JInternalFrame implements ActionListener {
 		button = new JButton("Save");
 		button.addActionListener(this);		
 		subPanel.add(button);
-		
+
 		button = new JButton("Cancel");
 		button.addActionListener(this);
 		subPanel.add(button);		
 		monomePanel.add(subPanel);
-		
+
 		this.add(monomePanel);
 		this.pack();		
 	}

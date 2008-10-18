@@ -49,37 +49,37 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 * The MonomeConfiguration that this page belongs to
 	 */
 	MonomeConfiguration monome;
-	
+
 	/**
 	 * The index of this page (the page number) 
 	 */
 	int index;
-	
+
 	/**
 	 * The GUI for this page
 	 */
 	JPanel panel;
-	
+
 	/**
 	 * The Add MIDI Output button
 	 */
 	private JButton addMidiOutButton;
-	
+
 	/**
 	 * The label for the delay setting
 	 */
 	private JLabel delayLabel;
-	
+
 	/**
 	 * The delay amount per MIDI CC paramater change (in ms)
 	 */
 	private int delayAmount = 6;
-	
+
 	/**
 	 * The Update Preferences button 
 	 */
 	private JButton updatePrefsButton;
-	
+
 	/**
 	 * The text field that stores the delay value 
 	 */
@@ -89,13 +89,13 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 * monome buttons to MIDI CC values (monome height = 16, 256 only) 
 	 */
 	private int[] buttonValuesLarge = {127, 118, 110, 101, 93, 84, 76, 67,
-									   59, 50, 42, 33, 25, 16, 8, 0 };
-	
+			59, 50, 42, 33, 25, 16, 8, 0 };
+
 	/**
 	 * monome buttons to MIDI CC values (monome height = 8, all monome models except 256)
 	 */
 	private int[] buttonValuesSmall = {127, 109, 91, 73, 54, 36, 18, 0};
-	
+
 	/**
 	 * Which level each fader is currently at
 	 */
@@ -105,12 +105,12 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 * The MIDI output device
 	 */
 	private Receiver recv;
-	
+
 	/**
 	 * The name of the MIDI output device
 	 */
 	private String midiDeviceName;
-	
+
 	/**
 	 * Constructor.
 	 * 
@@ -120,13 +120,13 @@ public class MIDIFadersPage implements Page, ActionListener {
 	public MIDIFadersPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		
+
 		// initialize to the bottom row (0)
 		for (int i=0; i < 16; i++) {
 			this.buttonFaders[i] = this.monome.sizeY - 1;
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -134,26 +134,26 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if (e.getActionCommand().equals("Add MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-	                this.monome,
-	                "Choose a MIDI Output to add",
-	                "Add MIDI Output",
-	                JOptionPane.PLAIN_MESSAGE,
-	                null,
-	                midiOutOptions,
-	                "");
-			
+					this.monome,
+					"Choose a MIDI Output to add",
+					"Add MIDI Output",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					midiOutOptions,
+					"");
+
 			if (deviceName == null) {
 				return;
 			}
-			
+
 			this.addMidiOutDevice(deviceName);
 		}
-		
+
 		if (e.getActionCommand().equals("Update Preferences")) {
 			this.delayAmount = Integer.parseInt(this.getDelayTF().getText());
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
@@ -209,7 +209,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 			if (startY == endY) {
 				return;
 			}
-			
+
 			if (this.monome.sizeY == 8) {
 				startVal = this.buttonValuesSmall[startY];
 				endVal = this.buttonValuesSmall[endY];
@@ -217,7 +217,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 				startVal = this.buttonValuesLarge[startY];
 				endVal = this.buttonValuesLarge[endY];
 			}
-			
+
 			if (this.monome.sizeY == 8) {
 				MIDIFader fader = new MIDIFader(this.recv, 0, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount);
 				new Thread(fader).start();
@@ -277,7 +277,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		xml += "    </page>\n";
 		return xml;
 	}
-	
+
 	/**
 	 * @return The delay setting GUI label
 	 */
@@ -289,7 +289,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		}
 		return delayLabel;
 	}
-	
+
 	/**
 	 * @return The delay setting text field
 	 */
@@ -301,7 +301,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		}
 		return delayTF;
 	}
-	
+
 	/**
 	 * @return The Add MIDI Output button
 	 */
@@ -313,7 +313,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		}
 		return addMidiOutButton;
 	}
-	
+
 	/**
 	 * @return The Update Preferences button
 	 */
@@ -332,7 +332,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 	public void setDelayAmount(int delayAmount) {
 		this.delayAmount = delayAmount;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheDisabled()
 	 */
