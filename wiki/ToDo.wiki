@@ -1,6 +1,7 @@
 #summary Items planned for the next release.
 
-  * Remove all references to GroupLayout (once and for all).
+  * ~~Remove all references to GroupLayout (once and for all).~~
+  * ~~Add javadoc comments~~
   * Expand to 63 pages for 40h/64, 127 pages for 128, and 255 pages for 256.
   * In the Ableton page, make leds solid of a clip exists, flashing if a clip is playing, and flashing faster if a clip is triggered.
   * In the Ableton page, add an offset column.
