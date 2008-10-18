@@ -41,22 +41,22 @@ import javax.swing.JPanel;
  *
  */
 public class PageTemplate implements Page, ActionListener {
-	
+
 	/**
 	 * The MonomeConfiguration this page belongs to
 	 */
 	private MonomeConfiguration monome;
-	
+
 	/**
 	 * This page's index (page number) 
 	 */
 	private int index;
-	
+
 	/**
 	 * This page's GUI / configuration panel 
 	 */
 	private JPanel panel;
-	
+
 	/**
 	 * The selected MIDI output device
 	 */
@@ -84,14 +84,14 @@ public class PageTemplate implements Page, ActionListener {
 		if (e.getActionCommand().equals("Add MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-	                this.monome,
-	                "Choose a MIDI Output to add",
-	                "Add MIDI Output",
-	                JOptionPane.PLAIN_MESSAGE,
-	                null,
-	                midiOutOptions,
-	                "");
-			
+					this.monome,
+					"Choose a MIDI Output to add",
+					"Add MIDI Output",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					midiOutOptions,
+					"");
+
 			if (deviceName == null) {
 				return;
 			}
@@ -121,14 +121,14 @@ public class PageTemplate implements Page, ActionListener {
 		if (this.panel != null) {
 			return this.panel;
 		}
-		
+
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		panel.setPreferredSize(new java.awt.Dimension(464, 156));
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": Page Name");
 		panel.add(label);
-				
+
 		this.panel = panel;
 		return panel;
 	}
@@ -179,7 +179,7 @@ public class PageTemplate implements Page, ActionListener {
 		xml += "    </page>\n";
 		return xml;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheDisabled()
 	 */

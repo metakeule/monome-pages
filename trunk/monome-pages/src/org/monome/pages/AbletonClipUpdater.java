@@ -37,12 +37,12 @@ import com.illposed.osc.OSCPortOut;
  *
  */
 public class AbletonClipUpdater implements Runnable {
-	
+
 	/**
 	 * A reference to the AbletonClipPage that this AbletonClipUpdater belongs to.
 	 */
 	private AbletonClipLauncherPage page;
-	
+
 	/**
 	 * @param page The page that this AbletonClipUpdater belongs to
 	 */
@@ -62,10 +62,10 @@ public class AbletonClipUpdater implements Runnable {
 		}
 		// query Ableton for the status of currently playing clips
 		OSCMessage msg = new OSCMessage("/live/clip/playing");
-		
+
 		// query Ableton for the record armed/disarmed status of each track
 		OSCMessage msg2 = new OSCMessage("/live/track/info");
-		
+
 		while (running) {
 			try {
 				abletonOscOut.send(msg);

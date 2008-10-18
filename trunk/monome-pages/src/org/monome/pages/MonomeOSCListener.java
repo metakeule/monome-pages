@@ -40,26 +40,26 @@ public class MonomeOSCListener implements OSCListener {
 	 */
 	MonomeConfiguration monome;
 
-    /**
-     * @param monome The MonomeConfiguration that this OSCListener triggers
-     */
-    MonomeOSCListener(MonomeConfiguration monome) {
+	/**
+	 * @param monome The MonomeConfiguration that this OSCListener triggers
+	 */
+	MonomeOSCListener(MonomeConfiguration monome) {
 		this.monome = monome;
 	}
 
-    /* (non-Javadoc)
-     * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
-     */
-    public void acceptMessage(Date time, OSCMessage message) {
-    	
-    	// only act if the message has our monome prefix
-    	if (!message.getAddress().contains(monome.prefix)) {
-    		return;
-    	}
-        Object[] args = message.getArguments();
-        int x = ((Integer) args[0]).intValue();
-        int y = ((Integer) args[1]).intValue();
-        int value = ((Integer) args[2]).intValue();
-        monome.handlePress(x, y, value);
-    }
+	/* (non-Javadoc)
+	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
+	 */
+	public void acceptMessage(Date time, OSCMessage message) {
+
+		// only act if the message has our monome prefix
+		if (!message.getAddress().contains(monome.prefix)) {
+			return;
+		}
+		Object[] args = message.getArguments();
+		int x = ((Integer) args[0]).intValue();
+		int y = ((Integer) args[1]).intValue();
+		int value = ((Integer) args[2]).intValue();
+		monome.handlePress(x, y, value);
+	}
 }

@@ -52,28 +52,28 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * This page's index (page number).
 	 */
 	private int index;
-	 
+
 	/**
 	 * This page's GUI / control panel.
 	 */
 	private JPanel panel;
-	
+
 	/**
 	 * clipState[track_number][clip number] - The current state of all clips in Ableton, true if the clip is playing.
 	 */
 	private boolean[][] clipState = new boolean[16][500];
-	
+
 	/**
 	 * tracksArmed[track_number] - The record armed/disarmed state of all tracks, true if the track is armed for recording.
 	 */
 	private boolean[] tracksArmed = new boolean[16];
-	
+
 	/**
 	 * A background thread process that updates clipState and tracksArmed based on
 	 * information sent back by LiveOSC.
 	 */
 	private AbletonClipUpdater updater;
-	
+
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index This page's index number
@@ -84,7 +84,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		this.updater = new AbletonClipUpdater(this);
 		new Thread(this.updater).start();
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -114,14 +114,14 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		if (this.panel != null) {
 			return this.panel;
 		}
-		
+
 		// create the panel
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		
+
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
 		panel.add(label);
-				
+
 		this.panel = panel;
 		return panel;
 	}
@@ -154,7 +154,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/play/clip track clip" to LiveOSC.
 	 * 
@@ -172,7 +172,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/arm track" to LiveOSC.
 	 * 
@@ -194,7 +194,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/disarm track" to LiveOSC.
 	 * 
@@ -216,7 +216,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/stop/track track" to LiveOSC.
 	 * 
@@ -261,7 +261,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				}
 			}
 		}
-		
+
 		// redraw the track armed/disarmed state
 		for (int i = 0; i < this.monome.sizeX; i++) {
 			if (this.tracksArmed[i] == true) {
@@ -270,7 +270,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				this.monome.led(i, this.monome.sizeY - 2, 0, this.index);
 			}
 		}
-		
+
 		// clear the bottom row, stop buttons are never on
 		for (int i=0; i < this.monome.sizeX; i++) {
 			this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
@@ -305,7 +305,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void updateClipState(int track, int clip, boolean state) {
 		// this variable is set if it's determined that redrawing the monome is necessary
 		boolean redrawNeeded = false;
-		
+
 		// if AbletonClipUpdater received /live/clip/playing from LiveOSC
 		if (state == true) {
 			for (int i=0; i < 16; i++) {
@@ -322,7 +322,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				}
 			}
 		}
-		
+
 		// if AbletonClipUpdater received /live/clip/stopped from LiveOSC
 		if (state == false) {
 			if (this.clipState[track][clip] != false) {
@@ -330,7 +330,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			}
 			this.clipState[track][clip] = false;
 		}
-		
+
 		if (redrawNeeded) {
 			this.redrawMonome();
 		}
@@ -345,18 +345,18 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void updateTrackState(int track, int armed) {
 		boolean redrawNeeded = false;
 		boolean state = (armed != 0);
-		
+
 		if (this.tracksArmed[track] != state) {
 			redrawNeeded = true;
 		}
-		
+
 		this.tracksArmed[track] = state;
-		
+
 		if (redrawNeeded) {
 			this.redrawMonome();
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheEnabled()
 	 */

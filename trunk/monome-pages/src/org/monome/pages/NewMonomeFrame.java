@@ -42,50 +42,50 @@ import javax.swing.JTextField;
  */
 @SuppressWarnings("serial")
 public class NewMonomeFrame extends JInternalFrame implements ActionListener {
-	
+
 	/**
 	 * The main Configuration object
 	 */
 	private Configuration configuration;
-	
+
 	/**
 	 * The main application GUI
 	 */
 	private JFrame frame;
-	
+
 	/**
 	 * Text field to store the width of the new monome configuration
 	 */
 	private JTextField sizeX;
-	
+
 	/**
 	 * Text field to store the height of the new monome configuration
 	 */
 	private JTextField sizeY;
-	
+
 	/**
 	 * Text field to store the OSC prefix of the new monome configuration 
 	 */
 	private JTextField prefix;
-	
+
 	/**
 	 * @param configuration The main Configuration object
 	 * @param frame The main application GUI
 	 */
 	public NewMonomeFrame(Configuration configuration, JFrame frame) {
-		
+
 		super("New Monome", true, true);
-		
+
 		this.configuration = configuration;
 		this.frame = frame;
-		
+
 		JLabel label;
 		JPanel subPanel;
 		JButton button;
-		
+
 		JPanel monomePanel = new JPanel();
 		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));
-			
+
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
 		label = new JLabel("Size X (Width)");
@@ -93,7 +93,7 @@ public class NewMonomeFrame extends JInternalFrame implements ActionListener {
 		this.sizeX = new JTextField("8");
 		this.sizeX.setEditable(true);
 		subPanel.add(this.sizeX);
-		
+
 		monomePanel.add(subPanel);
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
@@ -112,17 +112,17 @@ public class NewMonomeFrame extends JInternalFrame implements ActionListener {
 		this.prefix.setEditable(true);
 		subPanel.add(this.prefix);
 		monomePanel.add(subPanel);
-		
+
 		subPanel = new JPanel();
 		button = new JButton("Save");
 		button.addActionListener(this);		
 		subPanel.add(button);
-		
+
 		button = new JButton("Cancel");
 		button.addActionListener(this);
 		subPanel.add(button);		
 		monomePanel.add(subPanel);
-		
+
 		this.add(monomePanel);
 		this.pack();		
 	}

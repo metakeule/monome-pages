@@ -40,62 +40,62 @@ public class MIDIFader implements Runnable {
 	 * The MIDI Receiver to send on
 	 */
 	private Receiver recv;
-	
+
 	/**
 	 * The MIDI channel to use
 	 */
 	private int channel;
-	
+
 	/**
 	 * The MIDI control change number to use
 	 */
 	private int cc;
-	
+
 	/**
 	 * The CC value to start at 
 	 */
 	private int startVal;
-	
+
 	/**
 	 * The CC value to end at 
 	 */
 	private int endVal;
-	
+
 	/**
 	 * The MonomeConfiguration that the fader page this thread belongs to is on
 	 */
 	private MonomeConfiguration monome;
-	
+
 	/**
 	 * The column that was pressed on the monome
 	 */
 	private int col;
-	
+
 	/**
 	 * The starting point Y coordinate on the monome
 	 */
 	private int startY;
-	
+
 	/**
 	 * The Y coordinate to end on when the thread is complete
 	 */
 	private int endY;
-	
+
 	/**
 	 * The page index of the fader page this thread belongs to
 	 */
 	private int pageIndex;
-	
+
 	/**
 	 * The amount to delay between every movement of 1 MIDI CC value (in ms)
 	 */
 	private int delayAmount;
-	
+
 	/**
 	 * 
 	 */
 	private int[] buttonValues;
-	
+
 	/**
 	 * @param recv
 	 * @param channel
@@ -111,14 +111,14 @@ public class MIDIFader implements Runnable {
 	 * @param delayAmount
 	 */
 	public MIDIFader(Receiver recv, int channel, int cc, int startVal, int endVal, int[] buttonValues, 
-			         MonomeConfiguration monome, int col, int startY, int endY, int pageIndex, int delayAmount) {
-		
+			MonomeConfiguration monome, int col, int startY, int endY, int pageIndex, int delayAmount) {
+
 		this.recv = recv;
 		this.channel = channel;
 		this.cc = cc;
 		this.startVal = startVal;
 		this.endVal = endVal;
-		
+
 		this.monome = monome;
 		this.col = col;
 		this.startY = startY;
@@ -127,7 +127,7 @@ public class MIDIFader implements Runnable {
 		this.buttonValues = buttonValues;
 		this.delayAmount = delayAmount;		
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
@@ -140,16 +140,16 @@ public class MIDIFader implements Runnable {
 		} else {
 			valueDirection = -1;
 		}
-		
+
 		if (this.endY > this.startY) {
 			buttonDirection = 1;
 		} else {
 			buttonDirection = -1;
 		}
-		
+
 		int msgs = this.startVal;
 		int curButton = this.startY; 
-		
+
 		for (int i = this.startVal; i != this.endVal; i += valueDirection) {
 			if (valueDirection == 1) {			
 				if (msgs + 1 >= this.buttonValues[curButton]) {
@@ -170,7 +170,7 @@ public class MIDIFader implements Runnable {
 					curButton += buttonDirection;
 				}
 			}
-			
+
 			try {
 				msgs += valueDirection;
 				msg.setMessage(ShortMessage.CONTROL_CHANGE, this.channel, this.cc, i);

@@ -33,10 +33,10 @@ public class Main {
 	 * @param args command line arguments
 	 */
 	public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-            	new GUI();
-            }
-        });
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				new GUI();
+			}
+		});
 	}
 }

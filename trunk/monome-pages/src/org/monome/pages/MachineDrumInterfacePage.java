@@ -47,12 +47,12 @@ import com.cloudgarden.layout.AnchorLayout;
  *
  */
 public class MachineDrumInterfacePage implements Page, ActionListener {
-	
+
 	/**
 	 * The MonomeConfiguration object this page belongs to
 	 */
 	MonomeConfiguration monome;
-	
+
 	/**
 	 * The index of this page (the page number) 
 	 */
@@ -62,22 +62,22 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 * The GUI for this page's configuration
 	 */
 	private JPanel panel;
-	
+
 	/**
 	 * The Add MIDI Output button
 	 */
 	private JButton addMidiOutButton;
-	
+
 	/**
 	 * The Speed label 
 	 */
 	private JLabel speedLabel;
-	
+
 	/**
 	 * The Update Preferences button
 	 */
 	private JButton updatePrefsButton;
-	
+
 	/**
 	 * The Speed text field
 	 */
@@ -87,47 +87,47 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 * The MIDI device to send to the MachineDrum on
 	 */
 	private Receiver recv;
-	
+
 	/**
 	 * The name of the selected MIDI device
 	 */
 	private String midiDeviceName;
-	
-    /**
-     * morph_machines[machine_number] - 1 if machine_number machine should be sent random parameter changes
-     */
-    private int[] morph_machines = new int[16];
-    
-    /**
-     * morph_params[param_number] - 1 if the param_number paramater should be sent random changes 
-     */
-    private int[] morph_params = new int[24];
-    
-    /**
-     * fx_morph[fx_number] - 1 if the fx_number fx unit should be sent random parameter changes, [0] = echo, [1] = gate, [2] = eq, [3] = compressor
-     */
-    private int[] fx_morph = new int[4];
-    
-    /**
-     * true randomly enables and disables morph_machines and morph_params
-     */
-    private boolean auto_morph = false;
-    
+
+	/**
+	 * morph_machines[machine_number] - 1 if machine_number machine should be sent random parameter changes
+	 */
+	private int[] morph_machines = new int[16];
+
+	/**
+	 * morph_params[param_number] - 1 if the param_number paramater should be sent random changes 
+	 */
+	private int[] morph_params = new int[24];
+
+	/**
+	 * fx_morph[fx_number] - 1 if the fx_number fx unit should be sent random parameter changes, [0] = echo, [1] = gate, [2] = eq, [3] = compressor
+	 */
+	private int[] fx_morph = new int[4];
+
+	/**
+	 * true randomly enables and disables morph_machines and morph_params
+	 */
+	private boolean auto_morph = false;
+
 	/**
 	 * Random number generator 
 	 */
 	private Random generator;
-	
+
 	/**
 	 * Utility class for sending MIDI messages to the MachineDrum 
 	 */
 	private MachineDrum machine_drum;
-	
+
 	/**
 	 * A counter for MIDI clock sync ticks 
 	 */
 	private int ticks;
-	
+
 	/**
 	 * How often random param changes are sent. 
 	 */
@@ -138,7 +138,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 * @param index The index of this page (the page number)
 	 */
 	public MachineDrumInterfacePage(MonomeConfiguration monome, int index) {
-        this.machine_drum = new MachineDrum();
+		this.machine_drum = new MachineDrum();
 		this.monome = monome;
 		this.index = index;
 		this.generator = new Random();
@@ -167,7 +167,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 					morph_machines[machine_num] = 1;
 					this.monome.led(x, y, 1, this.index);
 				}
-			// next 3 rows, toggle morph_params on and off
+				// next 3 rows, toggle morph_params on and off
 			} else if (y < 5) {
 				int param_num = getMachineNum(x, y - 2);
 				if (morph_params[param_num] == 1) {
@@ -177,10 +177,10 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 					morph_params[param_num] = 1;
 					this.monome.led(x, y, 1, this.index);
 				}
-			// 6th row, initialize new kits
+				// 6th row, initialize new kits
 			} else if (y == 5) {
 				machine_drum.initKit(recv, x);
-			// 7th row, kit load and save
+				// 7th row, kit load and save
 			} else if (y == 6) {
 				System.out.println("kit function");
 				if (x < 4) {
@@ -188,7 +188,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 				} else {
 					machine_drum.sendKitSave(recv, x - 4);
 				}
-			// last row, auto morph toggle and fx morph toggles
+				// last row, auto morph toggle and fx morph toggles
 			} else if (y == 7) {
 				if (x == 0) {
 					if (auto_morph == false) {
@@ -209,7 +209,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 			}
 		}
 	}
-	
+
 	/**
 	 * Translate monome x/y to a MachineDrum machine number
 	 * 
@@ -237,7 +237,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if (ticks == 6) {
 			ticks = 0;
 		}
-		
+
 		// turn off and on random machines/params to morph
 		if (auto_morph == true && generator.nextInt(this.speed) == 1) {
 			int machine_num = generator.nextInt(12) + 2;
@@ -284,7 +284,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		}
 
 		// send random parameter changes
-		
+
 		// for each machine
 		for (int x = 0; x < 16; x++) {
 			// divide out the sends so we don't saturate the midi channel
@@ -324,7 +324,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 					} else {
 						this.monome.led(x, y, 0, this.index);
 					}
-				// redraw the morph param state (next 3 rows)
+					// redraw the morph param state (next 3 rows)
 				} else if (y < 4) {
 					int param_num = getMachineNum(x, y - 2);
 					if (morph_params[param_num] == 1) {
@@ -332,7 +332,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 					} else {
 						this.monome.led(x, y, 0, this.index);
 					}
-				// redraw the bottom row (auto morph and fx toggles)
+					// redraw the bottom row (auto morph and fx toggles)
 				} else if (y == 7) {
 					if (x == 0) {
 						if (auto_morph == true) {
@@ -343,7 +343,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 					} else if (x > 0 && x < 5) {
 						this.monome.led(x, y, fx_morph[x-1], this.index);
 					}
-				// everything else should be off
+					// everything else should be off
 				} else {
 					this.monome.led(x, y, 0, this.index);
 				}
@@ -358,7 +358,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if (this.recv == null) {
 			return;
 		}
-		
+
 		// pass midi clock messages on to the machinedrum for tempo sync
 		ShortMessage shortMessage;
 		if (message instanceof ShortMessage) {
@@ -377,7 +377,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 			}
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#toXml()
 	 */
@@ -390,7 +390,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		xml += "    </page>\n";
 		return xml;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
@@ -398,7 +398,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if (this.panel != null) {
 			return this.panel;
 		}
-		
+
 		if (this.panel != null) {
 			return this.panel;
 		}
@@ -421,7 +421,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		this.panel = panel;
 		return panel;
 	}
-	
+
 	/**
 	 * @return The speed label
 	 */
@@ -433,7 +433,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		}
 		return speedLabel;
 	}
-	
+
 	/**
 	 * @return The speed text field
 	 */
@@ -445,7 +445,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		}
 		return speedTF;
 	}
-	
+
 	/**
 	 * @return The Add MIDI Output button
 	 */
@@ -457,7 +457,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		}
 		return addMidiOutButton;
 	}
-	
+
 	/**
 	 * @return The Update Preferences button
 	 */
@@ -485,21 +485,21 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if (e.getActionCommand().equals("Add MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-	                this.monome,
-	                "Choose a MIDI Output to add",
-	                "Add MIDI Output",
-	                JOptionPane.PLAIN_MESSAGE,
-	                null,
-	                midiOutOptions,
-	                "");
-			
+					this.monome,
+					"Choose a MIDI Output to add",
+					"Add MIDI Output",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					midiOutOptions,
+					"");
+
 			if (deviceName == null) {
 				return;
 			}
-			
+
 			this.addMidiOutDevice(deviceName);	
 		}
-		
+
 		if (e.getActionCommand().equals("Update Preferences")) {
 			this.speed = Integer.parseInt(this.getSpeedTF().getText());
 		}
@@ -512,7 +512,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		this.recv = this.monome.getMidiReceiver(deviceName);
 		this.midiDeviceName = deviceName;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheDisabled()
 	 */

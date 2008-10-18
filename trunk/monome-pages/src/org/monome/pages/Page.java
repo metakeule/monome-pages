@@ -43,13 +43,13 @@ public interface Page {
 	 * @param value The type of event (1 = button press, 0 = button release)
 	 */
 	public void handlePress(int x, int y, int value);
-	
+
 	/**
 	 * Called whenever the monome needs to be redrawn from the current page state.  Should
 	 * turn on or off every LED on the monome, even if the button is unused.
 	 */
 	public void redrawMonome();
-	
+
 	/**
 	 * Called whenever a MIDI clock tick message is received from the selected MIDI input deviec.
 	 */
@@ -59,7 +59,7 @@ public interface Page {
 	 * @return The name of the page
 	 */
 	public String getName();
-	
+
 	/**
 	 * @return The GUI panel for the page
 	 */
@@ -72,12 +72,12 @@ public interface Page {
 	 * @param timeStamp The timestamp that the message was received at
 	 */
 	public void send(MidiMessage message, long timeStamp);
-	
+
 	/**
 	 * Called whenever a MIDI clock reset message is received on the selected MIDI input device.
 	 */
 	public void handleReset();
-	
+
 	/**
 	 * Called when a save configuration action is requested.
 	 * 
@@ -91,7 +91,7 @@ public interface Page {
 	 * @param e The action event
 	 */
 	public void actionPerformed(ActionEvent e);
-	
+
 	/**
 	 * Adds or selects a MIDI output device for the page.
 	 * 

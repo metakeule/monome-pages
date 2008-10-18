@@ -43,45 +43,45 @@ import javax.swing.JTextField;
  */
 @SuppressWarnings("serial")
 public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionListener {
-		
+
 	/**
 	 * The main Configuration object
 	 */
 	private Configuration configuration;
-	
+
 	/**
 	 * Text field to configure the Ableton OSC input port
 	 */
 	private JTextField inport;
-	
+
 	/**
 	 * Text field to configure the Ableton OSC output port
 	 */
 	private JTextField outport;
-	
+
 	/**
 	 * Text field to configure the Ableton OSC hostname 
 	 */
 	private JTextField hostname;
-	
+
 	/**
 	 * @param configuration The main Configuration object
 	 */
 	public AbletonOSCSettingsFrame(Configuration configuration) {
-		
+
 		// call JInternalFrame's constructor
 		super("Ableton OSC Settings", true, true);
-		
+
 		this.configuration = configuration;
 
 		// build the window
 		JLabel label;
 		JPanel subPanel;
 		JButton button;
-		
+
 		JPanel monomePanel = new JPanel();
 		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));
-			
+
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
 		label = new JLabel("Hostname");
@@ -99,7 +99,7 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		this.inport.setEditable(true);
 		subPanel.add(this.inport);
 		monomePanel.add(subPanel);
-		
+
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
 		label = new JLabel("OSC Out Port");
@@ -113,14 +113,14 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		button = new JButton("Save");
 		button.addActionListener(this);		
 		subPanel.add(button);
-		
+
 		button = new JButton("Cancel");
 		button.addActionListener(this);
 		subPanel.add(button);		
 		monomePanel.add(subPanel);
-		
+
 		this.add(monomePanel);
-		
+
 		// display the window
 		this.pack();		
 	}
@@ -132,7 +132,7 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		// destroy this window
 		if (e.getActionCommand().equals("Cancel")) {
 			this.dispose();
-		// update Configuration with inputed values
+			// update Configuration with inputed values
 		} else if (e.getActionCommand().equals("Save")) {
 			int inport = Integer.parseInt(this.inport.getText());
 			int outport = Integer.parseInt(this.outport.getText());
