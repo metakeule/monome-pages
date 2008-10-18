@@ -9,3 +9,4 @@
   * Make 2 velocity levels in midi sequencer ala sevenuplive
   * Make a 'hold notes' mode for midi sequencer
   * Look into track jump / LiveOSC to possibly make a 2nd Ableton page
+  * Escape XML before saving it to file
