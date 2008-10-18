@@ -56,11 +56,15 @@ public interface Page {
 	public void handleTick();
 
 	/**
+	 * Returns the name of the page.
+	 * 
 	 * @return The name of the page
 	 */
 	public String getName();
 
 	/**
+	 * Returns the page's GUI panel.
+	 * 
 	 * @return The GUI panel for the page
 	 */
 	public JPanel getPanel();
