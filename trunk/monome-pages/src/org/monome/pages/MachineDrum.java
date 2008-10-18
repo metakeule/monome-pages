@@ -1,21 +1,21 @@
 /*
  *  MachineDrum.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
@@ -28,21 +28,45 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.InvalidMidiDataException;
 
+/**
+ * A utility class to interact with the Elektron MachineDrum over a MIDI connection.
+ * 
+ * @author Tom Dinchak
+ *
+ */
 public class MachineDrum {
 
+	/**
+	 * Random number generator
+	 */
 	Random generator;
+	
+	/**
+	 * Control out message.
+	 */
 	ShortMessage ctrl_out;
 
+	/**
+	 * Constructor.
+	 */
 	MachineDrum() {
 		ctrl_out = new ShortMessage();
 		generator = new Random();
 	}
 
+	/**
+	 * Sends a random MIDI CC value from 0-127 to machine_number's param_number through the output_device.
+	 * 
+	 * @param output_device The MIDI output to use
+	 * @param machine_number The machine number (0=BD, 1=SD, etc.)
+	 * @param param_number The parameter number (0-7 = first page from upper left to bottom right, 8-15 = second page, 16-23 = third page)
+	 */
 	public void sendRandomParamChange(Receiver output_device, int machine_number, int param_number) {
 	    if (output_device == null) {
 	    	return;
 	    }
 
+	    // see appendix of machinedrum manual
 		int midi_channel = (int) Math.floor(machine_number / 4);
 		int cc = (param_number + 16) + ((machine_number % 4) * 24);
 		if (cc >= 64) {
@@ -53,10 +77,16 @@ public class MachineDrum {
             ctrl_out.setMessage(ShortMessage.CONTROL_CHANGE, midi_channel, cc, value);
             output_device.send(ctrl_out, -1);
 		} catch (InvalidMidiDataException e) {
-			System.out.println("InvalidMidiDataException in sendRandomParamChange()");
+			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Sends a request to load the kit specified by kit_number.
+	 * 
+	 * @param output_device The MIDI output to use
+	 * @param kit_number The kit number to load (0 = first kit, 63 = last kit)
+	 */
 	public void sendKitLoad(Receiver output_device, int kit_number) {
 	    if (output_device == null) {
 	    	return;
@@ -77,10 +107,16 @@ public class MachineDrum {
 		    msg.setMessage(data, 9);
 		    output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
-			System.out.println("InvalidMidiDataException in sendKitLoad()");
+			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Sends a request to save the current kit to kit slot specified by kit_number.
+	 * 
+	 * @param output_device The MIDI output to use
+	 * @param kit_number The kit number to save the current kit into
+	 */
 	public void sendKitSave(Receiver output_device, int kit_number) {
 	    if (output_device == null) {
 	    	return;
@@ -101,10 +137,17 @@ public class MachineDrum {
 		    msg.setMessage(data, 9);
 		    output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
-			System.out.println("InvalidMidiDataException in sendKitSave()");
+			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Sends a request to initialize and assign a machine to a track.
+	 * 
+	 * @param output_device The MIDI output to use
+	 * @param track The track number (0=BD, 1=SD, etc.)
+	 * @param machine The machine number to assign, see the MachineDrum manual's appendix
+	 */
 	public void sendAssignMachine(Receiver output_device, int track, byte machine) {
 	    if (output_device == null) {
 	    	return;
@@ -127,11 +170,18 @@ public class MachineDrum {
 		try {
 		    msg.setMessage(data, 12);
 		} catch (InvalidMidiDataException e) {
-			System.out.println("InvalidMidiDataException in sendAssignMachine()");
+			e.printStackTrace();
 		}
 	}
 
-
+	/**
+	 * Sends a request to set the value of a global fx unit parameter. 
+	 * 
+	 * @param output_device The MIDI output to use
+	 * @param fx The name of the global fx unit: "echo", "gate", ,"eq", or "compressor" 
+	 * @param param The parameter number (0 = first paramater)
+	 * @param value The new value (from 0-127)
+	 */
 	public void sendFxParam(Receiver output_device, String fx, int param, int value) {
 	    if (output_device == null) {
 	    	return;
@@ -163,10 +213,16 @@ public class MachineDrum {
 		    msg.setMessage(data, 10);
 		    output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
-			System.out.println("InvalidMidiDataException in sendAssignMachine()");
+			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Sends a request to initialize a new drum kit.  This means initializing all tracks with machines randomly selected from a pool.
+	 * 
+	 * @param output_device The MIDI output device
+	 * @param x Which pools to use when assigning machines, currently only pool 0 will work
+	 */
 	public void initKit(Receiver output_device, int x) {
 		byte[] choice = new byte[16];
 
@@ -306,6 +362,12 @@ public class MachineDrum {
 		}
 	}
 
+	/**
+	 * Translates machine names to the number they're referenced by in Sysex messages.
+	 * 
+	 * @param name The name of the machine ("GND-SIN", "TRX-BD", etc.) 
+	 * @return The value that refers to that machine in Sysex messages
+	 */
 	public byte getMachine(String name) {
 		// GND-xyz
 		if (name.equals("GND-EMPTY")) {
@@ -468,8 +530,5 @@ public class MachineDrum {
 		}
 
 		return (byte) 0;
-
-
 	}
-
 }

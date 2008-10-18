@@ -1,39 +1,58 @@
 /*
  *  MonomeOSCListener.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
 package org.monome.pages;
 
-import com.illposed.osc.*;
 import java.util.Date;
+
+import com.illposed.osc.OSCListener;
+import com.illposed.osc.OSCMessage;
+
+/**
+ * Listens for /press messages from all monomes.
+ * 
+ * @author Tom Dinchak
+ *
+ */
 public class MonomeOSCListener implements OSCListener {
 
+	/**
+	 * The MonomeConfiguration that this OSCListener triggers
+	 */
 	MonomeConfiguration monome;
 
+    /**
+     * @param monome The MonomeConfiguration that this OSCListener triggers
+     */
     MonomeOSCListener(MonomeConfiguration monome) {
 		this.monome = monome;
 	}
 
+    /* (non-Javadoc)
+     * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
+     */
     public void acceptMessage(Date time, OSCMessage message) {
     	
+    	// only act if the message has our monome prefix
     	if (!message.getAddress().contains(monome.prefix)) {
     		return;
     	}
@@ -43,5 +62,4 @@ public class MonomeOSCListener implements OSCListener {
         int value = ((Integer) args[2]).intValue();
         monome.handlePress(x, y, value);
     }
-
 }

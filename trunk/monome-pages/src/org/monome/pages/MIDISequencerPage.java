@@ -1,26 +1,27 @@
 /*
  *  MIDISequencerPage.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
 package org.monome.pages;
+
 import com.cloudgarden.layout.AnchorConstraint;
 import com.cloudgarden.layout.AnchorLayout;
 
@@ -35,86 +36,162 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import org.jdesktop.layout.GroupLayout;
-import org.jdesktop.layout.LayoutStyle;
-
 
 /**
-* This code was edited or generated using CloudGarden's Jigloo
-* SWT/Swing GUI Builder, which is free for non-commercial
-* use. If Jigloo is being used commercially (ie, by a corporation,
-* company or business for any purpose whatever) then you
-* should purchase a license for each developer using Jigloo.
-* Please visit www.cloudgarden.com for details.
-* Use of Jigloo implies acceptance of these licensing terms.
-* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
-* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
-* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
-*/
+ * The MIDI Faders page.  Usage information is available at:
+ * 
+ * http://code.google.com/p/monome-pages/wiki/MIDISequencerPage
+ *   
+ * @author Tom Dinchak
+ *
+ */
 public class MIDISequencerPage implements Page, ActionListener {
 	
+	/**
+	 * The MonomeConfiguration that this page belongs to
+	 */
 	MonomeConfiguration monome;
+	
+	/**
+	 * The index of this page (the page number) 
+	 */
 	int index;
-	private JPanel panel;
-	private JLabel row15l;
-	private JTextField row14tf;
-	private JLabel row14l;
-	private JTextField row13tf;
-	private JLabel row13l;
-	private JTextField row12tf;
-	private JLabel row12l;
-	private JTextField row11tf;
-	private JLabel row11l;
-	private JTextField row10tf;
-	private JLabel row10l;
-	private JTextField row9tf;
-	private JLabel row9l;
-	private JTextField row8tf;
-	private JLabel row8l;
-	private JTextField row7tf;
-	private JLabel row7l;
-	private JTextField row6tf;
-	private JLabel row6l;
-	private JTextField row5tf;
-	private JLabel row5l;
+	
+	/**
+	 * The GUI for this page
+	 */
+	JPanel panel;
+	
+	/**
+	 * The Update Preferences button
+	 */
+	private JButton updatePrefsButton;
+	
+	/**
+	 * The Add MIDI Output button
+	 */
 	private JButton addMidiOutButton;
-	private JTextField row4tf;
+	
+	// row labels and text fields
+	private JLabel row1l;
+	private JTextField row1tf;
+	private JLabel row2l;
+	private JTextField row2tf;
+	private JLabel row3l;
+	private JTextField row3tf;
 	private JLabel row4l;
-	private int tickNum = 0;
-	private int sequencePosition = 0;
-	private int pattern = 0;
-	private int bankMode = 0;
-	private JPanel jPanel1;
+	private JTextField row4tf;
+	private JLabel row5l;
+	private JTextField row5tf;
+	private JLabel row6l;
+	private JTextField row6tf;
+	private JLabel row7l;
+	private JTextField row7tf;
+	private JLabel row8l;
+	private JTextField row8tf;
+	private JLabel row9l;
+	private JTextField row9tf;
+	private JLabel row10l;
+	private JTextField row10tf;
+	private JLabel row11l;
+	private JTextField row11tf;
+	private JLabel row12l;
+	private JTextField row12tf;
+	private JLabel row13l;
+	private JTextField row13tf;
+	private JLabel row14l;
+	private JTextField row14tf;
+	private JLabel row15l;
 	private JTextField row15tf;
+	private JPanel jPanel1;
+	
+	/**
+	 * The current MIDI clock tick number (from 0 to 6)
+	 */
+	private int tickNum = 0;
+	
+	/**
+	 * The current position in the sequence (from 0 to 31)
+	 */
+	private int sequencePosition = 0;
+	
+	/**
+	 * The selected pattern (0 to 3) 
+	 */
+	private int pattern = 0;
+	
+	/**
+	 * 1 = bank mode on 
+	 */
+	private int bankMode = 0;
+	
+	/**
+	 * sequence[bank_number][width][height] - the currently programmed sequences 
+	 */
 	private int[][][] sequence = new int[240][32][16];
+	
+	/**
+	 * noteNumbers[row] - midi note numbers that are sent for each row 
+	 */
 	private int[] noteNumbers = new int[16];
+	
+	/**
+	 * 64/40h/128 only, 1 = edit the 2nd page of sequence lanes 
+	 */
 	private int depth = 0;
+	
+	/**
+	 * 1 = bank clear mode enabled
+	 */
 	private int bankClearMode = 0;
+	
+	/**
+	 * 1 = bank copy mode enabled 
+	 */
 	private int bankCopyMode = 0;
+	
+	/**
+	 * Currently selected bank number
+	 */
 	private int bank = 0;
+	
+	/**
+	 * 1 = pattern copy mode enabled
+	 */
 	private int copyMode = 0;
+	
+	/**
+	 * 1 = pattern clear mode enabled
+	 */
 	private int clearMode = 0;
 		
+	/**
+	 * Random number generator
+	 */
 	private Random generator = new Random();
 	
+	/**
+	 * The selected MIDI output devices
+	 */
 	private ArrayList<Receiver> midiReceivers = new ArrayList<Receiver>();
-	private JTextField row3tf;
-	private JLabel row3l;
-	private JTextField row2tf;
-	private JLabel row2l;
-	private JButton updatePrefsButton;
-	private JTextField row1tf;
-	private JLabel row1l;
+	
+	/**
+	 * The names of the selected MIDI output devices 
+	 */
 	private ArrayList<String> midiDeviceNames = new ArrayList<String>();
 	
+	/**
+	 * @param monome The MonomeConfiguration that this page belongs to
+	 * @param index The index of this page (the page number)
+	 */
 	public MIDISequencerPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
+		// setup default notes
 		this.noteNumbers[0] = this.noteToMidiNumber("C-1");
 		this.noteNumbers[1] = this.noteToMidiNumber("D-1");
 		this.noteNumbers[2] = this.noteToMidiNumber("E-1");
@@ -133,11 +210,15 @@ public class MIDISequencerPage implements Page, ActionListener {
 		this.noteNumbers[15] = this.noteToMidiNumber("D-3");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handlePress(int, int, int)
+	 */
 	public void handlePress(int x, int y, int value) {
 		int x_seq;
 		int y_seq;
-		// bottom row
+		// only on press events
 		if (value == 1) {
+			// bottom row - bank mode functions
 			if (this.bankMode == 1) {
 				if (y == (this.monome.sizeY - 1)) {
 					if (x < 2) {
@@ -176,6 +257,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 						this.redrawMonome();
 					}
 
+				// bank button pressed
 				} else {
 					if (this.bankCopyMode == 1) {
 						this.bankCopyMode = 0;
@@ -191,6 +273,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 						this.redrawMonome();
 					}
 				}
+			// sequence edit mode
 			} else {
 				if (y == this.monome.sizeY - 1) {
 					// pattern select
@@ -208,6 +291,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 							this.redrawMonome();
 						}
 					}
+					// copy mode
 					if (x == 4 && this.clearMode == 0 && this.bankMode == 0) {
 						if (this.copyMode == 1) {
 							this.copyMode = 0;
@@ -217,6 +301,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 							this.monome.led(4, (this.monome.sizeY - 1), 1, this.index);
 						}
 					}
+					// clear mode
 					if (x == 5 && this.copyMode == 0 && this.bankMode == 0) {
 						if (this.clearMode == 1) {
 							this.clearMode = 0;
@@ -226,13 +311,14 @@ public class MIDISequencerPage implements Page, ActionListener {
 							this.monome.led(5, (this.monome.sizeY - 1), 1, this.index);
 						}
 					}
+					// bank button
 					if (x == 6 && this.copyMode == 0 && this.clearMode == 0) {
 						this.bankMode = 1;
 						this.redrawMonome();
 					}
 
+				// record button press to sequence
 				} else {
-					// record button press to sequence
 					x_seq = (pattern * (this.monome.sizeX)) + x;
 					y_seq = (depth * (this.monome.sizeY - 1)) + y;
 					if (this.sequence[this.bank][x_seq][y_seq] == 0) {
@@ -247,6 +333,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 
+	/**
+	 * Clear a pattern in the currently selected bank.
+	 * 
+	 * @param dst destination pattern to clear (0-3)
+	 */
 	private void sequencerClearPattern(int dst) {
 		for (int x = 0; x < (this.monome.sizeX); x++) {
 			for (int y = 0; y < 15; y++) {
@@ -256,6 +347,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 
+	/**
+	 * Copies src pattern to dst pattern.
+	 * 
+	 * @param src The source pattern to copy (0-3)
+	 * @param dst The destination to copy the source pattern to (0-3)
+	 */
 	private void sequencerCopyPattern(int src, int dst) {
 		for (int x = 0; x < (this.monome.sizeX); x++) {
 			for (int y = 0; y < 15; y++) {
@@ -266,6 +363,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 
+	/**
+	 * Copies src bank to dst bank.
+	 *
+	 * @param src The source bank to copy
+	 * @param dst The destination to copy the source bank to
+	 */
 	public void sequencerCopyBank(int src, int dst) {
 		for (int x = 0; x < 32; x++) {
 			for (int y = 0; y < 16; y++) {
@@ -274,6 +377,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 
+	/**
+	 * Clears a bank.
+	 * 
+	 * @param dst The bank number to clear.
+	 */
 	public void sequencerClearBank(int dst) {
 		for (int x = 0; x < 32; x++) {
 			for (int y = 0; y < 16; y++) {
@@ -282,11 +390,15 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleTick()
+	 */
 	public void handleTick() {
 		if (this.tickNum == 6) {
 			this.tickNum = 0;
 		}
 		
+		// send a note on for lit leds on this sequence position
 		if (this.tickNum == 0) {
 			if (this.sequencePosition == 32) {
 				this.sequencePosition = 0;
@@ -300,17 +412,18 @@ public class MIDISequencerPage implements Page, ActionListener {
 						value2 = 0;
 					}
 					this.monome.led_col(this.sequencePosition % (this.monome.sizeX), 255, value2, this.index);
-					this.redrawCol(this.sequencePosition % (this.monome.sizeX), 255, this.index);
+					this.redrawCol(this.sequencePosition % (this.monome.sizeX), 255);
 				}
 			}
 			this.playNotes(this.sequencePosition, 127);
 		}
 		
+		// send a note off for lit leds on this sequence position
 		if (this.tickNum == 5) {
 			if (this.sequencePosition >= (this.pattern * (this.monome.sizeX)) && this.sequencePosition < ((this.pattern + 1) * (this.monome.sizeX))) {
 				if (this.bankMode == 0) {
 					this.monome.led_col(this.sequencePosition % (this.monome.sizeX), 0, 0, this.index);
-					this.redrawCol(this.sequencePosition % (this.monome.sizeX), 0, this.index);
+					this.redrawCol(this.sequencePosition % (this.monome.sizeX), 0);
 				}
 			}
 			this.playNotes(this.sequencePosition, 0);
@@ -320,13 +433,22 @@ public class MIDISequencerPage implements Page, ActionListener {
 		this.tickNum++;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleReset()
+	 */
 	public void handleReset() {
 		this.tickNum = 0;
 		this.sequencePosition = 0;
 		this.redrawMonome();
 	}
 
-	private void redrawCol(int col, int val, int page) {
+	/**
+	 * Redraws a column as the sequence position indicator passes by.
+	 * 
+	 * @param col The column number to redraw
+	 * @param val The value of the led_col message that triggered this redraw
+	 */
+	private void redrawCol(int col, int val) {
 		if (val == 0 && this.bankMode == 0) {
 			int x_seq = (this.pattern * (this.monome.sizeX)) + col;
 			for (int y = 0; y < (this.monome.sizeY - 1); y++) {
@@ -356,6 +478,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 
+	/**
+	 * Send MIDI note messages based on the sequence position.  If velocity = 0, note off will be sent.
+	 * 
+	 * @param seq_pos The sequence position to play notes for
+	 * @param velocity The velocity to play the notes at
+	 */
 	public void playNotes(int seq_pos, int velocity) {
         ShortMessage note_out = new ShortMessage();
 		int note_num;
@@ -372,13 +500,19 @@ public class MIDISequencerPage implements Page, ActionListener {
 						midiReceivers.get(i).send(note_out, -1);
 					}
 				} catch (InvalidMidiDataException e) {
-					System.out.println("Error sending midi note");
+					e.printStackTrace();
 				}
 
 			}
 		}
 	}
 	
+	/**
+	 * Convert a MIDI note number to a string, ie. "C-3".
+	 * 
+	 * @param noteNum The MIDI note number to convert
+	 * @return The converted representation of the MIDI note number (ie. "C-3")
+	 */
 	public String numberToMidiNote(int noteNum) {
 		int n = noteNum % 12;
 		String note = "";
@@ -414,6 +548,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 		return note;
 	}
 	
+	/**
+	 * Converts a note name to a MIDI note number (ie. "C-3").
+	 * 
+	 * @param convert_note The note to convert (ie. "C-3")
+	 * @return The MIDI note value of that note
+	 */
 	public int noteToMidiNumber(String convert_note) {		
 		for (int n=0; n < 12; n++) {
 			String note = "";
@@ -457,10 +597,22 @@ public class MIDISequencerPage implements Page, ActionListener {
 		return -1;
 	}
 
+	/**
+	 * Get the MIDI note number for a sequence lane (row)
+	 * 
+	 * @param y The row / sequence lane to get the MIDI note number for
+	 * @return The MIDI note number assigned to that row / sequence lane
+	 */
 	public int getNoteNumber(int y) {
 		return noteNumbers[y];
 	}
 	
+	/**
+	 * Set row number num to midi note value value.
+	 * 
+	 * @param num The row number to set (0 = Row 1)
+	 * @param value The MIDI note value to set the row to
+	 */
 	public void setNoteValue(int num, int value) {
 		switch (num) {
 		case 0:
@@ -512,9 +664,13 @@ public class MIDISequencerPage implements Page, ActionListener {
 		this.noteNumbers[num] = value;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#redrawMonome()
+	 */
 	public void redrawMonome() {
 		int x_seq;
 		int y_seq;
+		// redraw if we're in bank mode
 		if (this.bankMode == 1) {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				for (int y = 0; y < (this.monome.sizeY - 1); y++) {
@@ -525,6 +681,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 					}
 				}
 			}
+		// redraw if we're in sequence mode
 		} else {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				x_seq = (this.pattern * (this.monome.sizeY)) + x;
@@ -534,10 +691,15 @@ public class MIDISequencerPage implements Page, ActionListener {
 				}
 			}
 		}
+		// redraw the bottom row
 		this.sequencerRedrawBottomRow();
 	}
 
+	/**
+	 * Redraws the bottom row of the sequencer page on the monome.
+	 */
 	public void sequencerRedrawBottomRow() {
+		// redraw this way if we're in bank mode
 		if (this.bankMode == 1) {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				if (x < 4) {
@@ -557,6 +719,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 					this.monome.led(x, (this.monome.sizeY - 1), this.bankMode, this.index);
 				}
 			}
+		// redraw this way if we're in sequence edit mode
 		} else {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				if (x < 4) {
@@ -594,11 +757,16 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getName()
+	 */
 	public String getName() {
-		// TODO Auto-generated method stub
 		return "MIDI Sequencer";
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getPanel()
+	 */
 	public JPanel getPanel() {
 		if (this.panel != null) {
 			return this.panel;
@@ -622,11 +790,18 @@ public class MIDISequencerPage implements Page, ActionListener {
 		return panel;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
+	 */
 	public void send(MidiMessage message, long timeStamp) {
-		
+		return;
 	}
 	
+	/**
+	 * Generates a random sequencer pattern on the current bank.
+	 */
 	private void generateSequencerPattern() {
+		// pattern template to use
 		int[][] p1 = {
 						{1,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0}, // 1
 						{0,0,0,0,1,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,1,0,0,0}, // 2
@@ -643,6 +818,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 						{0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 13
 						{0,0,1,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}  // 14
 					};
+		// randomly turn things on and off
 		for (int x = 0; x < 32; x++) {
 			for (int y = 0; y < 14; y++) {
 				sequence[bank][x][y] = p1[y][x];
@@ -657,8 +833,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 
 	}
 
+	/**
+	 * Alters the current sequencer patterns. 
+	 */
 	private void alterSequencerPattern() {
-		System.out.println("altering sequence");
+		// randomly turn things on or off
 		for (int x = 0; x < 32; x++) {
 			for (int y = 0; y < 14; y++) {
 				if (generator.nextInt(12) == 1) {
@@ -671,6 +850,9 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#toXml()
+	 */
 	public String toXml() {
 		StringBuffer xml = new StringBuffer();
 		xml.append("    <page>\n");
@@ -694,6 +876,9 @@ public class MIDISequencerPage implements Page, ActionListener {
 		return xml.toString();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 		if (e.getActionCommand().equals("Add MIDI Output")) {
@@ -714,7 +899,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 			this.addMidiOutDevice(deviceName);
 		}
 		if (e.getActionCommand().equals("Update Preferences")) {
-			System.out.println("Updating preferences...");
 			this.noteNumbers[0] = this.noteToMidiNumber(this.row1tf.getText());
 			this.noteNumbers[1] = this.noteToMidiNumber(this.row2tf.getText());
 			this.noteNumbers[2] = this.noteToMidiNumber(this.row3tf.getText());
@@ -733,19 +917,19 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
+	 */
 	public void addMidiOutDevice(String deviceName) {
 		Receiver receiver = this.monome.getMidiReceiver(deviceName);
 		
 		for (int i=0; i < this.midiReceivers.size(); i++) {
 			if (this.midiReceivers.get(i).equals(receiver)) {
-				System.out.println("Receiver already connected");
 				return;
 			}
 		}
 		this.midiReceivers.add(receiver);
 		this.midiDeviceNames.add(deviceName);
-		System.out.println("Got receiver for " + deviceName);
-
 	}
 	
 	private JLabel getRow1l() {
@@ -1076,6 +1260,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 		return jPanel1;
 	}
 
+	/**
+	 * Loads a sequence from a configuration file.  Called from GUI on open configuration action.
+	 * 
+	 * @param l
+	 * @param sequence2
+	 */
 	public void setSequence(int l, String sequence2) {
 		int row = 0;
 		int pos = 0;
@@ -1095,13 +1285,17 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 	}
 	
-	public boolean getCacheEnabled() {
-		return true;
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getCacheDisabled()
+	 */
+	public boolean getCacheDisabled() {
+		return false;
 	}
-	
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#destroyPage()
+	 */
 	public void destroyPage() {
 		return;
 	}
-
 }

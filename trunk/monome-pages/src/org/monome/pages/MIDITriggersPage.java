@@ -33,46 +33,97 @@ import javax.sound.midi.ShortMessage;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 /**
-* This code was edited or generated using CloudGarden's Jigloo
-* SWT/Swing GUI Builder, which is free for non-commercial
-* use. If Jigloo is being used commercially (ie, by a corporation,
-* company or business for any purpose whatever) then you
-* should purchase a license for each developer using Jigloo.
-* Please visit www.cloudgarden.com for details.
-* Use of Jigloo implies acceptance of these licensing terms.
-* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
-* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
-* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
-*/
+ * The MIDI Triggers page.  Usage information is available at:
+ * 
+ * http://code.google.com/p/monome-pages/wiki/MIDITriggersPage
+ *   
+ * @author Tom Dinchak
+ *
+ */
 public class MIDITriggersPage implements Page, ActionListener {
 	
-	
+	/**
+	 * Toggles mode constant
+	 */
 	private static final int MODE_TOGGLES = 0;
+	
+	/**
+	 * Triggers mode constant
+	 */
 	private static final int MODE_TRIGGERS = 1;
+	
+	/**
+	 * Rows orientation constant
+	 */
 	private static final int ORIENTATION_ROWS = 2;
+	
+	/**
+	 * Columns orientation constant
+	 */
 	private static final int ORIENTATION_COLUMNS = 3;
 	
+	/**
+	 * Checkboxes to enable toggle mode on or off for each row/col
+	 */
 	private JCheckBox[] toggles = new JCheckBox[16];
+	
+	/**
+	 * The toggled state of each button (on or off)
+	 */
 	private int[][] toggleValues = new int[16][16];
 	
+	/**
+	 * The MonomeConfiguration object this page belongs to
+	 */
 	MonomeConfiguration monome;
+	
+	/**
+	 * The index of this page (the page number) 
+	 */
 	private int index;
+	
+	/**
+	 * The GUI for this page
+	 */
 	private JPanel panel;
+	
+	/**
+	 * the Add MIDI Output button 
+	 */
 	private JButton addMidiOutButton;
+	
+	/**
+	 * Columns mode radio button
+	 */
 	private JRadioButton colRB;
+	
+	/**
+	 * Rows mode radio button
+	 */
 	private JRadioButton rowRB;
+	
+	/**
+	 * Rows/columns radio button group 
+	 */
 	private ButtonGroup rowColBG;
 
+	/**
+	 * The selected MIDI output device
+	 */
 	private Receiver recv;
+	
+	/**
+	 * The name of the selected MIDI output device
+	 */
 	private String midiDeviceName;
 
+	// GUI elements
 	private JLabel row13Label;
 	private JLabel row14Label;
 	private JLabel row15Label;
@@ -90,6 +141,10 @@ public class MIDITriggersPage implements Page, ActionListener {
 	private JLabel row2Label;
 	private JLabel row1Label;
 
+	/**
+	 * @param monome The MonomeConfiguration this page belongs to
+	 * @param index The index of this page (the page number)
+	 */
 	public MIDITriggersPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
@@ -100,6 +155,9 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 		if (e.getActionCommand().equals("Add MIDI Output")) {
@@ -157,15 +215,27 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
+	 */
 	public void addMidiOutDevice(String deviceName) {
 		this.recv = this.monome.getMidiReceiver(deviceName);
 		this.midiDeviceName = deviceName;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getName()
+	 */
 	public String getName() {
 		return "MIDI Triggers";
 	}
 	
+	/**
+	 * Find out of toggle mode is enabled for a row/column.
+	 * 
+	 * @param index The index of the row/column
+	 * @return
+	 */
 	private int getToggleMode(int index) {
 		if (this.toggles[index].isSelected()) {
 			return MODE_TOGGLES;
@@ -174,7 +244,13 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 	}
 	
+	/**
+	 * Get the current orientation setting.
+	 * 
+	 * @return The current orientation (rows or columns)
+	 */
 	private int getOrientation() {
+		// default to rows
 		if (this.rowRB == null) {
 			return ORIENTATION_ROWS;
 		}
@@ -185,6 +261,9 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handlePress(int, int, int)
+	 */
 	public void handlePress(int x, int y, int value) {
 		int a = x;
 		int b = y;
@@ -216,6 +295,13 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 	}
 	
+	/**
+	 * Converts a button press into a MIDI note event
+	 * 
+	 * @param x The x value of the button pressed
+	 * @param y The y value of the button pressed
+	 * @param value The state, 1 = pressed, 0 = released
+	 */
 	public void playNote(int x, int y, int value) {
 		int note_num = x + 12;
 		int channel = y;
@@ -235,14 +321,23 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
     }
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleReset()
+	 */
 	public void handleReset() {
 		return;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleTick()
+	 */
 	public void handleTick() {
 		return;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#redrawMonome()
+	 */
 	public void redrawMonome() {		
 		for (int x = 0; x < this.monome.sizeX; x++) {
 			for (int y = 0; y < this.monome.sizeY; y++) {
@@ -265,10 +360,16 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
+	 */
 	public void send(MidiMessage message, long timeStamp) {
 		return;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#toXml()
+	 */
 	public String toXml() {
 		String mode;
 		if (this.rowRB.isSelected()) {
@@ -296,12 +397,19 @@ public class MIDITriggersPage implements Page, ActionListener {
 
 	}
 	
+	/**
+	 * @return The rows/columns radio button group
+	 */
 	private ButtonGroup getRowColBG() {
 		if(rowColBG == null) {
 			rowColBG = new ButtonGroup();
 		}
 		return rowColBG;
 	}
+	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getPanel()
+	 */
 	public JPanel getPanel() {
 		if (this.panel != null) {
 			return this.panel;
@@ -437,6 +545,11 @@ public class MIDITriggersPage implements Page, ActionListener {
 		return panel;
 	}
 
+	/**
+	 * Sets the mode / orientation of the page to rows or columns mode
+	 * 
+	 * @param mode "rows" for row mode, "columns" for column mode
+	 */
 	public void setMode(String mode) {
 		if (mode.equals("rows")) {
 			this.rowRB.doClick();
@@ -446,17 +559,26 @@ public class MIDITriggersPage implements Page, ActionListener {
 		
 	}
 
+	/**
+	 * Used when loading configuration to enable checkboxes for rows/columns that should be toggles.
+	 * 
+	 * @param l 
+	 */
 	public void enableToggle(int l) {
 		this.toggles[l].doClick();
 	}
 	
-	public boolean getCacheEnabled() {
-		return true;
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getCacheDisabled()
+	 */
+	public boolean getCacheDisabled() {
+		return false;
 	}
 	
-
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#destroyPage()
+	 */
 	public void destroyPage() {
 		return;
 	}
-
 }

@@ -1,21 +1,21 @@
 /*
  *  ExternalApplicationPage.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
@@ -31,64 +31,136 @@ import java.net.UnknownHostException;
 import java.util.Date;
 
 import javax.sound.midi.MidiMessage;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
-
 /**
-* This code was edited or generated using CloudGarden's Jigloo
-* SWT/Swing GUI Builder, which is free for non-commercial
-* use. If Jigloo is being used commercially (ie, by a corporation,
-* company or business for any purpose whatever) then you
-* should purchase a license for each developer using Jigloo.
-* Please visit www.cloudgarden.com for details.
-* Use of Jigloo implies acceptance of these licensing terms.
-* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
-* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
-* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
-*/
+ * The External Application page.  Usage information is available at:
+ * 
+ * http://code.google.com/p/monome-pages/wiki/ExternalApplicationPage
+ * 
+ * @author Tom Dinchak
+ *
+ */
 public class ExternalApplicationPage implements Page, ActionListener, OSCListener {
 	
+	/**
+	 * The MonomeConfiguration this page belongs to
+	 */
 	private MonomeConfiguration monome;
+	
+	/**
+	 * This page's index (page number) 
+	 */
 	private int index;
 	
+	/**
+	 * The OSC prefix the external application uses
+	 */
 	private String prefix = "/mlr";
+	
+	/**
+	 * The hostname that the external application is bound to 
+	 */
 	private String hostname = "localhost";
-	private OSCPortIn oscIn;
-	private OSCPortOut oscOut;
+	
+	/**
+	 * The OSC input port number to receive messages from the external application 
+	 */
 	private int inPort = 8080;
+	
+	/**
+	 * The OSCPortIn object for communication with the external application
+	 */
+	private OSCPortIn oscIn;
+	
+	/**
+	 * The OSC output port number to send messages to the external application
+	 */
 	private int outPort = 8000;
+	
+	/**
+	 * The OSCPortOut object for communication with the external application 
+	 */
+	private OSCPortOut oscOut;
+	
+	/**
+	 * The page's GUI
+	 */
 	private JPanel panel;
+	
+	/**
+	 * The Disable LED Cache checkbox 
+	 */
 	private JCheckBox disableCache;
+	
+	/**
+	 * The OSC Prefix label
+	 */
 	private JLabel prefixLabel;
-	private JPanel jPanel1;
-	private JTextField oscOutTF;
-	private JTextField oscInTF;
-	private JTextField hostnameTF;
+	
+	/**
+	 * The OSC Prefix text field 
+	 */
 	private JTextField prefixTF;
+	
+	/**
+	 * The OSC Output Port label
+	 */
 	private JLabel oscOutLabel;
+	
+	/**
+	 * The OSC Output Port text field
+	 */
+	private JTextField oscOutTF;
+	
+	/**
+	 * The OSC Input Port text field
+	 */
 	private JLabel oscInLabel;
+	
+	/**
+	 * The OSC Input Port text field
+	 */
+	private JTextField oscInTF;
+	
+	/**
+	 * The OSC hostname label
+	 */
 	private JLabel hostnameLabel;
+	
+	/**
+	 * The OSC hostname text field
+	 */
+	private JTextField hostnameTF;
+	
+	/**
+	 * The update preferences button
+	 */
 	private JButton updatePrefsButton;
 
+	/**
+	 * @param monome The MonomeConfiguration object this page belongs to
+	 * @param index The index of this page (page number)
+	 */
 	public ExternalApplicationPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
+		// update the external application OSC configuration
 		if (e.getActionCommand().equals("Update Preferences")) {
 			this.prefix = this.prefixTF.getText();
 			this.hostname = this.hostnameTF.getText();
@@ -99,6 +171,9 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		return;
 	}
 	
+	/**
+	 * Stops OSC communication with the external application
+	 */
 	public void stopOSC() {
 		if (this.oscIn != null) {
 			if (this.oscIn.isListening()) {
@@ -112,12 +187,13 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 	}
 	
+	/**
+	 * Initializes OSC communication with the external application
+	 */
 	public void initOSC() {
 		this.stopOSC();
 		try {
-			System.out.println("Binding to " + this.hostname + ":" + this.outPort);
 			this.oscOut = new OSCPortOut(InetAddress.getByName(this.hostname), this.outPort);
-			System.out.println("Listening on " + this.inPort);
 			this.oscIn = new OSCPortIn(this.inPort);
 			this.oscIn.addListener(this.prefix + "/led", this);
 			this.oscIn.addListener(this.prefix + "/led_col", this);
@@ -130,18 +206,29 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
+	 */
 	public void addMidiOutDevice(String deviceName) {
 		return;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getName()
+	 */
 	public String getName() {
 		return "External Application";
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getPanel()
+	 */
 	public JPanel getPanel() {
 		if (this.panel != null) {
 			return this.panel;
 		}
+		
+		// builds the page GUI
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
@@ -193,7 +280,11 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		return panel;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handlePress(int, int, int)
+	 */
 	public void handlePress(int x, int y, int value) {
+		// pass all press messages along to the external application
 		if (this.oscOut == null) {
 			return;
 		}
@@ -205,21 +296,29 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		try {
 			this.oscOut.send(msg);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleReset()
+	 */
 	public void handleReset() {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleTick()
+	 */
 	public void handleTick() {
 		return;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#redrawMonome()
+	 */
 	public void redrawMonome() {
+		// redraw the monome from the pageState, this is updated when the page isn't selected
 		for (int x=0; x < this.monome.sizeX; x++) {
 			for (int y=0; y < this.monome.sizeY; y++) {
 				this.monome.led(x, y, this.monome.pageState[this.index][x][y], this.index);
@@ -228,11 +327,16 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
+	 */
 	public void send(MidiMessage message, long timeStamp) {
-		// TODO Auto-generated method stub
-
+		return;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#toXml()
+	 */
 	public String toXml() {
 		
 		String disableCache = "false";
@@ -253,10 +357,16 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		return xml;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
+	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
+		// only process messages from the external application
     	if (!msg.getAddress().contains(this.prefix)) {
     		return;
     	}
+    	
+    	// handle a monome clear request from the external application
     	if (msg.getAddress().contains("clear")) {
     		Object[] args = msg.getArguments();
 			if (!(args[0] instanceof Integer)) {
@@ -265,6 +375,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     		int int_arg = ((Integer) args[0]).intValue();
     		this.monome.clear(int_arg, this.index);
     	}
+    	
+    	// handle a monome led_col request from the external application
     	if (msg.getAddress().contains("led_col")) {
     		Object[] args = msg.getArguments();
     		int[] int_args = {0, 0, 0};
@@ -276,6 +388,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     		}
     		this.monome.led_col(int_args[0], int_args[1], int_args[2], this.index);
     	}
+    	
+    	// handle a monome led_row request from the external application
     	if (msg.getAddress().contains("led_row")) {
     		Object[] args = msg.getArguments();
     		int[] int_args = {0, 0, 0};
@@ -287,6 +401,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     		}
     		this.monome.led_row(int_args[0], int_args[1], int_args[2], this.index);
     	}
+    	
+    	// handle a monome led request from the external application
     	else if (msg.getAddress().contains("led")) {
     		Object[] args = msg.getArguments();
     		int[] int_args = {0, 0, 0};
@@ -300,26 +416,41 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
     	}
 	}
 
+	/**
+	 * @param extPrefix The OSC prefix of the external application
+	 */
 	public void setPrefix(String extPrefix) {
 		this.prefix = extPrefix;
 		this.prefixTF.setText(extPrefix);
 	}
 
+	/**
+	 * @param extInPort The OSC input port number to receive messages from the external application
+	 */
 	public void setInPort(String extInPort) {
 		this.inPort = Integer.parseInt(extInPort);
 		this.oscInTF.setText(extInPort);
 	}
 
+	/**
+	 * @param extOutPort The OSC output port number to send messages to the external application
+	 */
 	public void setOutPort(String extOutPort) {
 		this.outPort = Integer.parseInt(extOutPort);
 		this.oscOutTF.setText(extOutPort);
 	}
 
+	/**
+	 * @param extHostname The hostname that the external application is bound to
+	 */
 	public void setHostname(String extHostname) {
 		this.hostname = extHostname;
 		this.hostnameTF.setText(extHostname);
 	}
 	
+	/**
+	 * @return The Disable LED Cache checkbox
+	 */
 	public JCheckBox getDisableCache() {
 		if(disableCache == null) {
 			disableCache = new JCheckBox();
@@ -329,8 +460,10 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		return disableCache;
 	}
 
-	public void setCacheEnabled(String cacheDisabled) {
-		System.out.println("called setCacheEnabled with " + cacheDisabled);
+	/**
+	 * @param cacheDisabled "true" if the cache should be disabled
+	 */
+	public void setCacheDisabled(String cacheDisabled) {
 		if (cacheDisabled.equals("true")) {
 			this.getDisableCache().setSelected(true);
 		} else {
@@ -338,15 +471,22 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 	}
 	
-	public boolean getCacheEnabled() {
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getCacheDisabled()
+	 */
+	public boolean getCacheDisabled() {
 		if (this.getDisableCache().isSelected()) {
-			return false;
-		} else {
 			return true;
+		} else {
+			return false;
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#destroyPage()
+	 */
 	public void destroyPage() {
+		// close OSC communication with the external application
 		if (this.oscIn != null) {
 			if (this.oscIn.isListening()) {
 				this.oscIn.stopListening();				
@@ -358,5 +498,4 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			this.oscOut.close();
 		}
 	}
-
 }
