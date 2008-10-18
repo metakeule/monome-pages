@@ -1,9 +1,9 @@
 /*
  *  AbletonOSCListener.java
  * 
- *  copyright (c) 2008, tom dinchak
+  *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
  *  pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,33 +27,52 @@ import java.util.Date;
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 
+/**
+ * The AbletonOSCListener object listens for OSC messages from Ableton
+ * calls the Configuration object when messages are received to update
+ * any Ableton Clip Launcher pages.
+ * 
+ * @author Tom Dinchak
+ *
+ */
 public class AbletonOSCListener implements OSCListener {
 	
-	Configuration configuration;
+	/**
+	 * The Configuration object
+	 */
+	private Configuration configuration;
 
+    /**
+     * @param config The Configuration object
+     */
     AbletonOSCListener(Configuration config) {
 		this.configuration = config;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
+	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
+		// received message from LiveOSC about a clip currently playing
 		if (msg.getAddress().contains("/live/clip/playing")) {
 	        Object[] args = msg.getArguments();
 	        int track = ((Integer) args[0]).intValue();
 	        int clip = ((Integer) args[1]).intValue();
-	        this.configuration.updateClipState(track, clip, true);
+	        this.configuration.updateAbletonClipState(track, clip, true);
 		}
+		// received message from LiveOSC about a clip being stopped
 		if (msg.getAddress().contains("/live/clip/stopped")) {
 	        Object[] args = msg.getArguments();
 	        int track = ((Integer) args[0]).intValue();
 	        int clip = ((Integer) args[1]).intValue();
-	        this.configuration.updateClipState(track, clip, false);
+	        this.configuration.updateAbletonClipState(track, clip, false);
 		}
+		// received message from LiveOSC about a track being armed
 		if (msg.getAddress().contains("/live/track/armed")) {
 			Object[] args = msg.getArguments();
 			int track = ((Integer) args[0]).intValue();
 			int armed = ((Integer) args[1]).intValue();
-			this.configuration.updateTrackState(track, armed);
+			this.configuration.updateAbletonTrackState(track, armed);
 		}
 	}
-
 }

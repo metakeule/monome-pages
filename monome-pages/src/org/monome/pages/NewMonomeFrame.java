@@ -22,7 +22,6 @@
 
 package org.monome.pages;
 
-import java.awt.Component;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,20 +33,45 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-/**
- * 
- */
 
 /**
- * @author Administrator
+ * This class generates a configuration window for a new monome configuration.
+ * 
+ * @author Tom Dinchak
  *
  */
+@SuppressWarnings("serial")
 public class NewMonomeFrame extends JInternalFrame implements ActionListener {
 	
+	/**
+	 * The main Configuration object
+	 */
 	private Configuration configuration;
-	private JFrame frame;
-	private JTextField sizeX, sizeY, prefix;
 	
+	/**
+	 * The main application GUI
+	 */
+	private JFrame frame;
+	
+	/**
+	 * Text field to store the width of the new monome configuration
+	 */
+	private JTextField sizeX;
+	
+	/**
+	 * Text field to store the height of the new monome configuration
+	 */
+	private JTextField sizeY;
+	
+	/**
+	 * Text field to store the OSC prefix of the new monome configuration 
+	 */
+	private JTextField prefix;
+	
+	/**
+	 * @param configuration The main Configuration object
+	 * @param frame The main application GUI
+	 */
 	public NewMonomeFrame(Configuration configuration, JFrame frame) {
 		
 		super("New Monome", true, true);
@@ -103,6 +127,9 @@ public class NewMonomeFrame extends JInternalFrame implements ActionListener {
 		this.pack();		
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("Cancel")) {
 			this.dispose();

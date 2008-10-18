@@ -1,21 +1,21 @@
 /*
  *  Configuration.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
@@ -37,53 +37,143 @@ import javax.sound.midi.Transmitter;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
-
 /**
- * @author Administrator
+ * This object stores all configuration about all current monomes and pages.  It
+ * also stores global options like Ableton OSC port selection and enabled MIDI
+ * devices.
+ * 
+ * @author Tom Dinchak
  *
  */
 public class Configuration implements Receiver {
 
+	/**
+	 * The name of the configuration.
+	 */
 	private String name;
+	
+	/**
+	 * The number of monomes currently configured.
+	 */
 	private int numMonomeConfigurations = 0;
+	
+	/**
+	 * An array containing the MonomeConfiguration objects.
+	 */
 	private ArrayList<MonomeConfiguration> monomeConfigurations = new ArrayList<MonomeConfiguration>();
+	
+	/**
+	 * The selected MIDI input device to receive MIDI clock sync messages from.
+	 */
 	private MidiDevice midiInDevice;
 	
+	/**
+	 * midiInDevice's associated Transmitter object. 
+	 */
+	private Transmitter midiInTransmitter;
+
+	/**
+	 * The selected MIDI output devices.
+	 */
 	private ArrayList<MidiDevice> midiOutDevices = new ArrayList<MidiDevice>();
+		
+	/**
+	 * midiOutDevices' associated Receiver objects.
+	 */
 	private ArrayList<Receiver> midiOutReceivers = new ArrayList<Receiver>();
 	
-	private int OSCInPort = 8000;
-	private int OSCOutPort = 8080;
-	private String hostname = "localhost";
+	/**
+	 * The port number to receive OSC messages from MonomeSerial.
+	 */
+	private int monomeSerialOSCInPortNumber = 8000;
 	
-	public OSCPortIn oscIn;
-	public OSCPortOut oscOut;
+	/**
+	 * The OSCPortIn object to receive messages from MonomeSerial.
+	 */
+	public OSCPortIn monomeSerialOSCPortIn;
+
+	/**
+	 * The port number to send OSC messages to MonomeSerial. 
+	 */
+	private int monomeSerialOSCOutPortNumber = 8080;
 	
-	private Transmitter midiInTransmitter;
+	/**
+	 * The OSCPortOut object to send messages to MonomeSerial.
+	 */
+	public OSCPortOut monomeSerialOSCPortOut;
 	
-	private int abletonOscInPort = 9001;
-	private int abletonOscOutPort = 9000;
-	private String abletonHostname = "localhost";
+	/**
+	 * The hostname that MonomeSerial is bound to.
+	 */
+	private String monomeHostname = "localhost";
+	
+	/**
+	 * The port number to receive OSC messages from Ableton.
+	 */
+	private int abletonOSCInPortNumber = 9001;
+	
+	/**
+	 * The OSCPortIn object to receive OSC messages from Ableton. 
+	 */
 	private OSCPortIn abletonOSCPortIn;
+	
+	/**
+	 * The port number to send OSC messages to Ableton. 
+	 */
+	private int abletonOSCOutPortNumber = 9000;
+	
+	/**
+	 * The OSCPortOut object to send OSC messages to Ableton.
+	 */
 	private OSCPortOut abletonOSCPortOut;
+	
+	/**
+	 * The hostname that Ableton is bound to.
+	 */
+	private String abletonHostname = "localhost";
+	
+	/**
+	 * Whether or not Ableton has been initialized yet. 
+	 */
 	boolean abletonInitialized = false;
 	
+	/**
+	 * @param name The name of the configuration
+	 */
 	public Configuration(String name) {
 		this.name = name;
 	}
 	
+	/**
+	 * @param index The index of the MIDI Receiver object to return
+	 * @return The MIDI Receiver
+	 */
 	public Receiver getMidiReceiver(int index) {
 		return this.midiOutReceivers.get(index);
 	}
 	
+	/**
+	 * @return The selected MIDI input device to receive MIDI clock sync from
+	 */
 	public MidiDevice getMidiInDevice() {
 		return this.midiInDevice;
 	}
 
+	/**
+	 * @return The selected MIDI output devices
+	 */
 	public ArrayList<MidiDevice> getMidiOutDevices() {
 		return this.midiOutDevices;
 	}
 		
+	/**
+	 * Called from GUI to add a new monome configuration.
+	 * 
+	 * @param prefix The prefix of the monome (ie. /40h)
+	 * @param sizeX The width of the monome (ie. 8 or 16)
+	 * @param sizeY The height of the monome (ie. 8 or 16)
+	 * @return The new monome's index
+	 */
 	public int addMonomeConfiguration(String prefix, int sizeX, int sizeY) {
 		MonomeConfiguration monome = new MonomeConfiguration(this, this.numMonomeConfigurations, prefix, sizeX, sizeY);
 		this.monomeConfigurations.add(this.numMonomeConfigurations, monome);
@@ -92,26 +182,34 @@ public class Configuration implements Receiver {
 		return this.numMonomeConfigurations - 1;
 	}
 	
-	public void closeMonomes() {
+	/**
+	 * Close all monome configuration windows.
+	 */
+	public void closeMonomeConfigurationWindows() {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).close();
 			monomeConfigurations.get(i).dispose();
 		}
 	}
 	
-	public void stopOSC() {
-		if (this.oscIn != null) {
-			if (this.oscIn.isListening()) {
-				this.oscIn.stopListening();				
+	/**
+	 * Close MonomeSerial OSC Connections. 
+	 */
+	public void stopMonomeSerialOSC() {
+		if (this.monomeSerialOSCPortIn != null) {
+			if (this.monomeSerialOSCPortIn.isListening()) {
+				this.monomeSerialOSCPortIn.stopListening();				
 			}
-			this.oscIn.close();
+			this.monomeSerialOSCPortIn.close();
 		}
 		
-		if (this.oscOut != null) {
-			this.oscOut.close();
+		if (this.monomeSerialOSCPortOut != null) {
+			this.monomeSerialOSCPortOut.close();
 		}
 	}
 
+	/**
+	 * Close Ableton OSC connections.
+	 */
 	public void stopAbletonOSC() {
 		if (this.abletonOSCPortIn != null) {
 			if (this.abletonOSCPortIn.isListening()) {
@@ -125,21 +223,35 @@ public class Configuration implements Receiver {
 		}
 	}
 	
-	public void destroyPages() {
+	/**
+	 * Calls each page's destroyPage() function.
+	 */
+	public void destroyAllPages() {
 		for (int i = 0; i < this.numMonomeConfigurations; i++) {
 			this.monomeConfigurations.get(i).destroyPage();
 		}
 	}
 
+	/**
+	 * @param index The index of the MonomeConfiguration to get
+	 * @return The indexed MonomeConfiguration object
+	 */
 	public MonomeConfiguration getMonomeConfigurationFrame(int index) {
 		return monomeConfigurations.get(index);
 	}
 
+	/**
+	 * Closes a monome configuration window.
+	 * 
+	 * @param index The index of the monome window to close
+	 */
 	public void closeMonome(int index) {
-		this.monomeConfigurations.get(index).close();
 		this.monomeConfigurations.get(index).dispose();
 	}
 	
+	/**
+	 * Closes all selected MIDI devices.
+	 */
 	public void closeMidiDevices() {
 		if (this.midiInTransmitter != null) {
 			this.midiInTransmitter.close();
@@ -154,10 +266,15 @@ public class Configuration implements Receiver {
 		}
 	}
 	
+	/**
+	 * Called when a MIDI output device is selected or de-selected from the MIDI menu
+	 * 
+	 * @param midiOutDevice The MIDI output device to select or de-select
+	 */
 	public void toggleMidiOutDevice(MidiDevice midiOutDevice) {
+		// check if the device is already enabled, if so disable it
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
 			if (this.midiOutDevices.get(i).equals(midiOutDevice)) {
-				System.out.println("Midi device already active, disabling");
 				this.midiOutReceivers.get(i).close();
 				this.midiOutReceivers.remove(i);
 				this.midiOutDevices.get(i).close();
@@ -166,43 +283,56 @@ public class Configuration implements Receiver {
 			}
 		}
 		
+		// try to enable the device
 		try {
 			midiOutDevice.open();
 			this.midiOutDevices.add(midiOutDevice);
 			this.midiOutReceivers.add(midiOutDevice.getReceiver());
 		} catch (MidiUnavailableException e) {
-			System.out.println("Failed to open midi out device");
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Enables a MIDI in device to receive MIDI clock.
+	 * 
+	 * @param midiInDevice The MIDI input device to enable
+	 */
 	public void addMidiInDevice(MidiDevice midiInDevice) {
-		System.out.println("adding midi device " + midiInDevice.getDeviceInfo());
+		// close the currently open device if we have one
 		if (this.midiInTransmitter != null) {
 			this.midiInTransmitter.close();
 		}
-		
 		if (this.midiInDevice != null) {
 			this.midiInDevice.close();
 		}
 		
 		this.midiInDevice = midiInDevice;
 		
+		// try to open the new midi in device
 		try {
 			this.midiInDevice.open();
 			this.midiInTransmitter = this.midiInDevice.getTransmitter();
 			this.midiInTransmitter.setReceiver(this);
 		} catch (MidiUnavailableException e) {
-			System.out.println("Failed to open MIDI Input device.");
 			this.midiInDevice = null;
 			this.midiInTransmitter = null;
+			e.printStackTrace();
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see javax.sound.midi.Receiver#send(javax.sound.midi.MidiMessage, long)
+	 */
 	public void send(MidiMessage message, long lTimeStamp) {
 		ShortMessage shortMessage;
+		
+		// pass all messages along to all monomes (who pass to all pages)
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			this.monomeConfigurations.get(i).send(message, lTimeStamp);
 		}
+		
+		// filter for midi clock ticks or midi reset messages
 		if (message instanceof ShortMessage) {
 			shortMessage = (ShortMessage) message;
 			switch (shortMessage.getCommand()) {
@@ -224,135 +354,212 @@ public class Configuration implements Receiver {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.sound.midi.Receiver#close()
+	 */
 	public void close() {
+		return;
 	}
 
-	public void setOSCInPort(int inport) {
-		this.OSCInPort = inport;
+	/**
+	 * @param inport The port number to receive OSC messages from MonomeSerial 
+	 */
+	public void setMonomeSerialOSCInPortNumber(int inport) {
+		this.monomeSerialOSCInPortNumber = inport;
 	}
 	
-	public int getOSCInPort() {
-		return this.OSCInPort;
+	/**
+	 * @return The port number to receive OSC messages from MonomeSerial
+	 */
+	public int getMonomeSerialOSCInPortNumber() {
+		return this.monomeSerialOSCInPortNumber;
 	}
 	
-	public void setOSCOutPort(int outport) {
-		this.OSCOutPort = outport;
+	/**
+	 * @param outport The port number to send OSC messages to MonomeSerial
+	 */
+	public void setMonomeSerialOSCOutPortNumber(int outport) {
+		this.monomeSerialOSCOutPortNumber = outport;
 	}
 	
-	public int getOSCOutPort() {
-		return this.OSCOutPort;
+	/**
+	 * @return The port number to send OSC messages to MonomeSerial
+	 */
+	public int getMonomeSerialOSCOutPortNumber() {
+		return this.monomeSerialOSCOutPortNumber;
 	}
 	
-	public void setAbletonOSCInPort(int inport) {
-		this.abletonOscInPort = inport;
+	/**
+	 * @param inport The port number to receive OSC messages from Ableton
+	 */
+	public void setAbletonOSCInPortNumber(int inport) {
+		this.abletonOSCInPortNumber = inport;
 	}
 	
-	public int getAbletonOSCInPort() {
-		return this.abletonOscInPort;
+	/**
+	 * @return The port number to receive OSC messages from Ableton
+	 */
+	public int getAbletonOSCInPortNumber() {
+		return this.abletonOSCInPortNumber;
 	}
 	
-	public void setAbletonOSCOutPort(int outport) {
-		this.abletonOscOutPort = outport;
+	/**
+	 * @param outport The port number to send OSC messages to Ableton
+	 */
+	public void setAbletonOSCOutPortNumber(int outport) {
+		this.abletonOSCOutPortNumber = outport;
 	}
 	
-	public int getAbletonOSCOutPort() {
-		return this.abletonOscOutPort;
+	/**
+	 * @return The port number to send OSC messages to Ableton
+	 */
+	public int getAbletonOSCOutPortNumber() {
+		return this.abletonOSCOutPortNumber;
 	}
 	
+	/**
+	 * @return The OSCPortOut object to send OSC messages to Ableton
+	 */
 	public OSCPortOut getAbletonOSCPortOut() {
 		return this.abletonOSCPortOut;
 	}
 	
+	/**
+	 * @param hostname The hostname that Ableton is bound to
+	 */
 	public void setAbletonHostname(String hostname) {
 		this.abletonHostname = hostname;
 	}
 	
+	/**
+	 * @return The hostname that Ableton is bound to
+	 */
 	public String getAbletonHostname() {
 		return this.abletonHostname;
 	}
 	
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
+	/**
+	 * @param hostname The hostname that MonomeSerial is bound to
+	 */
+	public void setMonomeHostname(String hostname) {
+		this.monomeHostname = hostname;
 	}
 	
-	public String getHostname() {
-		return this.hostname;
+	/**
+	 * @return The hostname that MonomeSerial is bound to
+	 */
+	public String getMonomeHostname() {
+		return this.monomeHostname;
 	}
 	
+	/**
+	 * Initializes a new monome configuration.  Starts OSC communication with MonomeSerial if needed.
+	 * 
+	 * @param monome The MonomeConfiguration object to initialize
+	 * @return true of initialization was successful
+	 */
 	private boolean initMonome(MonomeConfiguration monome) {
 		try {
 			MonomeOSCListener oscListener = new MonomeOSCListener(monome);
 			
-			if (this.oscIn == null) {
-				this.oscIn = new OSCPortIn(this.OSCInPort);
+			if (this.monomeSerialOSCPortIn == null) {
+				this.monomeSerialOSCPortIn = new OSCPortIn(this.monomeSerialOSCInPortNumber);
 			}
 			
-			if (this.oscOut == null) {
-				this.oscOut = new OSCPortOut(InetAddress.getByName(this.hostname), this.OSCOutPort);
+			if (this.monomeSerialOSCPortOut == null) {
+				this.monomeSerialOSCPortOut = new OSCPortOut(InetAddress.getByName(this.monomeHostname), this.monomeSerialOSCOutPortNumber);
 			}
 			
-            this.oscIn.addListener(monome.prefix + "/press", oscListener);
-            this.oscIn.startListening();
+            this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
+            this.monomeSerialOSCPortIn.startListening();
     		monome.clearMonome();
 		} catch (SocketException e) {
+			e.printStackTrace();
 			return false;
 		} catch (UnknownHostException e) {
+			e.printStackTrace();
 			return false;
 		}
 		return true;
 	}
 	
+	/**
+	 * Initializes OSC communication with Ableton.
+	 * 
+	 * @return true if initialization was successful
+	 */
 	public boolean initAbleton() {
 		try {
 			AbletonOSCListener oscListener = new AbletonOSCListener(this);
-			this.abletonOSCPortOut = new OSCPortOut(InetAddress.getByName(this.abletonHostname), this.abletonOscOutPort);
-			this.abletonOSCPortIn = new OSCPortIn(this.abletonOscInPort);
+			this.abletonOSCPortOut = new OSCPortOut(InetAddress.getByName(this.abletonHostname), this.abletonOSCOutPortNumber);
+			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
 			this.abletonOSCPortIn.addListener("/live/clip/playing", oscListener);
 			this.abletonOSCPortIn.addListener("/live/clip/stopped", oscListener);
 			this.abletonOSCPortIn.addListener("/live/track/armed", oscListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
-			System.out.println("Socket exception");
+			e.printStackTrace();
 		} catch (UnknownHostException e) {
-			System.out.println("Unknown host exception!");
+			e.printStackTrace();
 		}
 		return true;
 	}
 	
-	public void updateClipState(int track, int clip, boolean state) {
+	/**
+	 * This is called by AbletonClipUpdater and passed along to all monomes, who pass it to
+	 * any Ableton Clip Launcher pages that belong to them.
+	 * 
+	 * @param track
+	 * @param clip
+	 * @param state
+	 */
+	public void updateAbletonClipState(int track, int clip, boolean state) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			monomeConfigurations.get(i).updateClipState(track, clip, state);
 		}
 	}
 	
-	public void updateTrackState(int track, int armed) {
+	/**
+	 * This is called by AbletonClipUpdater and passed along to all monomes, who pass it to
+	 * any Ableton Clip Launcher pages that belong to them.
+	 * 
+	 * @param track
+	 * @param armed
+	 */
+	public void updateAbletonTrackState(int track, int armed) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			monomeConfigurations.get(i).updateTrackState(track, armed);
 		}
 	}
 	
+	/**
+	 * Converts the current configuration to a string of XML.  
+	 * 
+	 * @return The string of XML representing the current configuration
+	 */
 	public String toXml() {
 		String xml;
+		// main configuration
 		xml  = "<configuration>\n";
 		xml += "  <name>" + this.name + "</name>\n";
-		xml += "  <hostname>" + this.hostname + "</hostname>\n";
-		xml += "  <oscinport>" + this.OSCInPort + "</oscinport>\n";
-		xml += "  <oscoutport>" + this.OSCOutPort + "</oscoutport>\n";
+		xml += "  <hostname>" + this.monomeHostname + "</hostname>\n";
+		xml += "  <oscinport>" + this.monomeSerialOSCInPortNumber + "</oscinport>\n";
+		xml += "  <oscoutport>" + this.monomeSerialOSCOutPortNumber + "</oscoutport>\n";
 		xml += "  <abletonhostname>" + this.abletonHostname + "</abletonhostname>\n";
-		xml += "  <abletonoscinport>" + this.abletonOscInPort + "</abletonoscinport>\n";
-		xml += "  <abletonoscoutport>" + this.abletonOscOutPort + "</abletonoscoutport>\n";
+		xml += "  <abletonoscinport>" + this.abletonOSCInPortNumber + "</abletonoscinport>\n";
+		xml += "  <abletonoscoutport>" + this.abletonOSCOutPortNumber + "</abletonoscoutport>\n";
 		if (this.midiInDevice != null) {
 			xml += "  <midiinport>" + this.midiInDevice.getDeviceInfo() + "</midiinport>\n";
 		}
-		System.out.println(this.midiOutDevices.size() + " midi out devices");
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
 			xml += "  <midioutport>" + this.midiOutDevices.get(i).getDeviceInfo() + "</midioutport>\n";
 		}
+		
+		// monome and page configuration
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			xml += this.monomeConfigurations.get(i).toXml();
 		}
 		xml += "</configuration>\n";
 		return xml;
 	}
-
 }

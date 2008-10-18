@@ -32,10 +32,7 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -43,8 +40,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPortIn;
-import com.illposed.osc.OSCPortOut;
 
 /**
  * @author Administrator
@@ -53,24 +48,85 @@ import com.illposed.osc.OSCPortOut;
 @SuppressWarnings("serial")
 public class MonomeConfiguration extends JInternalFrame implements ActionListener {
 
+	/**
+	 * The monome's prefix (ie. "/40h")
+	 */
 	public String prefix;
+	
+	/**
+	 * The monome's width (ie. 8 or 16)
+	 */
 	public int sizeX;
+	
+	/**
+	 * The monome's height (ie. 8 or 16) 
+	 */
 	public int sizeY;
+	
+	/**
+	 * The main Configuration object 
+	 */
 	public Configuration configuration;
+	
+	/**
+	 * This monome's index 
+	 */
 	private int index;
+	
+	/**
+	 * ledState[x][y] - The LED state cache for the monome
+	 */
 	public int[][] ledState;
+	
+	/**
+	 * pageState[page_num][x][y] - The LED state cache for each page
+	 */
 	public int[][][] pageState = new int[16][32][32];
 	
+	/**
+	 * The pages that belong to this monome
+	 */
 	private ArrayList<Page> pages = new ArrayList<Page>();
+	
+	/**
+	 * The number of pages this monome has 
+	 */
 	private int numPages = 0;
+	
+	/**
+	 * The currently selected page
+	 */
 	public int curPage = 0;
 
+	/**
+	 * The options dropdown when creating a new page (contains a list of all page names)
+	 */
 	private String options[] = new String[7];
+	
+	/**
+	 * The current page panel being displayed 
+	 */
 	private JPanel curPanel;
+	
+	/**
+	 * 1 when the page change button is held down (bottom right button) 
+	 */
 	private int pageChangeMode = 0;
+	
+	/**
+	 * true if a page has been changed while the page change button was held down 
+	 */
 	private boolean pageChanged = false;
 	
+	/**
+	 * @param configuration The main Configuration object
+	 * @param index The index of this monome
+	 * @param prefix The prefix of this monome
+	 * @param sizeX The width of this monome
+	 * @param sizeY The height of this monome
+	 */
 	public MonomeConfiguration(Configuration configuration, int index, String prefix, int sizeX, int sizeY) {
+		// call the parent's constructor, build the window, initialize the options dropdown choices
 		super(prefix, true, false, true, true);
 		this.clearMonome();
 
@@ -95,9 +151,13 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.pack();
 	}
 	
-	public void close() {
-	}
 	
+	/**
+	 * Adds a new page to this monome
+	 * 
+	 * @param pageName The name of the page to add
+	 * @return The new Page object
+	 */
 	public Page addPage(String pageName) {
 		Page page;
 		if (pageName.compareTo("MIDI Sequencer") == 0) {
@@ -116,7 +176,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			page = new ExternalApplicationPage(this, this.numPages);
 		}
 		else if (pageName.compareTo("Ableton Clip Launcher") == 0) {
-			page = new AbletonClipPage(this, this.numPages);
+			page = new AbletonClipLauncherPage(this, this.numPages);
 		}
 		else if (pageName.compareTo("Machine Drum Interface") == 0) {
 			page = new MachineDrumInterfacePage(this, this.numPages);
@@ -127,11 +187,16 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.pages.add(this.numPages, page);
 		this.switchPage(page, this.numPages, true);
 		this.numPages++;
+		// recreate the menu bar to include this page in the show page list
 		this.setJMenuBar(this.createMenuBar());
 		return page;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
+		// create a new page
 		if (e.getActionCommand().equals("New Page")) {
 			String name = (String)JOptionPane.showInputDialog(
 	                this,
@@ -145,19 +210,26 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				return;
 			}
 			this.addPage(name);
-			System.out.println(name);
 		}
+		// remove this monome configuration
 		if (e.getActionCommand().equals("Remove Configuration")) {
 			this.configuration.closeMonome(this.index);
 		}
+		// Switch page
 		if (e.getActionCommand().contains(": ")) {
 			String[] pieces = e.getActionCommand().split(":");
 			int index = Integer.parseInt(pieces[0]);
 			this.switchPage(this.pages.get(index - 1), index - 1, true);
-			System.out.println("switched page to " + index);
 		}
 	}
 
+	/**
+	 * Switch pages on this monome.
+	 * 
+	 * @param page The page to switch to
+	 * @param pageIndex The index of the page to switch to
+	 * @param redrawPanel true if the GUI panel should be redrawn
+	 */
 	private void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
 		page.redrawMonome();
@@ -175,33 +247,52 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 	}
 	
+	/**
+	 * Called by AbletonClipUpdater to update the state of Ableton clips.
+	 * 
+	 * @param track Ableton track number (0 = track 1)
+	 * @param clip Ableton clip number (0 = first clip)
+	 * @param state State of the clip (1 = playing)
+	 */
 	public void updateClipState(int track, int clip, boolean state) {
 		if (this.pages.size() == 0) {
 			return;
 		}
 		
 		for (int i = 0; i < this.pages.size(); i++) {
-			if (pages.get(i) instanceof AbletonClipPage) {
-				AbletonClipPage page = (AbletonClipPage) pages.get(i);
+			if (pages.get(i) instanceof AbletonClipLauncherPage) {
+				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.updateClipState(track, clip, state);
 			}
 		}
 	}
 	
+	/**
+	 * Update the record enabled/disabled state of an Ableton track.
+	 * 
+	 * @param track The track number to update
+	 * @param armed The state of the track (1 = armed)
+	 */
 	public void updateTrackState(int track, int armed) {
 		if (this.pages.size() == 0) {
 			return;
 		}
 		
 		for (int i = 0; i < this.pages.size(); i++) {
-			if (pages.get(i) instanceof AbletonClipPage) {
-				AbletonClipPage page = (AbletonClipPage) pages.get(i);
+			if (pages.get(i) instanceof AbletonClipLauncherPage) {
+				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.updateTrackState(track, armed);
 			}
 		}
 	}
 
-
+	/**
+	 * Handles a press event from the monome.
+	 * 
+	 * @param x The x coordinate of the button pressed.
+	 * @param y The y coordinate of the button pressed.
+	 * @param value The type of event (1 = press, 0 = release)
+	 */
 	public void handlePress(int x, int y, int value) {
 		// if we have no pages then dont handle any button presses
 		if (this.pages.size() == 0) {
@@ -250,6 +341,11 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 	}
 	
+	/**
+	 * Builds the monome configuration window's Page menu
+	 * 
+	 * @return The Page menu
+	 */
 	public JMenuBar createMenuBar() {
 		JMenuBar menuBar;
 		JMenu fileMenu;
@@ -290,25 +386,44 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		return menuBar;
 	}
 
+	/**
+	 * Called every time a MIDI clock sync 'tick' is received, this triggers each page's handleTick() method
+	 */
 	public void tick() {
 		for (int i=0; i < this.numPages; i++) {
 			this.pages.get(i).handleTick();
 		}
 	}
 	
+	/**
+	 * Called every time a MIDI clock sync 'reset' is received, this triggers each page's handleReset() method.
+	 */
 	public void reset() {
 		for (int i=0; i < this.numPages; i++) {
 			this.pages.get(i).handleReset();
 		}
 	}
 
+	/**
+	 * Called every time a MIDI message is received, the messages are passed along to each page.
+	 * 
+	 * @param message The MIDI message received
+	 * @param timeStamp The timestamp of the MIDI message
+	 */
 	public void send(MidiMessage message, long timeStamp) {
 		for (int i=0; i < this.numPages; i++) {
 			this.pages.get(i).send(message, timeStamp);
 		}
-		// TODO Auto-generated method stub
 	}
 	
+	/**
+	 * Sends a /led x y value command to the monome if index is the selected page.
+	 * 
+	 * @param x The x coordinate of the led
+	 * @param y The y coordinate of the led
+	 * @param value The value of the led (1 = on, 0 = off)
+	 * @param index The index of the page making the request
+	 */
 	public void led(int x, int y, int value, int index) {
 		this.pageState[index][x][y] = value;
 		
@@ -320,7 +435,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return;
 		}
 		
-		if (this.pages.get(index).getCacheEnabled() == true) {
+		if (this.pages.get(index).getCacheDisabled() == false) {
 			if (this.ledState[x][y] == value) {
 				return;
 			}	
@@ -333,12 +448,15 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		args[2] = new Integer(value);
 		OSCMessage msg = new OSCMessage(this.prefix + "/led", args);
 		try {
-			this.configuration.oscOut.send(msg);
+			this.configuration.monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
-			System.out.println("Exception when sending to: " + prefix + "/led");
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Clear the monome.
+	 */
 	public void clearMonome() {
 		for (int x=0; x < this.sizeX; x++) {
 			for (int y=0; y < this.sizeY; y++) {
@@ -349,14 +467,22 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				args[2] = new Integer(0);
 				OSCMessage msg = new OSCMessage(this.prefix + "/led", args);
 				try {
-					this.configuration.oscOut.send(msg);
+					this.configuration.monomeSerialOSCPortOut.send(msg);
 				} catch (Exception e) {
-					System.out.println("Exception when sending to: " + prefix + "/led");
+					e.printStackTrace();
 				}
 			}
 		}
 	}
 
+	/**
+	 * Sends a led_col message to the monome if index is the selected page.
+	 * 
+	 * @param col The column to effect
+	 * @param value1 The first 8 bits of the value
+	 * @param value2 The second 8 bits of the value
+	 * @param index The index of the page making the call
+	 */
 	public void led_col(int col, int value1, int value2, int index) {
 		int fullvalue = (value2 << 8) + value1;
 		for (int y=0; y < this.sizeY; y++) {
@@ -381,12 +507,20 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_col", args);
 		
 		try {
-			this.configuration.oscOut.send(msg);
+			this.configuration.monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
-			System.out.println("Exception when sending to: " + prefix + "/led_col");
+			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Sends a led_row message to the monome if index is the selected page.
+	 * 
+	 * @param row The row to effect
+	 * @param value1 The first 8 bits of the value
+	 * @param value2 The second 8 bits of the value
+	 * @param index The index of the page making the call
+	 */
 	public void led_row(int row, int value1, int value2, int index) {
 		int fullvalue = (value2 << 8) + value1;
 		for (int x=0; x < this.sizeX; x++) {
@@ -412,17 +546,32 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_row", args);
 		
 		try {
-			this.configuration.oscOut.send(msg);
+			this.configuration.monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
-			System.out.println("Exception when sending to: " + prefix + "/led_row");
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Sends a frame message to the monome if index is the selected page
+	 * TODO: implement this method
+	 * 
+	 * @param x 
+	 * @param y
+	 * @param values
+	 * @param index
+	 */
 	public void frame(int x, int y, int[] values, int index) {
 		for (int i=0; i < values.length; i++) {
 		}
 	}
 	
+	/**
+	 * Sends a clear message to the monome if index is the selected page
+	 * 
+	 * @param state See monome OSC spec 
+	 * @param index The index of the page making the call
+	 */
 	public void clear(int state, int index) {		
 		if (state == 0 || state == 1) {
 			for (int x = 0; x < this.sizeX; x++) {
@@ -446,13 +595,18 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
 			
 			try {
-				this.configuration.oscOut.send(msg);
+				this.configuration.monomeSerialOSCPortOut.send(msg);
 			} catch (Exception e) {
-				System.out.println("Exception when sending to: " + prefix + "/clear");
+				e.printStackTrace();
 			}
 		}
 	}
 
+	/**
+	 * Converts the current monome configuration to XML.
+	 * 
+	 * @return XML representing the current monome configuration
+	 */
 	public String toXml() {
 		String xml = "";
 		xml += "  <monome>\n";
@@ -468,6 +622,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		return xml;
 	}
 
+	/**
+	 * @return The MIDI outputs that have been enabled in the main configuration.
+	 */
 	public String[] getMidiOutOptions() {
 		ArrayList<MidiDevice> midiOuts = this.configuration.getMidiOutDevices();
 		String[] midiOutOptions = new String[midiOuts.size()];
@@ -477,6 +634,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		return midiOutOptions;
 	}
 	
+	/**
+	 * The Receiver object for the MIDI device named midiDeviceName. 
+	 * 
+	 * @param midiDeviceName The name of the MIDI device to get the Receiver for
+	 * @return The MIDI receiver
+	 */
 	public Receiver getMidiReceiver(String midiDeviceName) {
 		ArrayList<MidiDevice> midiOuts = this.configuration.getMidiOutDevices();
 		for (int i=0; i < midiOuts.size(); i++) {
@@ -488,10 +651,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		return null;		
 	}
 
+	/**
+	 * Used to clean up OSC connections held by individual pages.
+	 */
 	public void destroyPage() {
 		for (int i = 0; i < this.numPages; i++) {
 			this.pages.get(i).destroyPage();
 		}
 	}
-
 }

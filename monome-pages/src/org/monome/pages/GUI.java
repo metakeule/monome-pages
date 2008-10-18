@@ -1,100 +1,132 @@
 /*
  *  GUI.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
 
 package org.monome.pages;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.BufferedReader;
+import java.util.ArrayList;
+
+import java.awt.Container;
+import java.awt.IllegalComponentStateException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.MidiDevice.Info;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-
 import javax.swing.JOptionPane;
-
-import javax.swing.JPanel;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JDesktopPane;
-
-import javax.swing.JTextField;
-import javax.swing.JLabel;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-
-import javax.swing.BorderFactory;
-
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.ButtonGroup;
-import javax.swing.KeyStroke;
-import javax.swing.ImageIcon;
 
-import javax.swing.JScrollPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-
 /**
- * @author Administrator
+ * The main Pages GUI and all associated actions.
+ * 
+ * @author Tom Dinchak
  *
  */
 public class GUI implements ActionListener {
 	
+	/**
+	 * The main frame of the GUI
+	 */
 	private JFrame frame;
+	
+	/**
+	 * Allows for multiple sub windows
+	 */
 	private JDesktopPane desktop;
+	
+	/**
+	 * The main Configuration object
+	 */
 	private Configuration configuration;
-	private JMenu configurationMenu, midiMenu;
+	
+	/**
+	 * The Configuration menu
+	 */
+	private JMenu configurationMenu;
+	
+	/**
+	 * The MIDI menu 
+	 */
+	private JMenu midiMenu;
+	
+	/**
+	 * The New Monome Configuration frame
+	 */
 	private NewMonomeFrame newMonomeFrame;
+	
+	/**
+	 * The MonomeSerial OSC settings frame 
+	 */
 	private OSCSettingsFrame oscSettingsFrame;
+	
+	/**
+	 * The Ableton OSC settings frame
+	 */
 	private AbletonOSCSettingsFrame abletonOscSettingsFrame;
 
+	/**
+	 * Constructor
+	 */
 	public GUI() {
 		this.createAndShowGUI();
 	}
 	
+	/**
+	 * @return The main configuration object
+	 */
 	public Configuration getConfiguration() {
 		return this.configuration;
 	}
 	
-	public JMenuBar createMenuBar() {
+	/**
+	 * Creates the File menu.
+	 * 
+	 * @return The File menu, GUI is the ActionListener
+	 */
+	public JMenuBar createFileMenuBar() {
 		JMenuBar menuBar;
 		JMenu fileMenu;
 		JMenuItem menuItem;
@@ -135,6 +167,9 @@ public class GUI implements ActionListener {
 		return menuBar;
 	}
 	
+	/**
+	 * Creates the Configuration and MIDI menus, GUI is the ActionListener.
+	 */
 	private void buildConfigurationMenu() {
 		JMenu midiInMenu, midiOutMenu;
 		JRadioButtonMenuItem rbMenuItem;
@@ -184,8 +219,6 @@ public class GUI implements ActionListener {
 			try {
 				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
 				if (midiDevice.getMaxTransmitters() != 0) {
-					
-					
 					rbMenuItem = new JRadioButtonMenuItem("MIDI Input: " + midiInfo[i].getName());
 					rbMenuItem.addActionListener(this);
 					midiInGroup.add(rbMenuItem);
@@ -195,7 +228,7 @@ public class GUI implements ActionListener {
 					midiInMenu.add(rbMenuItem);
 				}
 			} catch (MidiUnavailableException e) {
-				// midi device unavailable, skip
+				e.printStackTrace();
 			}
 		}
 		
@@ -220,7 +253,7 @@ public class GUI implements ActionListener {
 					midiOutMenu.add(cbMenuItem);
 				}
 			} catch (MidiUnavailableException e) {
-				// midi device unavailable, skip
+				e.printStackTrace();
 			}
 		}
 		
@@ -233,6 +266,9 @@ public class GUI implements ActionListener {
 		this.frame.setSize(800, 600);
 	}
 	
+	/**
+	 * @return The container for all sub windows
+	 */
 	public Container createContentPane() {
 		this.desktop = new JDesktopPane();
 		this.desktop.setOpaque(true);
@@ -240,215 +276,242 @@ public class GUI implements ActionListener {
 		return this.desktop;
 	}
 	
+	/**
+	 * Builds the main GUI and makes it visible.
+	 */
 	private void createAndShowGUI() {
 		this.frame = new JFrame("Monome Pages");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.frame.setJMenuBar(this.createMenuBar());
+		this.frame.setJMenuBar(this.createFileMenuBar());
 		this.frame.setContentPane(this.createContentPane());
 		this.frame.setSize(800, 600);
 		this.frame.setVisible(true);
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 		
+		// File -> Exit
 		if (e.getActionCommand().equals("Exit")) {
 			this.actionExit();
 		}
 		
+		// File -> New Configuration
 		if (e.getActionCommand().equals("New Configuration")) {
 			this.actionNewConfiguration();
 		}
 		
+		// File -> Close Configuration
 		if (e.getActionCommand().equals("Close Configuration")) {
 			this.actionCloseConfiguration();
 		}
 
+		// File -> Save Configuration
 		if (e.getActionCommand().equals("Save Configuration")) {
 			this.actionSaveConfiguration();
 		}
 		
+		// File -> Open Configuration
 		if (e.getActionCommand().equals("Open Configuration")) {
 			this.actionOpenConfiguration();
 		}
 		
+		// Configuration -> New Monome Configuration
 		if (e.getActionCommand().equals("New Monome Configuration")) {
 			this.actionNewMonomeConfiguration();
 		}
 		
+		// Configuration -> OSC Settings
 		if (e.getActionCommand().equals("OSC Settings")) {
 			this.actionOSCSettings();
 		}
 		
+		// COnfiguration -> Ableton OSC Settings
 		if (e.getActionCommand().equals("Ableton OSC Settings")) {
 			this.actionAbletonOSCSettings();
 		}
 		
+		// MIDI -> MIDI Input
 		if (e.getActionCommand().contains("MIDI Input: ")) {
 			String[] pieces = e.getActionCommand().split("MIDI Input: ");
 			this.actionSelectMidiInput(pieces[1]);
 		}
+		
+		// MIDI -> MIDI Output
 		if (e.getActionCommand().contains("MIDI Output: ")) {
 			String[] pieces = e.getActionCommand().split("MIDI Output: ");
-			this.actionSelectMidiOutput(pieces[1]);
+			this.actionAddMidiOutput(pieces[1]);
 		}
 	}
 	
+	/**
+	 * Handle a request to save the current configuration.
+	 */
 	private void actionSaveConfiguration() {
 		JFileChooser fc = new JFileChooser();
 		int returnVal = fc.showSaveDialog(this.desktop);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			try {
-				// TODO send a message or dialog if no config to save
 				if (this.configuration != null) {
 					FileWriter fw = new FileWriter(file);
 					fw.write(this.configuration.toXml());
 					fw.close();
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Opened " + file.getName() + " for saving");
 		}
 	}
 	
+	/**
+	 * Handles a request to open a previously saved configuration.
+	 */
 	private void actionOpenConfiguration() {
 		JFileChooser fc = new JFileChooser();
-		String config = new String();
 		int returnVal = fc.showOpenDialog(this.desktop);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			try {
-								
-                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse(file);
-				doc.getDocumentElement().normalize();
-				System.out.println("Root element " + doc.getDocumentElement().getNodeName());
-				
-				NodeList rootNL = doc.getElementsByTagName("name");
-				Element rootEL = (Element) rootNL.item(0);
-				NodeList rootNL2 = rootEL.getChildNodes();
-				String name = ((Node) rootNL2.item(0)).getNodeValue();
-				System.out.println("Name is " + name);
-
+				// close any current configuration
 				if (this.configuration != null) {
 					this.actionCloseConfiguration();
 				}
 				
+                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
+				Document doc = db.parse(file);
+				doc.getDocumentElement().normalize();
+
+				// read <name> from the configuration file
+				NodeList rootNL = doc.getElementsByTagName("name");
+				Element rootEL = (Element) rootNL.item(0);
+				NodeList rootNL2 = rootEL.getChildNodes();
+				String name = ((Node) rootNL2.item(0)).getNodeValue();
+
 				this.frame.setTitle("Monome Pages : " + name);
 				this.configuration = new Configuration(name);
 				
+				// read <hostname> from the configuration file
 				rootNL = doc.getElementsByTagName("hostname");
 				rootEL = (Element) rootNL.item(0);
 				rootNL2 = rootEL.getChildNodes();
 				String hostname = ((Node) rootNL2.item(0)).getNodeValue();
-				System.out.println("hostname is " + hostname);
 				
-				this.configuration.setHostname(hostname);
-				
+				this.configuration.setMonomeHostname(hostname);
+
+				// read <oscinport> from the configuration file
 				rootNL = doc.getElementsByTagName("oscinport");
 				rootEL = (Element) rootNL.item(0);
 				rootNL2 = rootEL.getChildNodes();
 				String oscinport = ((Node) rootNL2.item(0)).getNodeValue();
-				System.out.println("oscinport is " + oscinport);
 				
-				this.configuration.setOSCInPort(Integer.valueOf(oscinport).intValue());
-				
+				this.configuration.setMonomeSerialOSCInPortNumber(Integer.valueOf(oscinport).intValue());
+
+				// read <oscoutport> from the configuration file
 				rootNL = doc.getElementsByTagName("oscoutport");
 				rootEL = (Element) rootNL.item(0);
 				rootNL2 = rootEL.getChildNodes();
 				String oscoutport = ((Node) rootNL2.item(0)).getNodeValue();
 				System.out.println("oscoutport is " + oscoutport);
 				
-				this.configuration.setOSCOutPort(Integer.valueOf(oscoutport).intValue());
+				this.configuration.setMonomeSerialOSCOutPortNumber(Integer.valueOf(oscoutport).intValue());
 				
+				// read <abletonhostname> from the configuration file
 				rootNL = doc.getElementsByTagName("abletonhostname");
 				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
 					String abletonhostname = ((Node) rootNL2.item(0)).getNodeValue();
-					System.out.println("abletonhostname is " + abletonhostname);
 					this.configuration.setAbletonHostname(abletonhostname);
 				}
-				
-				
+								
+				// read <abletonoscinport> from the configuration file
 				rootNL = doc.getElementsByTagName("abletonoscinport");
 				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
 					String abletonoscinport = ((Node) rootNL2.item(0)).getNodeValue();
-					System.out.println("abletonoscinport is " + abletonoscinport);
-					this.configuration.setAbletonOSCInPort(Integer.valueOf(abletonoscinport).intValue());
+					this.configuration.setAbletonOSCInPortNumber(Integer.valueOf(abletonoscinport).intValue());
 				}
 				
-				
+				// read <abletonoscoutport> from the configuration file
 				rootNL = doc.getElementsByTagName("abletonoscoutport");
 				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
 					String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
-					System.out.println("abletonoscoutport is " + abletonoscoutport);					
-					this.configuration.setAbletonOSCOutPort(Integer.valueOf(abletonoscoutport).intValue());
+					this.configuration.setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
 				}
-				
+
+				// read <midiinport> from the configuration file
 				rootNL = doc.getElementsByTagName("midiinport");
 				rootEL = (Element) rootNL.item(0);
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
 					String midiinport = ((Node) rootNL2.item(0)).getNodeValue();
-					System.out.println("midiinport is " + midiinport);
 					this.actionSelectMidiInput(midiinport);
 				}
-				
+
+				// read all <midioutport> tags from the configuration file
 				rootNL = doc.getElementsByTagName("midioutport");
 				for (int i=0; i < rootNL.getLength(); i++) {
 					System.out.println("Item " + i);
 					rootEL = (Element) rootNL.item(i);
 					rootNL2 = rootEL.getChildNodes();
 					String midioutport = ((Node) rootNL2.item(0)).getNodeValue();
-					System.out.println("midioutport is " + midioutport);
-					this.actionSelectMidiOutput(midioutport);
+					this.actionAddMidiOutput(midioutport);
 				}
 				
 				this.buildConfigurationMenu();
 				this.frame.validate();
 				
+				// read in each <monome> block
 				rootNL = doc.getElementsByTagName("monome");
 				for (int i=0; i < rootNL.getLength(); i++) {
 					Node node = rootNL.item(i);					
 					if (node.getNodeType() == Node.ELEMENT_NODE) {
 						Element monomeElement = (Element) node;
 						
+						// set the monome prefix
 						NodeList nl = monomeElement.getElementsByTagName("prefix");
 						Element el = (Element) nl.item(0);
 						nl = el.getChildNodes();
 						String prefix = ((Node) nl.item(0)).getNodeValue();
 						
+						// set the width of the monome
 						nl = monomeElement.getElementsByTagName("sizeX");
 						el = (Element) nl.item(0);
 						nl = el.getChildNodes();
 						String sizeX = ((Node) nl.item(0)).getNodeValue();
 						
+						// set the height of the monome
 						nl = monomeElement.getElementsByTagName("sizeY");
 						el = (Element) nl.item(0);
 						nl = el.getChildNodes();
 						String sizeY = ((Node) nl.item(0)).getNodeValue();
 						
+						// create the new monome configuration and display it's window
 						int index = this.configuration.addMonomeConfiguration(prefix, Integer.valueOf(sizeX).intValue(), 
 								                                                      Integer.valueOf(sizeY).intValue());
 						MonomeConfiguration monomeFrame = this.configuration.getMonomeConfigurationFrame(index);
 						monomeFrame.setVisible(true);
 						this.frame.add(monomeFrame);
 						
+						// read in each page of the monome
 						NodeList pageNL = monomeElement.getElementsByTagName("page");
 						for (int j=0; j < pageNL.getLength(); j++) {
 							Node pageNode = pageNL.item(j);
 							if (pageNode.getNodeType() == Node.ELEMENT_NODE) {
 								Element pageElement = (Element) pageNode;
 								
+								// all pages have a name
 								nl = pageElement.getElementsByTagName("name");
 								el = (Element) nl.item(0);
 								nl = el.getChildNodes();
@@ -456,8 +519,8 @@ public class GUI implements ActionListener {
 								System.out.println("Page name is " + pageName);
 								Page page = monomeFrame.addPage(pageName);
 								
+								// most pages have midi outputs
 								NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
-								System.out.println("looking for selectedmidioutport "+ midiNL.getLength());
 								for (int k=0; k < midiNL.getLength(); k++) {
 									el = (Element) midiNL.item(k);
 									nl = el.getChildNodes();
@@ -466,6 +529,7 @@ public class GUI implements ActionListener {
 									page.addMidiOutDevice(midioutport);
 								}
 								
+								// page-specific configuration for external application page
 								if (pageName.equals("External Application")) {
 									ExternalApplicationPage extpage = (ExternalApplicationPage) page;
 
@@ -497,12 +561,12 @@ public class GUI implements ActionListener {
 									el = (Element) nl.item(0);
 									nl = el.getChildNodes();
 									String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
-									extpage.setCacheEnabled(cacheDisabled);
+									extpage.setCacheDisabled(cacheDisabled);
 									
 									extpage.initOSC();
 								}
 
-								
+								// page-specific configuration for midi sequencer page
 								if (pageName.equals("MIDI Sequencer")) {
 									// configure midi notes / rows
 									MIDISequencerPage seqpage = (MIDISequencerPage) page;
@@ -525,6 +589,7 @@ public class GUI implements ActionListener {
 									seqpage.redrawMonome();
 								}
 								
+								// page-specific configuration for midi triggers page
 								if (pageName.equals("MIDI Triggers")) {
 									// configure midi notes / rows
 									MIDITriggersPage trigpage = (MIDITriggersPage) page;
@@ -549,7 +614,7 @@ public class GUI implements ActionListener {
 									trigpage.redrawMonome();
 								}
 
-								
+								// page-specific configuration for midi faders page
 								if (pageName.equals("MIDI Faders")) {
 									MIDIFadersPage faderpage = (MIDIFadersPage) page;
 									NodeList rowNL = pageElement.getElementsByTagName("delayamount");
@@ -561,6 +626,7 @@ public class GUI implements ActionListener {
 									}
 								}
 								
+								// page-specific configuration for machine drum interface page
 								if (pageName.equals("Machine Drum Interface")) {
 									MachineDrumInterfacePage mdpage = (MachineDrumInterfacePage) page;
 									NodeList rowNL = pageElement.getElementsByTagName("speed");
@@ -574,25 +640,24 @@ public class GUI implements ActionListener {
 
 							}
 						}
-												
+									
+						// redraw the GUI
 						this.frame.validate();
 					}
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (ParserConfigurationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			System.out.println("Opened " + file.getName() + " for reading");
-			System.out.println(config);
 		}
 	}
 
+	/**
+	 * Handles a request to exit the application.
+	 */
 	private void actionExit() {
 		if (this.configuration != null) {
 			this.actionCloseConfiguration();
@@ -600,6 +665,9 @@ public class GUI implements ActionListener {
 		System.exit(1);
 	}
 
+	/**
+	 * Handles a request to create a new configuration.
+	 */
 	public void actionNewConfiguration() {
 		String name = (String)JOptionPane.showInputDialog(
                 this.frame,
@@ -623,6 +691,9 @@ public class GUI implements ActionListener {
 		this.frame.validate();
 	}
 	
+	/**
+	 * Handles a request to close the current configuration.
+	 */
 	public void actionCloseConfiguration() {
 		JMenuBar menuBar = this.frame.getJMenuBar();
 		
@@ -642,28 +713,30 @@ public class GUI implements ActionListener {
 			this.newMonomeFrame.dispose();
 		}
 		
-		this.configuration.closeMonomes();
+		this.configuration.closeMonomeConfigurationWindows();
 		this.configuration.closeMidiDevices();
-		this.configuration.stopOSC();
+		this.configuration.stopMonomeSerialOSC();
 		this.configuration.stopAbletonOSC();
-		this.configuration.destroyPages();
+		this.configuration.destroyAllPages();
 		this.frame.setTitle("Monome Pages");
 		this.frame.validate();		
 		this.configuration = null;
 	}
 	
-	public void actionNewMonomeConfiguration() {
-				
+	/**
+	 * Handles a request to create a new monome configuration.
+	 */
+	public void actionNewMonomeConfiguration() {				
 		try {
 			if (this.newMonomeFrame != null &&
 				this.newMonomeFrame.getLocationOnScreen() != null) {
-				System.out.println("grabbing focus");
 				this.newMonomeFrame.requestFocus();
 				this.newMonomeFrame.grabFocus();
 				return;
 			}
 		} catch (IllegalComponentStateException e) {
 			this.newMonomeFrame = null;
+			e.printStackTrace();
 		}
 		
 		this.newMonomeFrame = new NewMonomeFrame(this.configuration, this.frame);
@@ -674,17 +747,20 @@ public class GUI implements ActionListener {
 		this.frame.validate();
 	}
 
+	/**
+	 * Handles a request to view the MonomeSerial OSC settings.
+	 */
 	private void actionOSCSettings() {
 		try {
 			if (this.oscSettingsFrame != null &&
 				this.oscSettingsFrame.getLocationOnScreen() != null) {
-				System.out.println("grabbing focus");
 				this.oscSettingsFrame.requestFocus();
 				this.oscSettingsFrame.grabFocus();
 				return;
 			}
 		} catch (IllegalComponentStateException e) {
 			this.oscSettingsFrame = null;
+			e.printStackTrace();
 		}
 		
 		this.oscSettingsFrame = new OSCSettingsFrame(this.configuration, this.frame);
@@ -695,25 +771,33 @@ public class GUI implements ActionListener {
 		this.frame.validate();
 	}
 	
+	/**
+	 * Handles a request to view the Ableton OSC settings.
+	 */
 	private void actionAbletonOSCSettings() {
 		try {
 			if (this.abletonOscSettingsFrame != null &&
 				this.abletonOscSettingsFrame.getLocationOnScreen() != null) {
-				System.out.println("grabbing focus");
 				this.abletonOscSettingsFrame.requestFocus();
 				this.abletonOscSettingsFrame.grabFocus();
 				return;
 			}
 		} catch (IllegalComponentStateException e) {
 			this.abletonOscSettingsFrame = null;
+			e.printStackTrace();
 		}
 		
-		this.abletonOscSettingsFrame = new AbletonOSCSettingsFrame(this.configuration, this.frame);
+		this.abletonOscSettingsFrame = new AbletonOSCSettingsFrame(this.configuration);
 		this.abletonOscSettingsFrame.setVisible(true);
 		this.frame.add(this.abletonOscSettingsFrame);
 		this.frame.validate();
 	}
 	
+	/**
+	 * Handles a request to select a new MIDI input device
+	 * 
+	 * @param sMidiDevice The name of the MIDI device to select
+	 */
 	public void actionSelectMidiInput(String sMidiDevice) {
 		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
 		MidiDevice midiDevice;
@@ -727,13 +811,18 @@ public class GUI implements ActionListener {
 					}
 				}
 			} catch (MidiUnavailableException e) {
-				// midi device unavailable, skip
+				e.printStackTrace();
 			}
 		}
 		
 	}
 	
-	public void actionSelectMidiOutput(String sMidiDevice) {
+	/**
+	 * Enables or disables a MIDI output device
+	 * 
+	 * @param sMidiDevice The MIDI output device to enable or disable
+	 */
+	public void actionAddMidiOutput(String sMidiDevice) {
 		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
 		MidiDevice midiDevice;
 				
@@ -746,9 +835,8 @@ public class GUI implements ActionListener {
 					}
 				}
 			} catch (MidiUnavailableException e) {
-				// midi device unavailable, skip
+				e.printStackTrace();
 			}
-		}
-		
+		}		
 	}
 }

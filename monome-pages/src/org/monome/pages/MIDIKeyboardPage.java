@@ -1,21 +1,21 @@
 /*
  *  MIDIKeyboardPage.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2008, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
@@ -36,34 +36,91 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+/**
+ * The MIDI Faders page.  Usage information is available at:
+ * 
+ * http://code.google.com/p/monome-pages/wiki/MIDIKeyboardPage
+ *   
+ * @author Tom Dinchak
+ *
+ */
 public class MIDIKeyboardPage implements Page, ActionListener {
 	
+	/**
+	 * The MonomeConfiguration that this page belongs to
+	 */
 	MonomeConfiguration monome;
+	
+	/**
+	 * The index of this page (the page number) 
+	 */
 	int index;
-	private JPanel panel;
+	
+	/**
+	 * The GUI for this page
+	 */
+	JPanel panel;
+
+	/**
+	 * The selected MIDI channel (8x8 only)
+	 */
 	private int midiChannel = 0;
+	
+	/**
+	 * The octave offset for each row (128 and 256 only) 
+	 */
 	private int[] octave = new int[16];
+	
+	/**
+	 * The selected scale
+	 */
 	private int myScale = 0;
+	
+	/**
+	 * The semitones between each note in the selected scale 
+	 */
 	private int[][] scales = { 
 							  {2,2,1,2,2,2,1}, // major
 							  {2,1,2,2,1,2,2}, // natural minor
 							  {3,1,1,2,2,1,2}, // blues/r&r?
 							  {1,2,1,3,1,2,2}  // indian?
 							};
+	
+	/**
+	 * The selected key 
+	 */
 	private int myKey = 0;
-	                     //C2                                         //B2
+	
+	/**
+	 * The starting note for each key (from C-2 to B-2) 
+	 */
 	private int[] keys = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
 	
+	/**
+	 * The MIDI output devices
+	 */
 	private ArrayList<Receiver> midiReceivers = new ArrayList<Receiver>();
+	
+	/**
+	 * The names of the MIDI output devices 
+	 */
 	private ArrayList<String> midiDeviceNames = new ArrayList<String>();
 	
+	/**
+	 * @param monome The MonomeConfiguration object this page belongs to
+	 * @param index The index of this page (the page number)
+	 */
 	public MIDIKeyboardPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handlePress(int, int, int)
+	 */
 	public void handlePress(int x, int y, int value) {
 		
+		// if this is a 128 or 256 then handle presses differently from a 64 or 40h
 		if (this.monome.sizeX > 8) {
 			this.handlePress256(x, y, value);
 		} else {
@@ -71,9 +128,16 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 	}
 	
+	/**
+	 * Handles a button press for a 64 / 40h monome
+	 * 
+	 * @param x The x value of the button press received
+	 * @param y The y value of the button press received
+	 * @param value The type of event (1 = press, 0 = release)
+	 */
 	public void handlePress64(int x, int y, int value) {
 		if (value == 1) {
-			
+			// select scale or key
 			if (y >= 6) {
 				if (y == 6) {
 					if (this.myKey > 7) {
@@ -99,6 +163,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						this.monome.led(this.myScale + 4, y, 1, this.index);
 					}
 				}
+			// select the midi channel
 			} else {		
 				if (x == 7) {
 					this.midiChannel = y;
@@ -113,21 +178,28 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			}
 		}
 		
+		// for presses and releases in the keyboard area, send the note on message on press
+		// and send the note off on message release
 		if (y < 6 && x < 7) {
 			int velocity = value * 127;
 			int channel = this.midiChannel;
-			System.out.println("channel is " + channel);
 			int note_num = this.getNoteNumber(x) + ((y - 3) * 12);
-			System.out.println("Playing note num " + note_num);
 			this.playNote(note_num, velocity, channel);
 			this.monome.led(x, y, value, this.index);
 		}
 	}
 	
+	/**
+	 * Handles a button press for a 128 / 256 monome
+	 * 
+	 * @param x The x value of the button press received
+	 * @param y The y value of the button press received
+	 * @param value The type of event (1 = press, 0 = release)
+	 */
 	public void handlePress256(int x, int y, int value) {
 		
 		if (value == 1) {
-			
+			// bottom row - set the key or scale
 			if (y == (this.monome.sizeY - 1)) {
 				if (x < 12) {
 					this.myKey = x;
@@ -135,8 +207,10 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 				if (x >= 12) {
 					this.myScale = (x - 12); 
 				}
+			// set the octave offset
 			} else {
-				
+
+				// minus 2 octaves
 				if (x == 14) {
 					if (this.octave[y] == -1) {
 						return;
@@ -151,10 +225,10 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						this.monome.led(14, y, 1, this.index);
 						this.monome.led(15, y, 0, this.index);
 					}
-					System.out.println("octave is " + this.octave[y]);
 					return;
 				}
 				
+				// plus 2 octaves
 				if (x == 15) {
 					if (this.octave[y] == 1) {
 						return;
@@ -169,18 +243,16 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						this.monome.led(14, y, 0, this.index);
 						this.monome.led(15, y, 1, this.index);
 					}
-					System.out.println("octave is " + this.octave[y]);
 					return;
 				}
 			}	
 		}
 		
+		// play the note
 		if (y != (this.monome.sizeY - 1) && x < 14) {
 			int velocity = value * 127;
 			int channel = (int) Math.floor(y / 3);
-			System.out.println("channel is " + channel);
 			int note_num = this.getNoteNumber(x) + (this.octave[y] * 24);
-			System.out.println("Playing note num " + note_num);
 			this.playNote(note_num, velocity, channel);
 			if (x < 14) {
 				this.monome.led(x, y, value, this.index);
@@ -203,14 +275,27 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 	}
 
-
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleTick()
+	 */
 	public void handleTick() {
+		return;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#handleReset()
+	 */
 	public void handleReset() {
 		this.redrawMonome();
 	}
 
+	/**
+	 * Plays a MIDI note.  0 velocity will send a note off, and > 0 velocity will send a note on.
+	 * 
+	 * @param note_num
+	 * @param velocity
+	 * @param channel
+	 */
 	public void playNote(int note_num, int velocity, int channel) {
         ShortMessage note_out = new ShortMessage();
         try {
@@ -223,10 +308,16 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 				midiReceivers.get(i).send(note_out, -1);
 			}
 		} catch (InvalidMidiDataException e) {
-			System.out.println("Error sending midi note");
+			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * Convert a button press to a MIDI note number.
+	 * 
+	 * @param y The y value of the button pressed
+	 * @return The MIDI note number
+	 */
 	public int getNoteNumber(int y) {
 		int offset = 0;
 		int note;
@@ -246,15 +337,24 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		return note;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#redrawMonome()
+	 */
 	public void redrawMonome() {
+		// for 128 / 256 monomes
 		if (this.monome.sizeX > 8) {
 			this.redrawMonome256();
+		// for 64 / 40h monomes
 		} else {
 			this.redrawMonome64();
 		}
 	}
 	
+	/**
+	 * Redraw this page on a 64 or 40h monome.
+	 */
 	public void redrawMonome64() {
+		// everything off except the midi channel selection, the key and the scale
 		for (int x=0; x < this.monome.sizeX; x++) {
 			for (int y=0; y < this.monome.sizeY; y++) {
 				if (x == 7 && y < 6) {
@@ -280,8 +380,11 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 	}
 	
+	/**
+	 * Redraws this page for a 128 or 256 monome.
+	 */
 	public void redrawMonome256() {
-		System.out.println("redraw monome");
+		// everything off except the key/scale selection and the octave offsets
 		for (int x=0; x < this.monome.sizeX; x++) {
 			for (int y=0; y < this.monome.sizeY; y++) {
 				if (y == (this.monome.sizeY - 1)) {
@@ -319,11 +422,16 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 	}
 
-
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getName()
+	 */
 	public String getName() {
 		return "MIDI Keyboard";
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getPanel()
+	 */
 	public JPanel getPanel() {
 		if (this.panel != null) {
 			return this.panel;
@@ -347,10 +455,16 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		return panel;
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
+	 */
 	public void send(MidiMessage message, long timeStamp) {
-		
+		return;
 	}
 		
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#toXml()
+	 */
 	public String toXml() {
 		String xml = "";
 		xml += "    <page>\n";
@@ -362,6 +476,9 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		return xml;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 		if (e.getActionCommand().equals("Add MIDI Output")) {
@@ -384,6 +501,9 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
+	 */
 	public void addMidiOutDevice(String deviceName) {
 		Receiver receiver = this.monome.getMidiReceiver(deviceName);
 		
@@ -395,16 +515,19 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 		this.midiReceivers.add(receiver);
 		this.midiDeviceNames.add(deviceName);
-		System.out.println("Got receiver for " + deviceName);
 	}
 	
-	public boolean getCacheEnabled() {
-		return true;
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#getCacheDisabled()
+	 */
+	public boolean getCacheDisabled() {
+		return false;
 	}
 	
-
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#destroyPage()
+	 */
 	public void destroyPage() {
 		return;
 	}
-
 }
