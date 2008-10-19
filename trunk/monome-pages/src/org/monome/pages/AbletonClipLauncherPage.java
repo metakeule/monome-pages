@@ -63,8 +63,19 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	private int[][] clipState = new int[16][210];
 	
+	/**
+	 * Used to represent an empty clip slot
+	 */
 	private static final int CLIP_STATE_EMPTY = 0;
+	
+	/**
+	 * Used to represent a clip slot with a clip that is stopped 
+	 */
 	private static final int CLIP_STATE_STOPPED = 1;
+	
+	/**
+	 * Used to represent a clip slot with a clip that is playing 
+	 */
 	private static final int CLIP_STATE_PLAYING = 2;
 	
 	/**
@@ -76,6 +87,11 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * tracksArmed[track_number] - The record armed/disarmed state of all tracks, true if the track is armed for recording.
 	 */
 	private boolean[] tracksArmed = new boolean[16];
+	
+	/**
+	 * The amount to offset the monome display of the clips
+	 */
+	private int clipOffset = 0;
 
 	/**
 	 * A background thread process that updates clipState and tracksArmed based on
@@ -141,25 +157,37 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void handlePress(int x, int y, int value) {
 		// only on button was pressed events
 		if (value == 1) {
-			// if this is the bottom row then stop track number x
-			if (y == this.monome.sizeY - 1) {
-				this.stopTrack(x);
-			}
-			// if this is the 2nd from the bottom row then arm or disarm the track
-			else if (y == this.monome.sizeY - 2) {
-				if (this.tracksArmed[x] == false) {
-					this.armTrack(x);
-					this.tracksArmed[x] = true;
-					this.monome.led(x, y, 1, this.index);
+			// if this is the far right column then change the offset
+			if (x == this.monome.sizeX - 1) {
+				if (y < this.monome.sizeY - 1) {
+					this.monome.led(x, this.clipOffset, 0, this.index);
+					this.clipOffset = y;
+					this.monome.led(x, this.clipOffset, 1, this.index);
 				} else {
-					this.disarmTrack(x);
-					this.monome.led(x, y, 0, this.index);
-					this.tracksArmed[x] = false;
+					this.abletonUndo();
 				}
-			}
-			// otherwise play the clip
-			else {
-				this.playClip(x, y);
+			} else {
+				// if this is the bottom row then stop track number x
+				if (y == this.monome.sizeY - 1) {
+					this.stopTrack(x);
+				}
+				// if this is the 2nd from the bottom row then arm or disarm the track
+				else if (y == this.monome.sizeY - 2) {
+					if (this.tracksArmed[x] == false) {
+						this.armTrack(x);
+						this.tracksArmed[x] = true;
+						this.monome.led(x, y, 1, this.index);
+					} else {
+						this.disarmTrack(x);
+						this.monome.led(x, y, 0, this.index);
+						this.tracksArmed[x] = false;
+					}
+				}
+				// otherwise play the clip
+				else {
+					int clip_num = y + (this.clipOffset * (this.monome.sizeY - 2));
+					this.playClip(x, clip_num);
+				}
 			}
 		}
 	}
@@ -174,7 +202,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		Object args[] = new Object[2];
 		args[0] = new Integer(track);
 		args[1] = new Integer(clip);
-		OSCMessage msg = new OSCMessage("/live/play/clip", args);
+		OSCMessage msg = new OSCMessage("/live/play/clipslot", args);
 		try {
 			this.monome.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
@@ -204,6 +232,18 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		}
 	}
 
+	/**
+	 * Sends "/live/undo" to LiveOSC. 
+	 */
+	public void abletonUndo() {
+		OSCMessage msg = new OSCMessage("/live/undo");
+		try {
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Sends "/live/disarm track" to LiveOSC.
 	 * 
@@ -261,9 +301,10 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	public void redrawMonome() {
 		// redraw the upper part of the monome (the clip state)
-		for (int track = 0; track < this.monome.sizeX; track++) {
+		for (int track = 0; track < this.monome.sizeX - 1; track++) {
 			for (int clip = 0; clip < (this.monome.sizeY - 2); clip++) {
-				if (this.clipState[track][clip] == CLIP_STATE_PLAYING) {
+				int clip_num = clip + (this.clipOffset * (this.monome.sizeY - 2));
+				if (this.clipState[track][clip_num] == CLIP_STATE_PLAYING) {
 					if (this.flashState[track][clip] == true) {
 						this.flashState[track][clip] = false;
 						this.monome.led(track, clip, 1, this.index);
@@ -271,16 +312,25 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 						this.flashState[track][clip] = true;
 						this.monome.led(track, clip, 0, this.index);
 					}
-				} else if (this.clipState[track][clip] == CLIP_STATE_STOPPED) {
+				} else if (this.clipState[track][clip_num] == CLIP_STATE_STOPPED) {
 					this.monome.led(track, clip, 1, this.index);
-				} else if (this.clipState[track][clip] == CLIP_STATE_EMPTY) {
+				} else if (this.clipState[track][clip_num] == CLIP_STATE_EMPTY) {
 					this.monome.led(track, clip, 0, this.index);
 				}
 			}
 		}
+		
+		// redraw the clip offset column
+		for (int y = 0; y < this.monome.sizeY; y++) {
+			if (y == this.clipOffset) {
+				this.monome.led(this.monome.sizeX - 1, y, 1, this.index);
+			} else {
+				this.monome.led(this.monome.sizeX - 1, y, 0, this.index);
+			}
+		}
 
 		// redraw the track armed/disarmed state
-		for (int i = 0; i < this.monome.sizeX; i++) {
+		for (int i = 0; i < this.monome.sizeX - 1; i++) {
 			if (this.tracksArmed[i] == true) {
 				this.monome.led(i, this.monome.sizeY - 2, 1, this.index);
 			} else {
@@ -321,9 +371,10 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	public void updateClipState(int track, int clip, int state) {
 		if (this.clipState[track][clip] != state) {
-			for (int x = 0; x < this.monome.sizeX; x++) {
-				for (int y = 0; y < this.monome.sizeY; y++) {
-					this.flashState[x][y] = false;
+			for (int x = 0; x < this.monome.sizeX - 1; x++) {
+				for (int y = 0; y < this.monome.sizeY - 2; y++) {
+					int clip_num = y + (this.clipOffset * (this.monome.sizeY - 2));
+					this.flashState[x][clip_num] = false;
 				}
 			}
 		}

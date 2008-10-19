@@ -571,6 +571,14 @@ public class GUI implements ActionListener {
 									// configure midi notes / rows
 									MIDISequencerPage seqpage = (MIDISequencerPage) page;
 
+									NodeList modeNL = pageElement.getElementsByTagName("holdmode");
+									el = (Element) modeNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String holdmode = ((Node) nl.item(0)).getNodeValue();
+										seqpage.setHoldMode(holdmode);
+									}
+									
 									NodeList rowNL = pageElement.getElementsByTagName("row");
 									for (int l=0; l < rowNL.getLength(); l++) {
 										el = (Element) rowNL.item(l);
