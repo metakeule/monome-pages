@@ -35,6 +35,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * The MIDI Faders page.  Usage information is available at:
  * 
@@ -272,7 +274,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>MIDI Faders</name>\n";
-		xml += "      <selectedmidioutport>" + this.midiDeviceName + "</selectedmidioutport>\n";
+		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <delayamount>" + this.delayAmount + "</delayamount>\n";
 		xml += "    </page>\n";
 		return xml;

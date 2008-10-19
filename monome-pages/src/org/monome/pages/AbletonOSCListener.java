@@ -41,6 +41,10 @@ public class AbletonOSCListener implements OSCListener {
 	 * The Configuration object
 	 */
 	private Configuration configuration;
+	
+	private static final int CLIP_STATE_EMPTY = 0;
+	private static final int CLIP_STATE_STOPPED = 1;
+	private static final int CLIP_STATE_PLAYING = 2;
 
 	/**
 	 * @param config The Configuration object
@@ -58,14 +62,20 @@ public class AbletonOSCListener implements OSCListener {
 			Object[] args = msg.getArguments();
 			int track = ((Integer) args[0]).intValue();
 			int clip = ((Integer) args[1]).intValue();
-			this.configuration.updateAbletonClipState(track, clip, true);
+			this.configuration.updateAbletonClipState(track, clip, CLIP_STATE_PLAYING);
 		}
 		// received message from LiveOSC about a clip being stopped
 		if (msg.getAddress().contains("/live/clip/stopped")) {
 			Object[] args = msg.getArguments();
 			int track = ((Integer) args[0]).intValue();
 			int clip = ((Integer) args[1]).intValue();
-			this.configuration.updateAbletonClipState(track, clip, false);
+			this.configuration.updateAbletonClipState(track, clip, CLIP_STATE_STOPPED);
+		}
+		if (msg.getAddress().contains("/live/clip/empty")) {
+			Object[] args = msg.getArguments();
+			int track = ((Integer) args[0]).intValue();
+			int clip = ((Integer) args[1]).intValue();
+			this.configuration.updateAbletonClipState(track, clip, CLIP_STATE_EMPTY);
 		}
 		// received message from LiveOSC about a track being armed
 		if (msg.getAddress().contains("/live/track/armed")) {

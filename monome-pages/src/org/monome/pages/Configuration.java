@@ -34,6 +34,8 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
@@ -495,6 +497,7 @@ public class Configuration implements Receiver {
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
 			this.abletonOSCPortIn.addListener("/live/clip/playing", oscListener);
 			this.abletonOSCPortIn.addListener("/live/clip/stopped", oscListener);
+			this.abletonOSCPortIn.addListener("/live/clip/empty", oscListener);
 			this.abletonOSCPortIn.addListener("/live/track/armed", oscListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
@@ -513,7 +516,7 @@ public class Configuration implements Receiver {
 	 * @param clip
 	 * @param state
 	 */
-	public void updateAbletonClipState(int track, int clip, boolean state) {
+	public void updateAbletonClipState(int track, int clip, int state) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			monomeConfigurations.get(i).updateClipState(track, clip, state);
 		}
@@ -549,10 +552,10 @@ public class Configuration implements Receiver {
 		xml += "  <abletonoscinport>" + this.abletonOSCInPortNumber + "</abletonoscinport>\n";
 		xml += "  <abletonoscoutport>" + this.abletonOSCOutPortNumber + "</abletonoscoutport>\n";
 		if (this.midiInDevice != null) {
-			xml += "  <midiinport>" + this.midiInDevice.getDeviceInfo() + "</midiinport>\n";
+			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(this.midiInDevice.getDeviceInfo().toString()) + "</midiinport>\n";
 		}
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
-			xml += "  <midioutport>" + this.midiOutDevices.get(i).getDeviceInfo() + "</midioutport>\n";
+			xml += "  <midioutport>" + StringEscapeUtils.escapeXml(this.midiOutDevices.get(i).getDeviceInfo().toString()) + "</midioutport>\n";
 		}
 
 		// monome and page configuration

@@ -41,6 +41,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * The MIDI Faders page.  Usage information is available at:
  * 
@@ -858,7 +860,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		xml.append("    <page>\n");
 		xml.append("      <name>MIDI Sequencer</name>\n");
 		for (int i=0; i < this.midiDeviceNames.size(); i++) {
-			xml.append("      <selectedmidioutport>" + this.midiDeviceNames.get(i) + "</selectedmidioutport>\n");
+			xml.append("      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceNames.get(i)) + "</selectedmidioutport>\n");
 		}
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");

@@ -31,6 +31,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * The Template page, a good starting point for creating your own pages.  
  * Usage information is available at:
@@ -175,7 +177,7 @@ public class PageTemplate implements Page, ActionListener {
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>Template Page</name>\n";
-		xml += "      <selectedmidioutport>" + this.midiDeviceName + "</selectedmidioutport>\n";
+		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "    </page>\n";
 		return xml;
 	}
