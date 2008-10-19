@@ -38,6 +38,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * The MIDI Triggers page.  Usage information is available at:
  * 
@@ -381,7 +383,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>MIDI Triggers</name>\n";
-		xml += "      <selectedmidioutport>" + this.midiDeviceName + "</selectedmidioutport>\n";		
+		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";		
 		xml += "      <mode>" + mode + "</mode>\n";
 		for (int i=0; i < 16; i++) {
 			String state;

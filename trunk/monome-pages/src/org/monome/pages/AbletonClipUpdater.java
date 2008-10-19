@@ -72,6 +72,7 @@ public class AbletonClipUpdater implements Runnable {
 				abletonOscOut.send(msg2);
 				// sleep for 100ms in between calls
 				Thread.sleep(100);
+				this.page.redrawMonome();
 			} catch (IOException e) {
 				running = false;
 				e.printStackTrace();

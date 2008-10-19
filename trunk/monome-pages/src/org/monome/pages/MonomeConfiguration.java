@@ -81,7 +81,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	/**
 	 * pageState[page_num][x][y] - The LED state cache for each page
 	 */
-	public int[][][] pageState = new int[16][32][32];
+	public int[][][] pageState = new int[255][32][32];
 
 	/**
 	 * The pages that belong to this monome
@@ -150,7 +150,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.setJMenuBar(this.createMenuBar());
 		this.pack();
 	}
-
 
 	/**
 	 * Adds a new page to this monome
@@ -254,7 +253,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param clip Ableton clip number (0 = first clip)
 	 * @param state State of the clip (1 = playing)
 	 */
-	public void updateClipState(int track, int clip, boolean state) {
+	public void updateClipState(int track, int clip, int state) {
 		if (this.pages.size() == 0) {
 			return;
 		}
@@ -305,11 +304,20 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return;
 		}
 		// if page change mode is on and this is a button on the bottom row then change page and return
-		if (y == (this.sizeY - 1) && this.pageChangeMode == 1 && value == 1) {
+		if (this.pageChangeMode == 1 && value == 1) {
 			// if the page exists then change, otherwise ignore
 			if (this.pages.size() > x) {
-				this.curPage = x;
-				this.switchPage(this.pages.get(curPage), this.curPage, false);
+				int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
+				if (next_page > this.pages.size()) {
+					return;
+				}
+				// offset back by one because of the page change button
+				if (next_page > 7) {
+					next_page--;
+				}
+				this.curPage = next_page;
+				
+				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
 			}
 			this.pageChanged = true;
 			return;
@@ -317,7 +325,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 
 		// if this is the bottom right button and we pressed the button (value == 1), turn page change mode on
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
-			System.out.println("Page change mode = " + value);
 			this.pageChangeMode = 1;
 			this.pageChanged = false;
 			return;

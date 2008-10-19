@@ -59,9 +59,18 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	private JPanel panel;
 
 	/**
-	 * clipState[track_number][clip number] - The current state of all clips in Ableton, true if the clip is playing.
+	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
 	 */
-	private boolean[][] clipState = new boolean[16][500];
+	private int[][] clipState = new int[16][210];
+	
+	private static final int CLIP_STATE_EMPTY = 0;
+	private static final int CLIP_STATE_STOPPED = 1;
+	private static final int CLIP_STATE_PLAYING = 2;
+	
+	/**
+	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
+	 */
+	private boolean[][] flashState = new boolean[16][210];
 
 	/**
 	 * tracksArmed[track_number] - The record armed/disarmed state of all tracks, true if the track is armed for recording.
@@ -253,11 +262,19 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void redrawMonome() {
 		// redraw the upper part of the monome (the clip state)
 		for (int track = 0; track < this.monome.sizeX; track++) {
-			for (int clip = 0; clip < this.monome.sizeY - 2; clip++) {
-				if (this.clipState[track][clip] == false) {
-					this.monome.led(track, clip, 0, this.index);
-				} else {
+			for (int clip = 0; clip < (this.monome.sizeY - 2); clip++) {
+				if (this.clipState[track][clip] == CLIP_STATE_PLAYING) {
+					if (this.flashState[track][clip] == true) {
+						this.flashState[track][clip] = false;
+						this.monome.led(track, clip, 1, this.index);
+					} else {
+						this.flashState[track][clip] = true;
+						this.monome.led(track, clip, 0, this.index);
+					}
+				} else if (this.clipState[track][clip] == CLIP_STATE_STOPPED) {
 					this.monome.led(track, clip, 1, this.index);
+				} else if (this.clipState[track][clip] == CLIP_STATE_EMPTY) {
+					this.monome.led(track, clip, 0, this.index);
 				}
 			}
 		}
@@ -274,7 +291,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		// clear the bottom row, stop buttons are never on
 		for (int i=0; i < this.monome.sizeX; i++) {
 			this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
-		}
+		}		
 	}
 
 	/* (non-Javadoc)
@@ -302,38 +319,15 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @param clip The clip number to update
 	 * @param state The new state
 	 */
-	public void updateClipState(int track, int clip, boolean state) {
-		// this variable is set if it's determined that redrawing the monome is necessary
-		boolean redrawNeeded = false;
-
-		// if AbletonClipUpdater received /live/clip/playing from LiveOSC
-		if (state == true) {
-			for (int i=0; i < 16; i++) {
-				if (clip == i) {
-					if (this.clipState[track][i] != true) {
-						redrawNeeded = true;
-					}
-					this.clipState[track][i] = true;
-				} else {
-					if (this.clipState[track][i] != false) {
-						redrawNeeded = true;
-					}
-					this.clipState[track][i] = false;
+	public void updateClipState(int track, int clip, int state) {
+		if (this.clipState[track][clip] != state) {
+			for (int x = 0; x < this.monome.sizeX; x++) {
+				for (int y = 0; y < this.monome.sizeY; y++) {
+					this.flashState[x][y] = false;
 				}
 			}
 		}
-
-		// if AbletonClipUpdater received /live/clip/stopped from LiveOSC
-		if (state == false) {
-			if (this.clipState[track][clip] != false) {
-				redrawNeeded = true;
-			}
-			this.clipState[track][clip] = false;
-		}
-
-		if (redrawNeeded) {
-			this.redrawMonome();
-		}
+		this.clipState[track][clip] = state;
 	}
 
 	/**

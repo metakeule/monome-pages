@@ -35,6 +35,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.cloudgarden.layout.AnchorConstraint;
 import com.cloudgarden.layout.AnchorLayout;
 
@@ -385,7 +387,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>Machine Drum Interface</name>\n";
-		xml += "      <selectedmidioutport>" + this.midiDeviceName + "</selectedmidioutport>\n";
+		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <speed>" + this.speed + "</speed>\n";
 		xml += "    </page>\n";
 		return xml;
