@@ -36,6 +36,7 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -130,12 +131,23 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 * 1 = bank mode on 
 	 */
 	private int bankMode = 0;
+	private JCheckBox holdModeCB;
 
 	/**
 	 * sequence[bank_number][width][height] - the currently programmed sequences 
 	 */
 	private int[][][] sequence = new int[240][32][16];
 
+	/**
+	 * flashSequence[bank_number][width][height] - the flashing state of leds 
+	 */
+	private int[][][] flashSequence = new int[240][32][16];
+	
+	/**
+	 * heldNotes[bank_number][note] - whether or not each note is currently held 
+	 */
+	private int[] heldNotes = new int[16];
+	
 	/**
 	 * noteNumbers[row] - midi note numbers that are sent for each row 
 	 */
@@ -326,7 +338,10 @@ public class MIDISequencerPage implements Page, ActionListener {
 					if (this.sequence[this.bank][x_seq][y_seq] == 0) {
 						this.sequence[this.bank][x_seq][y_seq] = 1;
 						this.monome.led(x, y, 1, this.index);
-					} else {
+					} else if (this.sequence[this.bank][x_seq][y_seq] == 1) {
+						this.sequence[bank][x_seq][y_seq] = 2;
+						this.monome.led(x, y, 1, this.index);
+					} else if (this.sequence[this.bank][x_seq][y_seq] == 2) {
 						this.sequence[bank][x_seq][y_seq] = 0;
 						this.monome.led(x, y, 0, this.index);
 					}
@@ -391,15 +406,44 @@ public class MIDISequencerPage implements Page, ActionListener {
 			}
 		}
 	}
+	
+	/**
+	 * Flashes LEDs for each sequence value of 2
+	 */
+	private void flashNotes() {
+		int x_seq;
+		int y_seq;
+		if (this.bankMode == 0) {
+			for (int x = 0; x < (this.monome.sizeX); x++) {
+				x_seq = (this.pattern * (this.monome.sizeY)) + x;
+				for (int y = 0; y < (this.monome.sizeY - 1); y++) {
+					y_seq = (this.depth * (this.monome.sizeY - 1)) + y;
+					if (this.sequence[bank][x_seq][y_seq] == 1) {
+						if (this.flashSequence[bank][x_seq][y_seq] == 0) {
+							this.flashSequence[bank][x_seq][y_seq] = 1;
+							this.monome.led(x, y, 1, this.index);
+						} else {
+							this.flashSequence[bank][x_seq][y_seq] = 0;
+							this.monome.led(x, y, 0, this.index);
+						}
+					}
+				}
+			}
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handleTick()
 	 */
 	public void handleTick() {
+		if (this.tickNum == 3 || this.tickNum == 6) {
+			this.flashNotes();
+		}
+		
 		if (this.tickNum == 6) {
 			this.tickNum = 0;
 		}
-
+		
 		// send a note on for lit leds on this sequence position
 		if (this.tickNum == 0) {
 			if (this.sequencePosition == 32) {
@@ -419,7 +463,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 			}
 			this.playNotes(this.sequencePosition, 127);
 		}
-
 		// send a note off for lit leds on this sequence position
 		if (this.tickNum == 5) {
 			if (this.sequencePosition >= (this.pattern * (this.monome.sizeX)) && this.sequencePosition < ((this.pattern + 1) * (this.monome.sizeX))) {
@@ -455,7 +498,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 			int x_seq = (this.pattern * (this.monome.sizeX)) + col;
 			for (int y = 0; y < (this.monome.sizeY - 1); y++) {
 				int y_seq = (this.depth * (this.monome.sizeY - 1)) + y;
-				if (this.sequence[bank][x_seq][y_seq] == 1) {
+				if (this.sequence[bank][x_seq][y_seq] > 0) {
 					this.monome.led(col, y, 1, this.index);
 				}
 			}
@@ -481,30 +524,66 @@ public class MIDISequencerPage implements Page, ActionListener {
 	}
 
 	/**
-	 * Send MIDI note messages based on the sequence position.  If velocity = 0, note off will be sent.
+	 * Send MIDI note messages based on the sequence position.  If on = 0, note off will be sent.
 	 * 
 	 * @param seq_pos The sequence position to play notes for
-	 * @param velocity The velocity to play the notes at
+	 * @param on Whether to turn notes on or off, a value of 1 means play notes
 	 */
-	public void playNotes(int seq_pos, int velocity) {
+	public void playNotes(int seq_pos, int on) {
 		ShortMessage note_out = new ShortMessage();
 		int note_num;
+		int velocity;
 		for (int y = 0; y < 16; y++) {
-			if (sequence[this.bank][seq_pos][y] == 1) {
+			// hold mode
+			if (this.getHoldModeCB().isSelected()) {
+				if (on == 0) {
+					return;
+				}
+				if (sequence[this.bank][seq_pos][y] > 0) {
+					velocity = (this.sequence[this.bank][seq_pos][y] * 64) - 1;
+				} else {
+					velocity = 0;
+				}
 				note_num = this.getNoteNumber(y);
 				try {
-					if (velocity == 0) {
+					if (velocity == 0 && this.heldNotes[y] == 1) {
+						this.heldNotes[y] = 0;
 						note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, velocity);
-					} else {
+						for (int i=0; i < midiReceivers.size(); i++) {
+							midiReceivers.get(i).send(note_out, -1);
+						}
+					} else if (velocity > 0 && this.heldNotes[y] == 0) {
+						this.heldNotes[y] = 1;
 						note_out.setMessage(ShortMessage.NOTE_ON, 0, note_num, velocity);
-					}
-					for (int i=0; i < midiReceivers.size(); i++) {
-						midiReceivers.get(i).send(note_out, -1);
+						for (int i=0; i < midiReceivers.size(); i++) {
+							midiReceivers.get(i).send(note_out, -1);
+						}
 					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}
-
+			// normal mode 
+			} else {
+				if (sequence[this.bank][seq_pos][y] > 0) {
+					if (on > 0) {
+						velocity = (this.sequence[this.bank][seq_pos][y] * 64) - 1;
+					} else {
+						velocity = 0;
+					}
+					note_num = this.getNoteNumber(y);
+					try {
+						if (velocity == 0) {
+							note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, velocity);
+						} else {
+							note_out.setMessage(ShortMessage.NOTE_ON, 0, note_num, velocity);
+						}
+						for (int i=0; i < midiReceivers.size(); i++) {
+							midiReceivers.get(i).send(note_out, -1);
+						}
+					} catch (InvalidMidiDataException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}
@@ -689,7 +768,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 				x_seq = (this.pattern * (this.monome.sizeY)) + x;
 				for (int y = 0; y < (this.monome.sizeY - 1); y++) {
 					y_seq = (this.depth * (this.monome.sizeY - 1)) + y;
-					this.monome.led(x, y, this.sequence[bank][x_seq][y_seq], this.index);
+					int value = 0;
+					if (this.sequence[bank][x_seq][y_seq] > 0) {
+						value = 1;
+					}
+					this.monome.led(x, y, value, this.index);
 				}
 			}
 		}
@@ -805,27 +888,30 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private void generateSequencerPattern() {
 		// pattern template to use
 		int[][] p1 = {
-				{1,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0}, // 1
-				{0,0,0,0,1,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,1,0,0,0}, // 2
-				{0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 3
-				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 4
+				{2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0}, // 1
+				{0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,1,0}, // 2
+				{0,0,2,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 3
+				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 4
 				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0}, // 5
-				{0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}, // 6
+				{0,0,0,0,0,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}, // 6
 				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1}, // 7
-				{0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 8
-				{1,1,0,0,0,0,1,0, 1,0,1,0,1,1,0,0, 1,1,0,0,0,1,0,1, 1,0,1,0,0,1,0,1}, // 9
-				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0}, // 10
-				{0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0}, // 11
-				{1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 12
-				{0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 13
-				{0,0,1,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}  // 14
+				{0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 8
+				{2,1,0,0,2,0,2,0, 2,0,2,0,2,1,0,0, 1,2,0,0,0,1,2,1, 2,0,1,0,0,2,0,1}, // 9
+				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,1}, // 10
+				{0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0}, // 11
+				{2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 12
+				{0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 13
+				{0,0,2,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}  // 14
 		};
 		// randomly turn things on and off
 		for (int x = 0; x < 32; x++) {
 			for (int y = 0; y < 14; y++) {
 				sequence[bank][x][y] = p1[y][x];
-				if (generator.nextInt(10) == 1) {
+				if (generator.nextInt(20) == 1) {
 					sequence[bank][x][y] = 1;
+				}
+				if (generator.nextInt(10) == 1) {
+					sequence[bank][x][y] = 2;
 				}
 				if (generator.nextInt(6) == 1) {
 					sequence[bank][x][y] = 0;
@@ -841,13 +927,18 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private void alterSequencerPattern() {
 		// randomly turn things on or off
 		for (int x = 0; x < 32; x++) {
-			for (int y = 0; y < 14; y++) {
-				if (generator.nextInt(12) == 1) {
-					sequence[bank][x][y] = 1;
+			for (int y = 0; y < 15; y++) {
+				if (sequence[bank][x][y] > 0) {
+					if (generator.nextInt(30) == 1) {
+						sequence[bank][x][y] = generator.nextInt(3);
+					}
 				}
-				if (generator.nextInt(6) == 1) {
-					sequence[bank][x][y] = 0;
+				if (sequence[bank][x][y] == 0) {
+					if (generator.nextInt(150) == 1) {
+						sequence[bank][x][y] = generator.nextInt(3);
+					}
 				}
+
 			}
 		}
 	}
@@ -857,8 +948,13 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 */
 	public String toXml() {
 		StringBuffer xml = new StringBuffer();
+		int holdmode = 0;
 		xml.append("    <page>\n");
 		xml.append("      <name>MIDI Sequencer</name>\n");
+		if (this.getHoldModeCB().isSelected() == true) {
+			holdmode = 1;
+		}
+		xml.append("      <holdmode>" + holdmode + "</holdmode>\n");
 		for (int i=0; i < this.midiDeviceNames.size(); i++) {
 			xml.append("      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceNames.get(i)) + "</selectedmidioutport>\n");
 		}
@@ -1228,6 +1324,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 			AnchorLayout jPanel1Layout = new AnchorLayout();
 			jPanel1.setLayout(jPanel1Layout);
 			jPanel1.setPreferredSize(new java.awt.Dimension(457, 102));
+			jPanel1.add(getHoldModeCB(), new AnchorConstraint(808, 1001, 985, 670, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 			jPanel1.add(getRow4tf(), new AnchorConstraint(799, 184, 1004, 101, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 			jPanel1.add(getRow4l(), new AnchorConstraint(828, 101, 965, 1, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 			jPanel1.add(getRow8l(), new AnchorConstraint(828, 324, 965, 224, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
@@ -1280,8 +1377,10 @@ public class MIDISequencerPage implements Page, ActionListener {
 
 			if (sequence2.charAt(i) == '0') {
 				this.sequence[l][pos][row] = 0;
-			} else {
+			} else if (sequence2.charAt(i) == '1') {
 				this.sequence[l][pos][row] = 1;
+			} else if (sequence2.charAt(i) == '2') {
+				this.sequence[l][pos][row] = 2;
 			}
 			row++;
 		}
@@ -1299,5 +1398,20 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 */
 	public void destroyPage() {
 		return;
+	}
+	
+	private JCheckBox getHoldModeCB() {
+		if(holdModeCB == null) {
+			holdModeCB = new JCheckBox();
+			holdModeCB.setText("Hold Mode");
+			holdModeCB.setPreferredSize(new java.awt.Dimension(151, 18));
+		}
+		return holdModeCB;
+	}
+
+	public void setHoldMode(String holdmode) {
+		if (holdmode.equals("1")) {
+			this.getHoldModeCB().doClick();
+		}
 	}
 }

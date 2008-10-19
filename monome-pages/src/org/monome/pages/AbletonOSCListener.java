@@ -42,8 +42,19 @@ public class AbletonOSCListener implements OSCListener {
 	 */
 	private Configuration configuration;
 	
+	/**
+	 * Used to represent an empty clip slot
+	 */
 	private static final int CLIP_STATE_EMPTY = 0;
+	
+	/**
+	 * Used to represent a clip slot with a clip that is stopped 
+	 */
 	private static final int CLIP_STATE_STOPPED = 1;
+	
+	/**
+	 * Used to represent a clip slot with a clip that is playing 
+	 */
 	private static final int CLIP_STATE_PLAYING = 2;
 
 	/**
