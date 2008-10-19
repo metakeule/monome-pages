@@ -5,9 +5,9 @@
   * ~~Expand to 63 pages for 40h/64, 127 pages for 128, and 255 pages for 256.~~
   * ~~Escape XML before saving it to file~~
   * ~~In the Ableton page, make leds solid of a clip exists and flashing if a clip is playing.~~
-  * In the Ableton page, add an offset column.
-  * In the Ableton page, add undo (and redo?).
+  * ~~In the Ableton page, add an offset column.~~
+  * ~~In the Ableton page, add undo.~~
   * Make 2 velocity levels in midi sequencer ala sevenuplive
   * Make a 'hold notes' mode for midi sequencer
   * Look into track jump / LiveOSC to possibly make a 2nd Ableton page
-  * Check into clipslot.fire() for recording audio clips, possibly integrate into Ableton page if it works.
+  * ~~Check into clipslot.fire() for recording audio clips, possibly integrate into Ableton page if it works.~~
