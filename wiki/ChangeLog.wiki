@@ -2,8 +2,8 @@
 
 = 0.1.4 / 10-19-2008 =
 
-    * Remove all references to GroupLayout.
-    * Add javadoc comments.
+    * Removed all references to GroupLayout.
+    * Added javadoc comments and generated javadoc.
     * Expanded to 63 pages for 40h/64, 127 pages for 128, and 255 pages for 256.
     * Now properly escape XML before saving.
     * In the Ableton page, made LEDs solid of a clip exists and flashing if a clip is playing.
