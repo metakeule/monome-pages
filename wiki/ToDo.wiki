@@ -4,7 +4,7 @@
   * ~~Add javadoc comments~~
   * ~~Expand to 63 pages for 40h/64, 127 pages for 128, and 255 pages for 256.~~
   * ~~Escape XML before saving it to file~~
-  * In the Ableton page, make leds solid of a clip exists, flashing if a clip is playing, and flashing faster if a clip is triggered.
+  * ~~In the Ableton page, make leds solid of a clip exists and flashing if a clip is playing.~~
   * In the Ableton page, add an offset column.
   * In the Ableton page, add undo (and redo?).
   * Make 2 velocity levels in midi sequencer ala sevenuplive
