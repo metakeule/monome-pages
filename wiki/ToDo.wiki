@@ -7,3 +7,5 @@
   * Allow patterns up to 64 steps in length and allow for 4 patterns for 128/256.
   * Fix stuck note issues
   * Modify the keyboard page so key/scale/channel changes are done by holding a button
+  * Add a way to page through tracks in ableton page
+  * Make the record / stop buttons disappear as an option on the Ableton page
