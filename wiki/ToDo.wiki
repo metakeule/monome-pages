@@ -5,3 +5,5 @@
   * Verify a report that copy pattern doesn't work right on 128.
   * Add a pattern length setting.
   * Allow patterns up to 64 steps in length and allow for 4 patterns for 128/256.
+  * Fix stuck note issues
+  * Modify the keyboard page so key/scale/channel changes are done by holding a button
