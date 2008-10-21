@@ -6,7 +6,7 @@ Pages was designed to allow multiple applications to run simultaneously on a sin
 
 Pages doesn't make any sound on its own; it is intended to run alongside applications like Ableton Live and Max/MSP.  It is not limited to these two applications and should work with any applications capable of sending/receiving MIDI and/or OSC.  Think of it as a somewhat general purpose MIDI/OSC router for interfacing monome(s) with other audio applications.
 
-There are currently 5 pages available, and any number of monomes can be configured with any combination of these 5 pages.  The pages adapt to the size of the monome you are using.  Each page supports 8x8 (40h/64), 16x8 (128), and 16x16 (256) sized monomes and will automatically adapt based on your configuration.
+There are currently 7 pages available, and any number of monomes can be configured with any combination of these 7 pages.  The pages adapt to the size of the monome you are using.  Each page supports 8x8 (40h/64), 16x8 (128), and 16x16 (256) sized monomes and will automatically adapt based on your configuration.
 
 = Summary of Available Pages =
 
