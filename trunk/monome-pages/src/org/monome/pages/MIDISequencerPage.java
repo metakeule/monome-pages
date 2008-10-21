@@ -374,7 +374,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		for (int x = 0; x < (this.monome.sizeX); x++) {
 			for (int y = 0; y < 15; y++) {
 				int x_src = x + (src * (this.monome.sizeX));
-				int x_dst = x + (dst * (this.monome.sizeY));
+				int x_dst = x + (dst * (this.monome.sizeX));
 				sequence[bank][x_dst][y] = sequence[bank][x_src][y];
 			}
 		}
@@ -415,7 +415,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		int y_seq;
 		if (this.bankMode == 0) {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
-				x_seq = (this.pattern * (this.monome.sizeY)) + x;
+				x_seq = (this.pattern * (this.monome.sizeX)) + x;
 				for (int y = 0; y < (this.monome.sizeY - 1); y++) {
 					y_seq = (this.depth * (this.monome.sizeY - 1)) + y;
 					if (this.sequence[bank][x_seq][y_seq] == 1) {
@@ -765,7 +765,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 			// redraw if we're in sequence mode
 		} else {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
-				x_seq = (this.pattern * (this.monome.sizeY)) + x;
+				x_seq = (this.pattern * (this.monome.sizeX)) + x;
 				for (int y = 0; y < (this.monome.sizeY - 1); y++) {
 					y_seq = (this.depth * (this.monome.sizeY - 1)) + y;
 					int value = 0;
