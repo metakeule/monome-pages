@@ -198,6 +198,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			this.oscIn.addListener(this.prefix + "/led", this);
 			this.oscIn.addListener(this.prefix + "/led_col", this);
 			this.oscIn.addListener(this.prefix + "/led_row", this);
+			this.oscIn.addListener(this.prefix + "/clear", this);
+			this.oscIn.addListener(this.prefix + "/frame", this);
 			this.oscIn.startListening();
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -365,7 +367,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		if (!msg.getAddress().contains(this.prefix)) {
 			return;
 		}
-
 		// handle a monome clear request from the external application
 		if (msg.getAddress().contains("clear")) {
 			Object[] args = msg.getArguments();
@@ -413,6 +414,18 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 				int_args[i] = ((Integer) args[i]).intValue();
 			}
 			this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
+		}
+		
+		else if (msg.getAddress().contains("clear")) {
+			Object[] args = msg.getArguments();
+			int[] int_args = {0};
+			for (int i=0; i < args.length; i++) {
+				if (!(args[i] instanceof Integer)) {
+					return;
+				}
+				int_args[i] = ((Integer) args[i]).intValue();
+			}
+			this.monome.clear(int_args[0], this.index);
 		}
 	}
 
