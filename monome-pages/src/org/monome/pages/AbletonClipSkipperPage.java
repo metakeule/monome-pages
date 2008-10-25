@@ -1,5 +1,5 @@
 /*
- *  PageTemplate.java
+ *  AbletonClipSkipperPage.java
  * 
  *  Copyright (c) 2008, Tom Dinchak
  * 
