@@ -69,31 +69,16 @@ public class AbletonOSCListener implements OSCListener {
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
 		// received message from LiveOSC about a clip currently playing
-		if (msg.getAddress().contains("/live/clip/playing")) {
-			Object[] args = msg.getArguments();
-			int track = ((Integer) args[0]).intValue();
-			int clip = ((Integer) args[1]).intValue();
-			this.configuration.updateAbletonClipState(track, clip, CLIP_STATE_PLAYING);
-		}
-		// received message from LiveOSC about a clip being stopped
-		if (msg.getAddress().contains("/live/clip/stopped")) {
-			Object[] args = msg.getArguments();
-			int track = ((Integer) args[0]).intValue();
-			int clip = ((Integer) args[1]).intValue();
-			this.configuration.updateAbletonClipState(track, clip, CLIP_STATE_STOPPED);
-		}
-		if (msg.getAddress().contains("/live/clip/empty")) {
-			Object[] args = msg.getArguments();
-			int track = ((Integer) args[0]).intValue();
-			int clip = ((Integer) args[1]).intValue();
-			this.configuration.updateAbletonClipState(track, clip, CLIP_STATE_EMPTY);
-		}
-		// received message from LiveOSC about a track being armed
-		if (msg.getAddress().contains("/live/track/armed")) {
+		if (msg.getAddress().contains("/live/track/info")) {
 			Object[] args = msg.getArguments();
 			int track = ((Integer) args[0]).intValue();
 			int armed = ((Integer) args[1]).intValue();
 			this.configuration.updateAbletonTrackState(track, armed);
+			for (int i=2; i < args.length; i+=2) {
+				int clip = ((Integer) args[i]).intValue();
+				int clipstate = ((Integer) args[i+1]).intValue();
+				this.configuration.updateAbletonClipState(track, clip, clipstate);
+			}
 		}
 	}
 }
