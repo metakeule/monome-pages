@@ -514,9 +514,9 @@ public class Configuration implements Receiver {
 	 * @param clip
 	 * @param state
 	 */
-	public void updateAbletonClipState(int track, int clip, int state) {
+	public void updateAbletonClipState(int track, int clip, int state, float length) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonClipState(track, clip, state);
+			monomeConfigurations.get(i).updateAbletonClipState(track, clip, state, length);
 		}
 	}
 	
