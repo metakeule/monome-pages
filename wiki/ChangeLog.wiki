@@ -15,6 +15,7 @@
     * The Ableton state updating process is now much more efficient
     * Made options to disable the arm/disarm and stop control rows and extend the clip view in their place
     * Fixed a load/save issue when MIDI devices were no longer present on the system
+    * Added initial version of Ableton clip skipper page
 
 = 0.1.4 / 10-19-2008 =
 
