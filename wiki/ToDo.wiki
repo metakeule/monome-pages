@@ -6,6 +6,10 @@
   * ~~Allow patterns up to 64 steps in length and allow for 4 patterns for 128/256.~~
   * ~~Fix stuck note issues in MIDI sequencer~~
   * ~~Fix stuck note issues in MIDI keyboard~~
+  * ~~Add track offset prev/next buttons~~
+  * ~~Add clip offset prev/next buttons~~
+  * ~~Add tempo + / - buttons~~
+  * ~~Add redo button~~
   * ~~Make Ableton clip updater more efficient~~
   * Modify the keyboard page so key/scale/channel changes are done by holding a button
   * ~~Add a way to page through tracks in ableton page~~
