@@ -653,6 +653,26 @@ public class GUI implements ActionListener {
 										mdpage.setSpeed(Integer.parseInt(speed));
 									}
 								}
+								
+								if (pageName.equals("Ableton Clip Launcher")) {
+									// configure midi notes / rows
+									AbletonClipLauncherPage ablepage = (AbletonClipLauncherPage) page;
+
+									NodeList armNL = pageElement.getElementsByTagName("disablearm");
+									el = (Element) armNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String disableArm = ((Node) nl.item(0)).getNodeValue();
+										ablepage.setDisableArm(disableArm);
+									}
+									NodeList stopNL = pageElement.getElementsByTagName("disablestop");
+									el = (Element) stopNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String disableStop = ((Node) nl.item(0)).getNodeValue();
+										ablepage.setDisableStop(disableStop);
+									}
+								}
 
 							}
 						}

@@ -28,6 +28,7 @@ import java.io.IOException;
 
 import javax.sound.midi.MidiMessage;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -61,7 +62,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	/**
 	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
 	 */
-	private int[][] clipState = new int[50][210];
+	private int[][] clipState = new int[50][250];
 	
 	/**
 	 * Used to represent an empty clip slot
@@ -81,7 +82,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	/**
 	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
 	 */
-	private boolean[][] flashState = new boolean[50][210];
+	private boolean[][] flashState = new boolean[50][250];
 
 	/**
 	 * tracksArmed[track_number] - The record armed/disarmed state of all tracks, true if the track is armed for recording.
@@ -104,7 +105,18 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	private AbletonClipUpdater updater;
 
+	/**
+	 * Ableton's current tempo/BPM setting
+	 */
 	private float tempo = (float) 120.0;
+	
+	private JCheckBox disableArmCB = new JCheckBox();
+	private JCheckBox disableStopCB = new JCheckBox();
+
+	/**
+	 * The number of control rows (track arm, track stop) that are enabled currently
+	 */
+	private int numEnabledRows = 2;
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -121,6 +133,14 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
+		int numEnabledRows = 0;
+		if (this.disableArmCB.isSelected() == false) {
+			numEnabledRows++;
+		}
+		if (this.disableStopCB.isSelected() == false) {
+			numEnabledRows++;
+		}
+		this.numEnabledRows = numEnabledRows;
 		return;
 	}
 
@@ -153,6 +173,14 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
 		panel.add(label);
+		
+		disableArmCB.setText("Disable Arm");
+		disableArmCB.addActionListener(this);
+		panel.add(disableArmCB);
+
+		disableStopCB.setText("Disable Stop");
+		disableStopCB.addActionListener(this);
+		panel.add(disableStopCB);
 
 		this.panel = panel;
 		return panel;
@@ -164,7 +192,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void handlePress(int x, int y, int value) {
 		// only on button was pressed events
 		if (value == 1) {
-			// if this is the far right column then change the offset
+			// if this is the far right column then do special actions
 			if (x == this.monome.sizeX - 1) {
 				// minus 1 clip offset
 				if (y == 0) {
@@ -173,7 +201,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					}
 				// plus 1 clip offset
 				} else if (y == 1) {
-					if ((this.clipOffset + 1) * (this.monome.sizeY - 2) < 210) {
+					if ((this.clipOffset + 1) * (this.monome.sizeY - this.numEnabledRows) < 210) {
 						this.clipOffset += 1;
 					}
 				// minus 1 track offset
@@ -192,18 +220,19 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					this.tempoUp();
 				} else if (y == 6) {
 					this.abletonRedo();
-				} else if (y == this.monome.sizeY - 1) {
+				} else if (y == 7) {
 					this.abletonUndo();
 				}
 			} else {
 				// if this is the bottom row then stop track number x
-				if (y == this.monome.sizeY - 1) {
+				if (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
 					this.stopTrack(track_num);
 					this.viewTrack(track_num);
 				}
 				// if this is the 2nd from the bottom row then arm or disarm the track
-				else if (y == this.monome.sizeY - 2) {
+				else if ((y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableArmCB.isSelected() == false) ||
+						  y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == true && this.disableArmCB.isSelected() == false) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
 					if (this.tracksArmed[track_num] == false) {
 						this.armTrack(track_num);
@@ -218,7 +247,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				}
 				// otherwise play the clip
 				else {
-					int clip_num = y + (this.clipOffset * (this.monome.sizeY - 2));
+					int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
 					this.viewTrack(track_num);
 					this.playClip(track_num, clip_num);
@@ -416,8 +445,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void redrawMonome() {
 		// redraw the upper part of the monome (the clip state)
 		for (int track = 0; track < this.monome.sizeX - 1; track++) {
-			for (int clip = 0; clip < (this.monome.sizeY - 2); clip++) {
-				int clip_num = clip + (this.clipOffset * (this.monome.sizeY - 2));
+			for (int clip = 0; clip < (this.monome.sizeY - this.numEnabledRows); clip++) {
+				int clip_num = clip + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
 				int track_num = track + (this.trackOffset * (this.monome.sizeX - 1));
 				if (this.clipState[track_num][clip_num] == CLIP_STATE_PLAYING) {
 					if (this.flashState[track][clip] == true) {
@@ -436,19 +465,23 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		}
 		
 		// redraw the track armed/disarmed state
-		for (int i = 0; i < this.monome.sizeX - 1; i++) {
-			int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
-			if (this.tracksArmed[track_num] == true) {
-				this.monome.led(i, this.monome.sizeY - 2, 1, this.index);
-			} else {
-				this.monome.led(i, this.monome.sizeY - 2, 0, this.index);
+		if (this.disableArmCB.isSelected() == false) {
+			for (int i = 0; i < this.monome.sizeX - 1; i++) {
+				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
+				if (this.tracksArmed[track_num] == true) {
+					this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
+				} else {
+					this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 0, this.index);
+				}
 			}
 		}
 
 		// clear the bottom row, stop buttons are never on
-		for (int i=0; i < this.monome.sizeX; i++) {
-			this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
-		}		
+		if (this.disableStopCB.isSelected() == false) {
+			for (int i=0; i < this.monome.sizeX; i++) {
+				this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
+			}
+		}
 	}
 
 	/* (non-Javadoc)
@@ -462,11 +495,35 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#toXml()
 	 */
 	public String toXml() {
+		String disableArm = "false";
+		String disableStop = "false";
+		if (disableArmCB.isSelected() == true) {
+			disableArm = "true";
+		}
+		
+		if (disableStopCB.isSelected() == true) {
+			disableStop = "true";
+		}
+		
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>Ableton Clip Launcher</name>\n";
+		xml += "      <disablearm>" + disableArm + "</disablearm>\n";
+		xml += "      <disablestop>" + disableStop + "</disablestop>\n";
 		xml += "    </page>\n";
 		return xml;
+	}
+	
+	public void setDisableArm(String disableArm) {
+		if (disableArm.equals("true")) {
+			this.disableArmCB.doClick();
+		}
+	}
+	
+	public void setDisableStop(String disableStop) {
+		if (disableStop.equals("true")) {
+			this.disableStopCB.doClick();
+		}
 	}
 
 	/**
@@ -479,8 +536,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void updateClipState(int track, int clip, int state) {
 		if (this.clipState[track][clip] != state) {
 			for (int x = 0; x < this.monome.sizeX - 1; x++) {
-				for (int y = 0; y < this.monome.sizeY - 2; y++) {
-					int clip_num = y + (this.clipOffset * (this.monome.sizeY - 2));
+				for (int y = 0; y < this.monome.sizeY - this.numEnabledRows; y++) {
+					int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
 					this.flashState[x][clip_num] = false;
 				}
 			}
