@@ -1,17 +1,4 @@
 #summary Items planned for the next release.
 
   * Look into track jump / LiveOSC to possibly make a 2nd Ableton page
-  * ~~Fix MIDI sequencer bugs on 128~~
-  * ~~Add a pattern length setting.~~
-  * ~~Allow patterns up to 64 steps in length and allow for 4 patterns for 128/256.~~
-  * ~~Fix stuck note issues in MIDI sequencer~~
-  * ~~Fix stuck note issues in MIDI keyboard~~
-  * ~~Add track offset prev/next buttons~~
-  * ~~Add clip offset prev/next buttons~~
-  * ~~Add tempo + / - buttons~~
-  * ~~Add redo button~~
-  * ~~Make Ableton clip updater more efficient~~
-  * ~~Add a way to page through tracks in ableton page~~
-  * ~~Make clip slot trigger buttons, stop buttons, and arm/disarm buttons select the current instrument for their associated track~~
-  * ~~Make the record / stop buttons disappear as an option on the Ableton page~~
   * Modify the keyboard page so key/scale/channel changes are done by holding a button
