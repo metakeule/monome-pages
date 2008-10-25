@@ -8,5 +8,5 @@
   * ~~Fix stuck note issues in MIDI keyboard~~
   * ~~Make Ableton clip updater more efficient~~
   * Modify the keyboard page so key/scale/channel changes are done by holding a button
-  * Add a way to page through tracks in ableton page
+  * ~~Add a way to page through tracks in ableton page~~
   * Make the record / stop buttons disappear as an option on the Ableton page
