@@ -97,6 +97,11 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 * The starting note for each key (from C-2 to B-2) 
 	 */
 	private int[] keys = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
+	
+	/**
+	 * Stores the note on / off state of all MIDI notes
+	 */
+	private int[][] notesOn = new int[16][128];
 
 	/**
 	 * The MIDI output devices
@@ -165,6 +170,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						this.monome.led(this.myScale + 4, y, 1, this.index);
 					}
 				}
+				this.stopNotes();
 				// select the midi channel
 			} else {		
 				if (x == 7) {
@@ -177,6 +183,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						}
 					}
 				}
+				this.stopNotes();
 			}
 		}
 
@@ -187,6 +194,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			int channel = this.midiChannel;
 			int note_num = this.getNoteNumber(x) + ((y - 3) * 12);
 			this.playNote(note_num, velocity, channel);
+			this.notesOn[channel][note_num] = value;
 			this.monome.led(x, y, value, this.index);
 		}
 	}
@@ -209,6 +217,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 				if (x >= 12) {
 					this.myScale = (x - 12); 
 				}
+				this.stopNotes();
 				// set the octave offset
 			} else {
 
@@ -247,6 +256,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 					}
 					return;
 				}
+				this.stopNotes();
 			}	
 		}
 
@@ -289,6 +299,24 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public void handleReset() {
 		this.redrawMonome();
+	}
+	
+	private void stopNotes() {
+		ShortMessage note_out = new ShortMessage();
+		for (int chan=0; chan < 16; chan++) {
+			for (int i=0; i < 128; i++) {
+				if (this.notesOn[chan][i] == 1) {
+					try {
+						note_out.setMessage(ShortMessage.NOTE_OFF, chan, i, 0);
+						for (int j=0; j < midiReceivers.size(); j++) {
+							midiReceivers.get(j).send(note_out, -1);
+						}
+					} catch (InvalidMidiDataException e) {
+						e.printStackTrace();
+					}				
+				}
+			}
+		}
 	}
 
 	/**

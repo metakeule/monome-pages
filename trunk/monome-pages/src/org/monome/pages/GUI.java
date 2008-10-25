@@ -579,6 +579,14 @@ public class GUI implements ActionListener {
 										seqpage.setHoldMode(holdmode);
 									}
 									
+									NodeList bankNL = pageElement.getElementsByTagName("banksize");
+									el = (Element) bankNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String banksize = ((Node) nl.item(0)).getNodeValue();
+										seqpage.setBankSize(Integer.parseInt(banksize));
+									}
+									
 									NodeList rowNL = pageElement.getElementsByTagName("row");
 									for (int l=0; l < rowNL.getLength(); l++) {
 										el = (Element) rowNL.item(l);
