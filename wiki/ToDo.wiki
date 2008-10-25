@@ -1,4 +1,3 @@
 #summary Items planned for the next release.
 
-  * Look into track jump / LiveOSC to possibly make a 2nd Ableton page
   * Modify the keyboard page so key/scale/channel changes are done by holding a button
