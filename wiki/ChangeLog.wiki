@@ -1,5 +1,21 @@
 #summary List of changes for each version
 
+= 0.1.5 / 10-25-2008 =
+
+    * Fixed some MIDI sequencer bugs on 128 devices
+    * Added a pattern length setting to the MIDI sequencer
+    * Made it possible to use up to 64 steps / 4 patterns on a 128 / 256 device
+    * Fixed stuck note issues in the MIDI sequencer and MIDI keyboard pages
+    * Modified the Ableton page, removed the clip offset buttons and replaced them with:
+    * Clip offset previous / next buttons to move up and down the Ableton grid
+    * Track offset previous / next buttons to move left and right on the Ableton grid
+    * -1 / +1 BPM buttons to change the tempo
+    * A redo button above the undo button
+    * Triggering a clip, arming/disarming a track or pushing a stop button will now bring up any associated VST/plugin instrument's panel
+    * The Ableton state updating process is now much more efficient
+    * Made options to disable the arm/disarm and stop control rows and extend the clip view in their place
+    * Fixed a load/save issue when MIDI devices were no longer present on the system
+
 = 0.1.4 / 10-19-2008 =
 
     * Removed all references to GroupLayout.
