@@ -495,10 +495,7 @@ public class Configuration implements Receiver {
 			AbletonOSCListener oscListener = new AbletonOSCListener(this);
 			this.abletonOSCPortOut = new OSCPortOut(InetAddress.getByName(this.abletonHostname), this.abletonOSCOutPortNumber);
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
-			this.abletonOSCPortIn.addListener("/live/clip/playing", oscListener);
-			this.abletonOSCPortIn.addListener("/live/clip/stopped", oscListener);
-			this.abletonOSCPortIn.addListener("/live/clip/empty", oscListener);
-			this.abletonOSCPortIn.addListener("/live/track/armed", oscListener);
+			this.abletonOSCPortIn.addListener("/live/track/info", oscListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
 			e.printStackTrace();

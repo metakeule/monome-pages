@@ -1020,14 +1020,15 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 */
 	public void addMidiOutDevice(String deviceName) {
 		Receiver receiver = this.monome.getMidiReceiver(deviceName);
-
-		for (int i=0; i < this.midiReceivers.size(); i++) {
-			if (this.midiReceivers.get(i).equals(receiver)) {
-				return;
+		if (receiver != null) {
+			for (int i=0; i < this.midiReceivers.size(); i++) {
+				if (this.midiReceivers.get(i).equals(receiver)) {
+					return;
+				}
 			}
+			this.midiReceivers.add(receiver);
+			this.midiDeviceNames.add(deviceName);
 		}
-		this.midiReceivers.add(receiver);
-		this.midiDeviceNames.add(deviceName);
 	}
 
 	private JLabel getRow1l() {
