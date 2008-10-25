@@ -60,15 +60,15 @@ public class AbletonClipUpdater implements Runnable {
 			this.page.monome.configuration.initAbleton();
 			abletonOscOut = this.page.monome.configuration.getAbletonOSCPortOut();
 		}
-		// query Ableton for the status of currently playing clips
-		//OSCMessage msg = new OSCMessage("/live/clip/playing");
+		// query Ableton for the tempo
+		OSCMessage msg = new OSCMessage("/live/tempo");
 
 		// query Ableton for the record armed/disarmed status of each track
 		OSCMessage msg2 = new OSCMessage("/live/track/info");
 
 		while (running) {
 			try {
-				//abletonOscOut.send(msg);
+				abletonOscOut.send(msg);
 				abletonOscOut.send(msg2);
 				// sleep for 300ms in between calls
 				Thread.sleep(100);

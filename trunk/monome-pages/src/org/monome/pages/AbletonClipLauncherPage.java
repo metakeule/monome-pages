@@ -104,6 +104,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	private AbletonClipUpdater updater;
 
+	private float tempo = (float) 120.0;
+
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index This page's index number
@@ -164,15 +166,33 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		if (value == 1) {
 			// if this is the far right column then change the offset
 			if (x == this.monome.sizeX - 1) {
-				if (y < this.monome.sizeY / 2) {
-					this.monome.led(x, this.clipOffset, 0, this.index);
-					this.clipOffset = y;
-					this.monome.led(x, this.clipOffset, 1, this.index);
-				} else if (y >= (this.monome.sizeY / 2) && y != this.monome.sizeY - 1) {
-					this.monome.led(x, y, 0, this.index);
-					this.trackOffset = y - (this.monome.sizeY / 2);
-					this.monome.led(x, y, 1, this.index);
-				} else {
+				// minus 1 clip offset
+				if (y == 0) {
+					if (this.clipOffset > 0) {
+						this.clipOffset -= 1;
+					}
+				// plus 1 clip offset
+				} else if (y == 1) {
+					if ((this.clipOffset + 1) * (this.monome.sizeY - 2) < 210) {
+						this.clipOffset += 1;
+					}
+				// minus 1 track offset
+				} else if (y == 2) {
+					if (this.trackOffset > 0) {
+						this.trackOffset -= 1;
+					}
+				// plus 1 track offset
+				} else if (y == 3) {
+					if ((this.trackOffset + 1) * (this.monome.sizeX - 1) < 50) {
+						this.trackOffset += 1;
+					}
+				} else if (y == 4) {
+					this.tempoDown();
+				} else if (y == 5) {
+					this.tempoUp();
+				} else if (y == 6) {
+					this.abletonRedo();
+				} else if (y == this.monome.sizeY - 1) {
 					this.abletonUndo();
 				}
 			} else {
@@ -180,6 +200,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				if (y == this.monome.sizeY - 1) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
 					this.stopTrack(track_num);
+					this.viewTrack(track_num);
 				}
 				// if this is the 2nd from the bottom row then arm or disarm the track
 				else if (y == this.monome.sizeY - 2) {
@@ -193,11 +214,13 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 						this.monome.led(x, y, 0, this.index);
 						this.tracksArmed[track_num] = false;
 					}
+					this.viewTrack(track_num);
 				}
 				// otherwise play the clip
 				else {
 					int clip_num = y + (this.clipOffset * (this.monome.sizeY - 2));
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+					this.viewTrack(track_num);
 					this.playClip(track_num, clip_num);
 				}
 			}
@@ -245,11 +268,74 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	}
 
 	/**
+	 * Sends "/live/redo" to LiveOSC. 
+	 */
+	public void abletonRedo() {
+		OSCMessage msg = new OSCMessage("/live/redo");
+		try {
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
 	 * Sends "/live/undo" to LiveOSC. 
 	 */
 	public void abletonUndo() {
 		OSCMessage msg = new OSCMessage("/live/undo");
 		try {
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends "/live/tempo tempo-1" to LiveOSC. 
+	 */
+	public void tempoDown() {
+		if (this.tempo - 1.0 < 20.0) {
+			this.tempo = (float) 21.0;
+		}
+		Object args[] = new Object[1];
+		args[0] = new Float(this.tempo - 1.0);
+		
+		OSCMessage msg = new OSCMessage("/live/tempo", args);
+		try {
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends "/live/tempo tempo+1" to LiveOSC. 
+	 */
+	public void tempoUp() {
+		if (this.tempo + 1.0 > 999.0) {
+			this.tempo = (float) 998.0;
+		}
+		Object args[] = new Object[1];
+		args[0] = new Float(this.tempo + 1.0);
+		OSCMessage msg = new OSCMessage("/live/tempo", args);
+		try {
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
 			this.monome.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -294,6 +380,22 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		}
 	}
 
+	/**
+	 * Sends "/live/track/view track" to LiveOSC.
+	 * 
+	 * @param track The track number to stop (0 = first track)
+	 */
+	public void viewTrack(int track) {
+		Object args[] = new Object[1];
+		args[0] = new Integer(track);
+		OSCMessage msg = new OSCMessage("/live/track/view", args);
+		try {
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handleReset()
 	 */
@@ -333,17 +435,6 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			}
 		}
 		
-		// redraw the clip offset column
-		for (int y = 0; y < this.monome.sizeY; y++) {
-			if (y == this.clipOffset) {
-				this.monome.led(this.monome.sizeX - 1, y, 1, this.index);
-			} else if (y == this.trackOffset + (this.monome.sizeY / 2)) {
-				this.monome.led(this.monome.sizeX - 1, y, 1, this.index);
-			} else {
-				this.monome.led(this.monome.sizeX - 1, y, 0, this.index);
-			}
-		}
-
 		// redraw the track armed/disarmed state
 		for (int i = 0; i < this.monome.sizeX - 1; i++) {
 			int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
@@ -430,5 +521,9 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	public void destroyPage() {
 		return;
+	}
+
+	public void updateTempo(float tempo) {
+		this.tempo = tempo;
 	}
 }

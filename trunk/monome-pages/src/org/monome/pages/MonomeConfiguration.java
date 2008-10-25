@@ -253,7 +253,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param clip Ableton clip number (0 = first clip)
 	 * @param state State of the clip (1 = playing)
 	 */
-	public void updateClipState(int track, int clip, int state) {
+	public void updateAbletonClipState(int track, int clip, int state) {
 		if (this.pages.size() == 0) {
 			return;
 		}
@@ -262,6 +262,19 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.updateClipState(track, clip, state);
+			}
+		}
+	}
+	
+	public void updateAbletonTempo(float tempo) {
+		if (this.pages.size() == 0) {
+			return;
+		}
+
+		for (int i = 0; i < this.pages.size(); i++) {
+			if (pages.get(i) instanceof AbletonClipLauncherPage) {
+				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
+				page.updateTempo(tempo);
 			}
 		}
 	}
