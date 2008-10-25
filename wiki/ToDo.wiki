@@ -13,5 +13,5 @@
   * ~~Make Ableton clip updater more efficient~~
   * ~~Add a way to page through tracks in ableton page~~
   * ~~Make clip slot trigger buttons, stop buttons, and arm/disarm buttons select the current instrument for their associated track~~
-  * Make the record / stop buttons disappear as an option on the Ableton page
+  * ~~Make the record / stop buttons disappear as an option on the Ableton page~~
   * Modify the keyboard page so key/scale/channel changes are done by holding a button
