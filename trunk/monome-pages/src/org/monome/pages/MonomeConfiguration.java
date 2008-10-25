@@ -101,7 +101,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	/**
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
-	private String options[] = new String[7];
+	private String options[] = new String[8];
 
 	/**
 	 * The current page panel being displayed 
@@ -136,7 +136,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[3] = "MIDI Triggers";
 		this.options[4] = "External Application";
 		this.options[5] = "Ableton Clip Launcher";
-		this.options[6] = "Machine Drum Interface";
+		this.options[6] = "Ableton Clip Skipper";
+		this.options[7] = "Machine Drum Interface";
 
 		this.configuration = configuration;
 		this.prefix = prefix;
@@ -176,6 +177,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		else if (pageName.compareTo("Ableton Clip Launcher") == 0) {
 			page = new AbletonClipLauncherPage(this, this.numPages);
+		}
+		else if (pageName.compareTo("Ableton Clip Skipper") == 0) {
+			page = new AbletonClipSkipperPage(this, this.numPages);
 		}
 		else if (pageName.compareTo("Machine Drum Interface") == 0) {
 			page = new MachineDrumInterfacePage(this, this.numPages);
@@ -253,7 +257,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param clip Ableton clip number (0 = first clip)
 	 * @param state State of the clip (1 = playing)
 	 */
-	public void updateAbletonClipState(int track, int clip, int state) {
+	public void updateAbletonClipState(int track, int clip, int state, float length) {
 		if (this.pages.size() == 0) {
 			return;
 		}
@@ -262,6 +266,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.updateClipState(track, clip, state);
+			} else if (pages.get(i) instanceof AbletonClipSkipperPage) {
+				AbletonClipSkipperPage page = (AbletonClipSkipperPage) pages.get(i);
+				page.updateClipState(track, clip, state, length);
 			}
 		}
 	}
