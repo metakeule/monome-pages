@@ -237,8 +237,8 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 				if (this.clipState[y][clip] == CLIP_STATE_PLAYING) {
 					this.clipPosition[y][clip] += (float) (4.0 / 96.0);					
 				}
-				if (this.clipPosition[y][clip] >= this.clipLength[y][clip]) {
-					this.clipPosition[y][clip] = (float) 0.0;
+				if (this.clipPosition[y][clip] > this.clipLength[y][clip]) {
+					this.clipPosition[y][clip] -= this.clipLength[y][clip];
 				}
 			}
 		}
