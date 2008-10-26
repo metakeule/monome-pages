@@ -14,29 +14,49 @@ There are currently 7 pages available, and any number of monomes can be configur
 
 The MIDI Sequencer page turns a monome into a MIDI clock-driven step sequencer that sends MIDI note on/off messages.  It has approximately 240 banks of 32x15 steps each (that's 32 steps wide, 15 instruments deep).  Basic features such as copy and clear pattern/bank have been implemented, as well as a simple pattern generator and pattern alteration algorithm.
 
+See: MIDISequencerPage
+
   * MIDI Keyboard
 
 The MIDI Keyboard is a basic keyboard interface that sends a MIDI note on message when a button is pressed and a MIDI note off message when a button is released.  The buttons are automatically mapped to musical keys/scales.  Up to 6 instruments can be controlled from a single instance of the MIDI Keyboard by sending MIDI note messages on different MIDI channels.  The key and scale can be selected on the monome.  Currently 4 scales are implemented with 12 keys, for a total of 48 possible key/scale combinations.
+
+See: MIDIKeyboardPage
 
   * MIDI Faders
 
 The MIDI Faders page turns the monome into a set of virtual faders where each column represents the MIDI CC value of one parameter.  There is a variable delay that controls how fast the faders move from value to value.
 
+See: MIDIFadersPage
+
   * MIDI Triggers
 
 The MIDI Triggers page is a simple grid of MIDI trigger buttons.  The buttons send MIDI notes when pressed.  The buttons are organized in either columns or rows, and each column/row sends on it's own MIDI channel.  Each row or column can be configured to act as toggle buttons instead of triggers.  In toggle mode, a row or column's buttons will switch from on to off whenever they are pressed.  In trigger mode, a row or column's buttons will stay lit while the buttons are held down.
+
+See: MIDITriggersPage
 
   * External Application
 
 The External Application page is used to route an external application (ie. mlr, bboingg, flin, dj64, etc.) through a page.  This allows you to run multiple applications simultaneously on a single monome device and switch between them.  For example, you could run mlr on page 1, boiingg on page 2, etc.  You could also run quadrants or hub configured with a few applications of their own through a page.
 
+See: ExternalApplicationPage
+
   * Ableton Clip Launcher
 
 The Ableton Clip Launcher page is an interface to launch clips, stop tracks, or record enable/disable tracks in Ableton Live.  It is currently implemented to use the LiveOSC project to communicate with Ableton Live (so you'll need LiveOSC installed and configured for this to work).  It polls the state of Ableton Live and updates the page according to the state of the clips, so it is always in sync with the state of Ableton Live.
 
+See: AbletonClipLauncherPage
+
+  * Ableton Clip Skipper
+
+The Ableton Clip Skipper page is kind of like mlr for Ableton Live.  It allows you to skip around in the currently playing audio or MIDI clips of the first 8 or 16 Ableton Live tracks.  The grid adapts to the currently playing clip's loop length automatically so any size clips will work and no configuration of the row/clip is necessary.
+
+See: AbletonClipSkipperPage
+
   * Machine Drum Interface
 
 The Machine Drum Interface page is a set of controls for controlling an Elektron Machine Drum (any version should work). It has 4 kit save slots, 4 kit load slots, it can initialize a new kit with random machines in each slot, and it sends random parameter changes to machines and global effects. Useful as a live performance tool or in the studio for crafting kits w/ randomness. This can generate some bizarre, other-worldly drum sounds. Other MIDI pages (like the sequencer) can be routed out to the Machine Drum as well (just select the appropriate MIDI output device in the page).
+
+See: MachineDrumInterfacePage
 
 = Setup Guide =
 
