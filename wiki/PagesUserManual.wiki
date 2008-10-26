@@ -14,25 +14,25 @@ There are currently 7 pages available, and any number of monomes can be configur
 
 The MIDI Sequencer page turns a monome into a MIDI clock-driven step sequencer that sends MIDI note on/off messages.  It has approximately 240 banks of 32x15 steps each (that's 32 steps wide, 15 instruments deep).  Basic features such as copy and clear pattern/bank have been implemented, as well as a simple pattern generator and pattern alteration algorithm.
 
-See: MIDISequencerPage
+See: [http://code.google.com/p/monome-pages/wiki/MIDISequencerPage MIDISequencerPage]
 
   * MIDI Keyboard
 
 The MIDI Keyboard is a basic keyboard interface that sends a MIDI note on message when a button is pressed and a MIDI note off message when a button is released.  The buttons are automatically mapped to musical keys/scales.  Up to 6 instruments can be controlled from a single instance of the MIDI Keyboard by sending MIDI note messages on different MIDI channels.  The key and scale can be selected on the monome.  Currently 4 scales are implemented with 12 keys, for a total of 48 possible key/scale combinations.
 
-See: MIDIKeyboardPage
+See: [http://code.google.com/p/monome-pages/wiki/MIDIKeyboardPage MIDIKeyboardPage]
 
   * MIDI Faders
 
 The MIDI Faders page turns the monome into a set of virtual faders where each column represents the MIDI CC value of one parameter.  There is a variable delay that controls how fast the faders move from value to value.
 
-See: MIDIFadersPage
+See: [http://code.google.com/p/monome-pages/wiki/MIDIFadersPage MIDIFadersPage]
 
   * MIDI Triggers
 
 The MIDI Triggers page is a simple grid of MIDI trigger buttons.  The buttons send MIDI notes when pressed.  The buttons are organized in either columns or rows, and each column/row sends on it's own MIDI channel.  Each row or column can be configured to act as toggle buttons instead of triggers.  In toggle mode, a row or column's buttons will switch from on to off whenever they are pressed.  In trigger mode, a row or column's buttons will stay lit while the buttons are held down.
 
-See: MIDITriggersPage
+See: [http://code.google.com/p/monome-pages/wiki/MIDITriggersPage MIDITriggersPage]
 
   * External Application
 
