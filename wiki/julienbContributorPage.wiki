@@ -1,11 +1,11 @@
 #labels Featured
 I'm Julien Bayle and was invited by the genius Tom to contribute here.
 
-= Introduction =
+== Introduction ==
 asap!
 
-= Contributions =
+== Contributions ==
 asap!
 
-= Homepage =
+== Homepage ==
 http://www.julienbayle.net
