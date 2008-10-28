@@ -8,6 +8,7 @@ I have to update it because my framework follows actually and definitively monom
 == Contributions ==
  * arpeggiator page (work in progress)
  * ableton Clip Launcher julien.bayle's page version (work in progress)
+ * keyboard julien.bayle's page version (work in progress)
 
 == Homepage ==
 http://www.julienbayle.net
