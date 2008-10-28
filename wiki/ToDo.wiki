@@ -1,3 +1,6 @@
 #summary Items planned for the next release.
 
   * Modify the keyboard page so key/scale/channel changes are done by holding a button
+  * Add a feature in the core to grab from live the type of the clip (looped,one shot, etc) [proposed by julien]
+  * Add a feature in the core to control the blinking rate of leds [proposed by julien]
+  * Add a feature in the core to the brightness of leds individually (involve a firmware modifications) [proposed by julien]
