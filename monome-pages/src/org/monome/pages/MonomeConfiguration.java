@@ -285,6 +285,24 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			}
 		}
 	}
+	
+	public void redrawAbletonPages() {
+		if (this.pages.size() == 0) {
+			return;
+		}
+
+		for (int i = 0; i < this.pages.size(); i++) {
+			if (pages.get(i) instanceof AbletonClipLauncherPage) {
+				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
+				page.redrawMonome();
+			}
+			
+			if (pages.get(i) instanceof AbletonClipSkipperPage) {
+				AbletonClipSkipperPage page = (AbletonClipSkipperPage) pages.get(i);
+				page.redrawMonome();
+			}
+		}
+	}
 
 	/**
 	 * Update the record enabled/disabled state of an Ableton track.

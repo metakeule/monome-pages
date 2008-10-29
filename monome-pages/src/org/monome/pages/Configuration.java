@@ -167,6 +167,14 @@ public class Configuration implements Receiver {
 	public ArrayList<MidiDevice> getMidiOutDevices() {
 		return this.midiOutDevices;
 	}
+	
+	/**
+	 * A background thread process that updates clipState and tracksArmed based on
+	 * information sent back by LiveOSC.
+	 */
+	private AbletonClipUpdater updater;
+
+	private AbletonOSCListener abletonOSCListener;
 
 	/**
 	 * Called from GUI to add a new monome configuration.
@@ -490,20 +498,53 @@ public class Configuration implements Receiver {
 	 * 
 	 * @return true if initialization was successful
 	 */
-	public boolean initAbleton() {
+	public void initAbleton() {
+		if (this.abletonOSCListener != null) {
+			return;
+		}
+		System.out.println("initing ableton");
+		
+		this.abletonOSCListener = new AbletonOSCListener(this);
+		this.initAbletonOSCOut();
+		this.initAbletonOSCIn();
+		this.initAbletonClipUpdater();
+	}
+	
+	public void initAbletonOSCOut() {
+		if (this.abletonOSCPortOut != null) {
+			return;
+		}
+		System.out.println("initing ableton osc out");
+		
 		try {
-			AbletonOSCListener oscListener = new AbletonOSCListener(this);
 			this.abletonOSCPortOut = new OSCPortOut(InetAddress.getByName(this.abletonHostname), this.abletonOSCOutPortNumber);
-			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
-			this.abletonOSCPortIn.addListener("/live/track/info", oscListener);
-			this.abletonOSCPortIn.addListener("/live/tempo", oscListener);
-			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
-		return true;
+
+	}
+	
+	public void initAbletonOSCIn() {
+		if (this.abletonOSCPortIn != null) {
+			return;
+		}
+		System.out.println("initing ableton osc in");
+		
+		try {
+			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
+			this.abletonOSCPortIn.addListener("/live/track/info", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/tempo", this.abletonOSCListener);
+			this.abletonOSCPortIn.startListening();
+		} catch (SocketException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void initAbletonClipUpdater() {
+		this.updater = new AbletonClipUpdater(this, this.abletonOSCPortOut);
+		new Thread(this.updater).start();
 	}
 
 	/**
@@ -568,5 +609,11 @@ public class Configuration implements Receiver {
 		}
 		xml += "</configuration>\n";
 		return xml;
+	}
+
+	public void redrawAbletonPages() {
+		for (int i=0; i < this.numMonomeConfigurations; i++) {
+			monomeConfigurations.get(i).redrawAbletonPages();
+		}		
 	}
 }
