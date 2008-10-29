@@ -88,8 +88,6 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 
 	private int[] jumpClip = new int[16];
 
-	private int ticks;
-		
 	/**
 	 * Used to represent an empty clip slot
 	 */
@@ -194,6 +192,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 				this.trackJump[y] = y;
 				this.trackMovement[y] = movement;
 				this.jumpClip[y] = clip;
+				this.monome.led_row(y, 0, 0, this.index);
 			}
 		}		
 	}
@@ -215,6 +214,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 */
 	public void handleReset() {
 		for (int y=0; y < this.monome.sizeY; y++) {
+			this.monome.led_row(y, 0, 0, this.index);
 			for (int clip=0; clip < 250; clip++) {
 				this.clipPosition[y][clip] = (float) 0.0;
 			}
@@ -232,7 +232,6 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 				this.trackJump[y] = -1;
 			}			
 		}
-		this.ticks++;
 		for (int y=0; y < this.monome.sizeY; y++) {
 			for (int clip=0; clip < 250; clip++) {
 				if (this.clipState[y][clip] == CLIP_STATE_PLAYING) {
@@ -242,9 +241,6 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 					this.clipPosition[y][clip] -= this.clipLength[y][clip];
 				}
 			}
-		}
-		if (this.ticks == 12) {
-			this.ticks = 0;
 		}
 		this.redrawMonome();
 	}
@@ -259,12 +255,18 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 				if (this.clipState[y][clip] == CLIP_STATE_PLAYING) {
 					foundPlayingClip = 1;
 					int x = (int) ((float) (this.clipPosition[y][clip] / this.clipLength[y][clip]) * (float) this.monome.sizeX);
-					this.monome.led_row(y, 0, 0, this.index);
+					int left = x - 1;
+					if (left < 0) {
+						left = this.monome.sizeX - 1;
+					}
+					this.monome.led(left, y, 0, this.index);
 					this.monome.led(x, y, 1, this.index);
 				}
 			}
 			if (foundPlayingClip == 0) {
-				this.monome.led_row(y, 0, 0, this.index);
+				for (int x=0; x < this.monome.sizeX; x++) {
+					this.monome.led(x, y, 0, this.index);
+				}
 			}
 		}
 	}
@@ -301,5 +303,4 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	public void destroyPage() {
 		return;
 	}
-
 }
