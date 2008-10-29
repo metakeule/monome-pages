@@ -125,6 +125,18 @@ public class Configuration implements Receiver {
 	private int abletonOSCOutPortNumber = 9000;
 
 	/**
+	 * A background thread process that updates clipState and tracksArmed based on
+	 * information sent back by LiveOSC.
+	 */
+	private AbletonClipUpdater updater;
+
+	/**
+	 * Listens for /live/track/info and /live/tempo responses from Ableton and
+	 * updates this object.  Implements the OSCListener interface.
+	 */
+	private AbletonOSCListener abletonOSCListener;
+
+	/**
 	 * The OSCPortOut object to send OSC messages to Ableton.
 	 */
 	private OSCPortOut abletonOSCPortOut;
@@ -133,11 +145,6 @@ public class Configuration implements Receiver {
 	 * The hostname that Ableton is bound to.
 	 */
 	private String abletonHostname = "localhost";
-
-	/**
-	 * Whether or not Ableton has been initialized yet. 
-	 */
-	boolean abletonInitialized = false;
 
 	/**
 	 * @param name The name of the configuration
@@ -168,14 +175,6 @@ public class Configuration implements Receiver {
 		return this.midiOutDevices;
 	}
 	
-	/**
-	 * A background thread process that updates clipState and tracksArmed based on
-	 * information sent back by LiveOSC.
-	 */
-	private AbletonClipUpdater updater;
-
-	private AbletonOSCListener abletonOSCListener;
-
 	/**
 	 * Called from GUI to add a new monome configuration.
 	 * 
@@ -502,7 +501,6 @@ public class Configuration implements Receiver {
 		if (this.abletonOSCListener != null) {
 			return;
 		}
-		System.out.println("initing ableton");
 		
 		this.abletonOSCListener = new AbletonOSCListener(this);
 		this.initAbletonOSCOut();
@@ -514,7 +512,6 @@ public class Configuration implements Receiver {
 		if (this.abletonOSCPortOut != null) {
 			return;
 		}
-		System.out.println("initing ableton osc out");
 		
 		try {
 			this.abletonOSCPortOut = new OSCPortOut(InetAddress.getByName(this.abletonHostname), this.abletonOSCOutPortNumber);
@@ -530,7 +527,6 @@ public class Configuration implements Receiver {
 		if (this.abletonOSCPortIn != null) {
 			return;
 		}
-		System.out.println("initing ableton osc in");
 		
 		try {
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
