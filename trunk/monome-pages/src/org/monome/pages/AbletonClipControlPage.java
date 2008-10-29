@@ -166,7 +166,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
+		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Controler (in progress!)");
 		panel.add(label);
 		
 		disableArmCB.setText("Disable Arm");
