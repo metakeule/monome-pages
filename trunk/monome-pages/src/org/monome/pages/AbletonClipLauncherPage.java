@@ -98,12 +98,6 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * The amount to offset the monome display of the tracks
 	 */
 	private int trackOffset;
-	
-	/**
-	 * A background thread process that updates clipState and tracksArmed based on
-	 * information sent back by LiveOSC.
-	 */
-	private AbletonClipUpdater updater;
 
 	/**
 	 * Ableton's current tempo/BPM setting
@@ -125,8 +119,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public AbletonClipLauncherPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		this.updater = new AbletonClipUpdater(this);
-		new Thread(this.updater).start();
+		this.monome.configuration.initAbleton();
 	}
 
 	/* (non-Javadoc)

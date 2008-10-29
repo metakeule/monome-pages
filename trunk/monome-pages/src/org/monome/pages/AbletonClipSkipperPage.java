@@ -111,6 +111,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	public AbletonClipSkipperPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
+		this.monome.configuration.initAbleton();
 	}
 
 	/* (non-Javadoc)

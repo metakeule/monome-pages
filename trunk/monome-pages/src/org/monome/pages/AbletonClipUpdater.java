@@ -41,25 +41,23 @@ public class AbletonClipUpdater implements Runnable {
 	/**
 	 * A reference to the AbletonClipPage that this AbletonClipUpdater belongs to.
 	 */
-	private AbletonClipLauncherPage page;
+	private Configuration configuration;
+	
+	private OSCPortOut abletonOscOut;
 
 	/**
-	 * @param page The page that this AbletonClipUpdater belongs to
+	 * @param configuration The page that this AbletonClipUpdater belongs to
 	 */
-	public AbletonClipUpdater(AbletonClipLauncherPage page) {
-		this.page = page;
+	public AbletonClipUpdater(Configuration configuration, OSCPortOut abletonOscOut) {
+		this.abletonOscOut = abletonOscOut;
+		this.configuration = configuration;
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		boolean running = true;
-		OSCPortOut abletonOscOut = this.page.monome.configuration.getAbletonOSCPortOut();
-		if (abletonOscOut == null) {
-			this.page.monome.configuration.initAbleton();
-			abletonOscOut = this.page.monome.configuration.getAbletonOSCPortOut();
-		}
+		boolean running = true;		
 		// query Ableton for the tempo
 		OSCMessage msg = new OSCMessage("/live/tempo");
 
@@ -68,11 +66,11 @@ public class AbletonClipUpdater implements Runnable {
 
 		while (running) {
 			try {
-				abletonOscOut.send(msg);
-				abletonOscOut.send(msg2);
+				this.abletonOscOut.send(msg);
+				this.abletonOscOut.send(msg2);
 				// sleep for 300ms in between calls
 				Thread.sleep(100);
-				this.page.redrawMonome();
+				this.configuration.redrawAbletonPages();
 			} catch (IOException e) {
 				running = false;
 				e.printStackTrace();
