@@ -101,7 +101,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	/**
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
-	private String options[] = new String[8];
+	private String options[] = new String[9];
 
 	/**
 	 * The current page panel being displayed 
@@ -138,7 +138,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[5] = "Ableton Clip Launcher";
 		this.options[6] = "Ableton Clip Skipper";
 		this.options[7] = "Machine Drum Interface";
-
+		this.options[8] = "Ableton Clip Control";
+		
 		this.configuration = configuration;
 		this.prefix = prefix;
 		this.sizeX = sizeX;
@@ -183,6 +184,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		else if (pageName.compareTo("Machine Drum Interface") == 0) {
 			page = new MachineDrumInterfacePage(this, this.numPages);
+		}
+		else if (pageName.compareTo("Ableton Clip Control") == 0) {
+			page = new AbletonClipControlPage(this, this.numPages);
 		}
 		else {
 			return null;
