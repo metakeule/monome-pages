@@ -1,5 +1,5 @@
 /*
- *  AbletonClipPage.java
+ *  AbletonClipControlPage.java
  * 
  *  Copyright (c) 2008, Tom Dinchak, Julien Bayle
  * 
@@ -37,11 +37,11 @@ import javax.swing.JPanel;
 import com.illposed.osc.OSCMessage;
 
 /**
- * The Ableton Clip Launcher page.  Usage information is available at:
+ * The Ableton Clip Control page.  Usage information is available at:
  * 
- * http://code.google.com/p/monome-pages/wiki/AbletonClipLauncherPage
+ * http://code.google.com/p/monome-pages/wiki/AbletonClipControlPage
  *   
- * @author Tom Dinchak
+ * @author Julien Bayle
  *
  */
 public class AbletonClipControlPage implements ActionListener, Page {
@@ -65,22 +65,22 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
 	 */
 	private int[][] clipState = new int[50][250];
-	
+
 	/**
 	 * Used to represent an empty clip slot
 	 */
 	private static final int CLIP_STATE_EMPTY = 0;
-	
+
 	/**
 	 * Used to represent a clip slot with a clip that is stopped 
 	 */
 	private static final int CLIP_STATE_STOPPED = 1;
-	
+
 	/**
 	 * Used to represent a clip slot with a clip that is playing 
 	 */
 	private static final int CLIP_STATE_PLAYING = 2;
-	
+
 	/**
 	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
 	 */
@@ -90,16 +90,21 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * tracksStopped[track_number] - Table container the stopped tracks information, true if the track was stopped at least one time.
 	 */
 	private boolean[] tracksStopped = new boolean[50];
-	
+
 	/**
 	 * The amount to offset the monome display of the clips
 	 */
 	private int clipOffset = 0;
-	
+
 	/**
 	 * The number of scene per song
 	 */
-	private int scenePerSong = 6;	
+	private int scenesPerSong = 6;	
+
+	/**
+	 * The maximum number of scenes (here, it is a multiple of scenePerSong ; here: maximum 50 songs...!)
+	 */
+	private int maxScenes= 300;
 
 	/**
 	 * The amount to offset the monome display of the tracks
@@ -110,9 +115,9 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * Ableton's current tempo/BPM setting
 	 */
 	private float tempo = (float) 120.0;
-	
-	private JCheckBox disableArmCB = new JCheckBox();
-	private JCheckBox disableStopCB = new JCheckBox();
+
+	//private JCheckBox disableArmCB = new JCheckBox();
+	//private JCheckBox disableStopCB = new JCheckBox();
 
 	/**
 	 * The number of control rows (track stop/midi notes feedback line + multi command line) that are enabled currently
@@ -134,12 +139,12 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		int numEnabledRows = 0;
-		if (this.disableArmCB.isSelected() == false) {
+		/*if (this.disableArmCB.isSelected() == false) {
 			numEnabledRows++;
 		}
 		if (this.disableStopCB.isSelected() == false) {
 			numEnabledRows++;
-		}
+		}*/
 		this.numEnabledRows = numEnabledRows;
 		return;
 	}
@@ -173,14 +178,14 @@ public class AbletonClipControlPage implements ActionListener, Page {
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Controler (in progress!)");
 		panel.add(label);
-		
-		disableArmCB.setText("Disable Arm");
+
+		/*disableArmCB.setText("Disable Arm");
 		disableArmCB.addActionListener(this);
 		panel.add(disableArmCB);
 
 		disableStopCB.setText("Disable Stop");
 		disableStopCB.addActionListener(this);
-		panel.add(disableStopCB);
+		panel.add(disableStopCB);*/
 
 		this.panel = panel;
 		return panel;
@@ -194,67 +199,49 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// only on button was pressed events
 		if (value == 1) {
 			// if you press a button of a row not inside the clip slots controller
-			if (y > this.scenePerSong) {
-				// minus 1 clip offset
-				if (y == 0) {
-					if (this.clipOffset > 0) {
-						this.clipOffset -= 1;
-					}
-				// plus 1 clip offset
-				} else if (y == 1) {
-					if ((this.clipOffset + 1) * (this.monome.sizeY - this.numEnabledRows) < 210) {
-						this.clipOffset += 1;
-					}
-				// minus 1 track offset
-				} else if (y == 2) {
-					if (this.trackOffset > 0) {
-						this.trackOffset -= 1;
-					}
-				// plus 1 track offset
-				} else if (y == 3) {
-					if ((this.trackOffset + 1) * (this.monome.sizeX - 1) < 50) {
-						this.trackOffset += 1;
-					}
-				} else if (y == 4) {
-					this.tempoDown();
-				} else if (y == 5) {
-					this.tempoUp();
-				} else if (y == 6) {
-					this.abletonRedo();
-				} else if (y == 7) {
-					this.abletonUndo();
-				}
-			}
-			// if you press a button of a row inside the clip slots controller
-			else {
-				// if this is the bottom row then stop track number x
-				if (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false) {
+			if (y > this.monome.sizeY - this.numEnabledRows - 1) {
+
+				// 7th row: MIDI NOTES FEEDBACKs / STOPs
+				if (y == this.monome.sizeY - 2) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
 					this.stopTrack(track_num);
 					this.viewTrack(track_num);
 				}
-				// if this is the 2nd from the bottom row then arm or disarm the track
-				else if ((y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableArmCB.isSelected() == false) ||
-						  y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == true && this.disableArmCB.isSelected() == false) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					if (this.tracksStopped[track_num] == false) {
-						this.armTrack(track_num);
-						this.tracksStopped[track_num] = true;
-						this.monome.led(x, y, 1, this.index);
-					} else {
-						this.disarmTrack(track_num);
-						this.monome.led(x, y, 0, this.index);
-						this.tracksStopped[track_num] = false;
+
+				// 8th row: Multi commands row
+				if (y == this.monome.sizeY - 1) {
+					if (x == 0) {
+						if (this.clipOffset > 0) {// previous song
+							this.clipOffset -= 1;
+						}
+					} else if (x == 1) {// next song
+						if ((this.clipOffset + 1) * (this.scenesPerSong) < this.maxScenes) {
+							this.clipOffset += 1;
+						}
+					} else if (x == 2) {// -bpm
+						this.tempoDown();
+
+					} else if (x == 3) {// +bpm
+						this.tempoUp();
+
+					} else if (x == 4) {// ----
+						//this.tempoDown();
+					} else if (x == 5) {// ----
+						//this.tempoUp();
+					} else if (x == 6) {// ----
+						//this.abletonRedo();
+					} else if (x == 7) {// ----
+						//this.abletonUndo();
 					}
-					this.viewTrack(track_num);
 				}
-				// otherwise play the clip
-				else {
-					int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					this.viewTrack(track_num);
-					this.playClip(track_num, clip_num);
-				}
+			}
+			// if you press a button of a row inside the clip slots controller
+			else {
+
+				int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
+				int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+				this.viewTrack(track_num);
+				this.playClip(track_num, clip_num);
 			}
 		}
 	}
@@ -310,7 +297,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/undo" to LiveOSC. 
 	 */
@@ -322,7 +309,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/tempo tempo-1" to LiveOSC. 
 	 */
@@ -332,7 +319,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		}
 		Object args[] = new Object[1];
 		args[0] = new Float(this.tempo - 1.0);
-		
+
 		OSCMessage msg = new OSCMessage("/live/tempo", args);
 		try {
 			this.monome.configuration.getAbletonOSCPortOut().send(msg);
@@ -348,7 +335,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
@@ -373,7 +360,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Sends "/live/disarm track" to LiveOSC.
 	 * 
@@ -427,7 +414,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handleReset()
 	 */
@@ -449,7 +436,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		//TODO: finish this function
 		// redraw the upper part of the monome (the clip state)
 		for (int track = 0; track < this.monome.sizeX; track++) {
-			for (int clip = 0; clip < (this.monome.sizeY - this.numEnabledRows); clip++) {
+			for (int clip = 0; clip < (this.scenesPerSong); clip++) {
 				int clip_num = clip + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
 				int track_num = track + (this.trackOffset * (this.monome.sizeX - 1));
 				if (this.clipState[track_num][clip_num] == CLIP_STATE_PLAYING) {
@@ -467,24 +454,23 @@ public class AbletonClipControlPage implements ActionListener, Page {
 				}
 			}
 		}
-		
-		// redraw the track STOP TRACK / MIDI NOTES FEEDBACK
-			for (int i = 0; i < this.monome.sizeX; i++) {
-				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
-				if (this.tracksStopped[track_num] == true) {
-					this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 0, this.index);
-				} else {
-					//this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
-					// TODO: Midi notes blinking
-				}
-			}
 
-		// clear the bottom row, stop buttons are never on
-		if (this.disableStopCB.isSelected() == false) {
-			for (int i=0; i < this.monome.sizeX; i++) {
-				this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
+		// redraw the track STOP TRACK / MIDI NOTES FEEDBACK
+		for (int i = 0; i < this.monome.sizeX; i++) {
+			int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
+			if (this.tracksStopped[track_num] == true) {
+				this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
+			} else {
+				//this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
+				// TODO: Midi notes blinking
 			}
 		}
+
+		// clear the bottom row, stop buttons are never on
+
+		/*for (int i=0; i < this.monome.sizeX; i++) {
+			this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
+		}*/
 	}
 
 	/* (non-Javadoc)
@@ -498,36 +484,36 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#toXml()
 	 */
 	public String toXml() {
-		String disableArm = "false";
+		/*String disableArm = "false";
 		String disableStop = "false";
 		if (disableArmCB.isSelected() == true) {
 			disableArm = "true";
 		}
-		
+
 		if (disableStopCB.isSelected() == true) {
 			disableStop = "true";
-		}
-		
+		}*/
+
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>Ableton Clip Control</name>\n";
-		xml += "      <disablearm>" + disableArm + "</disablearm>\n";
-		xml += "      <disablestop>" + disableStop + "</disablestop>\n";
+		/*xml += "      <disablearm>" + disableArm + "</disablearm>\n";
+		xml += "      <disablestop>" + disableStop + "</disablestop>\n";*/
 		xml += "    </page>\n";
 		return xml;
 	}
-	
-	public void setDisableArm(String disableArm) {
+
+	/*public void setDisableArm(String disableArm) {
 		if (disableArm.equals("true")) {
 			this.disableArmCB.doClick();
 		}
 	}
-	
+
 	public void setDisableStop(String disableStop) {
 		if (disableStop.equals("true")) {
 			this.disableStopCB.doClick();
 		}
-	}
+	}*/
 
 	/**
 	 * Called by AbletonClipUpdater based on messages received by LiveOSC.
