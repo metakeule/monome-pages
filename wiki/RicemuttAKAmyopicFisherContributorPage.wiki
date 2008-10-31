@@ -1,4 +1,5 @@
 #summary Hi there, pages users
+#labels Featured
 
 = Introduction =
 
