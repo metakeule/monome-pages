@@ -220,7 +220,11 @@ public class AbletonClipControlPage implements ActionListener, Page {
 						}
 					} else if (x == 2) {// -bpm
 						this.tempoDown();
-
+						/*if ((this.tempo - 1) < 20.0) {
+							this.tempo = (float) 21.0;
+						}
+						else this.tempo -= 1;*/
+						
 					} else if (x == 3) {// +bpm
 						this.tempoUp();
 
@@ -435,6 +439,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	public void redrawMonome() {
 		//TODO: finish this function
 		// redraw the upper part of the monome (the clip state)
+		
 		for (int track = 0; track < this.monome.sizeX; track++) {
 			for (int clip = 0; clip < (this.scenesPerSong); clip++) {
 				int clip_num = clip + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
