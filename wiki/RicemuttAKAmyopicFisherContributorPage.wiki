@@ -10,12 +10,12 @@ I should have a working beta ready sometime in the next week.
 
 
 = Details =
-
-Add your content here.  Format your content with:
-
 *features that will be implemented:*
 
-*ability to tune in Just intonation or Equal temperament
-*equal temperament can be done in any number of divisions per octave
-*includes numerous operations that can be done on the "grid" of notes, including rotation, horizontal and vertical flip, and so on
-*there will be some custom sequencers for working with these pitch sets as well.
+-ability to tune in Just intonation or Equal temperament
+
+-equal temperament can be done in any number of divisions per octave
+
+-includes numerous operations that can be done on the "grid" of notes, including rotation, horizontal and vertical flip, and so on
+
+-there will be some custom sequencers for working with these pitch sets as well.
