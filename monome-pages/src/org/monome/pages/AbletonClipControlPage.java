@@ -195,7 +195,6 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#handlePress(int, int, int)
 	 */
 	public void handlePress(int x, int y, int value) {
-		//TODO: finish this function
 		// only on button was pressed events
 		if (value == 1) {
 			// if you press a button of a row not inside the clip slots controller
@@ -437,7 +436,6 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
 	public void redrawMonome() {
-		//TODO: finish this function
 		// redraw the upper part of the monome (the clip state)
 		
 		for (int track = 0; track < this.monome.sizeX; track++) {
