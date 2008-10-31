@@ -16,7 +16,7 @@ The Ableton Clip Control page uses the LiveOSC project to communicate with Ablet
 || pvco || nxco || -bpm || +bpm || ---- || ---- || ---- || ---- ||
 
 
-Each column represents one track in Ableton Live's session view.  The clip buttons trigger clips from top to bottom in the track.  The recX buttons arm or disarm their associated track for recording.  The stpX buttons send a stop signal to their associated track.
+Each column represents one track in Ableton Live's session view.  The clip buttons trigger clips from top to bottom in the track.
 
 The notes/stop buttons have 2 states:
  * if a clip is playing in the track, it shows you midi note feedback from this track by led blinking & if you press it, it stops the clip playing in the track.
