@@ -274,6 +274,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				AbletonClipSkipperPage page = (AbletonClipSkipperPage) pages.get(i);
 				page.updateClipState(track, clip, state, length);
 			}
+			  else if (pages.get(i) instanceof AbletonClipControlPage) {
+				 AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
+				page.updateClipState(track, clip, state);
+			}
 		}
 	}
 	
@@ -331,6 +335,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
+				page.updateTrackState(track, armed);
+			}
+			if (pages.get(i) instanceof AbletonClipControlPage) {
+				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
 				page.updateTrackState(track, armed);
 			}
 		}
