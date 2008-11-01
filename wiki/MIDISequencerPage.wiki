@@ -103,7 +103,7 @@ Null buttons don't do anything.  Sorry.
 || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank ||
 || null || null || genp || altp || copy || clr  || bkmd || null || null || null || null || null || null || null || null || null ||
 
-The bank buttons are used to select banks.  Each bank contains four patterns of 8 steps each (the sequence view represents one bank).  Bank mode will be disabled when a bank button is pressed and the page will flip to sequence mode.
+The bank buttons are used to select banks.  Each bank contains four patterns of 8 steps each on a 64/40h or 16 steps each on a 128/256 (the sequence view represents one pattern).
 
 The off1 and off2 buttons represent the instrument offset on the 64 and 128 (they don't exist on the 256).  By default, off1 will be selected, but pressing off2 will change the rows on the sequencer view to correspond to the next 7 rows/instruments/MIDI notes.  This lets you sequence up to 14 instruments on a 64. 256 allows for 15 instruments with no offsetting required.
 
