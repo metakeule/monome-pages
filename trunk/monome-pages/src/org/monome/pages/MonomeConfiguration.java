@@ -268,7 +268,32 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			} else if (option.equals("1")) {
 				this.patternBanks.get(index).setQuantization(96);
 			}
-
+		}
+			// Set quantization
+		if (e.getActionCommand().contains("Set Pattern Length")) {
+			String[] pieces = e.getActionCommand().split(":");
+			int index = Integer.parseInt(pieces[0]) - 1;
+			String option = (String)JOptionPane.showInputDialog(
+					this,
+					"Set new pattern length in bars (between 1 and 16)",
+					"Set Pattern Length",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					null,
+					"");
+			
+			if (option == null) {
+				return;
+			}
+			
+			try {
+				int patternLength = Integer.parseInt(option);
+				if (patternLength > 0 && patternLength <= 16) {
+					this.patternBanks.get(index).setPatternLength(patternLength);
+				}
+			} catch (NumberFormatException nfe) {
+				nfe.printStackTrace();
+			}
 		}
 	}
 
@@ -518,6 +543,19 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		fileMenu.add(subMenu);
 
+		subMenu = new JMenu("Set Pattern Length");
+
+		if (this.numPages == 0) {
+			menuItem = new JMenuItem("No Pages Defined");
+			subMenu.add(menuItem);
+		} else {
+			for (int i=0; i < this.numPages; i++) {
+				menuItem = new JMenuItem(i+1 + ": Set Pattern Length for " + this.pages.get(i).getName());
+				menuItem.addActionListener(this);
+				subMenu.add(menuItem);
+			}
+		}
+		fileMenu.add(subMenu);
 		
 		menuItem = new JMenuItem("Remove Configuration", KeyEvent.VK_R);
 		menuItem.getAccessibleContext().setAccessibleDescription("Create a new configuration");
@@ -774,8 +812,22 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				xml += this.pages.get(i).toXml();
 			}
 		}
+		for (int i=0; i < this.numPages; i++) {
+			int patternLength = this.patternBanks.get(i).getPatternLength();
+			int quantization = this.patternBanks.get(i).getQuantization();
+			xml += "    <patternlength>" + patternLength + "</patternlength>\n";
+			xml += "    <quantization>" + quantization + "</quantization>\n";
+		}
 		xml += "  </monome>\n";
 		return xml;
+	}
+	
+	public void setPatternLength(int pageNum, int length) {
+		this.patternBanks.get(pageNum).setPatternLength(length);
+	}
+	
+	public void setQuantization(int pageNum, int quantization) {
+		this.patternBanks.get(pageNum).setQuantization(quantization);
 	}
 
 	/**

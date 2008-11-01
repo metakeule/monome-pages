@@ -42,8 +42,7 @@ public class PatternBank {
 			this.patterns.get(patternNum).clearPattern();
 		} else if (this.patternState[patternNum] == PATTERN_STATE_RECORDED) {
 			this.patternState[patternNum] = PATTERN_STATE_TRIGGERED;
-		}
-		
+		}	
 	}
 	
 	public void recordPress(int x, int y, int value) {
@@ -86,6 +85,18 @@ public class PatternBank {
 
 	public void setQuantization(int i) {
 		this.quantify = i;
+	}
+	
+	public int getQuantization() {
+		return this.quantify;
+	}
+	
+	public void setPatternLength(int bars) {
+		this.patternLength = 96 * bars;
+	}
+	
+	public int getPatternLength() {
+		return this.patternLength / 96;
 	}
 	
 	public void handleReset() {
