@@ -116,7 +116,7 @@ The Ableton Live setup described below can be adapted to other audio software if
 
 Now that Monome Serial and Ableton Live are running it's time to run the pages application.  If you haven't already, download a copy of it from the Downloads tab and do any necessary Java setup as described in the sections above.
 
-You can launch pages either by double-clicking on the JAR file or running "java -jar pages-0.1.jar" from the command line.
+You can launch pages either by double-clicking on the JAR file or running "java -jar pages-0.1.6.jar" from the command line.
 
 You will be greeted by an empty window and a File menu.  The first step is to create a new configuration.  Go to File -> New Configuration and give it a name.
 
@@ -135,3 +135,11 @@ MIDI-related pages have an 'Add MIDI Output' button, you should click on this an
 You can save and load configurations from the File menu.  Configurations are stored in XML format.
 
 See the individual page wiki pages for button layout and functionality.
+
+== Patterns ==
+
+Each page has 8 or 16 patterns, depending on the size of the monome.  Patterns can be accessed by holding down the page change button (the bottom right button).  The top row of buttons each represent one pattern.  When you hold down the page change button and press a pattern button you will trigger that pattern to play/record.  The currently playing pattern is always recording all button presses even after it begins looping, and it will flash when the page change button is held down.  Pushing another pattern button will switch the pattern that is running.  If you press the currently running pattern button it will clear and disable the pattern, allowing you to record over it again.
+
+By default, pattern recording is quantized to 1/16th notes.  You can change the quantization setting for each page's patterns in the Page menu.  You can also set the length of each page's patterns to a number of bars between 1 and 16.  By default, patterns are 4 bars long.  The pattern configuration will be saved with your configuration files, but the recorded patterns will not.
+
+Patterns run off of MIDI clock signal so you must have a MIDI input selected and that MIDI input must be receiving MIDI clock from Ableton or another source.
