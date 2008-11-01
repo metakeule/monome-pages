@@ -1,6 +1,10 @@
-#summary Items planned for the next release.
+#summary Items planned for future releases.
 
-  * Modify the keyboard page so key/scale/channel changes are done by holding a button
+  * Add a new Ableton page that combines a track/clip interface with a virtual keyboard.
+  * Implement pattern recording/playback for all pages
+  * AbletonClipLauncher: change redo button to overdub button
+  * MIDISequencerPage: stay in bank mode when a new bank is selected
+  * MIDIKeyboardPage: key/scale/channel changes are done by holding a button to avoid accidently changing scale/key
   * Add a feature in the core to grab from live the type of the clip (looped,one shot, etc) *proposed by julien*
   * Add a feature in the core to control the blinking rate of leds *proposed by julien*
   * Add a feature in the core to the brightness of leds individually (involve a firmware modifications) *proposed by julien*
