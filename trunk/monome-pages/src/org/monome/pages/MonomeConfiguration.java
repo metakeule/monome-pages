@@ -87,6 +87,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * The pages that belong to this monome
 	 */
 	private ArrayList<Page> pages = new ArrayList<Page>();
+	private ArrayList<PatternBank> patternBanks = new ArrayList<PatternBank>();
 
 	/**
 	 * The number of pages this monome has 
@@ -193,6 +194,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		this.pages.add(this.numPages, page);
 		this.switchPage(page, this.numPages, true);
+
+		int numPatterns = this.sizeX;
+		this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
+		
 		this.numPages++;
 		// recreate the menu bar to include this page in the show page list
 		this.setJMenuBar(this.createMenuBar());
@@ -364,19 +369,17 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		// if page change mode is on and this is a button on the bottom row then change page and return
 		if (this.pageChangeMode == 1 && value == 1) {
-			// if the page exists then change, otherwise ignore
-			if (this.pages.size() > x) {
-				int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
-				if (next_page > this.pages.size()) {
-					return;
-				}
+			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
+			int patternNum = x;
+			if (this.pages.size() > next_page && next_page < (this.sizeX * this.sizeY) / 2) {
 				// offset back by one because of the page change button
 				if (next_page > 7) {
 					next_page--;
 				}
 				this.curPage = next_page;
-				
 				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
+			} else if (y == 0) {
+				this.patternBanks.get(this.curPage).handlePress(patternNum);
 			}
 			this.pageChanged = true;
 			return;
@@ -386,6 +389,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
 			this.pageChangeMode = 1;
 			this.pageChanged = false;
+			this.drawPatternState();
 			return;
 		}
 
@@ -396,17 +400,36 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			if (this.pageChanged == false) {
 				if (this.pages.get(curPage) != null) {
 					this.pages.get(curPage).handlePress(x, y, 1);
+					this.patternBanks.get(curPage).recordPress(x, y, 1);
 					this.pages.get(curPage).handlePress(x, y, 0);
+					this.patternBanks.get(curPage).recordPress(x, y, 0);
 				}
 			}
+			this.pages.get(curPage).redrawMonome();
 			return;
 		}
 
 		if (this.pages.get(curPage) != null) {
+			this.patternBanks.get(curPage).recordPress(x, y, value);
 			this.pages.get(curPage).handlePress(x, y, value);
 		}
 	}
 
+	public void drawPatternState() {
+		for (int x=0; x < this.sizeX; x++) {
+			if (this.patternBanks.get(curPage).getPatternState(x) == PatternBank.PATTERN_STATE_TRIGGERED) {
+				if (this.ledState[x][0] == 1) {
+					this.led(x, 0, 0, -1);
+				} else {
+					this.led(x, 0, 1, -1);
+				}
+			} else if (this.patternBanks.get(curPage).getPatternState(x) == PatternBank.PATTERN_STATE_RECORDED) {
+				this.led(x, 0, 1, -1);
+			} else if (this.patternBanks.get(curPage).getPatternState(x) == PatternBank.PATTERN_STATE_EMPTY) {
+				this.led(x, 0, 0, -1);
+			}
+		}
+	}
 	/**
 	 * Builds the monome configuration window's Page menu
 	 * 
@@ -457,7 +480,18 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 */
 	public void tick() {
 		for (int i=0; i < this.numPages; i++) {
+			ArrayList<Press> presses = patternBanks.get(i).getRecordedPresses();
+			if (presses != null) {
+				for (int j=0; j < presses.size(); j++) {
+					int[] press = presses.get(j).getPress();
+					this.pages.get(curPage).handlePress(press[0], press[1], press[2]);
+				}
+			}
 			this.pages.get(i).handleTick();
+			this.patternBanks.get(i).handleTick();
+		}
+		if (this.pageChangeMode == 1) {
+			this.drawPatternState();
 		}
 	}
 
@@ -491,21 +525,24 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param index The index of the page making the request
 	 */
 	public void led(int x, int y, int value, int index) {
-		this.pageState[index][x][y] = value;
-
-		if (index != this.curPage) {
-			return;
-		}
-
-		if (this.pages.get(index) == null) {
-			return;
-		}
-
-		if (this.pages.get(index).getCacheDisabled() == false) {
-			if (this.ledState[x][y] == value) {
+		if (index > -1) {
+			this.pageState[index][x][y] = value;
+	
+			if (index != this.curPage) {
 				return;
-			}	
+			}
+	
+			if (this.pages.get(index) == null) {
+				return;
+			}
+
+			if (this.pages.get(index).getCacheDisabled() == false) {
+				if (this.ledState[x][y] == value) {
+					return;
+				}	
+			}
 		}
+
 		this.ledState[x][y] = value;
 
 		Object args[] = new Object[3];
