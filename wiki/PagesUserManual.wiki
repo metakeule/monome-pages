@@ -112,6 +112,10 @@ The Ableton Live setup described below can be adapted to other audio software if
   # Notice that there are two entries for each device, Input and Output.  Make sure that all 3 buttons are disabled on all Output entries for the devices you want to receive MIDI notes and control change messages on.
   # Enable Track and Remote on the Input entries of the devices you wish to use.  You can enable both Track and Remote for a device if you want both types of messages to go through it, or just one or the other.
 
+Here is an example of how the MIDI Sync page should be setup:
+
+[http://www.post-digital.net/~phortran/pages_ableton_midi.jpg]
+
 == Pages Setup ==
 
 Now that Monome Serial and Ableton Live are running it's time to run the pages application.  If you haven't already, download a copy of it from the Downloads tab and do any necessary Java setup as described in the sections above.
