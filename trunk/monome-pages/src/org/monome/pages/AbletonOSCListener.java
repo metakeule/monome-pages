@@ -66,10 +66,11 @@ public class AbletonOSCListener implements OSCListener {
 				this.configuration.updateAbletonClipState(track, clip, clipstate, length);
 			}
 		}
-		if (msg.getAddress().contains("/live/tempo")) {
+		if (msg.getAddress().contains("/live/state")) {
 			Object[] args = msg.getArguments();
 			float tempo = ((Float) args[0]).floatValue();
-			this.configuration.updateAbletonTempo(tempo);
+			int overdub = ((Integer) args[1]).intValue();
+			this.configuration.updateAbletonState(tempo, overdub);
 		}
 	}
 }

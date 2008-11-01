@@ -59,7 +59,7 @@ public class AbletonClipUpdater implements Runnable {
 	public void run() {
 		boolean running = true;		
 		// query Ableton for the tempo
-		OSCMessage msg = new OSCMessage("/live/tempo");
+		OSCMessage msg = new OSCMessage("/live/state");
 
 		// query Ableton for the record armed/disarmed status of each track
 		OSCMessage msg2 = new OSCMessage("/live/track/info");
