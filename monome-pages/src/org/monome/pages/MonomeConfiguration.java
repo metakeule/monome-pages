@@ -118,6 +118,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * true if a page has been changed while the page change button was held down 
 	 */
 	private boolean pageChanged = false;
+	
+	private String[] quantizationOptions = {"1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/48", "1/96"};
 
 	/**
 	 * @param configuration The main Configuration object
@@ -140,7 +142,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[6] = "Ableton Clip Skipper";
 		this.options[7] = "Machine Drum Interface";
 		this.options[8] = "Ableton Clip Control";
-		
+				
 		this.configuration = configuration;
 		this.prefix = prefix;
 		this.sizeX = sizeX;
@@ -228,10 +230,45 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.configuration.closeMonome(this.index);
 		}
 		// Switch page
-		if (e.getActionCommand().contains(": ")) {
+		if (e.getActionCommand().contains("Show Page")) {
 			String[] pieces = e.getActionCommand().split(":");
 			int index = Integer.parseInt(pieces[0]);
 			this.switchPage(this.pages.get(index - 1), index - 1, true);
+		}
+		// Set quantization
+		if (e.getActionCommand().contains("Set Quantization")) {
+			String[] pieces = e.getActionCommand().split(":");
+			int index = Integer.parseInt(pieces[0]) - 1;
+			String option = (String)JOptionPane.showInputDialog(
+					this,
+					"Select new pattern quantization value",
+					"Set Quantization",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					quantizationOptions,
+					"");
+			if (option == null) {
+				return;
+			}
+			
+			if (option.equals("1/96")) {
+				this.patternBanks.get(index).setQuantization(1);
+			} else if (option.equals("1/48")) {
+				this.patternBanks.get(index).setQuantization(2);
+			} else if (option.equals("1/32")) {
+				this.patternBanks.get(index).setQuantization(3);
+			} else if (option.equals("1/16")) {
+				this.patternBanks.get(index).setQuantization(6);
+			} else if (option.equals("1/8")) {
+				this.patternBanks.get(index).setQuantization(12);
+			} else if (option.equals("1/4")) {
+				this.patternBanks.get(index).setQuantization(24);
+			} else if (option.equals("1/2")) {
+				this.patternBanks.get(index).setQuantization(48);
+			} else if (option.equals("1")) {
+				this.patternBanks.get(index).setQuantization(96);
+			}
+
 		}
 	}
 
@@ -460,13 +497,28 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			subMenu.add(menuItem);
 		} else {
 			for (int i=0; i < this.numPages; i++) {
-				menuItem = new JMenuItem(i+1 + ": " + this.pages.get(i).getName());
+				menuItem = new JMenuItem(i+1 + ": Show Page " + this.pages.get(i).getName());
 				menuItem.addActionListener(this);
 				subMenu.add(menuItem);
 			}
 		}
 		fileMenu.add(subMenu);
 
+		subMenu = new JMenu("Set Quantization");
+
+		if (this.numPages == 0) {
+			menuItem = new JMenuItem("No Pages Defined");
+			subMenu.add(menuItem);
+		} else {
+			for (int i=0; i < this.numPages; i++) {
+				menuItem = new JMenuItem(i+1 + ": Set Quantization for " + this.pages.get(i).getName());
+				menuItem.addActionListener(this);
+				subMenu.add(menuItem);
+			}
+		}
+		fileMenu.add(subMenu);
+
+		
 		menuItem = new JMenuItem("Remove Configuration", KeyEvent.VK_R);
 		menuItem.getAccessibleContext().setAccessibleDescription("Create a new configuration");
 		menuItem.addActionListener(this);
@@ -501,6 +553,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	public void reset() {
 		for (int i=0; i < this.numPages; i++) {
 			this.pages.get(i).handleReset();
+			this.patternBanks.get(i).handleReset();
 		}
 	}
 
