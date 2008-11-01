@@ -34,9 +34,10 @@ public class PatternBank {
 		
 		if (this.patternState[patternNum] == PATTERN_STATE_EMPTY) {
 			this.patternState[patternNum] = PATTERN_STATE_TRIGGERED;
-			System.out.println("pattern " + patternNum + " is now triggered");
 		} else if (this.patternState[patternNum] == PATTERN_STATE_TRIGGERED) {
-			this.patternState[patternNum] = PATTERN_STATE_RECORDED;
+			this.patternState[patternNum] = PATTERN_STATE_EMPTY;
+			this.patterns.get(patternNum).clearPattern();
+			this.patternPosition[patternNum] = 0;
 		} else if (this.patternState[patternNum] == PATTERN_STATE_RECORDED) {
 			this.patternState[patternNum] = PATTERN_STATE_TRIGGERED;
 		}
@@ -47,7 +48,6 @@ public class PatternBank {
 		for (int i=0; i < this.numPatterns; i++) {
 			if (this.patternState[i] == PATTERN_STATE_TRIGGERED) {
 				Pattern pattern = this.patterns.get(i);
-				System.out.println("recording press");
 				pattern.recordPress(this.patternPosition[i], x, y, value);
 			}
 		}

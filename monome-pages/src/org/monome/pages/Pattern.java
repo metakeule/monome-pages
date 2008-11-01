@@ -26,4 +26,8 @@ public class Pattern {
 		return returnPresses;
 	}
 
+	public void clearPattern() {
+		this.presses = new ArrayList<Press>();
+	}
+
 }
