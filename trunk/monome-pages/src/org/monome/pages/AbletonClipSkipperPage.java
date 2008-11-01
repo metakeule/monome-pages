@@ -255,12 +255,13 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 				if (this.clipState[y][clip] == CLIP_STATE_PLAYING) {
 					foundPlayingClip = 1;
 					int x = (int) ((float) (this.clipPosition[y][clip] / this.clipLength[y][clip]) * (float) this.monome.sizeX);
-					int left = x - 1;
-					if (left < 0) {
-						left = this.monome.sizeX - 1;
+					for (int leds=0; leds < this.monome.sizeX; leds++) {
+						if (leds == x) {
+							this.monome.led(leds, y, 1, this.index);							
+						} else {
+							this.monome.led(leds, y, 0, this.index);
+						}
 					}
-					this.monome.led(left, y, 0, this.index);
-					this.monome.led(x, y, 1, this.index);
 				}
 			}
 			if (foundPlayingClip == 0) {
