@@ -1,7 +1,7 @@
 #summary Items planned for future releases.
 
   * Add a new Ableton page that combines a track/clip interface with a virtual keyboard.
-  * Implement pattern recording/playback for all pages
+  * ~~Implement pattern recording/playback for all pages~~
   * ~~AbletonClipLauncherPage: change redo button to overdub button~~
   * ~~MIDISequencerPage: stay in bank mode when a new bank is selected~~
   * MIDIKeyboardPage: key/scale/channel changes are done by holding a button to avoid accidently changing scale/key
