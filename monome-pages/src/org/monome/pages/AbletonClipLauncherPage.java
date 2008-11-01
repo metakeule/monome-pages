@@ -112,6 +112,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	private int numEnabledRows = 2;
 
+	private int overdub;
+
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index This page's index number
@@ -212,7 +214,11 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				} else if (y == 5) {
 					this.tempoUp();
 				} else if (y == 6) {
-					this.abletonRedo();
+					if (this.overdub == 1) {
+						this.abletonOverdub(0);
+					} else {
+						this.abletonOverdub(1);
+					}					
 				} else if (y == 7) {
 					this.abletonUndo();
 				}
@@ -294,6 +300,20 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	public void abletonRedo() {
 		OSCMessage msg = new OSCMessage("/live/redo");
+		try {
+			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void abletonOverdub(int overdub) {
+		Object args[] = new Object[1];
+		args[0] = new Integer(overdub);
+		OSCMessage msg = new OSCMessage("/live/overdub", args);
+		
+		// send the message 5 times because Ableton doesn't always respond to
+		// this for some reason
 		try {
 			this.monome.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
@@ -475,6 +495,12 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
 			}
 		}
+		
+		if (this.overdub == 1) {
+			this.monome.led(this.monome.sizeX - 1, 6, 1, this.index);
+		} else {
+			this.monome.led(this.monome.sizeX - 1, 6, 0, this.index);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -573,7 +599,12 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		return;
 	}
 
-	public void updateTempo(float tempo) {
+	public void updateAbletonState(float tempo, int overdub) {
 		this.tempo = tempo;
+		
+		if (this.overdub != overdub) {
+			this.monome.led(this.monome.sizeX - 1, 6, overdub, this.index);
+		}
+		this.overdub = overdub;
 	}
 }

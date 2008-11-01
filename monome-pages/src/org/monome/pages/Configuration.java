@@ -531,7 +531,7 @@ public class Configuration implements Receiver {
 		try {
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
 			this.abletonOSCPortIn.addListener("/live/track/info", this.abletonOSCListener);
-			this.abletonOSCPortIn.addListener("/live/tempo", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/state", this.abletonOSCListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -557,9 +557,9 @@ public class Configuration implements Receiver {
 		}
 	}
 	
-	public void updateAbletonTempo(float tempo) {
+	public void updateAbletonState(float tempo, int overdub) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonTempo(tempo);
+			monomeConfigurations.get(i).updateAbletonState(tempo, overdub);
 		}
 	}
 

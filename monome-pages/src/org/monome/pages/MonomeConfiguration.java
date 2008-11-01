@@ -281,7 +281,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 	}
 	
-	public void updateAbletonTempo(float tempo) {
+	public void updateAbletonState(float tempo, int overdub) {
 		if (this.pages.size() == 0) {
 			return;
 		}
@@ -289,11 +289,11 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
-				page.updateTempo(tempo);
+				page.updateAbletonState(tempo, overdub);
 			}
 			if (pages.get(i) instanceof AbletonClipControlPage) {
 				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
-				page.updateTempo(tempo);
+				page.updateAbletonState(tempo, overdub);
 			}
 		}
 	}

@@ -258,7 +258,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 					if (x < 2) {
 						if (this.monome.sizeY == 8) {
 							this.depth = x;
-							this.bankMode = 0;
 							this.redrawMonome();
 						}
 					}
@@ -307,7 +306,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 						}
 						this.redrawMonome();
 					} else {
-						this.bankMode = 0;
 						this.bank = (y * (this.monome.sizeY)) + x;
 						this.stopNotes();
 						this.redrawMonome();
