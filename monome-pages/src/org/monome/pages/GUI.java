@@ -676,6 +676,24 @@ public class GUI implements ActionListener {
 
 							}
 						}
+						
+						// most pages have midi outputs
+						NodeList lengthNL = monomeElement.getElementsByTagName("patternlength");
+						for (int k=0; k < lengthNL.getLength(); k++) {
+							el = (Element) lengthNL.item(k);
+							nl = el.getChildNodes();
+							String patternLength = ((Node) nl.item(0)).getNodeValue();
+							int length = Integer.parseInt(patternLength);
+							monomeFrame.setPatternLength(k, length);
+						}
+						NodeList quantifyNL = monomeElement.getElementsByTagName("quantization");
+						for (int k=0; k < quantifyNL.getLength(); k++) {
+							el = (Element) quantifyNL.item(k);
+							nl = el.getChildNodes();
+							String quantization = ((Node) nl.item(0)).getNodeValue();
+							int quantify = Integer.parseInt(quantization);
+							monomeFrame.setQuantization(k, quantify);
+						}
 
 						// redraw the GUI
 						this.frame.validate();
