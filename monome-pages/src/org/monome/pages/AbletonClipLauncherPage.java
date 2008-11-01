@@ -325,6 +325,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * Sends "/live/undo" to LiveOSC. 
 	 */
 	public void abletonUndo() {
+		System.out.println("ableton undo()");
 		OSCMessage msg = new OSCMessage("/live/undo");
 		try {
 			this.monome.configuration.getAbletonOSCPortOut().send(msg);

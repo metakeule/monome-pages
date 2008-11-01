@@ -141,7 +141,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[5] = "Ableton Clip Launcher";
 		this.options[6] = "Ableton Clip Skipper";
 		this.options[7] = "Machine Drum Interface";
-		this.options[8] = "Ableton Clip Control";
+		//this.options[8] = "Ableton Clip Control";
 				
 		this.configuration = configuration;
 		this.prefix = prefix;
@@ -574,7 +574,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			if (presses != null) {
 				for (int j=0; j < presses.size(); j++) {
 					int[] press = presses.get(j).getPress();
-					this.pages.get(curPage).handlePress(press[0], press[1], press[2]);
+					this.pages.get(i).handlePress(press[0], press[1], press[2]);
 				}
 			}
 			this.pages.get(i).handleTick();
