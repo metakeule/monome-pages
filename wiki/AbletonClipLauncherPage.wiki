@@ -63,6 +63,8 @@ You can record audio and MIDI clips on the fly by record enabling the track and 
 
 = LiveOSC Setup =
 
+== Windows ==
+
 1) Download and install Python 2.2.3 to {{{C:\Python22}}}.  Other versions may work as well, this just happens to be the version I'm using.
 
 http://www.python.org/download/releases/2.2.3/
@@ -84,3 +86,28 @@ http://www.python.org/download/releases/2.2.3/
 8) Load up Ableton Live, go to Options -> Preferences -> MIDI and select LiveOSC as a control surface. 
 
 9) In pages, make sure you go to Configuration -> Ableton OSC Settings and click save.  The default settings should work fine.
+
+== OSX ==
+
+1) Download the Python 2.2.3 source code from here:
+
+[http://www.python.org/ftp/python/2.2.3/Python-2.2.3.tgz]
+
+2) Un-tarred it to /python2.2
+
+3) Open terminal and run:
+{{{
+echo /python2.2/lib > /Library/Python/2.3/site-packages/python2.2.pth
+}}}
+
+4) Download and unzip the LiveAPI-OSX package from here:
+
+[http://liveapi.googlegroups.com/web/LiveAPI-OSX.zip]
+
+5) Put the _LiveAPICore folder into /python2.2/lib
+
+6) Download the LiveOSCBindings.py file from the Downloads tab and put it in the LiveOSC folder
+
+7) Put the LiveOSC and LiveTelnet folders inside Live.app (right-click, "Show Package Contents") Live.app/Contents/App-Resources/MIDI Remote Scripts
+
+8) Start Ableton Live, go to Options -> Preferences, go to the MIDI/Sync tab and select LiveOSC from the first Control Surface dropdown
