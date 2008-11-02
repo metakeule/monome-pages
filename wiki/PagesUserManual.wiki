@@ -134,7 +134,7 @@ http://www.python.org/download/releases/2.2.3/
 
 5) Copy the {{{LiveOSC}}} and {{{LiveTelnet}}} folders both to {{{C:\Program Files\Ableton\...\Resources\MIDI Remote Scripts}}}
 
-6) I have extended the LiveAPI somewhat for this project, you should download the {{{LiveOSC.py.Windows}}} and {{{LiveOSCBindings.py}}} files from the Downloads tab and copy them to the {{{C:\Program Files\Ableton\...\Resources\MIDI Remote Scripts\LiveOSC}}} directory.  Rename the {{{LiveOSC.py.Windows}}} file to {{{LiveOSC.py}}} and overwrite the existing files in the {{{LiveOSC}}} directory.
+6) I have extended the LiveAPI somewhat for this project, you should download the {{{LiveOSC.py.Windows}}} and {{{LiveOSCCallbacks.py}}} files from the Downloads tab and copy them to the {{{C:\Program Files\Ableton\...\Resources\MIDI Remote Scripts\LiveOSC}}} directory.  Rename the {{{LiveOSC.py.Windows}}} file to {{{LiveOSC.py}}} and overwrite the existing files in the {{{LiveOSC}}} directory.
 
 7) Load up Ableton Live, go to Options -> Preferences -> MIDI and select LiveOSC as a control surface. 
 
@@ -159,7 +159,7 @@ echo /python2.2/lib > /Library/Python/2.3/site-packages/python2.2.pth
 
 5) Put the _LiveAPICore folder into /python2.2/lib
 
-6) Download the LiveOSCBindings.py file from the Downloads tab and put it in the LiveOSC folder, overwrite the existing file
+6) Download the LiveOSCCallbacks.py file from the Downloads tab and put it in the LiveOSC folder, overwrite the existing file
 
 7) Download the LiveOSC.py.OSX file from the Downloads tab, rename it to LiveOSC.py and copy it to the LiveOSC folder, overwrite the existing file
 
