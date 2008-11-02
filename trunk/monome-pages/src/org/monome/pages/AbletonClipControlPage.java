@@ -29,10 +29,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.sound.midi.MidiMessage;
+
+
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
 
 import com.illposed.osc.OSCMessage;
 
@@ -119,6 +122,10 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	//private JCheckBox disableArmCB = new JCheckBox();
 	//private JCheckBox disableStopCB = new JCheckBox();
 
+	
+	
+	
+	
 	/**
 	 * The number of control rows (track stop/midi notes feedback line + multi command line) that are enabled currently
 	 */
@@ -153,6 +160,15 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
+		
+		return;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
+	 * added by Julien Bayle for handling midi notes purpose
+	 */
+	public void addMidiInDevice(String deviceName) {
 		return;
 	}
 
@@ -219,22 +235,16 @@ public class AbletonClipControlPage implements ActionListener, Page {
 						}
 					} else if (x == 2) {// -bpm
 						this.tempoDown();
-						/*if ((this.tempo - 1) < 20.0) {
-							this.tempo = (float) 21.0;
-						}
-						else this.tempo -= 1;*/
-						
 					} else if (x == 3) {// +bpm
 						this.tempoUp();
-
 					} else if (x == 4) {// ----
-						//this.tempoDown();
+						
 					} else if (x == 5) {// ----
-						//this.tempoUp();
+					
 					} else if (x == 6) {// ----
-						//this.abletonRedo();
+						
 					} else if (x == 7) {// ----
-						//this.abletonUndo();
+						
 					}
 				}
 			}
@@ -431,7 +441,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	public void handleTick() {
 		return;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
@@ -462,18 +472,12 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		for (int i = 0; i < this.monome.sizeX; i++) {
 			int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
 			if (this.tracksStopped[track_num] == true) {
-				this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
+				this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 0, this.index);
 			} else {
 				//this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
 				// TODO: Midi notes blinking
 			}
 		}
-
-		// clear the bottom row, stop buttons are never on
-
-		/*for (int i=0; i < this.monome.sizeX; i++) {
-			this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
-		}*/
 	}
 
 	/* (non-Javadoc)
@@ -505,18 +509,6 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		xml += "    </page>\n";
 		return xml;
 	}
-
-	/*public void setDisableArm(String disableArm) {
-		if (disableArm.equals("true")) {
-			this.disableArmCB.doClick();
-		}
-	}
-
-	public void setDisableStop(String disableStop) {
-		if (disableStop.equals("true")) {
-			this.disableStopCB.doClick();
-		}
-	}*/
 
 	/**
 	 * Called by AbletonClipUpdater based on messages received by LiveOSC.
