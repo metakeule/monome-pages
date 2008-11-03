@@ -29,11 +29,14 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 
@@ -123,8 +126,15 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	//private JCheckBox disableStopCB = new JCheckBox();
 
 	
-	
-	
+	/**
+	 * The MIDI device
+	 */
+	private Receiver recv;
+
+	/**
+	 * The name of the selected MIDI device
+	 */
+	private String midiDeviceName;
 	
 	/**
 	 * The number of control rows (track stop/midi notes feedback line + multi command line) that are enabled currently
@@ -141,18 +151,30 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		this.monome.configuration.initAbleton();
 	}
 
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
 		int numEnabledRows = 0;
-		/*if (this.disableArmCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		if (this.disableStopCB.isSelected() == false) {
-			numEnabledRows++;
-		}*/
 		this.numEnabledRows = numEnabledRows;
+		if (e.getActionCommand().equals("Add MIDI Output")) {
+			String[] midiOutOptions = this.monome.getMidiOutOptions();
+			String deviceName = (String)JOptionPane.showInputDialog(
+					this.monome,
+					"Choose a MIDI Output to add",
+					"Add MIDI Output",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					midiOutOptions,
+					"");
+
+			if (deviceName == null) {
+				return;
+			}
+			this.addMidiOutDevice(deviceName);	
+		}
+		
 		return;
 	}
 
@@ -160,17 +182,10 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
-		
+		this.recv = this.monome.getMidiReceiver(deviceName);
+		this.midiDeviceName = deviceName;
 		return;
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 * added by Julien Bayle for handling midi notes purpose
-	 */
-	public void addMidiInDevice(String deviceName) {
-		return;
-	}
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
@@ -216,7 +231,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			// if you press a button of a row not inside the clip slots controller
 			if (y > this.monome.sizeY - this.numEnabledRows - 1) {
 
-				// 7th row: MIDI NOTES FEEDBACKs / STOPs
+				// 7th row: STOPs
 				if (y == this.monome.sizeY - 2) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
 					this.stopTrack(track_num);
@@ -237,13 +252,13 @@ public class AbletonClipControlPage implements ActionListener, Page {
 						this.tempoDown();
 					} else if (x == 3) {// +bpm
 						this.tempoUp();
-					} else if (x == 4) {// ----
+					} else if (x == 4) {// nothing for the moment
 						
-					} else if (x == 5) {// ----
+					} else if (x == 5) {// nothing for the moment
 					
-					} else if (x == 6) {// ----
+					} else if (x == 6) {// nothing for the moment
 						
-					} else if (x == 7) {// ----
+					} else if (x == 7) {// nothing for the moment
 						
 					}
 				}
@@ -474,8 +489,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			if (this.tracksStopped[track_num] == true) {
 				this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 0, this.index);
 			} else {
-				//this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
-				// TODO: Midi notes blinking
+
 			}
 		}
 	}
@@ -484,7 +498,33 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
-		return;
+		if (this.recv == null) {
+			return;
+		}
+		ShortMessage shortMessage;
+
+		if (message instanceof ShortMessage) {
+			shortMessage = (ShortMessage) message;
+			//System.out.println(shortMessage.getCommand());
+			switch (shortMessage.getCommand()) {
+			case 0x90: // NOTE On event case
+				if (shortMessage.getChannel() == 9) {
+					//this.monome.led(0, 6, 1, this.index);
+					//this.monome.led(0, 6, , this.index);
+					System.out.println("received on channel 9");
+				}
+				if (shortMessage.getChannel() == 10) {
+					//this.monome.led(1, 6, 1, this.index);
+					//this.monome.led(1, 6, 0, this.index);
+				}
+				
+				break;
+				
+			default:
+				
+				break;
+			}
+		}
 	}
 
 	/* (non-Javadoc)
