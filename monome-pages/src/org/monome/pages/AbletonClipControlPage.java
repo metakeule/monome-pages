@@ -130,7 +130,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * The MIDI device
 	 */
 	private Receiver recv;
-
+		
 	/**
 	 * The name of the selected MIDI device
 	 */
@@ -498,30 +498,58 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
-		if (this.recv == null) {
-			return;
-		}
 		ShortMessage shortMessage;
-
 		if (message instanceof ShortMessage) {
 			shortMessage = (ShortMessage) message;
-			//System.out.println(shortMessage.getCommand());
+
 			switch (shortMessage.getCommand()) {
 			case 0x90: // NOTE On event case
+				if (shortMessage.getChannel() == 8) {
+					LEDBlink ledBlink = new LEDBlink(this.monome, 0, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
+				}
+
 				if (shortMessage.getChannel() == 9) {
-					//this.monome.led(0, 6, 1, this.index);
-					//this.monome.led(0, 6, , this.index);
-					System.out.println("received on channel 9");
+					LEDBlink ledBlink = new LEDBlink(this.monome, 1, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
 				}
+
 				if (shortMessage.getChannel() == 10) {
-					//this.monome.led(1, 6, 1, this.index);
-					//this.monome.led(1, 6, 0, this.index);
+					LEDBlink ledBlink = new LEDBlink(this.monome, 2, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
 				}
-				
+				if (shortMessage.getChannel() == 11) {
+					LEDBlink ledBlink = new LEDBlink(this.monome, 3, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
+				}
+
+				if (shortMessage.getChannel() == 12) {
+					LEDBlink ledBlink = new LEDBlink(this.monome, 4, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
+				}
+
+				if (shortMessage.getChannel() == 13) {
+					LEDBlink ledBlink = new LEDBlink(this.monome, 5, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
+				}
+				if (shortMessage.getChannel() == 14) {
+					LEDBlink ledBlink = new LEDBlink(this.monome, 6, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
+				}
+				if (shortMessage.getChannel() == 15) {
+					LEDBlink ledBlink = new LEDBlink(this.monome, 7, 6, 70,
+							this.index);
+					new Thread(ledBlink).start();
+				}
 				break;
-				
 			default:
-				
 				break;
 			}
 		}
