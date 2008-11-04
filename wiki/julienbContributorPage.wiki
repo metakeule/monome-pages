@@ -6,8 +6,8 @@ A little page on my website: http://www.julienbayle.net/diy/LiveInterface/
 I have to update it because my framework follows actually and definitively monome-pages project.
 
 == Contributions ==
+ * [http://code.google.com/p/monome-pages/wiki/AbletonClipControlPage Ableton Clip Control] (work in progress ; almost finished!)
  * arpeggiator page (work in progress)
- * [http://code.google.com/p/monome-pages/wiki/AbletonClipControlPage Ableton Clip Control] (work in progress)
  * keyboard julien.bayle's page version (work in progress)
 
 == Homepage ==
