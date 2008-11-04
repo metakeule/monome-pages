@@ -23,11 +23,9 @@
 package org.monome.pages;
 
 /**
- * A thread that behaves like a MIDI fader being moved up or down.  It sends out MIDI CC messages from
- * it's starting point to it's ending point and moves at a specified speed.  It also updates a monome's
- * leds accordingly as it moves.
+ * A thread to blink Leds cleanly.
  * 
- * @author Tom Dinchak
+ * @author Tom Dinchak, Julien Bayle
  *
  */
 
