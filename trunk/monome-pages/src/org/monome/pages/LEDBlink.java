@@ -29,19 +29,15 @@ package org.monome.pages;
  *
  */
 
-
 public class LEDBlink implements Runnable {
-	
 	int x, y;
 	int pageIndex;
 	int delay;
-	
-	
+		
 	/**
 	 * The MonomeConfiguration that the fader page this thread belongs to is on
 	 */
 	private MonomeConfiguration monome;
-
 	
 	/**
 	 * @param monome
@@ -49,13 +45,13 @@ public class LEDBlink implements Runnable {
 	 * @param y
 	 * @param delay
 	 */
-	public LEDBlink(MonomeConfiguration monome, int x, int y, int delay) {
-		this.monome = monome;
-		this.x = x;
-		this.y = y;
-		this.delay = delay;
-		}
-
+	public LEDBlink(MonomeConfiguration monome, int x, int y, int delay, int pageIndex) {
+        this.monome = monome;
+        this.x = x;
+        this.y = y;
+        this.delay = delay;
+        this.pageIndex = pageIndex;
+        }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
@@ -68,7 +64,7 @@ public class LEDBlink implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		this.monome.led(this.x, this.y, 1, this.pageIndex);
+		this.monome.led(this.x, this.y, 0, this.pageIndex);
 		}
 
 }
