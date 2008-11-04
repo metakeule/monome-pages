@@ -1,8 +1,15 @@
 #summary Detailed information about the Ableton Clip Control page.
+#labels Featured
 
 == Page Description ==
 
-The Ableton Clip Control page uses the LiveOSC project to communicate with Ableton Live.  Setup of LiveOSC is described in the document below.  Note that at the time of this writing LiveOSC is only available for Windows users.
+The Ableton Clip Control page is another implementation of the nice Ableton Clip Laucnher by Tom.
+I built this patch as the last step to my configuration session.
+Indeed, I use Ableton Live since 3 years and was very impressed by the monodeck II by Robert Henke (aka Monolake)
+The part that stuck me was the clip matrix part ; it permits to hide your screen, your mouse and gives you all the feeling you need to perform.
+
+This patch was easier to code than the path I follow to understand what I wanted to do during live performance. That said, it is probably a very julien bayle patch and won't fit exactly with your idea/set.
+By the way, I share it here :)
 
 == 64 Layout (only this layout for the moment) ==
 
