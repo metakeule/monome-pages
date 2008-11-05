@@ -29,12 +29,12 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
+//import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 
 import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
+//import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -125,17 +125,6 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	//private JCheckBox disableArmCB = new JCheckBox();
 	//private JCheckBox disableStopCB = new JCheckBox();
 
-	
-	/**
-	 * The MIDI device
-	 */
-	private Receiver recv;
-		
-	/**
-	 * The name of the selected MIDI device
-	 */
-	private String midiDeviceName;
-	
 	/**
 	 * The number of control rows (track stop/midi notes feedback line + multi command line) that are enabled currently
 	 */
@@ -182,10 +171,8 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;
 		return;
-	}	
+	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
