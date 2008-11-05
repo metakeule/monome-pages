@@ -46,6 +46,13 @@ The Ableton Clip Launcher page is an interface to launch clips, stop tracks, or 
 
 See: AbletonClipLauncherPage
 
+  * Ableton Clip Control (another version of Ableton Clip Launcher)
+
+The Ableton Clip Control page is an interface to launch clips, follow midi notes played in all tracks, and stop tracks in Ableton Live.  It is currently implemented to use the LiveOSC project to communicate with Ableton Live (so you'll need LiveOSC installed and configured for this to work).  It polls the state of Ableton Live and updates the page according to the state of the clips, so it is always in sync with the state of Ableton Live.
+
+See: AbletonClipControlPage
+
+
   * Ableton Clip Skipper
 
 The Ableton Clip Skipper page is kind of like mlr for Ableton Live.  It allows you to skip around in the currently playing audio or MIDI clips of the first 8 or 16 Ableton Live tracks.  The grid adapts to the currently playing clip's loop length automatically so any size clips will work and no configuration of the row/clip is necessary.
