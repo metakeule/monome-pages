@@ -61,7 +61,6 @@ public class LEDBlink implements Runnable {
 		try {
 			Thread.sleep(this.delay);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.monome.led(this.x, this.y, 0, this.pageIndex);
