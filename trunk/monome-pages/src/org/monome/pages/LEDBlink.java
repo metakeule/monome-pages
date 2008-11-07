@@ -23,7 +23,7 @@
 package org.monome.pages;
 
 /**
- * A thread to blink Leds cleanly.
+ * A thread to blink leds cleanly.
  * 
  * @author Tom Dinchak, Julien Bayle
  *
