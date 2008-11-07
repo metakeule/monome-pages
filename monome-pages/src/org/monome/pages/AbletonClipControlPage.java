@@ -29,17 +29,19 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.sound.midi.MidiMessage;
-//import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 
 import javax.swing.BoxLayout;
 //import javax.swing.JCheckBox;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 
+import com.cloudgarden.layout.AnchorConstraint;
 import com.illposed.osc.OSCMessage;
 
 /**
@@ -122,8 +124,27 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 */
 	private float tempo = (float) 120.0;
 
-	//private JCheckBox disableArmCB = new JCheckBox();
-	//private JCheckBox disableStopCB = new JCheckBox();
+	/**
+	 * The text field that stores the delay value 
+	 */
+	private JTextField delayBlinking;
+	
+	/**
+	 * The label for the delay setting
+	 */
+	private JLabel delayBlinkingLabel;
+
+	/**
+	 * The delay amount for midi notes feedback
+	 */
+	private int delayBlinkingAmount = 90;
+	
+	
+	/**
+	 * The Update Preferences button 
+	 */
+	private JButton updatePrefsButton;
+
 
 	/**
 	 * The number of control rows (track stop/midi notes feedback line + multi command line) that are enabled currently
@@ -193,18 +214,20 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// create the panel
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Controler (in progress!)");
+		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Controller");
 		panel.add(label);
-
-		/*disableArmCB.setText("Disable Arm");
-		disableArmCB.addActionListener(this);
-		panel.add(disableArmCB);
-
-		disableStopCB.setText("Disable Stop");
-		disableStopCB.addActionListener(this);
-		panel.add(disableStopCB);*/
-
+		
+		//TODO: change delay feature
+		/*panel.add(delayBlinking);
+		delayBlinking.setText("Blinking delay");
+		delayBlinking.addActionListener(this);
+		
+		panel.add(getUpdatePrefsButton(), new AnchorConstraint(603, 487, 819, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		this.getUpdatePrefsButton().addActionListener(this);
+		
+		panel.add(getDelayBlinking(), new AnchorConstraint(335, 371, 541, 40, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getDelayBlinkingLabel(), new AnchorConstraint(365, 230, 510, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+*/
 		this.panel = panel;
 		return panel;
 	}
@@ -475,9 +498,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
 			if (this.tracksStopped[track_num] == true) {
 				this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 0, this.index);
-			} else {
-
-			}
+			} 
 		}
 	}
 
@@ -492,46 +513,46 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			switch (shortMessage.getCommand()) {
 			case 0x90: // NOTE On event case
 				if (shortMessage.getChannel() == 8) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 0, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 0, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
 
 				if (shortMessage.getChannel() == 9) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 1, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 1, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
 
 				if (shortMessage.getChannel() == 10) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 2, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 2, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
 				if (shortMessage.getChannel() == 11) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 3, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 3, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
 
 				if (shortMessage.getChannel() == 12) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 4, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 4, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
 
 				if (shortMessage.getChannel() == 13) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 5, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 5, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
 				if (shortMessage.getChannel() == 14) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 6, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 6, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
 				if (shortMessage.getChannel() == 15) {
-					LEDBlink ledBlink = new LEDBlink(this.monome, 7, 6, 70,
+					LEDBlink ledBlink = new LEDBlink(this.monome, 7, 6, this.delayBlinkingAmount,
 							this.index);
 					new Thread(ledBlink).start();
 				}
@@ -605,6 +626,44 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		}
 	}
 
+	/**
+	 * @return The delay setting GUI label
+	 */
+	private JLabel getDelayBlinkingLabel() {
+		if(delayBlinkingLabel == null) {
+			delayBlinkingLabel = new JLabel();
+			delayBlinkingLabel.setText("Blinking delay (ms)");
+			delayBlinkingLabel.setPreferredSize(new java.awt.Dimension(67, 14));
+		}
+		return delayBlinkingLabel;
+	}
+	
+	/**
+	 * @return The delay setting text field
+	 */
+	private JTextField getDelayBlinking() {
+		if(delayBlinking == null) {
+			delayBlinking = new JTextField();
+			delayBlinking.setText("60");
+			delayBlinking.setPreferredSize(new java.awt.Dimension(33, 20));
+		}
+		return delayBlinking;
+	}
+	
+	/**
+	 * @return The Update Preferences button
+	 */
+	private JButton getUpdatePrefsButton() {
+		if(updatePrefsButton == null) {
+			updatePrefsButton = new JButton();
+			updatePrefsButton.setText("Update Preferences");
+			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 21));
+		}
+		return updatePrefsButton;
+	}
+	
+	
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheEnabled()
 	 */
