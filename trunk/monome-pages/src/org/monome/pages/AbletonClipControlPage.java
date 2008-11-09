@@ -137,7 +137,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	/**
 	 * The delay amount for midi notes feedback
 	 */
-	private int delayBlinkingAmount = 90;
+	private int delayBlinkingAmount = 80;
 	
 	
 	/**
@@ -216,18 +216,18 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Controller");
 		panel.add(label);
-		
+
 		//TODO: change delay feature
 		/*panel.add(delayBlinking);
 		delayBlinking.setText("Blinking delay");
 		delayBlinking.addActionListener(this);
-		
+
 		panel.add(getUpdatePrefsButton(), new AnchorConstraint(603, 487, 819, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		this.getUpdatePrefsButton().addActionListener(this);
-		
+
 		panel.add(getDelayBlinking(), new AnchorConstraint(335, 371, 541, 40, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getDelayBlinkingLabel(), new AnchorConstraint(365, 230, 510, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-*/
+		 */
 		this.panel = panel;
 		return panel;
 	}
@@ -283,7 +283,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 			}
 		}
 	}
-
+	
 	/**
 	 * Sends "/live/play/clip track clip" to LiveOSC.
 	 * 
@@ -352,11 +352,11 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * Sends "/live/tempo tempo-1" to LiveOSC. 
 	 */
 	public void tempoDown() {
-		if (this.tempo - 1.0 < 20.0) {
-			this.tempo = (float) 21.0;
+		if (this.tempo - 2.0 < 20.0) {
+			this.tempo = (float) 22.0;
 		}
 		Object args[] = new Object[1];
-		args[0] = new Float(this.tempo - 1.0);
+		args[0] = new Float(this.tempo - 2.0);
 
 		OSCMessage msg = new OSCMessage("/live/tempo", args);
 		try {
@@ -378,11 +378,11 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
 	public void tempoUp() {
-		if (this.tempo + 1.0 > 999.0) {
+		if (this.tempo + 2.0 > 999.0) {
 			this.tempo = (float) 998.0;
 		}
 		Object args[] = new Object[1];
-		args[0] = new Float(this.tempo + 1.0);
+		args[0] = new Float(this.tempo + 2.0);
 		OSCMessage msg = new OSCMessage("/live/tempo", args);
 		try {
 			this.monome.configuration.getAbletonOSCPortOut().send(msg);
@@ -580,8 +580,6 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>Ableton Clip Control</name>\n";
-		/*xml += "      <disablearm>" + disableArm + "</disablearm>\n";
-		xml += "      <disablestop>" + disableStop + "</disablestop>\n";*/
 		xml += "    </page>\n";
 		return xml;
 	}
