@@ -42,7 +42,7 @@ Midi notes feedback
 In order to receive midi notes feedback from live, you'll have to make it sends them to you ;)
 If you use an instrument in a midi track in Ableton Live, none midi notes can be exported/sent outside of Ableton Live. You need to create as many midi tracks to make the trick as you have midi track with instruments.
 For instance, you have a midi track with a pretty operator. You want to send midi notes outside of this track to get feedback. You create another midi track and set:
-* midi from <your operator midi track>
-* Monitor : IN
-* midi to <Midi Yoke output: 1> (only Midi Yoke Input can be handle in monome-pages apps)
+ * midi from <your operator midi track>
+ * Monitor : IN
+ * midi to <Midi Yoke output: 1> (only Midi Yoke Input can be handle in monome-pages apps)
 I mapped channel 9 to column 1, 10 to 2 etc etc
