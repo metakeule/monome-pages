@@ -16,13 +16,13 @@ Enjoy!
 
 == 64 Layout (only this layout for the moment) ==
 
-|| clip || clip || clip || clip || clip || clip || clip || clip ||
-|| clip || clip || clip || clip || clip || clip || clip || clip ||
-|| clip || clip || clip || clip || clip || clip || clip || clip ||
-|| clip || clip || clip || clip || clip || clip || clip || clip ||
-|| clip || clip || clip || clip || clip || clip || clip || clip ||
-|| clip || clip || clip || clip || clip || clip || clip || clip ||
 || notes/stop || notes/stop || notes/stop || notes/stop || notes/stop || notes/stop || notes/stop || notes/stop ||
+|| clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip ||
+|| clip || clip || clip || clip || clip || clip || clip || clip ||
 || pvco || nxco || -bpm || +bpm || ---- || ---- || ---- || ---- ||
 
 
@@ -37,3 +37,12 @@ The pvco and nxco buttons switch to the previous clip offset or the next clip of
 the -bpm and +bpm buttons subtract 1 or add 1 to the current tempo.
 
 ---- means no functions (for the moment ;)
+
+Midi notes feedback
+In order to receive midi notes feedback from live, you'll have to make it sends them to you ;)
+If you use an instrument in a midi track in Ableton Live, none midi notes can be exported/sent outside of Ableton Live. You need to create as many midi tracks to make the trick as you have midi track with instruments.
+For instance, you have a midi track with a pretty* operator. You want to send midi notes outside of this track to get feedback. You create another midi track and set:
+- midi from <your operator midi track>
+- Monitor <IN>
+- midi to <Midi Yoke output: 1> (only Midi Yoke Input can be handle in monome-pages apps)
+I mapped channel 9 to column 1, 10 to 2 etc etc
