@@ -7,8 +7,8 @@ I have to update it because my framework follows actually and definitively monom
 
 == Contributions ==
  * [http://code.google.com/p/monome-pages/wiki/AbletonClipControlPage Ableton Clip Control] 
+ * [http://code.google.com/p/monome-pages/wiki/MIDIKeyboardPageJulienb my midi keyboard to play Ableton Live] (work in progress)
  * arpeggiator page (work in progress)
- * keyboard julien.bayle's page version (work in progress)
 
 == Homepage ==
 http://www.julienbayle.net
