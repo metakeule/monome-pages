@@ -36,7 +36,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak
  *
  */
-public class AbletonClipUpdater implements Runnable {
+public class AbletonOSCClipUpdater implements Runnable {
 
 	/**
 	 * A reference to the AbletonClipPage that this AbletonClipUpdater belongs to.
@@ -44,11 +44,13 @@ public class AbletonClipUpdater implements Runnable {
 	private Configuration configuration;
 	
 	private OSCPortOut abletonOscOut;
+	
+	private boolean running = true;
 
 	/**
 	 * @param configuration The page that this AbletonClipUpdater belongs to
 	 */
-	public AbletonClipUpdater(Configuration configuration, OSCPortOut abletonOscOut) {
+	public AbletonOSCClipUpdater(Configuration configuration, OSCPortOut abletonOscOut) {
 		this.abletonOscOut = abletonOscOut;
 		this.configuration = configuration;
 	}
@@ -57,14 +59,13 @@ public class AbletonClipUpdater implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		boolean running = true;		
 		// query Ableton for the tempo
 		OSCMessage msg = new OSCMessage("/live/state");
 
 		// query Ableton for the record armed/disarmed status of each track
 		OSCMessage msg2 = new OSCMessage("/live/track/info");
 
-		while (running) {
+		while (this.running) {
 			try {
 				this.abletonOscOut.send(msg);
 				this.abletonOscOut.send(msg2);
@@ -79,6 +80,10 @@ public class AbletonClipUpdater implements Runnable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void stop() {
+		this.running = false;
 	}
 
 }

@@ -192,8 +192,8 @@ public class GUI implements ActionListener {
 		menuItem.addActionListener(this);
 		this.configurationMenu.add(menuItem);
 
-		menuItem = new JMenuItem("Ableton OSC Settings", KeyEvent.VK_A);
-		menuItem.getAccessibleContext().setAccessibleDescription("Ableton OSC Settings");
+		menuItem = new JMenuItem("Ableton OSC/MIDI Settings", KeyEvent.VK_A);
+		menuItem.getAccessibleContext().setAccessibleDescription("Ableton OSC/MIDI Settings");
 		menuItem.addActionListener(this);
 		this.configurationMenu.add(menuItem);
 
@@ -219,13 +219,17 @@ public class GUI implements ActionListener {
 			try {
 				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
 				if (midiDevice.getMaxTransmitters() != 0) {
-					rbMenuItem = new JRadioButtonMenuItem("MIDI Input: " + midiInfo[i].getName());
-					rbMenuItem.addActionListener(this);
-					midiInGroup.add(rbMenuItem);
-					if (this.configuration.getMidiInDevice() != null && this.configuration.getMidiInDevice().equals(midiDevice)) {
-						rbMenuItem.setSelected(true);
+					cbMenuItem = new JCheckBoxMenuItem("MIDI Input: " + midiInfo[i].getName());
+					cbMenuItem.addActionListener(this);
+					ArrayList<MidiDevice> midiInDevices = this.configuration.getMidiInDevices();
+					if (midiInDevices != null) {
+						for (int j=0; j < midiInDevices.size(); j++) {
+							if (midiInDevices.get(j).equals(midiDevice)) {
+								cbMenuItem.setSelected(true);
+							}
+						}
 					}
-					midiInMenu.add(rbMenuItem);
+					midiInMenu.add(cbMenuItem);
 				}
 			} catch (MidiUnavailableException e) {
 				e.printStackTrace();
@@ -329,15 +333,15 @@ public class GUI implements ActionListener {
 			this.actionOSCSettings();
 		}
 
-		// COnfiguration -> Ableton OSC Settings
-		if (e.getActionCommand().equals("Ableton OSC Settings")) {
+		// COnfiguration -> Ableton OSC/MIDI Settings
+		if (e.getActionCommand().equals("Ableton OSC/MIDI Settings")) {
 			this.actionAbletonOSCSettings();
 		}
 
 		// MIDI -> MIDI Input
 		if (e.getActionCommand().contains("MIDI Input: ")) {
 			String[] pieces = e.getActionCommand().split("MIDI Input: ");
-			this.actionSelectMidiInput(pieces[1]);
+			this.actionAddMidiInput(pieces[1]);
 		}
 
 		// MIDI -> MIDI Output
@@ -420,43 +424,77 @@ public class GUI implements ActionListener {
 
 				this.configuration.setMonomeSerialOSCOutPortNumber(Integer.valueOf(oscoutport).intValue());
 
-				// read <abletonhostname> from the configuration file
-				rootNL = doc.getElementsByTagName("abletonhostname");
+				// read <abletonmode> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonmode");
 				rootEL = (Element) rootNL.item(0);
+				String abletonmode = "";
 				// old versions might not have this setting
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
-					String abletonhostname = ((Node) rootNL2.item(0)).getNodeValue();
-					this.configuration.setAbletonHostname(abletonhostname);
+					abletonmode = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonMode(abletonmode);
 				}
+				
+				if (abletonmode.equals("OSC")) {
 
-				// read <abletonoscinport> from the configuration file
-				rootNL = doc.getElementsByTagName("abletonoscinport");
-				rootEL = (Element) rootNL.item(0);
-				// old versions might not have this setting
-				if (rootEL != null) {
-					rootNL2 = rootEL.getChildNodes();
-					String abletonoscinport = ((Node) rootNL2.item(0)).getNodeValue();
-					this.configuration.setAbletonOSCInPortNumber(Integer.valueOf(abletonoscinport).intValue());
+					// read <abletonhostname> from the configuration file
+					rootNL = doc.getElementsByTagName("abletonhostname");
+					rootEL = (Element) rootNL.item(0);
+					// old versions might not have this setting
+					if (rootEL != null) {
+						rootNL2 = rootEL.getChildNodes();
+						String abletonhostname = ((Node) rootNL2.item(0)).getNodeValue();
+						this.configuration.setAbletonHostname(abletonhostname);
+					}
+	
+					// read <abletonoscinport> from the configuration file
+					rootNL = doc.getElementsByTagName("abletonoscinport");
+					rootEL = (Element) rootNL.item(0);
+					// old versions might not have this setting
+					if (rootEL != null) {
+						rootNL2 = rootEL.getChildNodes();
+						String abletonoscinport = ((Node) rootNL2.item(0)).getNodeValue();
+						this.configuration.setAbletonOSCInPortNumber(Integer.valueOf(abletonoscinport).intValue());
+					}
+	
+					// read <abletonoscoutport> from the configuration file
+					rootNL = doc.getElementsByTagName("abletonoscoutport");
+					rootEL = (Element) rootNL.item(0);
+					// old versions might not have this setting
+					if (rootEL != null) {
+						rootNL2 = rootEL.getChildNodes();
+						String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
+						this.configuration.setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
+					}					
+				} else if (abletonmode.equals("MIDI")) {
+					// read <abletonmidiinport> from the configuration file
+					rootNL = doc.getElementsByTagName("abletonmidiinport");
+					rootEL = (Element) rootNL.item(0);
+					// old versions might not have this setting
+					if (rootEL != null) {
+						rootNL2 = rootEL.getChildNodes();
+						String abletonmidiinport = ((Node) rootNL2.item(0)).getNodeValue();
+						this.configuration.setAbletonMIDIInDeviceName(abletonmidiinport);
+					}
+					
+					// read <abletonmidioutport> from the configuration file
+					rootNL = doc.getElementsByTagName("abletonmidioutport");
+					rootEL = (Element) rootNL.item(0);
+					// old versions might not have this setting
+					if (rootEL != null) {
+						rootNL2 = rootEL.getChildNodes();
+						String abletonmidioutport = ((Node) rootNL2.item(0)).getNodeValue();
+						this.configuration.setAbletonMIDIOutDeviceName(abletonmidioutport);
+					}
 				}
-
-				// read <abletonoscoutport> from the configuration file
-				rootNL = doc.getElementsByTagName("abletonoscoutport");
-				rootEL = (Element) rootNL.item(0);
-				// old versions might not have this setting
-				if (rootEL != null) {
-					rootNL2 = rootEL.getChildNodes();
-					String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
-					this.configuration.setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
-				}
-
+				
 				// read <midiinport> from the configuration file
 				rootNL = doc.getElementsByTagName("midiinport");
 				rootEL = (Element) rootNL.item(0);
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
 					String midiinport = ((Node) rootNL2.item(0)).getNodeValue();
-					this.actionSelectMidiInput(midiinport);
+					this.actionAddMidiInput(midiinport);
 				}
 
 				// read all <midioutport> tags from the configuration file
@@ -829,18 +867,6 @@ public class GUI implements ActionListener {
 	 * Handles a request to view the Ableton OSC settings.
 	 */
 	private void actionAbletonOSCSettings() {
-		try {
-			if (this.abletonOscSettingsFrame != null &&
-					this.abletonOscSettingsFrame.getLocationOnScreen() != null) {
-				this.abletonOscSettingsFrame.requestFocus();
-				this.abletonOscSettingsFrame.grabFocus();
-				return;
-			}
-		} catch (IllegalComponentStateException e) {
-			this.abletonOscSettingsFrame = null;
-			e.printStackTrace();
-		}
-
 		this.abletonOscSettingsFrame = new AbletonOSCSettingsFrame(this.configuration);
 		this.abletonOscSettingsFrame.setVisible(true);
 		this.frame.add(this.abletonOscSettingsFrame);
@@ -848,11 +874,11 @@ public class GUI implements ActionListener {
 	}
 
 	/**
-	 * Handles a request to select a new MIDI input device
+	 * Enables or disables a MIDI input device
 	 * 
-	 * @param sMidiDevice The name of the MIDI device to select
+	 * @param sMidiDevice The name of the MIDI device to toggle
 	 */
-	public void actionSelectMidiInput(String sMidiDevice) {
+	public void actionAddMidiInput(String sMidiDevice) {
 		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
 		MidiDevice midiDevice;
 
@@ -861,7 +887,7 @@ public class GUI implements ActionListener {
 				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
 				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
 					if (midiDevice.getMaxTransmitters() != 0) {
-						this.configuration.addMidiInDevice(midiDevice);
+						this.configuration.toggleMidiInDevice(midiDevice);
 					}
 				}
 			} catch (MidiUnavailableException e) {
