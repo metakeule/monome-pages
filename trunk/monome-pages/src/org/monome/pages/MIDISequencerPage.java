@@ -217,6 +217,8 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 * The names of the selected MIDI output devices 
 	 */
 	private ArrayList<String> midiDeviceNames = new ArrayList<String>();
+	
+	private int noteDelay = 0;
 
 	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
@@ -593,13 +595,17 @@ public class MIDISequencerPage implements Page, ActionListener {
 						this.heldNotes[y] = 0;
 						note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, velocity);
 						for (int i=0; i < midiReceivers.size(); i++) {
-							midiReceivers.get(i).send(note_out, -1);
+							NoteEvent ne = new NoteEvent(midiReceivers.get(i), note_out, noteDelay);
+							new Thread(ne).start();
+							//midiReceivers.get(i).send(note_out, -1);
 						}
 					} else if (velocity > 0 && this.heldNotes[y] == 0) {
 						this.heldNotes[y] = 1;
 						note_out.setMessage(ShortMessage.NOTE_ON, 0, note_num, velocity);
 						for (int i=0; i < midiReceivers.size(); i++) {
-							midiReceivers.get(i).send(note_out, -1);
+							NoteEvent ne = new NoteEvent(midiReceivers.get(i), note_out, noteDelay);
+							new Thread(ne).start();
+							//midiReceivers.get(i).send(note_out, -1);
 						}
 					}
 				} catch (InvalidMidiDataException e) {
@@ -623,7 +629,9 @@ public class MIDISequencerPage implements Page, ActionListener {
 							this.heldNotes[y] = 1;
 						}
 						for (int i=0; i < midiReceivers.size(); i++) {
-							midiReceivers.get(i).send(note_out, -1);
+							NoteEvent ne = new NoteEvent(midiReceivers.get(i), note_out, noteDelay);
+							new Thread(ne).start();
+							//midiReceivers.get(i).send(note_out, -1);
 						}
 					} catch (InvalidMidiDataException e) {
 						e.printStackTrace();

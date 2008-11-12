@@ -27,10 +27,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 /**
@@ -63,6 +68,15 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 	 * Text field to configure the Ableton OSC hostname 
 	 */
 	private JTextField hostname;
+	
+	private JRadioButton midiRB;
+	private JRadioButton oscRB;
+	private ButtonGroup midiOscBG;
+	private JPanel settingsPanel;
+	private JPanel monomePanel;
+	
+	private JComboBox midiInDeviceCB;
+	private JComboBox midiOutDeviceCB;
 
 	/**
 	 * @param configuration The main Configuration object
@@ -75,39 +89,68 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		this.configuration = configuration;
 
 		// build the window
-		JLabel label;
 		JPanel subPanel;
+
+		this.monomePanel = new JPanel();
+		this.monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));
+		
+		subPanel = new JPanel();
+		subPanel.setLayout(new GridLayout(1, 1));
+		this.midiRB = new JRadioButton("MIDI");
+		this.midiRB.addActionListener(this);
+		this.oscRB = new JRadioButton("OSC");
+		this.oscRB.addActionListener(this);
+		
+		if (this.configuration.getAbletonMode().equals("OSC")) {
+			this.oscRB.setSelected(true);
+			this.settingsPanel = this.createOSCPanel();
+		} else if (this.configuration.getAbletonMode().equals("MIDI")) {
+			this.midiRB.setSelected(true);
+			this.settingsPanel = this.createMIDIPanel();
+		}
+		this.midiOscBG = new ButtonGroup();
+		this.midiOscBG.add(this.midiRB);
+		this.midiOscBG.add(this.oscRB);
+		subPanel.add(this.midiRB);
+		subPanel.add(this.oscRB);
+		this.monomePanel.add(subPanel);
+		this.monomePanel.add(this.settingsPanel);
+		this.add(this.monomePanel);
+		this.pack();		
+	}
+	
+	public JPanel createMIDIPanel() {
+		JLabel label;
 		JButton button;
-
-		JPanel monomePanel = new JPanel();
-		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));
-
+		JPanel subPanel;
+		JPanel settingsPanel = new JPanel();
+		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
+		
+		this.midiInDeviceCB = new JComboBox();
+		this.midiOutDeviceCB = new JComboBox();
+		String[] midiOutOptions = this.configuration.getMidiOutOptions();
+		String[] midiInOptions = this.configuration.getMidiInOptions();
+		
+		for (int i=0; i < midiInOptions.length; i++) {
+			this.midiInDeviceCB.addItem(midiInOptions[i]);
+		}
+		for (int i=0; i < midiOutOptions.length; i++) {
+			this.midiOutDeviceCB.addItem(midiOutOptions[i]);
+		}
+		
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
-		label = new JLabel("Hostname");
+		label = new JLabel("MIDI In Device");
 		subPanel.add(label);
-		this.hostname = new JTextField(this.configuration.getAbletonHostname());
-		this.hostname.setEditable(true);
-		subPanel.add(this.hostname);
-		monomePanel.add(subPanel);
-
+		subPanel.add(midiInDeviceCB);
+		settingsPanel.add(subPanel);
+		
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
-		label = new JLabel("OSC In Port");
+		label = new JLabel("MIDI Out Device");
 		subPanel.add(label);
-		this.inport = new JTextField(String.valueOf(this.configuration.getAbletonOSCInPortNumber()));
-		this.inport.setEditable(true);
-		subPanel.add(this.inport);
-		monomePanel.add(subPanel);
-
-		subPanel = new JPanel();
-		subPanel.setLayout(new GridLayout(1, 1));
-		label = new JLabel("OSC Out Port");
-		subPanel.add(label);
-		this.outport = new JTextField(String.valueOf(this.configuration.getAbletonOSCOutPortNumber()));
-		this.outport.setEditable(true);
-		subPanel.add(this.outport);		
-		monomePanel.add(subPanel);
+		subPanel.add(midiOutDeviceCB);
+		settingsPanel.add(subPanel);
 
 		subPanel = new JPanel();
 		button = new JButton("Save");
@@ -117,12 +160,57 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		button = new JButton("Cancel");
 		button.addActionListener(this);
 		subPanel.add(button);		
-		monomePanel.add(subPanel);
+		settingsPanel.add(subPanel);
+		
+		return settingsPanel;
+	}
+		
+    public JPanel createOSCPanel() {
+		JLabel label;
+		JPanel subPanel;
+		JButton button;
+		JPanel settingsPanel = new JPanel();
+		settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.PAGE_AXIS));
 
-		this.add(monomePanel);
+		subPanel = new JPanel();
+		subPanel.setLayout(new GridLayout(1, 1));
+		label = new JLabel("Hostname");
+		subPanel.add(label);
+		this.hostname = new JTextField(this.configuration.getAbletonHostname());
+		this.hostname.setEditable(true);
+		subPanel.add(this.hostname);
+		settingsPanel.add(subPanel);
+
+		subPanel = new JPanel();
+		subPanel.setLayout(new GridLayout(1, 1));
+		label = new JLabel("OSC In Port");
+		subPanel.add(label);
+		this.inport = new JTextField(String.valueOf(this.configuration.getAbletonOSCInPortNumber()));
+		this.inport.setEditable(true);
+		subPanel.add(this.inport);
+		settingsPanel.add(subPanel);
+
+		subPanel = new JPanel();
+		subPanel.setLayout(new GridLayout(1, 1));
+		label = new JLabel("OSC Out Port");
+		subPanel.add(label);
+		this.outport = new JTextField(String.valueOf(this.configuration.getAbletonOSCOutPortNumber()));
+		this.outport.setEditable(true);
+		subPanel.add(this.outport);		
+		settingsPanel.add(subPanel);
+
+		subPanel = new JPanel();
+		button = new JButton("Save");
+		button.addActionListener(this);		
+		subPanel.add(button);
+
+		button = new JButton("Cancel");
+		button.addActionListener(this);
+		subPanel.add(button);		
+		settingsPanel.add(subPanel);
 
 		// display the window
-		this.pack();		
+		return settingsPanel;
 	}
 
 	/* (non-Javadoc)
@@ -134,13 +222,36 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 			this.dispose();
 			// update Configuration with inputed values
 		} else if (e.getActionCommand().equals("Save")) {
-			int inport = Integer.parseInt(this.inport.getText());
-			int outport = Integer.parseInt(this.outport.getText());
-			String hostname = this.hostname.getText();
-			this.configuration.setAbletonOSCInPortNumber(inport);
-			this.configuration.setAbletonOSCOutPortNumber(outport);
-			this.configuration.setAbletonHostname(hostname);
+			if (this.oscRB.isSelected()) {
+				int inport = Integer.parseInt(this.inport.getText());
+				int outport = Integer.parseInt(this.outport.getText());
+				String hostname = this.hostname.getText();
+				this.configuration.setAbletonOSCInPortNumber(inport);
+				this.configuration.setAbletonOSCOutPortNumber(outport);
+				this.configuration.setAbletonHostname(hostname);
+				this.configuration.initAbleton();
+			} else if (this.midiRB.isSelected()) {
+				String midiInDevice = this.midiInDeviceCB.getSelectedItem().toString();
+				System.out.println("midi in device is " + midiInDevice);
+				this.configuration.setAbletonMIDIInDeviceName(midiInDevice);
+				String midiOutDevice = this.midiOutDeviceCB.getSelectedItem().toString();
+				this.configuration.setAbletonMIDIOutDeviceName(midiOutDevice);
+				System.out.println("midi out device is " + midiOutDevice);
+				this.configuration.initAbleton();
+			}
 			this.dispose();
+		} else if (e.getActionCommand().equals("OSC")) {
+			this.monomePanel.remove(this.settingsPanel);
+			this.settingsPanel = this.createOSCPanel();
+			this.monomePanel.add(this.settingsPanel);
+			this.configuration.setAbletonMode("OSC");
+			this.pack();
+		} else if (e.getActionCommand().equals("MIDI")) {
+			this.monomePanel.remove(this.settingsPanel);
+			this.settingsPanel = this.createMIDIPanel();
+			this.monomePanel.add(this.settingsPanel);
+			this.configuration.setAbletonMode("MIDI");
+			this.pack();
 		}
 	}
 }

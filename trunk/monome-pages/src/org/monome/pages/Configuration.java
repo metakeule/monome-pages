@@ -32,6 +32,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
+import javax.sound.midi.SysexMessage;
 import javax.sound.midi.Transmitter;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -67,12 +68,12 @@ public class Configuration implements Receiver {
 	/**
 	 * The selected MIDI input device to receive MIDI clock sync messages from.
 	 */
-	private MidiDevice midiInDevice;
+	private ArrayList<MidiDevice> midiInDevices = new ArrayList<MidiDevice>();
 
 	/**
 	 * midiInDevice's associated Transmitter object. 
 	 */
-	private Transmitter midiInTransmitter;
+	private ArrayList<Transmitter> midiInTransmitters = new ArrayList<Transmitter>();
 
 	/**
 	 * The selected MIDI output devices.
@@ -128,7 +129,7 @@ public class Configuration implements Receiver {
 	 * A background thread process that updates clipState and tracksArmed based on
 	 * information sent back by LiveOSC.
 	 */
-	private AbletonClipUpdater updater;
+	private AbletonOSCClipUpdater abletonOSCClipUpdater;
 
 	/**
 	 * Listens for /live/track/info and /live/tempo responses from Ableton and
@@ -145,6 +146,20 @@ public class Configuration implements Receiver {
 	 * The hostname that Ableton is bound to.
 	 */
 	private String abletonHostname = "localhost";
+
+	private Receiver abletonReceiver;
+
+	private Transmitter abletonTransmitter;
+	
+	private AbletonSysexReceiver abletonSysexReceiver = new AbletonSysexReceiver(this);
+
+	private String abletonMode = "OSC";
+
+	private AbletonMIDIClipUpdater abletonMIDIClipUpdater;
+
+	private String abletonMIDIInDeviceName;
+
+	private String abletonMIDIOutDeviceName;
 
 	/**
 	 * @param name The name of the configuration
@@ -164,8 +179,8 @@ public class Configuration implements Receiver {
 	/**
 	 * @return The selected MIDI input device to receive MIDI clock sync from
 	 */
-	public MidiDevice getMidiInDevice() {
-		return this.midiInDevice;
+	public ArrayList<MidiDevice> getMidiInDevices() {
+		return this.midiInDevices;
 	}
 
 	/**
@@ -262,12 +277,12 @@ public class Configuration implements Receiver {
 	 * Closes all selected MIDI devices.
 	 */
 	public void closeMidiDevices() {
-		if (this.midiInTransmitter != null) {
-			this.midiInTransmitter.close();
+		for (int i=0; i < this.midiInTransmitters.size(); i++) {
+			this.midiInTransmitters.get(i).close();
 		}
-
-		if (this.midiInDevice != null) {
-			this.midiInDevice.close();
+		
+		for (int i=0; i < this.midiInDevices.size(); i++) {
+			this.midiInDevices.get(i).close();
 		}
 
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
@@ -307,25 +322,26 @@ public class Configuration implements Receiver {
 	 * 
 	 * @param midiInDevice The MIDI input device to enable
 	 */
-	public void addMidiInDevice(MidiDevice midiInDevice) {
+	public void toggleMidiInDevice(MidiDevice midiInDevice) {
 		// close the currently open device if we have one
-		if (this.midiInTransmitter != null) {
-			this.midiInTransmitter.close();
+		for (int i=0; i < this.midiInDevices.size(); i++) {
+			if (this.midiInDevices.get(i).equals(midiInDevice)) {
+				this.midiInTransmitters.get(i).close();
+				this.midiInTransmitters.remove(i);
+				this.midiInDevices.get(i).close();
+				this.midiInDevices.remove(i);
+				return;
+			}
 		}
-		if (this.midiInDevice != null) {
-			this.midiInDevice.close();
-		}
-
-		this.midiInDevice = midiInDevice;
 
 		// try to open the new midi in device
 		try {
-			this.midiInDevice.open();
-			this.midiInTransmitter = this.midiInDevice.getTransmitter();
-			this.midiInTransmitter.setReceiver(this);
+			midiInDevice.open();
+			Transmitter transmitter = midiInDevice.getTransmitter();
+			transmitter.setReceiver(this);
+			this.midiInDevices.add(midiInDevice);
+			this.midiInTransmitters.add(transmitter);
 		} catch (MidiUnavailableException e) {
-			this.midiInDevice = null;
-			this.midiInTransmitter = null;
 			e.printStackTrace();
 		}
 	}
@@ -335,12 +351,11 @@ public class Configuration implements Receiver {
 	 */
 	public void send(MidiMessage message, long lTimeStamp) {
 		ShortMessage shortMessage;
-
 		// pass all messages along to all monomes (who pass to all pages)
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			this.monomeConfigurations.get(i).send(message, lTimeStamp);
 		}
-
+		
 		// filter for midi clock ticks or midi reset messages
 		if (message instanceof ShortMessage) {
 			shortMessage = (ShortMessage) message;
@@ -360,7 +375,7 @@ public class Configuration implements Receiver {
 			default:
 				break;
 			}
-		}
+		}		
 	}
 
 	/* (non-Javadoc)
@@ -498,21 +513,33 @@ public class Configuration implements Receiver {
 	 * @return true if initialization was successful
 	 */
 	public void initAbleton() {
-		if (this.abletonOSCListener != null) {
-			return;
+		this.stopAbletonClipUpdaters();
+		if (this.abletonMode.equals("OSC")) {
+			this.initAbletonOSCMode();
+		} else if (this.abletonMode.equals("MIDI")) {
+			this.initAbletonMIDIMode();
 		}
+	}
+	
+	public void initAbletonMIDIMode() {
+		this.initAbletonMIDIInPort(this.abletonMIDIInDeviceName);
+		this.initAbletonMIDIOutPort(this.abletonMIDIOutDeviceName);
+		this.initAbletonMIDIClipUpdater();
+	}
+	
+	public void initAbletonMIDIClipUpdater() {
+		this.abletonMIDIClipUpdater = new AbletonMIDIClipUpdater(this, this.abletonReceiver);
+		new Thread(this.abletonMIDIClipUpdater).start();
+	}
 		
+	public void initAbletonOSCMode() {
 		this.abletonOSCListener = new AbletonOSCListener(this);
 		this.initAbletonOSCOut();
 		this.initAbletonOSCIn();
-		this.initAbletonClipUpdater();
+		this.initAbletonOSCClipUpdater();
 	}
 	
-	public void initAbletonOSCOut() {
-		if (this.abletonOSCPortOut != null) {
-			return;
-		}
-		
+	public void initAbletonOSCOut() {		
 		try {
 			this.abletonOSCPortOut = new OSCPortOut(InetAddress.getByName(this.abletonHostname), this.abletonOSCOutPortNumber);
 		} catch (SocketException e) {
@@ -524,11 +551,11 @@ public class Configuration implements Receiver {
 	}
 	
 	public void initAbletonOSCIn() {
-		if (this.abletonOSCPortIn != null) {
-			return;
-		}
-		
 		try {
+			if (this.abletonOSCPortIn != null) {
+				this.abletonOSCPortIn.stopListening();
+				this.abletonOSCPortIn.close();
+			}
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
 			this.abletonOSCPortIn.addListener("/live/track/info", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/state", this.abletonOSCListener);
@@ -538,9 +565,21 @@ public class Configuration implements Receiver {
 		}
 	}
 	
-	public void initAbletonClipUpdater() {
-		this.updater = new AbletonClipUpdater(this, this.abletonOSCPortOut);
-		new Thread(this.updater).start();
+	public void initAbletonOSCClipUpdater() {
+		this.abletonOSCClipUpdater = new AbletonOSCClipUpdater(this, this.abletonOSCPortOut);
+		new Thread(this.abletonOSCClipUpdater).start();
+	}
+	
+	public void stopAbletonClipUpdaters() {
+		if (this.abletonMIDIClipUpdater != null) {
+			this.abletonMIDIClipUpdater.stop();
+			this.abletonMIDIClipUpdater = null;
+		}
+		
+		if (this.abletonOSCClipUpdater != null) {
+			this.abletonOSCClipUpdater.stop();
+			this.abletonOSCClipUpdater = null;
+		}
 	}
 
 	/**
@@ -589,11 +628,17 @@ public class Configuration implements Receiver {
 		xml += "  <hostname>" + this.monomeHostname + "</hostname>\n";
 		xml += "  <oscinport>" + this.monomeSerialOSCInPortNumber + "</oscinport>\n";
 		xml += "  <oscoutport>" + this.monomeSerialOSCOutPortNumber + "</oscoutport>\n";
-		xml += "  <abletonhostname>" + this.abletonHostname + "</abletonhostname>\n";
-		xml += "  <abletonoscinport>" + this.abletonOSCInPortNumber + "</abletonoscinport>\n";
-		xml += "  <abletonoscoutport>" + this.abletonOSCOutPortNumber + "</abletonoscoutport>\n";
-		if (this.midiInDevice != null) {
-			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(this.midiInDevice.getDeviceInfo().toString()) + "</midiinport>\n";
+		xml += "  <abletonmode>" + this.abletonMode + "</abletonmode>\n";
+		if (this.abletonMode.equals("OSC")) {
+			xml += "  <abletonhostname>" + this.abletonHostname + "</abletonhostname>\n";
+			xml += "  <abletonoscinport>" + this.abletonOSCInPortNumber + "</abletonoscinport>\n";
+			xml += "  <abletonoscoutport>" + this.abletonOSCOutPortNumber + "</abletonoscoutport>\n";
+		} else if (this.abletonMode.equals("MIDI")) {
+			xml += "  <abletonmidiinport>" + this.abletonMIDIInDeviceName + "</abletonmidiinport>\n";
+			xml += "  <abletonmidioutport>" + this.abletonMIDIOutDeviceName + "</abletonmidioutport>\n";
+		}
+		for (int i=0; i < this.midiInDevices.size(); i++) {
+			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(this.midiInDevices.get(i).getDeviceInfo().toString()) + "</midiinport>\n";
 		}
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
 			xml += "  <midioutport>" + StringEscapeUtils.escapeXml(this.midiOutDevices.get(i).getDeviceInfo().toString()) + "</midioutport>\n";
@@ -612,4 +657,74 @@ public class Configuration implements Receiver {
 			monomeConfigurations.get(i).redrawAbletonPages();
 		}		
 	}
+	
+	/**
+	 * @return The MIDI outputs that have been enabled in the main configuration.
+	 */
+	public String[] getMidiOutOptions() {
+		ArrayList<MidiDevice> midiOuts = this.getMidiOutDevices();
+		String[] midiOutOptions = new String[midiOuts.size()];
+		for (int i=0; i < midiOuts.size(); i++) {
+			midiOutOptions[i] = midiOuts.get(i).getDeviceInfo().toString();
+		}
+		return midiOutOptions;
+	}
+	
+	/**
+	 * @return The MIDI outputs that have been enabled in the main configuration.
+	 */
+	public String[] getMidiInOptions() {
+		ArrayList<MidiDevice> midiIns = this.getMidiInDevices();
+		String[] midiOutOptions = new String[midiIns.size()];
+		for (int i=0; i < midiIns.size(); i++) {
+			midiOutOptions[i] = midiIns.get(i).getDeviceInfo().toString();
+		}
+		return midiOutOptions;
+	}
+
+	public void initAbletonMIDIInPort(String midiInDevice) {
+		this.abletonTransmitter = this.getMIDITransmitterByName(midiInDevice);
+		this.abletonTransmitter.setReceiver(this.abletonSysexReceiver);
+	}
+	
+	public void initAbletonMIDIOutPort(String midiOutDevice) {
+		this.abletonReceiver = this.getMIDIReceiverByName(midiOutDevice);
+	}
+	
+	public void setAbletonMode(String abletonMode) {
+		this.abletonMode = abletonMode;
+	}
+
+	public Receiver getMIDIReceiverByName(String midiDeviceName) {
+		for (int i=0; i < this.midiOutDevices.size(); i++) {
+			if (this.midiOutDevices.get(i).getDeviceInfo().toString().compareTo(midiDeviceName) == 0) {
+				Receiver receiver = this.midiOutReceivers.get(i);
+				return receiver;
+			}
+		}
+		return null;		
+	}
+	
+	public Transmitter getMIDITransmitterByName(String midiDeviceName) {
+		for (int i=0; i < this.midiInDevices.size(); i++) {
+			if (this.midiInDevices.get(i).getDeviceInfo().toString().compareTo(midiDeviceName) == 0) {
+				Transmitter transmitter = this.midiInTransmitters.get(i);
+				return transmitter;
+			}
+		}
+		return null;		
+	}
+
+	public void setAbletonMIDIInDeviceName(String midiInDevice) {
+		this.abletonMIDIInDeviceName = midiInDevice;
+	}
+
+	public void setAbletonMIDIOutDeviceName(String midiOutDevice) {
+		this.abletonMIDIOutDeviceName = midiOutDevice;
+	}
+
+	public String getAbletonMode() {
+		return this.abletonMode;
+	}
+
 }

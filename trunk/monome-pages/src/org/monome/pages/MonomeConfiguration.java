@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
+import javax.sound.midi.Transmitter;
 import javax.swing.BoxLayout;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
@@ -838,12 +839,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @return The MIDI outputs that have been enabled in the main configuration.
 	 */
 	public String[] getMidiOutOptions() {
-		ArrayList<MidiDevice> midiOuts = this.configuration.getMidiOutDevices();
-		String[] midiOutOptions = new String[midiOuts.size()];
-		for (int i=0; i < midiOuts.size(); i++) {
-			midiOutOptions[i] = midiOuts.get(i).getDeviceInfo().toString();
-		}
-		return midiOutOptions;
+		return this.configuration.getMidiOutOptions();
 	}
 
 	/**
@@ -853,14 +849,11 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @return The MIDI receiver
 	 */
 	public Receiver getMidiReceiver(String midiDeviceName) {
-		ArrayList<MidiDevice> midiOuts = this.configuration.getMidiOutDevices();
-		for (int i=0; i < midiOuts.size(); i++) {
-			if (midiOuts.get(i).getDeviceInfo().toString().compareTo(midiDeviceName) == 0) {
-				Receiver receiver = this.configuration.getMidiReceiver(i);
-				return receiver;
-			}
-		}
-		return null;		
+		return this.configuration.getMIDIReceiverByName(midiDeviceName);
+	}
+	
+	public Transmitter getMidiTransmitter(String midiDeviceName) {
+		return this.configuration.getMIDITransmitterByName(midiDeviceName);
 	}
 
 	/**

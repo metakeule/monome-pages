@@ -96,8 +96,8 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	/**
 	 * The starting note for each key (from C-2 to B-2) 
 	 */
-	private int[] keys = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
-	
+	//private int[] keys = {48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59};
+	private int[] keys = {60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71};
 	/**
 	 * Stores the note on / off state of all MIDI notes
 	 */

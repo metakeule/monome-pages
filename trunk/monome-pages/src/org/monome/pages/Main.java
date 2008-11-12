@@ -22,6 +22,8 @@
 
 package org.monome.pages;
 
+import org.lwjgl.Sys;
+
 /**
  * The application entry point
  * 
