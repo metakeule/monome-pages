@@ -47,8 +47,6 @@ import javax.swing.JFrame;
 import javax.swing.JDesktopPane;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.ButtonGroup;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -172,9 +170,7 @@ public class GUI implements ActionListener {
 	 */
 	private void buildConfigurationMenu() {
 		JMenu midiInMenu, midiOutMenu;
-		JRadioButtonMenuItem rbMenuItem;
 		JCheckBoxMenuItem cbMenuItem;
-		ButtonGroup midiInGroup = new ButtonGroup();
 		MidiDevice midiDevice;
 		JMenuItem menuItem;
 
