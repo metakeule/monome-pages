@@ -28,7 +28,6 @@ import java.awt.event.KeyEvent;
 
 import java.util.ArrayList;
 
-import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
