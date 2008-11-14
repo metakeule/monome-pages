@@ -48,7 +48,7 @@ See: AbletonClipLauncherPage
 
   * Ableton Clip Control (another version of Ableton Clip Launcher)
 
-The Ableton Clip Control page is an interface to launch clips, follow midi notes played in all tracks, and stop tracks in Ableton Live.  It is currently implemented to use the LiveOSC project to communicate with Ableton Live (so you'll need LiveOSC installed and configured for this to work).  It polls the state of Ableton Live and updates the page according to the state of the clips, so it is always in sync with the state of Ableton Live.
+The Ableton Clip Control page is an interface to launch clips, follow midi notes played in all tracks, and stop tracks in Ableton Live.  It is currently implemented to use the LiveOSC project to communicate with Ableton Live (so you'll need LiveOSC installed and configured for this to work).  It polls the state of Ableton Live and updates the page according to the state of the clips, so it is always in sync with the state of Ableton Live. It gives a precious feedback about midi notes played for each tracks in order to match what sound is made by what track. It is precious at least for Julien Bayle (!)
 
 See: AbletonClipControlPage
 
