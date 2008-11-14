@@ -127,7 +127,7 @@ Here is an example of how the MIDI Sync page should be setup:
 
 === Windows ===
 
-1) Download and install Python 2.2.3 to {{{C:\Python22}}}.  Other versions may work as well, this just happens to be the version I'm using.
+1) Download and install Python 2.2.3 to {{{C:\Python22}}}.  Be sure to install it to this directory.
 
 http://www.python.org/download/releases/2.2.3/
 
@@ -141,44 +141,36 @@ http://www.python.org/download/releases/2.2.3/
 
 5) Copy the {{{LiveOSC}}} and {{{LiveTelnet}}} folders both to {{{C:\Program Files\Ableton\...\Resources\MIDI Remote Scripts}}}
 
-6) I have extended the LiveAPI somewhat for this project, you should download the {{{LiveOSC.py.Windows}}} and {{{LiveOSCCallbacks.py}}} files from the Downloads tab and copy them to the {{{C:\Program Files\Ableton\...\Resources\MIDI Remote Scripts\LiveOSC}}} directory.  Rename the {{{LiveOSC.py.Windows}}} file to {{{LiveOSC.py}}} and overwrite the existing files in the {{{LiveOSC}}} directory.
+6) Download the LiveOSC.zip package from the Downloads tab and copy the folder to {{{C:\Program Files\Ableton\...\Resources\MIDI Remote Scripts}}}
 
 7) Load up Ableton Live, go to Options -> Preferences -> MIDI and select LiveOSC as a control surface. 
 
-8) Create an Ableton Clip Launcher page and create some clips in Ableton to see if they show up on the monome.
+8) Create an Ableton Clip Launcher page and create some clips in Ableton to see if they show up on the monome.  You shouldn't need to change the Ableton OSC/MIDI settings in pages because it defaults to OSC.
 
 === OSX ===
+1) Download and unzip the PagesMIDI.zip file from the Downloads tab
 
-1) Download the Python 2.2.3 source code from here:
+2) Put the PagesMIDI folder inside Live.app (right-click, "Show Package Contents") Live.app/Contents/App-Resources/MIDI Remote Scripts
 
-[http://www.python.org/ftp/python/2.2.3/Python-2.2.3.tgz]
+3) Start Ableton Live, go to Options -> Preferences, go to the MIDI/Sync tab and select PagesMIDI from the first Control Surface dropdown
 
-2) Un-tar it to /python2.2
+4) Make sure you have at least 2 IAC devices enabled
 
-3) Open terminal and run:
-{{{
-echo /python2.2/lib > /Library/Python/2.3/site-packages/python2.2.pth
-}}}
+5) In the Input / Output dropdowns select two unique devices (ie. IAC Driver 1 for Input and IAC Driver 2 for Output)
 
-4) Download and unzip the LiveAPI-OSX package from here:
+6) In pages, enable the MIDI Input and Output devices you selected in Ableton.  Important: you need to make the opposite selection as you made in Ableton.  If you picked IAC Driver 1 for Input in Ableton, pick it for Output in pages.  Same for the other device.
 
-[http://liveapi.googlegroups.com/web/LiveAPI-OSX.zip]
+7) In pages, choose the Ableton OSC/MIDI Settings option from the Configuration menu and choose the MIDI option.  Verify the ports and click Save.
 
-5) Put the _LiveAPICore folder into /python2.2/lib
+8) The Ableton / Pages integration is now configured.  You can save this configuration and load it back at any time without going through these steps again.
 
-6) Download the LiveOSCCallbacks.py file from the Downloads tab and put it in the LiveOSC folder, overwrite the existing file
-
-7) Download the LiveOSC.py.OSX file from the Downloads tab, rename it to LiveOSC.py and copy it to the LiveOSC folder, overwrite the existing file
-
-7) Put the LiveOSC and LiveTelnet folders inside Live.app (right-click, "Show Package Contents") Live.app/Contents/App-Resources/MIDI Remote Scripts
-
-8) Start Ableton Live, go to Options -> Preferences, go to the MIDI/Sync tab and select LiveOSC from the first Control Surface dropdown
+Note: You can use the same MIDI output port for MIDI clock sync as well.  Just enable Sync in Ableton on the appropriate MIDI output device from the MIDI preferences page (it should be labeled PagesMIDI).
 
 == Pages Setup ==
 
 Now that Monome Serial and Ableton Live are running it's time to run the pages application.  If you haven't already, download a copy of it from the Downloads tab and do any necessary Java setup as described in the sections above.
 
-You can launch pages either by double-clicking on the JAR file or running "java -jar pages-0.1.6.jar" from the command line.
+You can launch pages either by double-clicking on the JAR file or running "java -jar pages-0.1.7.jar" from the command line.
 
 You will be greeted by an empty window and a File menu.  The first step is to create a new configuration.  Go to File -> New Configuration and give it a name.
 
