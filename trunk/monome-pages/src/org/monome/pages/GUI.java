@@ -804,7 +804,7 @@ public class GUI implements ActionListener {
 		this.configuration.closeMonomeConfigurationWindows();
 		this.configuration.closeMidiDevices();
 		this.configuration.stopMonomeSerialOSC();
-		this.configuration.stopAbletonOSC();
+		this.configuration.stopAbleton();
 		this.configuration.destroyAllPages();
 		this.frame.setTitle("Monome Pages");
 		this.frame.validate();		

@@ -262,15 +262,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @param clip The clip number to play (0 = first clip)
 	 */
 	public void playClip(int track, int clip) {
-		Object args[] = new Object[2];
-		args[0] = new Integer(track);
-		args[1] = new Integer(clip);
-		OSCMessage msg = new OSCMessage("/live/play/clipslot", args);
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().playClip(track, clip);
 	}
 
 	/**
@@ -279,110 +271,39 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @param track The track number to arm (0 = first track)
 	 */
 	public void armTrack(int track) {
-		Object args[] = new Object[1];
-		args[0] = new Integer(track);
-		OSCMessage msg = new OSCMessage("/live/arm", args);
-		// send the message 5 times because Ableton doesn't always respond to
-		// this for some reason
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().armTrack(track);
 	}
 
 	/**
 	 * Sends "/live/redo" to LiveOSC. 
 	 */
 	public void abletonRedo() {
-		OSCMessage msg = new OSCMessage("/live/redo");
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().redo();
 	}
 	
 	public void abletonOverdub(int overdub) {
-		Object args[] = new Object[1];
-		args[0] = new Integer(overdub);
-		OSCMessage msg = new OSCMessage("/live/overdub", args);
-		
-		// send the message 5 times because Ableton doesn't always respond to
-		// this for some reason
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().setOverdub(overdub);
 	}
 	
 	/**
 	 * Sends "/live/undo" to LiveOSC. 
 	 */
 	public void abletonUndo() {
-		System.out.println("ableton undo()");
-		OSCMessage msg = new OSCMessage("/live/undo");
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().undo();
 	}
 	
 	/**
 	 * Sends "/live/tempo tempo-1" to LiveOSC. 
 	 */
 	public void tempoDown() {
-		if (this.tempo - 1.0 < 20.0) {
-			this.tempo = (float) 21.0;
-		}
-		Object args[] = new Object[1];
-		args[0] = new Float(this.tempo - 1.0);
-		
-		OSCMessage msg = new OSCMessage("/live/tempo", args);
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().tempoDown(this.tempo);
 	}
 	
 	/**
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
 	public void tempoUp() {
-		if (this.tempo + 1.0 > 999.0) {
-			this.tempo = (float) 998.0;
-		}
-		Object args[] = new Object[1];
-		args[0] = new Float(this.tempo + 1.0);
-		OSCMessage msg = new OSCMessage("/live/tempo", args);
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().tempoUp(this.tempo);
 	}
 	
 	/**
@@ -391,20 +312,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @param track The track number to disarm (0 = first track)
 	 */
 	public void disarmTrack(int track) {
-		Object args[] = new Object[1];
-		args[0] = new Integer(track);
-		OSCMessage msg = new OSCMessage("/live/disarm", args);
-		// send the message 5 times because Ableton doesn't always respond to
-		// this for some reason
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().disarmTrack(track);
 	}
 
 	/**
@@ -413,14 +321,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void stopTrack(int track) {
-		Object args[] = new Object[1];
-		args[0] = new Integer(track);
-		OSCMessage msg = new OSCMessage("/live/stop/track", args);
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().stopTrack(track);
 	}
 
 	/**
@@ -429,14 +330,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void viewTrack(int track) {
-		Object args[] = new Object[1];
-		args[0] = new Integer(track);
-		OSCMessage msg = new OSCMessage("/live/track/view", args);
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().viewTrack(track);
 	}
 	
 	/* (non-Javadoc)

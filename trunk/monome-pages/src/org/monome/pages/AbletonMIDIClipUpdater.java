@@ -23,8 +23,10 @@
 package org.monome.pages;
 
 import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
 
 /**
  * The AbletonClipUpdater runs as a thread and constantly queries
@@ -60,13 +62,20 @@ public class AbletonMIDIClipUpdater implements Runnable {
 		while (this.running) {
 			// sleep for 300ms in between calls
 			try {
+				
+				byte[] msg = {(byte) SysexMessage.SYSTEM_EXCLUSIVE, (byte) 0x10, (byte) 0x12, (byte) 0x15, (byte) 0x16};
+				SysexMessage sysexMessage = new SysexMessage();
+				sysexMessage.setMessage(msg, msg.length);
+				this.abletonReceiver.send(sysexMessage, -1);				
 				ShortMessage songStateMessage = new ShortMessage();
-				songStateMessage.setMessage(ShortMessage.NOTE_ON, 0, 0, 0);
-				this.abletonReceiver.send(songStateMessage, -1);				
+				songStateMessage.setMessage(ShortMessage.CONTROL_CHANGE, 0, 0, 0);
+				this.abletonReceiver.send(songStateMessage, -1);
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (InvalidMidiDataException e) {
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
 				e.printStackTrace();
 			}
 			this.configuration.redrawAbletonPages();

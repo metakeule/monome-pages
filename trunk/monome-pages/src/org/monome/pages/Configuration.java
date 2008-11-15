@@ -159,6 +159,8 @@ public class Configuration implements Receiver {
 	private String abletonMIDIInDeviceName;
 
 	private String abletonMIDIOutDeviceName;
+	
+	private AbletonControl abletonControl;
 
 	/**
 	 * @param name The name of the configuration
@@ -233,7 +235,7 @@ public class Configuration implements Receiver {
 	/**
 	 * Close Ableton OSC connections.
 	 */
-	public void stopAbletonOSC() {
+	public void stopAbleton() {
 		if (this.abletonOSCPortIn != null) {
 			if (this.abletonOSCPortIn.isListening()) {
 				this.abletonOSCPortIn.stopListening();				
@@ -244,6 +246,9 @@ public class Configuration implements Receiver {
 		if (this.abletonOSCPortOut != null) {
 			this.abletonOSCPortOut.close();
 		}
+		
+		this.abletonControl = null;
+		this.stopAbletonClipUpdaters();
 	}
 
 	/**
@@ -524,6 +529,8 @@ public class Configuration implements Receiver {
 		this.initAbletonMIDIInPort(this.abletonMIDIInDeviceName);
 		this.initAbletonMIDIOutPort(this.abletonMIDIOutDeviceName);
 		this.initAbletonMIDIClipUpdater();
+		this.abletonControl = new AbletonMIDIControl(this.abletonReceiver);
+		
 	}
 	
 	public void initAbletonMIDIClipUpdater() {
@@ -536,6 +543,7 @@ public class Configuration implements Receiver {
 		this.initAbletonOSCOut();
 		this.initAbletonOSCIn();
 		this.initAbletonOSCClipUpdater();
+		this.abletonControl = new AbletonOSCControl(this);
 	}
 	
 	public void initAbletonOSCOut() {		
@@ -724,6 +732,10 @@ public class Configuration implements Receiver {
 
 	public String getAbletonMode() {
 		return this.abletonMode;
+	}
+	
+	public AbletonControl getAbletonControl() {
+		return this.abletonControl;
 	}
 
 }

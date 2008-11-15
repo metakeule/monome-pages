@@ -2,6 +2,7 @@ package org.monome.pages;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
 
 public class AbletonSysexReceiver implements Receiver {
@@ -18,10 +19,27 @@ public class AbletonSysexReceiver implements Receiver {
 
 	public void send(MidiMessage msg, long timeStamp) {
 		byte[] data = msg.getMessage();
+		
+		if (msg instanceof ShortMessage) {
+			ShortMessage shortMessage = (ShortMessage) msg;
+			switch (shortMessage.getCommand()) {
+			case 0xF0:
+				if (shortMessage.getChannel() == 8) {
+					this.configuration.send(msg, timeStamp);
+				}
+				if (shortMessage.getChannel() == 0x0C) {
+					this.configuration.send(msg, timeStamp);
+				}
+				break;
+			default:
+				break;
+			}
+		}		
+ 		
 		if (!(msg instanceof SysexMessage)) {
 			return;
 		}
-		
+				
 		if (data[1] == 125) {
 			byte[] bytes = {data[2], data[3], data[4], data[5], data[6]};
 			float tempo = this.midiToFloat(bytes);
@@ -30,32 +48,27 @@ public class AbletonSysexReceiver implements Receiver {
 		}
 		
 		if (data[1] == 126) {
-			int tracknum = -1;
+			int tracknum = 0;
 			int clipnum = -1;
-			boolean get_armed = false;
 			boolean get_clip = false;
 			boolean get_length = false;
+			int track_armed = 0;
+			int clip_state = 0;
 			for (int i=0; i < data.length; i++) {
-				int track_armed = 0;
-				int clip_state = 0;
 				if (data[i] == -16 || data[i] == -9) {
 					continue;
 				}
 				
 				if (data[i] == 126) {
-					tracknum++;
-					get_armed = true;
-					continue;
-				}
-				
-				if (get_armed) {
-					get_armed = false;
-					track_armed = data[i];
+					clipnum = -1;
+					tracknum = data[i+1];
+					track_armed = data[i+2];
 					this.configuration.updateAbletonTrackState(tracknum, track_armed);
 					get_clip = true;
+					i+=2;
 					continue;
 				}
-				
+								
 				if (get_clip) {
 					clipnum++;
 					clip_state = data[i];
@@ -74,6 +87,7 @@ public class AbletonSysexReceiver implements Receiver {
 					float length = this.midiToFloat(bytes);
 					i += 4;
 					this.configuration.updateAbletonClipState(tracknum, clipnum, clip_state, length);
+					get_clip = true;
 				}
 				
 			}
