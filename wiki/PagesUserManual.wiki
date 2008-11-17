@@ -156,7 +156,7 @@ http://www.python.org/download/releases/2.2.3/
 
 4) Make sure you have at least 2 IAC devices enabled
 
-5) In the Input / Output dropdowns select two unique devices (ie. IAC Driver 1 for Input and IAC Driver 2 for Output)
+5) In the Input / Output dropdowns select two unique devices (ie. IAC Driver 1 for Input and IAC Driver 2 for Output).  Be sure to disable 'Track' and 'Remote' for the input device or you might have trouble mapping midi controls.
 
 6) In pages, enable the MIDI Input and Output devices you selected in Ableton.  Important: you need to make the opposite selection as you made in Ableton.  If you picked IAC Driver 1 for Input in Ableton, pick it for Output in pages.  Same for the other device.
 
