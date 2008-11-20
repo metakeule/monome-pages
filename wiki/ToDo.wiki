@@ -1,5 +1,17 @@
 #summary Items planned for future releases.
 
+Items for 0.2 release:
+
+  * try to add adc support to external app page
+  * implement clip length info for PagesMIDI
+  * get rid of the toFloat junk and just use integers and multiply/divide them by some factor to get an approximate floating point value
+  * make ableton update rate configurable
+  * make sure monomeserial ports are cleanly closed when configuration changes
+  * test PagesMIDI with 25+ clips in a track and do whatever i can to make it stable
+  * check presscafe through external app, implement frame messages if necessary (should probably do this anyway)
+
+Other items:
+
   * Add a new Ableton page that combines a track/clip interface with a virtual keyboard.
   * MIDIKeyboardPage: key/scale/channel changes are done by holding a button to avoid accidently changing scale/key
   * Add a feature in the core to grab from live the type of the clip (looped,one shot, etc) *proposed by julien*
