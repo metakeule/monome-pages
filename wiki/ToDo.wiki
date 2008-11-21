@@ -2,6 +2,7 @@
 
 Items for 0.2 release:
 
+  * command line option to load a configuration file
   * add feedback about which midi devices are selected, on the pages and on the ableton config window
   * try to add adc support to external app page
   * implement clip length info for PagesMIDI
@@ -13,6 +14,8 @@ Items for 0.2 release:
 
 Other items:
 
+  * Add mute buttons to 2nd and 3rd from bottom rows of midi sequencer bank mode.
+  * Add a way to reorder pages within the application.
   * Add a new Ableton page that combines a track/clip interface with a virtual keyboard.
   * MIDIKeyboardPage: key/scale/channel changes are done by holding a button to avoid accidently changing scale/key
   * Add a feature in the core to grab from live the type of the clip (looped,one shot, etc) *proposed by julien*
