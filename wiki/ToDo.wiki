@@ -2,6 +2,7 @@
 
 Items for 0.2 release:
 
+  * add feedback about which midi devices are selected, on the pages and on the ableton config window
   * try to add adc support to external app page
   * implement clip length info for PagesMIDI
   * get rid of the toFloat junk and just use integers and multiply/divide them by some factor to get an approximate floating point value
