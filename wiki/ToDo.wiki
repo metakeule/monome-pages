@@ -2,6 +2,7 @@
 
 Items for 0.2 release:
 
+  * check midi keyboard for monophonic behavior
   * command line option to load a configuration file
   * add feedback about which midi devices are selected, on the pages and on the ableton config window
   * try to add adc support to external app page
