@@ -102,7 +102,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	/**
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
-	private String options[] = new String[10];
+	private String options[] = new String[11];
 
 	/**
 	 * The current page panel being displayed 
@@ -140,9 +140,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[4] = "External Application";
 		this.options[5] = "Ableton Clip Launcher";
 		this.options[6] = "Ableton Clip Skipper";
-		this.options[7] = "Machine Drum Interface";
-		this.options[8] = "Ableton Clip Control";
-		this.options[9] = "MIDI Keyboard Julienb (work in progress)";
+		this.options[7] = "Ableton Live Looper";
+		this.options[8] = "Machine Drum Interface";
+		this.options[9] = "Ableton Clip Control";
+		this.options[10] = "MIDI Keyboard Julienb (work in progress)";
 		
 		this.configuration = configuration;
 		this.prefix = prefix;
@@ -185,6 +186,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		else if (pageName.compareTo("Ableton Clip Skipper") == 0) {
 			page = new AbletonClipSkipperPage(this, this.numPages);
+		}
+		else if (pageName.compareTo("Ableton Live Looper") == 0) {
+			page = new AbletonLiveLooperPage(this, this.numPages);
 		}
 		else if (pageName.compareTo("Machine Drum Interface") == 0) {
 			page = new MachineDrumInterfacePage(this, this.numPages);
@@ -338,14 +342,16 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 
 		for (int i = 0; i < this.pages.size(); i++) {
-			if (pages.get(i) instanceof AbletonClipLauncherPage) {
+			if (pages.get(i) instanceof AbletonLiveLooperPage) {
+				AbletonLiveLooperPage page = (AbletonLiveLooperPage) pages.get(i);
+				page.updateClipState(track, clip, state);
+			} else if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.updateClipState(track, clip, state);
 			} else if (pages.get(i) instanceof AbletonClipSkipperPage) {
 				AbletonClipSkipperPage page = (AbletonClipSkipperPage) pages.get(i);
 				page.updateClipState(track, clip, state, length);
-			}
-			  else if (pages.get(i) instanceof AbletonClipControlPage) {
+			} else if (pages.get(i) instanceof AbletonClipControlPage) {
 				 AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
 				page.updateClipState(track, clip, state);
 			}
@@ -358,6 +364,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 
 		for (int i = 0; i < this.pages.size(); i++) {
+			if (pages.get(i) instanceof AbletonLiveLooperPage) {
+				AbletonLiveLooperPage page = (AbletonLiveLooperPage) pages.get(i);
+				page.updateAbletonState(tempo, overdub);
+			}
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.updateAbletonState(tempo, overdub);
@@ -378,8 +388,11 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.redrawMonome();
+			}			
+			if (pages.get(i) instanceof AbletonLiveLooperPage) {
+				AbletonLiveLooperPage page = (AbletonLiveLooperPage) pages.get(i);
+				page.redrawMonome();
 			}
-			
 			if (pages.get(i) instanceof AbletonClipSkipperPage) {
 				AbletonClipSkipperPage page = (AbletonClipSkipperPage) pages.get(i);
 				page.redrawMonome();
@@ -404,6 +417,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 
 		for (int i = 0; i < this.pages.size(); i++) {
+			if (pages.get(i) instanceof AbletonLiveLooperPage) {
+				AbletonLiveLooperPage page = (AbletonLiveLooperPage) pages.get(i);
+				page.updateTrackState(track, armed);
+			}
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
 				page.updateTrackState(track, armed);

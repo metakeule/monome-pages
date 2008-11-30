@@ -41,9 +41,9 @@ public class AbletonSysexReceiver implements Receiver {
 		}
 				
 		if (data[1] == 125) {
-			byte[] bytes = {data[2], data[3], data[4], data[5], data[6]};
-			float tempo = this.midiToFloat(bytes);
-			int overdub = data[7];
+			byte[] bytes = {data[2], data[3]};
+			float tempo = (float) (this.midiToInt(bytes) / 50.0);
+			int overdub = data[4];
 			this.configuration.updateAbletonState(tempo, overdub);
 		}
 		
@@ -83,9 +83,9 @@ public class AbletonSysexReceiver implements Receiver {
 				
 				if (get_length) {
 					get_length = false;
-					byte[] bytes = {data[i], data[i+1], data[i+2], data[i+3], data[i+4]};
-					float length = this.midiToFloat(bytes);
-					i += 4;
+					byte[] bytes = {data[i], data[i+1]};
+					float length = (float) ((double) this.midiToInt(bytes) / 100.0);
+					i++;
 					this.configuration.updateAbletonClipState(tracknum, clipnum, clip_state, length);
 					get_clip = true;
 				}
@@ -110,6 +110,11 @@ public class AbletonSysexReceiver implements Receiver {
 		byte[] unpacked = {b1, b2, b3, b4};
 		
 		return arr2float(unpacked, 0);
+	}
+	
+	public int midiToInt(byte[] bytes) {
+		int value = (bytes[0] << 7) + bytes[1];
+		return value;
 	}
 	
 	public float arr2float (byte[] arr, int start) {

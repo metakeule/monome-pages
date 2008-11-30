@@ -37,6 +37,19 @@ import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+
+/**
+* This code was edited or generated using CloudGarden's Jigloo
+* SWT/Swing GUI Builder, which is free for non-commercial
+* use. If Jigloo is being used commercially (ie, by a corporation,
+* company or business for any purpose whatever) then you
+* should purchase a license for each developer using Jigloo.
+* Please visit www.cloudgarden.com for details.
+* Use of Jigloo implies acceptance of these licensing terms.
+* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+*/
 /**
  * The MIDI Faders page.  Usage information is available at:
  * 
@@ -61,6 +74,10 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 * The GUI for this page
 	 */
 	JPanel panel;
+	private JTextField ccOffsetTF;
+	private JLabel ccOffsetLabel;
+	private JTextField channelTF;
+	private JLabel channelL;
 
 	/**
 	 * The Add MIDI Output button
@@ -113,6 +130,10 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 */
 	private String midiDeviceName;
 
+	private int midiChannel;
+
+	private int ccOffset;
+
 	/**
 	 * Constructor.
 	 * 
@@ -153,6 +174,8 @@ public class MIDIFadersPage implements Page, ActionListener {
 
 		if (e.getActionCommand().equals("Update Preferences")) {
 			this.delayAmount = Integer.parseInt(this.getDelayTF().getText());
+			this.midiChannel = Integer.parseInt(this.getChannelTF().getText()) - 1;
+			this.ccOffset = Integer.parseInt(this.getCcOffsetTF().getText());
 		}
 	}
 
@@ -181,9 +204,9 @@ public class MIDIFadersPage implements Page, ActionListener {
 		JPanel panel = new JPanel();
 		AnchorLayout panelLayout = new AnchorLayout();
 		panel.setLayout(panelLayout);
-		panel.setPreferredSize(new java.awt.Dimension(319, 97));
-		panel.add(getAddMidiOutButton(), new AnchorConstraint(603, 963, 819, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getUpdatePrefsButton(), new AnchorConstraint(603, 487, 819, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.setPreferredSize(new java.awt.Dimension(319, 109));
+		panel.add(getAddMidiOutButton(), new AnchorConstraint(793, 963, 1013, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getUpdatePrefsButton(), new AnchorConstraint(793, 487, 1004, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getDelayTF(), new AnchorConstraint(335, 371, 541, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getDelayLabel(), new AnchorConstraint(365, 230, 510, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 
@@ -192,6 +215,10 @@ public class MIDIFadersPage implements Page, ActionListener {
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Faders");
 		panel.add(label, new AnchorConstraint(67, 349, 273, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getChannelL(), new AnchorConstraint(376, 731, 520, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getChannelTF(), new AnchorConstraint(345, 873, 551, 769, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getCcOffsetLabel(), new AnchorConstraint(591, 230, 738, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getCcOffsetTF(), new AnchorConstraint(564, 371, 766, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		label.setPreferredSize(new java.awt.Dimension(105, 20));
 
 		this.panel = panel;
@@ -204,7 +231,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 	public void handlePress(int x, int y, int value) {
 		int startVal = 0;
 		int endVal = 0;
-		int cc = (this.index * this.monome.sizeX) + (x + 16);
+		int cc = this.ccOffset + x;
 		if (value == 1) {
 			int startY = this.buttonFaders[x];
 			int endY = y;
@@ -221,10 +248,10 @@ public class MIDIFadersPage implements Page, ActionListener {
 			}
 
 			if (this.monome.sizeY == 8) {
-				MIDIFader fader = new MIDIFader(this.recv, 0, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount);
+				MIDIFader fader = new MIDIFader(this.recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount);
 				new Thread(fader).start();
 			} else if (this.monome.sizeY == 16) {
-				MIDIFader fader = new MIDIFader(this.recv, 0, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount);
+				MIDIFader fader = new MIDIFader(this.recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount);
 				new Thread(fader).start();
 			}
 			this.buttonFaders[x] = y;
@@ -276,6 +303,8 @@ public class MIDIFadersPage implements Page, ActionListener {
 		xml += "      <name>MIDI Faders</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <delayamount>" + this.delayAmount + "</delayamount>\n";
+		xml += "      <midichannel>" + this.midiChannel + "</midichannel>\n";
+		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
 		xml += "    </page>\n";
 		return xml;
 	}
@@ -311,7 +340,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(addMidiOutButton == null) {
 			addMidiOutButton = new JButton();
 			addMidiOutButton.setText("Add MIDI Output");
-			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 21));
+			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 24));
 		}
 		return addMidiOutButton;
 	}
@@ -323,7 +352,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(updatePrefsButton == null) {
 			updatePrefsButton = new JButton();
 			updatePrefsButton.setText("Update Preferences");
-			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 21));
+			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 23));
 		}
 		return updatePrefsButton;
 	}
@@ -333,6 +362,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 */
 	public void setDelayAmount(int delayAmount) {
 		this.delayAmount = delayAmount;
+		this.getDelayTF().setText(String.valueOf(delayAmount));
 	}
 
 	/* (non-Javadoc)
@@ -347,6 +377,52 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 */
 	public void destroyPage() {
 		return;
+	}
+	
+	private JLabel getChannelL() {
+		if(channelL == null) {
+			channelL = new JLabel();
+			channelL.setText("Channel");
+			channelL.setPreferredSize(new java.awt.Dimension(67, 14));
+		}
+		return channelL;
+	}
+	
+	private JTextField getChannelTF() {
+		if(channelTF == null) {
+			channelTF = new JTextField();
+			channelTF.setText("1");
+			channelTF.setPreferredSize(new java.awt.Dimension(33, 20));
+		}
+		return channelTF;
+	}
+	
+	private JLabel getCcOffsetLabel() {
+		if(ccOffsetLabel == null) {
+			ccOffsetLabel = new JLabel();
+			ccOffsetLabel.setText("CC Offset");
+			ccOffsetLabel.setPreferredSize(new java.awt.Dimension(67, 16));
+		}
+		return ccOffsetLabel;
+	}
+	
+	private JTextField getCcOffsetTF() {
+		if(ccOffsetTF == null) {
+			ccOffsetTF = new JTextField();
+			ccOffsetTF.setText("0");
+			ccOffsetTF.setPreferredSize(new java.awt.Dimension(33, 22));
+		}
+		return ccOffsetTF;
+	}
+
+	public void setMidiChannel(String midiChannel2) {
+		this.midiChannel = Integer.parseInt(midiChannel2) - 1;
+		this.getChannelTF().setText(midiChannel2);
+	}
+
+	public void setCCOffset(String ccOffset2) {
+		this.ccOffset = Integer.parseInt(ccOffset2);
+		this.getCcOffsetTF().setText(ccOffset2);
 	}
 
 }
