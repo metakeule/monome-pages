@@ -621,6 +621,14 @@ public class GUI implements ActionListener {
 										seqpage.setBankSize(Integer.parseInt(banksize));
 									}
 									
+									NodeList channelNL = pageElement.getElementsByTagName("midichannel");
+									el = (Element) channelNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String midiChannel = ((Node) nl.item(0)).getNodeValue();
+										seqpage.setMidiChannel(midiChannel);
+									}
+									
 									NodeList rowNL = pageElement.getElementsByTagName("row");
 									for (int l=0; l < rowNL.getLength(); l++) {
 										el = (Element) rowNL.item(l);
@@ -674,6 +682,23 @@ public class GUI implements ActionListener {
 										String delayAmount = ((Node) nl.item(0)).getNodeValue();
 										faderpage.setDelayAmount(Integer.parseInt(delayAmount));
 									}
+									
+									NodeList channelNL = pageElement.getElementsByTagName("midichannel");
+									el = (Element) channelNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String midiChannel = ((Node) nl.item(0)).getNodeValue();
+										faderpage.setMidiChannel(midiChannel);
+									}
+
+									NodeList ccOffsetNL = pageElement.getElementsByTagName("ccoffset");
+									el = (Element) ccOffsetNL.item(0);
+									if (el != null) {
+										nl = el.getChildNodes();
+										String ccOffset = ((Node) nl.item(0)).getNodeValue();
+										faderpage.setCCOffset(ccOffset);
+									}
+
 								}
 
 								// page-specific configuration for machine drum interface page

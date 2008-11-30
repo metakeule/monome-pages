@@ -103,8 +103,16 @@ public class AbletonMIDIControl implements AbletonControl {
 
 	// note channel = 2, note num = track, amount = value
 	public void trackJump(int track, float amount) {
+		ShortMessage msg = new ShortMessage();
+		int intAmount = (int) (amount * 4) + 32;
+		try {
+			msg.setMessage(ShortMessage.CONTROL_CHANGE, 2, track, intAmount);
+			this.abletonReceiver.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
 	}
-
+	
 	// cc 8
 	public void undo() {
 		ShortMessage msg = new ShortMessage();

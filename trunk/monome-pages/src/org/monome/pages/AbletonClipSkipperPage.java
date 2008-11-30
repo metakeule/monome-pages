@@ -24,7 +24,6 @@ package org.monome.pages;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -34,8 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringEscapeUtils;
-
-import com.illposed.osc.OSCMessage;
 
 /**
  * The Template page, a good starting point for creating your own pages.  
@@ -62,12 +59,6 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 * This page's GUI / configuration panel 
 	 */
 	private JPanel panel;
-
-	/**
-	 * The selected MIDI output device
-	 */
-	@SuppressWarnings("unused")
-	private Receiver recv;
 
 	/**
 	 * The name of the selected MIDI output device 
@@ -138,8 +129,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;
+		return;
 	}
 
 	/* (non-Javadoc)
@@ -198,15 +188,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	}
 		
 	public void trackJump(int track, float amount) {
-		Object args[] = new Object[2];
-		args[0] = new Integer(track);
-		args[1] = new Float(amount);
-		OSCMessage msg = new OSCMessage("/live/track/jump", args);
-		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.monome.configuration.getAbletonControl().trackJump(track, amount);
 	}
 
 	/* (non-Javadoc)

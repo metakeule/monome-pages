@@ -303,10 +303,11 @@ public class Configuration implements Receiver {
 		// check if the device is already enabled, if so disable it
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
 			if (this.midiOutDevices.get(i).equals(midiOutDevice)) {
-				this.midiOutReceivers.get(i).close();
+				MidiDevice outDevice = this.midiOutDevices.get(i);
 				this.midiOutReceivers.remove(i);
-				this.midiOutDevices.get(i).close();
 				this.midiOutDevices.remove(i);
+				outDevice.close();
+				outDevice.close();
 				return;
 			}
 		}
@@ -314,8 +315,9 @@ public class Configuration implements Receiver {
 		// try to enable the device
 		try {
 			midiOutDevice.open();
+			Receiver recv = midiOutDevice.getReceiver();
 			this.midiOutDevices.add(midiOutDevice);
-			this.midiOutReceivers.add(midiOutDevice.getReceiver());
+			this.midiOutReceivers.add(recv);
 		} catch (MidiUnavailableException e) {
 			e.printStackTrace();
 		}
@@ -330,10 +332,12 @@ public class Configuration implements Receiver {
 		// close the currently open device if we have one
 		for (int i=0; i < this.midiInDevices.size(); i++) {
 			if (this.midiInDevices.get(i).equals(midiInDevice)) {
-				this.midiInTransmitters.get(i).close();
+				MidiDevice inDevice = this.midiInDevices.get(i);
+				Transmitter transmitter = this.midiInTransmitters.get(i);
 				this.midiInTransmitters.remove(i);
-				this.midiInDevices.get(i).close();
 				this.midiInDevices.remove(i);
+				transmitter.close();
+				inDevice.close();
 				return;
 			}
 		}
@@ -641,8 +645,8 @@ public class Configuration implements Receiver {
 			xml += "  <abletonoscinport>" + this.abletonOSCInPortNumber + "</abletonoscinport>\n";
 			xml += "  <abletonoscoutport>" + this.abletonOSCOutPortNumber + "</abletonoscoutport>\n";
 		} else if (this.abletonMode.equals("MIDI")) {
-			xml += "  <abletonmidiinport>" + this.abletonMIDIInDeviceName + "</abletonmidiinport>\n";
-			xml += "  <abletonmidioutport>" + this.abletonMIDIOutDeviceName + "</abletonmidioutport>\n";
+			xml += "  <abletonmidiinport>" + StringEscapeUtils.escapeXml(this.abletonMIDIInDeviceName) + "</abletonmidiinport>\n";
+			xml += "  <abletonmidioutport>" + StringEscapeUtils.escapeXml(this.abletonMIDIOutDeviceName) + "</abletonmidioutport>\n";
 		}
 		for (int i=0; i < this.midiInDevices.size(); i++) {
 			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(this.midiInDevices.get(i).getDeviceInfo().toString()) + "</midiinport>\n";
@@ -691,7 +695,9 @@ public class Configuration implements Receiver {
 
 	public void initAbletonMIDIInPort(String midiInDevice) {
 		this.abletonTransmitter = this.getMIDITransmitterByName(midiInDevice);
-		this.abletonTransmitter.setReceiver(this.abletonSysexReceiver);
+		if (this.abletonTransmitter != null) {
+			this.abletonTransmitter.setReceiver(this.abletonSysexReceiver);
+		}
 	}
 	
 	public void initAbletonMIDIOutPort(String midiOutDevice) {
