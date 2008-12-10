@@ -49,8 +49,9 @@ public class AbletonSysexReceiver implements Receiver {
 		
 		if (data[1] == 126) {
 			int tracknum = 0;
-			int clipnum = -1;
-			boolean get_clip = false;
+			int clipnum = 0;
+			boolean get_clip_num = false;
+			boolean get_clip_state = false;
 			boolean get_length = false;
 			int track_armed = 0;
 			int clip_state = 0;
@@ -60,22 +61,31 @@ public class AbletonSysexReceiver implements Receiver {
 				}
 				
 				if (data[i] == 126) {
-					clipnum = -1;
 					tracknum = data[i+1];
 					track_armed = data[i+2];
 					this.configuration.updateAbletonTrackState(tracknum, track_armed);
-					get_clip = true;
+					get_clip_num = true;
 					i+=2;
 					continue;
 				}
+				
+				if (get_clip_num) {
+					get_clip_num = false;
+					byte[] bytes = {data[i], data[i+1]};
+					i++;
+					clipnum = this.midiToInt(bytes);
+					get_clip_state = true;
+					continue;
+				}
 								
-				if (get_clip) {
-					clipnum++;
+				if (get_clip_state) {
 					clip_state = data[i];
 					if (clip_state != 0) {
-						get_clip = false;
+						get_clip_state = false;
 						get_length = true;
 					} else {
+						get_clip_state = false;
+						get_clip_num = true;
 						this.configuration.updateAbletonClipState(tracknum, clipnum, clip_state, 0);
 					}
 					continue;
@@ -87,7 +97,7 @@ public class AbletonSysexReceiver implements Receiver {
 					float length = (float) ((double) this.midiToInt(bytes) / 100.0);
 					i++;
 					this.configuration.updateAbletonClipState(tracknum, clipnum, clip_state, length);
-					get_clip = true;
+					get_clip_num = true;
 				}
 				
 			}

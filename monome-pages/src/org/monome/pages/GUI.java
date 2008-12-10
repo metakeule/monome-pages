@@ -107,9 +107,10 @@ public class GUI implements ActionListener {
 
 	/**
 	 * Constructor
+	 * @param args 
 	 */
-	public GUI() {
-		this.createAndShowGUI();
+	public GUI(String[] args) {
+		this.createAndShowGUI(args);
 	}
 
 	/**
@@ -278,14 +279,24 @@ public class GUI implements ActionListener {
 
 	/**
 	 * Builds the main GUI and makes it visible.
+	 * @param args 
 	 */
-	private void createAndShowGUI() {
+	private void createAndShowGUI(String[] args) {
 		this.frame = new JFrame("Monome Pages");
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.frame.setJMenuBar(this.createFileMenuBar());
 		this.frame.setContentPane(this.createContentPane());
 		this.frame.setSize(800, 600);
 		this.frame.setVisible(true);
+		
+		if (args.length > 0) {
+			File file = new File(args[0]);
+			System.out.println("reading configuration file " + file.getPath());
+			if (file.canRead()) {
+				System.out.println("file is readable");
+			}
+			this.readConfigurationFile(file);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -375,396 +386,400 @@ public class GUI implements ActionListener {
 		int returnVal = fc.showOpenDialog(this.desktop);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			try {
-				// close any current configuration
-				if (this.configuration != null) {
-					this.actionCloseConfiguration();
-				}
+			this.readConfigurationFile(file);
+		}
+	}
+	
+	private void readConfigurationFile(File file) {
+		try {
+			// close any current configuration
+			if (this.configuration != null) {
+				this.actionCloseConfiguration();
+			}
 
-				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-				DocumentBuilder db = dbf.newDocumentBuilder();
-				Document doc = db.parse(file);
-				doc.getDocumentElement().normalize();
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			Document doc = db.parse(file);
+			doc.getDocumentElement().normalize();
 
-				// read <name> from the configuration file
-				NodeList rootNL = doc.getElementsByTagName("name");
-				Element rootEL = (Element) rootNL.item(0);
-				NodeList rootNL2 = rootEL.getChildNodes();
-				String name = ((Node) rootNL2.item(0)).getNodeValue();
+			// read <name> from the configuration file
+			NodeList rootNL = doc.getElementsByTagName("name");
+			Element rootEL = (Element) rootNL.item(0);
+			NodeList rootNL2 = rootEL.getChildNodes();
+			String name = ((Node) rootNL2.item(0)).getNodeValue();
 
-				this.frame.setTitle("Monome Pages : " + name);
-				this.configuration = new Configuration(name);
+			this.frame.setTitle("Monome Pages : " + name);
+			this.configuration = new Configuration(name);
 
-				// read <hostname> from the configuration file
-				rootNL = doc.getElementsByTagName("hostname");
-				rootEL = (Element) rootNL.item(0);
+			// read <hostname> from the configuration file
+			rootNL = doc.getElementsByTagName("hostname");
+			rootEL = (Element) rootNL.item(0);
+			rootNL2 = rootEL.getChildNodes();
+			String hostname = ((Node) rootNL2.item(0)).getNodeValue();
+
+			this.configuration.setMonomeHostname(hostname);
+
+			// read <oscinport> from the configuration file
+			rootNL = doc.getElementsByTagName("oscinport");
+			rootEL = (Element) rootNL.item(0);
+			rootNL2 = rootEL.getChildNodes();
+			String oscinport = ((Node) rootNL2.item(0)).getNodeValue();
+
+			this.configuration.setMonomeSerialOSCInPortNumber(Integer.valueOf(oscinport).intValue());
+
+			// read <oscoutport> from the configuration file
+			rootNL = doc.getElementsByTagName("oscoutport");
+			rootEL = (Element) rootNL.item(0);
+			rootNL2 = rootEL.getChildNodes();
+			String oscoutport = ((Node) rootNL2.item(0)).getNodeValue();
+			System.out.println("oscoutport is " + oscoutport);
+
+			this.configuration.setMonomeSerialOSCOutPortNumber(Integer.valueOf(oscoutport).intValue());
+
+			// read <abletonmode> from the configuration file
+			rootNL = doc.getElementsByTagName("abletonmode");
+			rootEL = (Element) rootNL.item(0);
+			String abletonmode = "";
+			// old versions might not have this setting
+			if (rootEL != null) {
 				rootNL2 = rootEL.getChildNodes();
-				String hostname = ((Node) rootNL2.item(0)).getNodeValue();
+				abletonmode = ((Node) rootNL2.item(0)).getNodeValue();
+				this.configuration.setAbletonMode(abletonmode);
+			}
+			
+			if (abletonmode.equals("OSC")) {
 
-				this.configuration.setMonomeHostname(hostname);
-
-				// read <oscinport> from the configuration file
-				rootNL = doc.getElementsByTagName("oscinport");
+				// read <abletonhostname> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonhostname");
 				rootEL = (Element) rootNL.item(0);
-				rootNL2 = rootEL.getChildNodes();
-				String oscinport = ((Node) rootNL2.item(0)).getNodeValue();
-
-				this.configuration.setMonomeSerialOSCInPortNumber(Integer.valueOf(oscinport).intValue());
-
-				// read <oscoutport> from the configuration file
-				rootNL = doc.getElementsByTagName("oscoutport");
-				rootEL = (Element) rootNL.item(0);
-				rootNL2 = rootEL.getChildNodes();
-				String oscoutport = ((Node) rootNL2.item(0)).getNodeValue();
-				System.out.println("oscoutport is " + oscoutport);
-
-				this.configuration.setMonomeSerialOSCOutPortNumber(Integer.valueOf(oscoutport).intValue());
-
-				// read <abletonmode> from the configuration file
-				rootNL = doc.getElementsByTagName("abletonmode");
-				rootEL = (Element) rootNL.item(0);
-				String abletonmode = "";
 				// old versions might not have this setting
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
-					abletonmode = ((Node) rootNL2.item(0)).getNodeValue();
-					this.configuration.setAbletonMode(abletonmode);
+					String abletonhostname = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonHostname(abletonhostname);
 				}
-				
-				if (abletonmode.equals("OSC")) {
 
-					// read <abletonhostname> from the configuration file
-					rootNL = doc.getElementsByTagName("abletonhostname");
-					rootEL = (Element) rootNL.item(0);
-					// old versions might not have this setting
-					if (rootEL != null) {
-						rootNL2 = rootEL.getChildNodes();
-						String abletonhostname = ((Node) rootNL2.item(0)).getNodeValue();
-						this.configuration.setAbletonHostname(abletonhostname);
-					}
-	
-					// read <abletonoscinport> from the configuration file
-					rootNL = doc.getElementsByTagName("abletonoscinport");
-					rootEL = (Element) rootNL.item(0);
-					// old versions might not have this setting
-					if (rootEL != null) {
-						rootNL2 = rootEL.getChildNodes();
-						String abletonoscinport = ((Node) rootNL2.item(0)).getNodeValue();
-						this.configuration.setAbletonOSCInPortNumber(Integer.valueOf(abletonoscinport).intValue());
-					}
-	
-					// read <abletonoscoutport> from the configuration file
-					rootNL = doc.getElementsByTagName("abletonoscoutport");
-					rootEL = (Element) rootNL.item(0);
-					// old versions might not have this setting
-					if (rootEL != null) {
-						rootNL2 = rootEL.getChildNodes();
-						String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
-						this.configuration.setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
-					}					
-				} else if (abletonmode.equals("MIDI")) {
-					// read <abletonmidiinport> from the configuration file
-					rootNL = doc.getElementsByTagName("abletonmidiinport");
-					rootEL = (Element) rootNL.item(0);
-					// old versions might not have this setting
-					if (rootEL != null) {
-						rootNL2 = rootEL.getChildNodes();
-						String abletonmidiinport = ((Node) rootNL2.item(0)).getNodeValue();
-						this.configuration.setAbletonMIDIInDeviceName(abletonmidiinport);
-					}
-					
-					// read <abletonmidioutport> from the configuration file
-					rootNL = doc.getElementsByTagName("abletonmidioutport");
-					rootEL = (Element) rootNL.item(0);
-					// old versions might not have this setting
-					if (rootEL != null) {
-						rootNL2 = rootEL.getChildNodes();
-						String abletonmidioutport = ((Node) rootNL2.item(0)).getNodeValue();
-						this.configuration.setAbletonMIDIOutDeviceName(abletonmidioutport);
-					}
-				}
-				
-				// read <midiinport> from the configuration file
-				rootNL = doc.getElementsByTagName("midiinport");
+				// read <abletonoscinport> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonoscinport");
 				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
 				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
-					String midiinport = ((Node) rootNL2.item(0)).getNodeValue();
-					this.actionAddMidiInput(midiinport);
+					String abletonoscinport = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonOSCInPortNumber(Integer.valueOf(abletonoscinport).intValue());
 				}
 
-				// read all <midioutport> tags from the configuration file
-				rootNL = doc.getElementsByTagName("midioutport");
-				for (int i=0; i < rootNL.getLength(); i++) {
-					System.out.println("Item " + i);
-					rootEL = (Element) rootNL.item(i);
+				// read <abletonoscoutport> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonoscoutport");
+				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
+				if (rootEL != null) {
 					rootNL2 = rootEL.getChildNodes();
-					String midioutport = ((Node) rootNL2.item(0)).getNodeValue();
-					this.actionAddMidiOutput(midioutport);
+					String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
+				}					
+			} else if (abletonmode.equals("MIDI")) {
+				// read <abletonmidiinport> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonmidiinport");
+				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
+				if (rootEL != null) {
+					rootNL2 = rootEL.getChildNodes();
+					String abletonmidiinport = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonMIDIInDeviceName(abletonmidiinport);
 				}
+				
+				// read <abletonmidioutport> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonmidioutport");
+				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
+				if (rootEL != null) {
+					rootNL2 = rootEL.getChildNodes();
+					String abletonmidioutport = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonMIDIOutDeviceName(abletonmidioutport);
+				}
+			}
+			
+			// read <midiinport> from the configuration file
+			rootNL = doc.getElementsByTagName("midiinport");
+			rootEL = (Element) rootNL.item(0);
+			if (rootEL != null) {
+				rootNL2 = rootEL.getChildNodes();
+				String midiinport = ((Node) rootNL2.item(0)).getNodeValue();
+				this.actionAddMidiInput(midiinport);
+			}
 
-				this.buildConfigurationMenu();
-				this.frame.validate();
+			// read all <midioutport> tags from the configuration file
+			rootNL = doc.getElementsByTagName("midioutport");
+			for (int i=0; i < rootNL.getLength(); i++) {
+				System.out.println("Item " + i);
+				rootEL = (Element) rootNL.item(i);
+				rootNL2 = rootEL.getChildNodes();
+				String midioutport = ((Node) rootNL2.item(0)).getNodeValue();
+				this.actionAddMidiOutput(midioutport);
+			}
 
-				// read in each <monome> block
-				rootNL = doc.getElementsByTagName("monome");
-				for (int i=0; i < rootNL.getLength(); i++) {
-					Node node = rootNL.item(i);					
-					if (node.getNodeType() == Node.ELEMENT_NODE) {
-						Element monomeElement = (Element) node;
+			this.buildConfigurationMenu();
+			this.frame.validate();
 
-						// set the monome prefix
-						NodeList nl = monomeElement.getElementsByTagName("prefix");
-						Element el = (Element) nl.item(0);
-						nl = el.getChildNodes();
-						String prefix = ((Node) nl.item(0)).getNodeValue();
+			// read in each <monome> block
+			rootNL = doc.getElementsByTagName("monome");
+			for (int i=0; i < rootNL.getLength(); i++) {
+				Node node = rootNL.item(i);					
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element monomeElement = (Element) node;
 
-						// set the width of the monome
-						nl = monomeElement.getElementsByTagName("sizeX");
-						el = (Element) nl.item(0);
-						nl = el.getChildNodes();
-						String sizeX = ((Node) nl.item(0)).getNodeValue();
+					// set the monome prefix
+					NodeList nl = monomeElement.getElementsByTagName("prefix");
+					Element el = (Element) nl.item(0);
+					nl = el.getChildNodes();
+					String prefix = ((Node) nl.item(0)).getNodeValue();
 
-						// set the height of the monome
-						nl = monomeElement.getElementsByTagName("sizeY");
-						el = (Element) nl.item(0);
-						nl = el.getChildNodes();
-						String sizeY = ((Node) nl.item(0)).getNodeValue();
+					// set the width of the monome
+					nl = monomeElement.getElementsByTagName("sizeX");
+					el = (Element) nl.item(0);
+					nl = el.getChildNodes();
+					String sizeX = ((Node) nl.item(0)).getNodeValue();
 
-						// create the new monome configuration and display it's window
-						int index = this.configuration.addMonomeConfiguration(prefix, Integer.valueOf(sizeX).intValue(), 
-								Integer.valueOf(sizeY).intValue());
-						MonomeConfiguration monomeFrame = this.configuration.getMonomeConfigurationFrame(index);
-						monomeFrame.setVisible(true);
-						this.frame.add(monomeFrame);
+					// set the height of the monome
+					nl = monomeElement.getElementsByTagName("sizeY");
+					el = (Element) nl.item(0);
+					nl = el.getChildNodes();
+					String sizeY = ((Node) nl.item(0)).getNodeValue();
 
-						// read in each page of the monome
-						NodeList pageNL = monomeElement.getElementsByTagName("page");
-						for (int j=0; j < pageNL.getLength(); j++) {
-							Node pageNode = pageNL.item(j);
-							if (pageNode.getNodeType() == Node.ELEMENT_NODE) {
-								Element pageElement = (Element) pageNode;
+					// create the new monome configuration and display it's window
+					int index = this.configuration.addMonomeConfiguration(prefix, Integer.valueOf(sizeX).intValue(), 
+							Integer.valueOf(sizeY).intValue());
+					MonomeConfiguration monomeFrame = this.configuration.getMonomeConfigurationFrame(index);
+					monomeFrame.setVisible(true);
+					this.frame.add(monomeFrame);
 
-								// all pages have a name
-								nl = pageElement.getElementsByTagName("name");
+					// read in each page of the monome
+					NodeList pageNL = monomeElement.getElementsByTagName("page");
+					for (int j=0; j < pageNL.getLength(); j++) {
+						Node pageNode = pageNL.item(j);
+						if (pageNode.getNodeType() == Node.ELEMENT_NODE) {
+							Element pageElement = (Element) pageNode;
+
+							// all pages have a name
+							nl = pageElement.getElementsByTagName("name");
+							el = (Element) nl.item(0);
+							nl = el.getChildNodes();
+							String pageName = ((Node) nl.item(0)).getNodeValue();
+							System.out.println("Page name is " + pageName);
+							Page page = monomeFrame.addPage(pageName);
+
+							// most pages have midi outputs
+							NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
+							for (int k=0; k < midiNL.getLength(); k++) {
+								el = (Element) midiNL.item(k);
+								nl = el.getChildNodes();
+								String midioutport = ((Node) nl.item(0)).getNodeValue();
+								System.out.println("selectedmidioutport is " + midioutport);
+								page.addMidiOutDevice(midioutport);
+							}
+
+							// page-specific configuration for external application page
+							if (pageName.equals("External Application")) {
+								ExternalApplicationPage extpage = (ExternalApplicationPage) page;
+
+								nl = pageElement.getElementsByTagName("prefix");
 								el = (Element) nl.item(0);
 								nl = el.getChildNodes();
-								String pageName = ((Node) nl.item(0)).getNodeValue();
-								System.out.println("Page name is " + pageName);
-								Page page = monomeFrame.addPage(pageName);
+								String extPrefix = ((Node) nl.item(0)).getNodeValue();
+								extpage.setPrefix(extPrefix);
 
-								// most pages have midi outputs
-								NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
-								for (int k=0; k < midiNL.getLength(); k++) {
-									el = (Element) midiNL.item(k);
+								nl = pageElement.getElementsByTagName("oscinport");
+								el = (Element) nl.item(0);
+								nl = el.getChildNodes();
+								String extInPort = ((Node) nl.item(0)).getNodeValue();
+								extpage.setInPort(extInPort);
+
+								nl = pageElement.getElementsByTagName("oscoutport");
+								el = (Element) nl.item(0);
+								nl = el.getChildNodes();
+								String extOutPort = ((Node) nl.item(0)).getNodeValue();
+								extpage.setOutPort(extOutPort);
+
+								nl = pageElement.getElementsByTagName("hostname");
+								el = (Element) nl.item(0);
+								nl = el.getChildNodes();
+								String extHostname = ((Node) nl.item(0)).getNodeValue();
+								extpage.setHostname(extHostname);
+
+								nl = pageElement.getElementsByTagName("disablecache");
+								el = (Element) nl.item(0);
+								nl = el.getChildNodes();
+								String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
+								extpage.setCacheDisabled(cacheDisabled);
+
+								extpage.initOSC();
+							}
+
+							// page-specific configuration for midi sequencer page
+							if (pageName.equals("MIDI Sequencer")) {
+								// configure midi notes / rows
+								MIDISequencerPage seqpage = (MIDISequencerPage) page;
+
+								NodeList modeNL = pageElement.getElementsByTagName("holdmode");
+								el = (Element) modeNL.item(0);
+								if (el != null) {
 									nl = el.getChildNodes();
-									String midioutport = ((Node) nl.item(0)).getNodeValue();
-									System.out.println("selectedmidioutport is " + midioutport);
-									page.addMidiOutDevice(midioutport);
-								}
-
-								// page-specific configuration for external application page
-								if (pageName.equals("External Application")) {
-									ExternalApplicationPage extpage = (ExternalApplicationPage) page;
-
-									nl = pageElement.getElementsByTagName("prefix");
-									el = (Element) nl.item(0);
-									nl = el.getChildNodes();
-									String extPrefix = ((Node) nl.item(0)).getNodeValue();
-									extpage.setPrefix(extPrefix);
-
-									nl = pageElement.getElementsByTagName("oscinport");
-									el = (Element) nl.item(0);
-									nl = el.getChildNodes();
-									String extInPort = ((Node) nl.item(0)).getNodeValue();
-									extpage.setInPort(extInPort);
-
-									nl = pageElement.getElementsByTagName("oscoutport");
-									el = (Element) nl.item(0);
-									nl = el.getChildNodes();
-									String extOutPort = ((Node) nl.item(0)).getNodeValue();
-									extpage.setOutPort(extOutPort);
-
-									nl = pageElement.getElementsByTagName("hostname");
-									el = (Element) nl.item(0);
-									nl = el.getChildNodes();
-									String extHostname = ((Node) nl.item(0)).getNodeValue();
-									extpage.setHostname(extHostname);
-
-									nl = pageElement.getElementsByTagName("disablecache");
-									el = (Element) nl.item(0);
-									nl = el.getChildNodes();
-									String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
-									extpage.setCacheDisabled(cacheDisabled);
-
-									extpage.initOSC();
-								}
-
-								// page-specific configuration for midi sequencer page
-								if (pageName.equals("MIDI Sequencer")) {
-									// configure midi notes / rows
-									MIDISequencerPage seqpage = (MIDISequencerPage) page;
-
-									NodeList modeNL = pageElement.getElementsByTagName("holdmode");
-									el = (Element) modeNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String holdmode = ((Node) nl.item(0)).getNodeValue();
-										seqpage.setHoldMode(holdmode);
-									}
-									
-									NodeList bankNL = pageElement.getElementsByTagName("banksize");
-									el = (Element) bankNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String banksize = ((Node) nl.item(0)).getNodeValue();
-										seqpage.setBankSize(Integer.parseInt(banksize));
-									}
-									
-									NodeList channelNL = pageElement.getElementsByTagName("midichannel");
-									el = (Element) channelNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String midiChannel = ((Node) nl.item(0)).getNodeValue();
-										seqpage.setMidiChannel(midiChannel);
-									}
-									
-									NodeList rowNL = pageElement.getElementsByTagName("row");
-									for (int l=0; l < rowNL.getLength(); l++) {
-										el = (Element) rowNL.item(l);
-										nl = el.getChildNodes();
-										String midiNote = ((Node) nl.item(0)).getNodeValue();
-										seqpage.setNoteValue(l, Integer.parseInt(midiNote));
-									}
-
-									NodeList seqNL = pageElement.getElementsByTagName("sequence");
-									for (int l=0; l < seqNL.getLength(); l++) {
-										el = (Element) seqNL.item(l);
-										nl = el.getChildNodes();
-										String sequence = ((Node) nl.item(0)).getNodeValue();
-										seqpage.setSequence(l, sequence);
-									}
-									seqpage.redrawMonome();
-								}
-
-								// page-specific configuration for midi triggers page
-								if (pageName.equals("MIDI Triggers")) {
-									// configure midi notes / rows
-									MIDITriggersPage trigpage = (MIDITriggersPage) page;
-
-									NodeList modeNL = pageElement.getElementsByTagName("mode");
-									el = (Element) modeNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String mode = ((Node) nl.item(0)).getNodeValue();
-										trigpage.setMode(mode);
-									}
-
-									NodeList seqNL = pageElement.getElementsByTagName("toggles");
-									for (int l=0; l < seqNL.getLength(); l++) {
-										el = (Element) seqNL.item(l);
-										nl = el.getChildNodes();
-										String mode = ((Node) nl.item(0)).getNodeValue();
-										if (mode.equals("on")) {
-											trigpage.enableToggle(l);
-										}
-									}
-									trigpage.redrawMonome();
-								}
-
-								// page-specific configuration for midi faders page
-								if (pageName.equals("MIDI Faders")) {
-									MIDIFadersPage faderpage = (MIDIFadersPage) page;
-									NodeList rowNL = pageElement.getElementsByTagName("delayamount");
-									el = (Element) rowNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String delayAmount = ((Node) nl.item(0)).getNodeValue();
-										faderpage.setDelayAmount(Integer.parseInt(delayAmount));
-									}
-									
-									NodeList channelNL = pageElement.getElementsByTagName("midichannel");
-									el = (Element) channelNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String midiChannel = ((Node) nl.item(0)).getNodeValue();
-										faderpage.setMidiChannel(midiChannel);
-									}
-
-									NodeList ccOffsetNL = pageElement.getElementsByTagName("ccoffset");
-									el = (Element) ccOffsetNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String ccOffset = ((Node) nl.item(0)).getNodeValue();
-										faderpage.setCCOffset(ccOffset);
-									}
-
-								}
-
-								// page-specific configuration for machine drum interface page
-								if (pageName.equals("Machine Drum Interface")) {
-									MachineDrumInterfacePage mdpage = (MachineDrumInterfacePage) page;
-									NodeList rowNL = pageElement.getElementsByTagName("speed");
-									el = (Element) rowNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String speed = ((Node) nl.item(0)).getNodeValue();
-										mdpage.setSpeed(Integer.parseInt(speed));
-									}
+									String holdmode = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setHoldMode(holdmode);
 								}
 								
-								if (pageName.equals("Ableton Clip Launcher")) {
-									// configure midi notes / rows
-									AbletonClipLauncherPage ablepage = (AbletonClipLauncherPage) page;
+								NodeList bankNL = pageElement.getElementsByTagName("banksize");
+								el = (Element) bankNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String banksize = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setBankSize(Integer.parseInt(banksize));
+								}
+								
+								NodeList channelNL = pageElement.getElementsByTagName("midichannel");
+								el = (Element) channelNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String midiChannel = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setMidiChannel(midiChannel);
+								}
+								
+								NodeList rowNL = pageElement.getElementsByTagName("row");
+								for (int l=0; l < rowNL.getLength(); l++) {
+									el = (Element) rowNL.item(l);
+									nl = el.getChildNodes();
+									String midiNote = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setNoteValue(l, Integer.parseInt(midiNote));
+								}
 
-									NodeList armNL = pageElement.getElementsByTagName("disablearm");
-									el = (Element) armNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String disableArm = ((Node) nl.item(0)).getNodeValue();
-										ablepage.setDisableArm(disableArm);
+								NodeList seqNL = pageElement.getElementsByTagName("sequence");
+								for (int l=0; l < seqNL.getLength(); l++) {
+									el = (Element) seqNL.item(l);
+									nl = el.getChildNodes();
+									String sequence = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setSequence(l, sequence);
+								}
+								seqpage.redrawMonome();
+							}
+
+							// page-specific configuration for midi triggers page
+							if (pageName.equals("MIDI Triggers")) {
+								// configure midi notes / rows
+								MIDITriggersPage trigpage = (MIDITriggersPage) page;
+
+								NodeList modeNL = pageElement.getElementsByTagName("mode");
+								el = (Element) modeNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String mode = ((Node) nl.item(0)).getNodeValue();
+									trigpage.setMode(mode);
+								}
+
+								NodeList seqNL = pageElement.getElementsByTagName("toggles");
+								for (int l=0; l < seqNL.getLength(); l++) {
+									el = (Element) seqNL.item(l);
+									nl = el.getChildNodes();
+									String mode = ((Node) nl.item(0)).getNodeValue();
+									if (mode.equals("on")) {
+										trigpage.enableToggle(l);
 									}
-									NodeList stopNL = pageElement.getElementsByTagName("disablestop");
-									el = (Element) stopNL.item(0);
-									if (el != null) {
-										nl = el.getChildNodes();
-										String disableStop = ((Node) nl.item(0)).getNodeValue();
-										ablepage.setDisableStop(disableStop);
-									}
+								}
+								trigpage.redrawMonome();
+							}
+
+							// page-specific configuration for midi faders page
+							if (pageName.equals("MIDI Faders")) {
+								MIDIFadersPage faderpage = (MIDIFadersPage) page;
+								NodeList rowNL = pageElement.getElementsByTagName("delayamount");
+								el = (Element) rowNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String delayAmount = ((Node) nl.item(0)).getNodeValue();
+									faderpage.setDelayAmount(Integer.parseInt(delayAmount));
+								}
+								
+								NodeList channelNL = pageElement.getElementsByTagName("midichannel");
+								el = (Element) channelNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String midiChannel = ((Node) nl.item(0)).getNodeValue();
+									faderpage.setMidiChannel(midiChannel);
+								}
+
+								NodeList ccOffsetNL = pageElement.getElementsByTagName("ccoffset");
+								el = (Element) ccOffsetNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String ccOffset = ((Node) nl.item(0)).getNodeValue();
+									faderpage.setCCOffset(ccOffset);
 								}
 
 							}
-						}
-						
-						// most pages have midi outputs
-						NodeList lengthNL = monomeElement.getElementsByTagName("patternlength");
-						for (int k=0; k < lengthNL.getLength(); k++) {
-							el = (Element) lengthNL.item(k);
-							nl = el.getChildNodes();
-							String patternLength = ((Node) nl.item(0)).getNodeValue();
-							int length = Integer.parseInt(patternLength);
-							monomeFrame.setPatternLength(k, length);
-						}
-						NodeList quantifyNL = monomeElement.getElementsByTagName("quantization");
-						for (int k=0; k < quantifyNL.getLength(); k++) {
-							el = (Element) quantifyNL.item(k);
-							nl = el.getChildNodes();
-							String quantization = ((Node) nl.item(0)).getNodeValue();
-							int quantify = Integer.parseInt(quantization);
-							monomeFrame.setQuantization(k, quantify);
-						}
 
-						// redraw the GUI
-						this.frame.validate();
+							// page-specific configuration for machine drum interface page
+							if (pageName.equals("Machine Drum Interface")) {
+								MachineDrumInterfacePage mdpage = (MachineDrumInterfacePage) page;
+								NodeList rowNL = pageElement.getElementsByTagName("speed");
+								el = (Element) rowNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String speed = ((Node) nl.item(0)).getNodeValue();
+									mdpage.setSpeed(Integer.parseInt(speed));
+								}
+							}
+							
+							if (pageName.equals("Ableton Clip Launcher")) {
+								// configure midi notes / rows
+								AbletonClipLauncherPage ablepage = (AbletonClipLauncherPage) page;
+
+								NodeList armNL = pageElement.getElementsByTagName("disablearm");
+								el = (Element) armNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String disableArm = ((Node) nl.item(0)).getNodeValue();
+									ablepage.setDisableArm(disableArm);
+								}
+								NodeList stopNL = pageElement.getElementsByTagName("disablestop");
+								el = (Element) stopNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String disableStop = ((Node) nl.item(0)).getNodeValue();
+									ablepage.setDisableStop(disableStop);
+								}
+							}
+
+						}
 					}
+					
+					// most pages have midi outputs
+					NodeList lengthNL = monomeElement.getElementsByTagName("patternlength");
+					for (int k=0; k < lengthNL.getLength(); k++) {
+						el = (Element) lengthNL.item(k);
+						nl = el.getChildNodes();
+						String patternLength = ((Node) nl.item(0)).getNodeValue();
+						int length = Integer.parseInt(patternLength);
+						monomeFrame.setPatternLength(k, length);
+					}
+					NodeList quantifyNL = monomeElement.getElementsByTagName("quantization");
+					for (int k=0; k < quantifyNL.getLength(); k++) {
+						el = (Element) quantifyNL.item(k);
+						nl = el.getChildNodes();
+						String quantization = ((Node) nl.item(0)).getNodeValue();
+						int quantify = Integer.parseInt(quantization);
+						monomeFrame.setQuantization(k, quantify);
+					}
+
+					// redraw the GUI
+					this.frame.validate();
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (ParserConfigurationException e) {
-				e.printStackTrace();
-			} catch (SAXException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -200,9 +200,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 					}
 				// plus 1 clip offset
 				} else if (y == 1) {
-					if ((this.clipOffset + 1) * (this.monome.sizeY - this.numEnabledRows) < 210) {
-						this.clipOffset += 1;
-					}
+					this.clipOffset += 1;
 				// minus 1 track offset
 				} else if (y == 2) {
 					if (this.trackOffset > 0) {
@@ -210,9 +208,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 					}
 				// plus 1 track offset
 				} else if (y == 3) {
-					if ((this.trackOffset + 1) * (this.monome.sizeX - 1) < 50) {
-						this.trackOffset += 1;
-					}
+					this.trackOffset += 1;
 				} else if (y >= 4 || y <= 7) {
 					this.monome.led(x, this.loopButton, 0, this.index);
 					this.loopButton = y;
@@ -260,8 +256,8 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	 */
 	public void playClip(int track, int clip) {
 		this.monome.configuration.getAbletonControl().playClip(track, clip);
-		if (this.clipState[track][clip] == this.CLIP_STATE_EMPTY) {
-			int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) - 30.0);
+		if (this.clipState[track][clip] == CLIP_STATE_EMPTY) {
+			int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) - 100.0);
 			AbletonClipDelay acd = new AbletonClipDelay(delay, track, clip, this.monome.configuration);
 			new Thread(acd).start();
 		}
