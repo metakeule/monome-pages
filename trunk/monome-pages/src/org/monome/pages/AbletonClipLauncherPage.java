@@ -196,9 +196,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					}
 				// plus 1 clip offset
 				} else if (y == 1) {
-					if ((this.clipOffset + 1) * (this.monome.sizeY - this.numEnabledRows) < 210) {
 						this.clipOffset += 1;
-					}
 				// minus 1 track offset
 				} else if (y == 2) {
 					if (this.trackOffset > 0) {
@@ -206,9 +204,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					}
 				// plus 1 track offset
 				} else if (y == 3) {
-					if ((this.trackOffset + 1) * (this.monome.sizeX - 1) < 50) {
-						this.trackOffset += 1;
-					}
+					this.trackOffset += 1;
 				} else if (y == 4) {
 					this.tempoDown();
 				} else if (y == 5) {

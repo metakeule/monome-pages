@@ -32,10 +32,10 @@ public class Main {
 	/**
 	 * @param args command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new GUI();
+				new GUI(args);
 			}
 		});
 	}
