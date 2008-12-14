@@ -103,15 +103,11 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	private int[][] notesOn = new int[16][128];
 
-	/**
-	 * The MIDI output devices
-	 */
-	private ArrayList<Receiver> midiReceivers = new ArrayList<Receiver>();
+	private Receiver recv;
 
-	/**
-	 * The names of the MIDI output devices 
-	 */
-	private ArrayList<String> midiDeviceNames = new ArrayList<String>();
+	private String midiDeviceName;
+
+	private JButton midiOutButton;
 
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
@@ -308,9 +304,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 				if (this.notesOn[chan][i] == 1) {
 					try {
 						note_out.setMessage(ShortMessage.NOTE_OFF, chan, i, 0);
-						for (int j=0; j < midiReceivers.size(); j++) {
-							midiReceivers.get(j).send(note_out, -1);
-						}
+						recv.send(note_out, -1);
 					} catch (InvalidMidiDataException e) {
 						e.printStackTrace();
 					}				
@@ -334,9 +328,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			} else {
 				note_out.setMessage(ShortMessage.NOTE_ON, channel, note_num, velocity);
 			}
-			for (int i=0; i < midiReceivers.size(); i++) {
-				midiReceivers.get(i).send(note_out, -1);
-			}
+			recv.send(note_out, -1);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -471,14 +463,19 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
 		JPanel subPanel = new JPanel();
-		JLabel label = new JLabel((this.index + 1) + ": MIDI Keyboard");
+		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Keyboard");
 		subPanel.add(label);
 		panel.add(subPanel);
-
+		
 		subPanel = new JPanel();
-		JButton button = new JButton("Add MIDI Output");
-		button.addActionListener(this);
-		subPanel.add(button);
+		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
+		subPanel.add(midiout);
+		panel.add(subPanel);
+	
+		subPanel = new JPanel();
+		this.midiOutButton = new JButton("Set MIDI Output");
+		this.midiOutButton.addActionListener(this);
+		subPanel.add(this.midiOutButton);
 		panel.add(subPanel);
 
 		this.panel = panel;
@@ -499,9 +496,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>MIDI Keyboard</name>\n";
-		for (int i=0; i < this.midiDeviceNames.size(); i++) {
-			xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceNames.get(i)) + "</selectedmidioutport>\n";
-		}
+		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "    </page>\n";
 		return xml;
 	}
@@ -511,12 +506,12 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
-		if (e.getActionCommand().equals("Add MIDI Output")) {
+		if (e.getActionCommand().equals("Set MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
 					this.monome,
-					"Choose a MIDI Output to add",
-					"Add MIDI Output",
+					"Choose a MIDI Output to use",
+					"Set MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
 					null,
 					midiOutOptions,
@@ -535,16 +530,12 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
-		Receiver receiver = this.monome.getMidiReceiver(deviceName);
-
-		for (int i=0; i < this.midiReceivers.size(); i++) {
-			if (this.midiReceivers.get(i).equals(receiver)) {
-				System.out.println("Receiver already connected");
-				return;
-			}
-		}
-		this.midiReceivers.add(receiver);
-		this.midiDeviceNames.add(deviceName);
+		this.recv = this.monome.getMidiReceiver(deviceName);
+		this.midiDeviceName = deviceName;
+		this.midiOutButton.removeActionListener(this);
+		this.panel.removeAll();
+		this.panel = null;			
+		this.monome.redrawPanel();
 	}
 
 	/* (non-Javadoc)

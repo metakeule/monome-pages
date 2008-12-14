@@ -303,6 +303,7 @@ public class Configuration implements Receiver {
 		// check if the device is already enabled, if so disable it
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
 			if (this.midiOutDevices.get(i).equals(midiOutDevice)) {
+				System.out.println("closing midi out device " + i + " / " + this.midiOutDevices.get(i).getDeviceInfo());
 				MidiDevice outDevice = this.midiOutDevices.get(i);
 				this.midiOutReceivers.remove(i);
 				this.midiOutDevices.remove(i);
@@ -333,6 +334,7 @@ public class Configuration implements Receiver {
 		for (int i=0; i < this.midiInDevices.size(); i++) {
 			if (this.midiInDevices.get(i).equals(midiInDevice)) {
 				MidiDevice inDevice = this.midiInDevices.get(i);
+				System.out.println("closing midi in device " + i + " / " + this.midiInDevices.get(i).getDeviceInfo());
 				Transmitter transmitter = this.midiInTransmitters.get(i);
 				this.midiInTransmitters.remove(i);
 				this.midiInDevices.remove(i);
@@ -727,11 +729,19 @@ public class Configuration implements Receiver {
 		}
 		return null;		
 	}
+	
+	public String getAbletonMIDIInDeviceName() {
+		return this.abletonMIDIInDeviceName;
+	}
 
 	public void setAbletonMIDIInDeviceName(String midiInDevice) {
 		this.abletonMIDIInDeviceName = midiInDevice;
 	}
 
+	public String getAbletonMIDIOutDeviceName() {
+		return this.abletonMIDIOutDeviceName;
+	}
+	
 	public void setAbletonMIDIOutDeviceName(String midiOutDevice) {
 		this.abletonMIDIOutDeviceName = midiOutDevice;
 	}

@@ -144,6 +144,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 * 1 = bank mode on 
 	 */
 	private int bankMode = 0;
+	private JLabel jLabel1;
 	private JTextField channelTF;
 	private JLabel channelL;
 	private JTextField bankSizeTF;
@@ -209,20 +210,14 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 * Random number generator
 	 */
 	private Random generator = new Random();
-
-	/**
-	 * The selected MIDI output devices
-	 */
-	private ArrayList<Receiver> midiReceivers = new ArrayList<Receiver>();
-
-	/**
-	 * The names of the selected MIDI output devices 
-	 */
-	private ArrayList<String> midiDeviceNames = new ArrayList<String>();
 	
 	private int noteDelay = 0;
 
 	private String midiChannel = "1";
+
+	private Receiver recv;
+
+	private String midiDeviceName;
 
 	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
@@ -562,9 +557,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 				int note_num = this.getNoteNumber(i);
 				try {
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
-					for (int j=0; j < midiReceivers.size(); j++) {
-						midiReceivers.get(j).send(note_out, -1);
-					}
+					this.recv.send(note_out, -1);
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}				
@@ -599,19 +592,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 					if (velocity == 0 && this.heldNotes[y] == 1) {
 						this.heldNotes[y] = 0;
 						note_out.setMessage(ShortMessage.NOTE_OFF, midiChannel, note_num, velocity);
-						for (int i=0; i < midiReceivers.size(); i++) {
-							//NoteEvent ne = new NoteEvent(midiReceivers.get(i), note_out, noteDelay);
-							//new Thread(ne).start();
-							midiReceivers.get(i).send(note_out, -1);
-						}
+						this.recv.send(note_out, -1);
 					} else if (velocity > 0 && this.heldNotes[y] == 0) {
 						this.heldNotes[y] = 1;
 						note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
-						for (int i=0; i < midiReceivers.size(); i++) {
-							//NoteEvent ne = new NoteEvent(midiReceivers.get(i), note_out, noteDelay);
-							//new Thread(ne).start();
-							midiReceivers.get(i).send(note_out, -1);
-						}
+						this.recv.send(note_out, -1);
 					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
@@ -633,11 +618,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 							note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
 							this.heldNotes[y] = 1;
 						}
-						for (int i=0; i < midiReceivers.size(); i++) {
-							//NoteEvent ne = new NoteEvent(midiReceivers.get(i), note_out, noteDelay);
-							//new Thread(ne).start();							
-							midiReceivers.get(i).send(note_out, -1);
-						}
+						this.recv.send(note_out, -1);
 					} catch (InvalidMidiDataException e) {
 						e.printStackTrace();
 					}
@@ -929,6 +910,9 @@ public class MIDISequencerPage implements Page, ActionListener {
 		panel.add(getAddMidiOutButton(), new AnchorConstraint(865, 345, 985, 1, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getChannelL(), new AnchorConstraint(865, 519, 945, 380, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getChannelTF(), new AnchorConstraint(848, 603, 968, 543, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+
+		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
+		panel.add(midiout, new AnchorConstraint(2, 786, 82, 419, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		label.setPreferredSize(new java.awt.Dimension(180, 14));
 
 		this.getAddMidiOutButton().addActionListener(this);
@@ -1019,9 +1003,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		xml.append("      <holdmode>" + holdmode + "</holdmode>\n");
 		xml.append("      <banksize>" + this.bankSize + "</banksize>\n");
 		xml.append("      <midichannel>" + this.midiChannel + "</midichannel>\n");
-		for (int i=0; i < this.midiDeviceNames.size(); i++) {
-			xml.append("      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceNames.get(i)) + "</selectedmidioutport>\n");
-		}
+		xml.append("      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n");
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");
 		}
@@ -1043,12 +1025,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
-		if (e.getActionCommand().equals("Add MIDI Output")) {
+		if (e.getActionCommand().equals("Set MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
 					this.monome,
-					"Choose a MIDI Output to add",
-					"Add MIDI Output",
+					"Choose a MIDI Output to use",
+					"Set MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
 					null,
 					midiOutOptions,
@@ -1100,16 +1082,13 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
-		Receiver receiver = this.monome.getMidiReceiver(deviceName);
-		if (receiver != null) {
-			for (int i=0; i < this.midiReceivers.size(); i++) {
-				if (this.midiReceivers.get(i).equals(receiver)) {
-					return;
-				}
-			}
-			this.midiReceivers.add(receiver);
-			this.midiDeviceNames.add(deviceName);
-		}
+		this.recv = this.monome.getMidiReceiver(deviceName);
+		this.midiDeviceName = deviceName;
+		this.getAddMidiOutButton().removeActionListener(this);
+		this.getUpdatePrefsButton().removeActionListener(this);
+		this.panel.removeAll();
+		this.panel = null;			
+		this.monome.redrawPanel();
 	}
 
 	private JLabel getRow1l() {
@@ -1196,7 +1175,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private JButton getAddMidiOutButton() {
 		if(addMidiOutButton == null) {
 			addMidiOutButton = new JButton();
-			addMidiOutButton.setText("Add MIDI Output");
+			addMidiOutButton.setText("Set MIDI Output");
 			addMidiOutButton.setPreferredSize(new java.awt.Dimension(169, 21));
 		}
 		return addMidiOutButton;
@@ -1536,5 +1515,14 @@ public class MIDISequencerPage implements Page, ActionListener {
 	public void setMidiChannel(String midiChannel2) {
 		this.midiChannel = midiChannel2;
 		this.channelTF.setText(midiChannel2);
+	}
+	
+	private JLabel getJLabel1() {
+		if(jLabel1 == null) {
+			jLabel1 = new JLabel();
+			jLabel1.setText("Page " + (this.index + 1) + ": MIDI Sequencer");
+			jLabel1.setPreferredSize(new java.awt.Dimension(180,14));
+		}
+		return jLabel1;
 	}
 }

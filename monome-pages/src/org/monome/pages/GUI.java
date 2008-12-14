@@ -855,18 +855,6 @@ public class GUI implements ActionListener {
 	 * Handles a request to create a new monome configuration.
 	 */
 	public void actionNewMonomeConfiguration() {				
-		try {
-			if (this.newMonomeFrame != null &&
-					this.newMonomeFrame.getLocationOnScreen() != null) {
-				this.newMonomeFrame.requestFocus();
-				this.newMonomeFrame.grabFocus();
-				return;
-			}
-		} catch (IllegalComponentStateException e) {
-			this.newMonomeFrame = null;
-			e.printStackTrace();
-		}
-
 		this.newMonomeFrame = new NewMonomeFrame(this.configuration, this.frame);
 		this.newMonomeFrame.setVisible(true);
 
@@ -879,18 +867,6 @@ public class GUI implements ActionListener {
 	 * Handles a request to view the MonomeSerial OSC settings.
 	 */
 	private void actionOSCSettings() {
-		try {
-			if (this.oscSettingsFrame != null &&
-					this.oscSettingsFrame.getLocationOnScreen() != null) {
-				this.oscSettingsFrame.requestFocus();
-				this.oscSettingsFrame.grabFocus();
-				return;
-			}
-		} catch (IllegalComponentStateException e) {
-			this.oscSettingsFrame = null;
-			e.printStackTrace();
-		}
-
 		this.oscSettingsFrame = new OSCSettingsFrame(this.configuration, this.frame);
 		this.oscSettingsFrame.setVisible(true);
 		this.frame.add(oscSettingsFrame);
