@@ -40,6 +40,19 @@ import javax.swing.JRadioButton;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+
+/**
+* This code was edited or generated using CloudGarden's Jigloo
+* SWT/Swing GUI Builder, which is free for non-commercial
+* use. If Jigloo is being used commercially (ie, by a corporation,
+* company or business for any purpose whatever) then you
+* should purchase a license for each developer using Jigloo.
+* Please visit www.cloudgarden.com for details.
+* Use of Jigloo implies acceptance of these licensing terms.
+* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+*/
 /**
  * The MIDI Triggers page.  Usage information is available at:
  * 
@@ -139,6 +152,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 	private JLabel row12Label;
 	private JLabel row5Label;
 	private JLabel row4Label;
+	private JLabel jLabel1;
 	private JLabel row3Label;
 	private JLabel row2Label;
 	private JLabel row1Label;
@@ -162,7 +176,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 	 */
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
-		if (e.getActionCommand().equals("Add MIDI Output")) {
+		if (e.getActionCommand().equals("Set MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
 					this.monome,
@@ -223,6 +237,10 @@ public class MIDITriggersPage implements Page, ActionListener {
 	public void addMidiOutDevice(String deviceName) {
 		this.recv = this.monome.getMidiReceiver(deviceName);
 		this.midiDeviceName = deviceName;
+		this.addMidiOutButton.removeActionListener(this);
+		this.panel.removeAll();
+		this.panel = null;			
+		this.monome.redrawPanel();
 	}
 
 	/* (non-Javadoc)
@@ -446,7 +464,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		panel.add(rowRB);
 		rowRB.setBounds(19, 104, 86, 18);
 		colRB.setBounds(19, 123, 86, 18);
-		addMidiOutButton.setText("Add MIDI Output");
+		addMidiOutButton.setText("Set MIDI Output");
 		addMidiOutButton.setBounds(285, 120, 164, 21);
 		row5Label = new JLabel();
 		row5Label.setText("Row 5");
@@ -529,7 +547,8 @@ public class MIDITriggersPage implements Page, ActionListener {
 		panel.add(toggles[12]);
 		panel.add(row13Label);
 		panel.add(label);
-		label.setBounds(0, 0, 99, 14);
+		panel.add(getJLabel1());
+		label.setBounds(0, 0, 189, 14);
 		row13Label.setBounds(405, 20, 46, 14);
 		toggles[12].setBounds(451, 18, 74, 18);
 		row9Label.setBounds(274, 20, 46, 14);
@@ -582,5 +601,12 @@ public class MIDITriggersPage implements Page, ActionListener {
 	 */
 	public void destroyPage() {
 		return;
+	}
+	
+	private JLabel getJLabel1() {
+		jLabel1 = new JLabel();
+		jLabel1.setText("MIDI Out: " + this.midiDeviceName);
+		jLabel1.setBounds(254, 0, 227, 14);
+		return jLabel1;
 	}
 }

@@ -62,7 +62,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	/**
 	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
 	 */
-	private int[][] clipState = new int[50][250];
+	private int[][] clipState = new int[100][1000];
 	
 	/**
 	 * Used to represent an empty clip slot
@@ -200,7 +200,9 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 					}
 				// plus 1 clip offset
 				} else if (y == 1) {
-					this.clipOffset += 1;
+					if ((this.clipOffset + 1) * (this.monome.sizeY - this.numEnabledRows) < 960) {
+						this.clipOffset += 1;
+					}
 				// minus 1 track offset
 				} else if (y == 2) {
 					if (this.trackOffset > 0) {
@@ -208,7 +210,9 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 					}
 				// plus 1 track offset
 				} else if (y == 3) {
-					this.trackOffset += 1;
+					if ((this.trackOffset + 1) * (this.monome.sizeX - 1) < 100) {
+						this.trackOffset += 1;
+					}
 				} else if (y >= 4 || y <= 7) {
 					this.monome.led(x, this.loopButton, 0, this.index);
 					this.loopButton = y;

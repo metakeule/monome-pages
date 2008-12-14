@@ -40,6 +40,19 @@ import org.apache.commons.lang.StringEscapeUtils;
 import com.cloudgarden.layout.AnchorConstraint;
 import com.cloudgarden.layout.AnchorLayout;
 
+
+/**
+* This code was edited or generated using CloudGarden's Jigloo
+* SWT/Swing GUI Builder, which is free for non-commercial
+* use. If Jigloo is being used commercially (ie, by a corporation,
+* company or business for any purpose whatever) then you
+* should purchase a license for each developer using Jigloo.
+* Please visit www.cloudgarden.com for details.
+* Use of Jigloo implies acceptance of these licensing terms.
+* A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR
+* THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
+* LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
+*/
 /**
  * The Machine Drum Interface page.  Usage information is available at:
  * 
@@ -64,6 +77,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 * The GUI for this page's configuration
 	 */
 	private JPanel panel;
+	private JLabel jLabel1;
 
 	/**
 	 * The Add MIDI Output button
@@ -401,24 +415,24 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 			return this.panel;
 		}
 
-		if (this.panel != null) {
-			return this.panel;
-		}
 		JPanel panel = new JPanel();
 		AnchorLayout panelLayout = new AnchorLayout();
 		panel.setLayout(panelLayout);
-		panel.setPreferredSize(new java.awt.Dimension(319, 97));
-		panel.add(getAddMidiOutButton(), new AnchorConstraint(603, 963, 819, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getUpdatePrefsButton(), new AnchorConstraint(603, 487, 819, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getSpeedTF(), new AnchorConstraint(335, 371, 541, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getSpeedLabel(), new AnchorConstraint(365, 230, 510, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.setPreferredSize(new java.awt.Dimension(319, 127));
+		panel.add(getAddMidiOutButton(), new AnchorConstraint(775, 963, 917, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getUpdatePrefsButton(), new AnchorConstraint(767, 487, 917, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getSpeedTF(), new AnchorConstraint(507, 340, 712, 236, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getSpeedLabel(), new AnchorConstraint(531, 236, 673, 57, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 
 		this.getUpdatePrefsButton().addActionListener(this);
 		this.getAddMidiOutButton().addActionListener(this);
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": Machine Drum Interface");
-		panel.add(label, new AnchorConstraint(67, 349, 273, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		label.setPreferredSize(new java.awt.Dimension(160, 20));
+		panel.add(label, new AnchorConstraint(67, 948, 273, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		
+		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
+		panel.add(midiout, new AnchorConstraint(271, 948, 429, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		label.setPreferredSize(new java.awt.Dimension(296, 20));
 
 		this.panel = panel;
 		return panel;
@@ -431,7 +445,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if(speedLabel == null) {
 			speedLabel = new JLabel();
 			speedLabel.setText("Speed");
-			speedLabel.setPreferredSize(new java.awt.Dimension(67, 14));
+			speedLabel.setPreferredSize(new java.awt.Dimension(57, 18));
 		}
 		return speedLabel;
 	}
@@ -443,7 +457,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if(speedTF == null) {
 			speedTF = new JTextField();
 			speedTF.setText("100");
-			speedTF.setPreferredSize(new java.awt.Dimension(33, 20));
+			speedTF.setPreferredSize(new java.awt.Dimension(33, 26));
 		}
 		return speedTF;
 	}
@@ -454,8 +468,8 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	private JButton getAddMidiOutButton() {
 		if(addMidiOutButton == null) {
 			addMidiOutButton = new JButton();
-			addMidiOutButton.setText("Add MIDI Output");
-			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 21));
+			addMidiOutButton.setText("Set MIDI Output");
+			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 18));
 		}
 		return addMidiOutButton;
 	}
@@ -467,7 +481,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if(updatePrefsButton == null) {
 			updatePrefsButton = new JButton();
 			updatePrefsButton.setText("Update Preferences");
-			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 21));
+			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 19));
 		}
 		return updatePrefsButton;
 	}
@@ -484,12 +498,12 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Add MIDI Output")) {
+		if (e.getActionCommand().equals("Set MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
 					this.monome,
 					"Choose a MIDI Output to add",
-					"Add MIDI Output",
+					"Set MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
 					null,
 					midiOutOptions,
@@ -499,7 +513,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 				return;
 			}
 
-			this.addMidiOutDevice(deviceName);	
+			this.addMidiOutDevice(deviceName);
 		}
 
 		if (e.getActionCommand().equals("Update Preferences")) {
@@ -513,6 +527,11 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	public void addMidiOutDevice(String deviceName) {
 		this.recv = this.monome.getMidiReceiver(deviceName);
 		this.midiDeviceName = deviceName;
+		this.getAddMidiOutButton().removeActionListener(this);
+		this.getUpdatePrefsButton().removeActionListener(this);
+		this.panel.removeAll();
+		this.panel = null;			
+		this.monome.redrawPanel();
 	}
 
 	/* (non-Javadoc)
@@ -528,4 +547,5 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	public void destroyPage() {
 		return;
 	}
+	
 }

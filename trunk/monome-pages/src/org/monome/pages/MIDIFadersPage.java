@@ -74,6 +74,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 * The GUI for this page
 	 */
 	JPanel panel;
+	private JLabel jLabel1;
 	private JTextField ccOffsetTF;
 	private JLabel ccOffsetLabel;
 	private JTextField channelTF;
@@ -185,6 +186,11 @@ public class MIDIFadersPage implements Page, ActionListener {
 	public void addMidiOutDevice(String deviceName) {
 		this.recv = this.monome.getMidiReceiver(deviceName);
 		this.midiDeviceName = deviceName;
+		this.getAddMidiOutButton().removeActionListener(this);
+		this.getUpdatePrefsButton().removeActionListener(this);
+		this.panel.removeAll();
+		this.panel = null;			
+		this.monome.redrawPanel();
 	}
 
 	/* (non-Javadoc)
@@ -204,22 +210,26 @@ public class MIDIFadersPage implements Page, ActionListener {
 		JPanel panel = new JPanel();
 		AnchorLayout panelLayout = new AnchorLayout();
 		panel.setLayout(panelLayout);
-		panel.setPreferredSize(new java.awt.Dimension(319, 109));
-		panel.add(getAddMidiOutButton(), new AnchorConstraint(793, 963, 1013, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getUpdatePrefsButton(), new AnchorConstraint(793, 487, 1004, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getDelayTF(), new AnchorConstraint(335, 371, 541, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getDelayLabel(), new AnchorConstraint(365, 230, 510, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.setPreferredSize(new java.awt.Dimension(319, 148));
+		panel.add(getAddMidiOutButton(), new AnchorConstraint(706, 963, 875, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getUpdatePrefsButton(), new AnchorConstraint(706, 487, 875, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getDelayTF(), new AnchorConstraint(347, 371, 489, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getDelayLabel(), new AnchorConstraint(347, 268, 489, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 
 		this.getUpdatePrefsButton().addActionListener(this);
 		this.getAddMidiOutButton().addActionListener(this);
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Faders");
-		panel.add(label, new AnchorConstraint(67, 349, 273, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getChannelL(), new AnchorConstraint(376, 731, 520, 521, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getChannelTF(), new AnchorConstraint(345, 873, 551, 769, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getCcOffsetLabel(), new AnchorConstraint(591, 230, 738, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		panel.add(getCcOffsetTF(), new AnchorConstraint(564, 371, 766, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		label.setPreferredSize(new java.awt.Dimension(105, 20));
+		panel.add(label, new AnchorConstraint(30, 873, 179, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getChannelL(), new AnchorConstraint(347, 710, 489, 500, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getChannelTF(), new AnchorConstraint(354, 813, 483, 710, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getCcOffsetLabel(), new AnchorConstraint(489, 268, 638, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		panel.add(getCcOffsetTF(), new AnchorConstraint(503, 371, 625, 268, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		
+		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
+		panel.add(midiout, new AnchorConstraint(179, 894, 307, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		midiout.setPreferredSize(new java.awt.Dimension(279, 19));
+		label.setPreferredSize(new java.awt.Dimension(272, 22));
 
 		this.panel = panel;
 		return panel;
@@ -316,7 +326,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(delayLabel == null) {
 			delayLabel = new JLabel();
 			delayLabel.setText("Delay (ms)");
-			delayLabel.setPreferredSize(new java.awt.Dimension(67, 14));
+			delayLabel.setPreferredSize(new java.awt.Dimension(79, 21));
 		}
 		return delayLabel;
 	}
@@ -328,7 +338,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(delayTF == null) {
 			delayTF = new JTextField();
 			delayTF.setText("6");
-			delayTF.setPreferredSize(new java.awt.Dimension(33, 20));
+			delayTF.setPreferredSize(new java.awt.Dimension(33, 21));
 		}
 		return delayTF;
 	}
@@ -340,7 +350,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(addMidiOutButton == null) {
 			addMidiOutButton = new JButton();
 			addMidiOutButton.setText("Add MIDI Output");
-			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 24));
+			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 25));
 		}
 		return addMidiOutButton;
 	}
@@ -352,7 +362,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(updatePrefsButton == null) {
 			updatePrefsButton = new JButton();
 			updatePrefsButton.setText("Update Preferences");
-			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 23));
+			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 25));
 		}
 		return updatePrefsButton;
 	}
@@ -383,7 +393,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(channelL == null) {
 			channelL = new JLabel();
 			channelL.setText("Channel");
-			channelL.setPreferredSize(new java.awt.Dimension(67, 14));
+			channelL.setPreferredSize(new java.awt.Dimension(67, 21));
 		}
 		return channelL;
 	}
@@ -392,7 +402,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(channelTF == null) {
 			channelTF = new JTextField();
 			channelTF.setText("1");
-			channelTF.setPreferredSize(new java.awt.Dimension(33, 20));
+			channelTF.setPreferredSize(new java.awt.Dimension(33, 19));
 		}
 		return channelTF;
 	}
@@ -401,7 +411,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(ccOffsetLabel == null) {
 			ccOffsetLabel = new JLabel();
 			ccOffsetLabel.setText("CC Offset");
-			ccOffsetLabel.setPreferredSize(new java.awt.Dimension(67, 16));
+			ccOffsetLabel.setPreferredSize(new java.awt.Dimension(79, 22));
 		}
 		return ccOffsetLabel;
 	}
@@ -410,7 +420,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if(ccOffsetTF == null) {
 			ccOffsetTF = new JTextField();
 			ccOffsetTF.setText("0");
-			ccOffsetTF.setPreferredSize(new java.awt.Dimension(33, 22));
+			ccOffsetTF.setPreferredSize(new java.awt.Dimension(33, 18));
 		}
 		return ccOffsetTF;
 	}
@@ -424,5 +434,5 @@ public class MIDIFadersPage implements Page, ActionListener {
 		this.ccOffset = Integer.parseInt(ccOffset2);
 		this.getCcOffsetTF().setText(ccOffset2);
 	}
-
+	
 }

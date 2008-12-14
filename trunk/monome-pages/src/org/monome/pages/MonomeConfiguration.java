@@ -328,6 +328,19 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pack();
 		}
 	}
+	
+	public void redrawPanel() {
+		if (this.curPanel != null) {
+			this.curPanel.setVisible(false);
+			this.curPanel.setEnabled(false);
+			this.remove(this.curPanel);
+		}
+		this.curPanel = this.pages.get(this.curPage).getPanel();
+		this.curPanel.setVisible(true);
+		this.add(this.curPanel);
+		this.validate();
+		this.pack();
+	}
 
 	/**
 	 * Called by AbletonClipUpdater to update the state of Ableton clips.

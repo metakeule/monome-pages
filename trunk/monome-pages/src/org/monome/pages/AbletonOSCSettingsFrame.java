@@ -129,12 +129,24 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		String[] midiOutOptions = this.configuration.getMidiOutOptions();
 		String[] midiInOptions = this.configuration.getMidiInOptions();
 		
+		int selectedMIDIIn = 0;
 		for (int i=0; i < midiInOptions.length; i++) {
 			this.midiInDeviceCB.addItem(midiInOptions[i]);
+			if (midiInOptions[i].equals(this.configuration.getAbletonMIDIInDeviceName())) {
+				selectedMIDIIn = i;
+			}
 		}
+		
+		int selectedMIDIOut = 0;
 		for (int i=0; i < midiOutOptions.length; i++) {
 			this.midiOutDeviceCB.addItem(midiOutOptions[i]);
+			if (midiOutOptions[i].equals(this.configuration.getAbletonMIDIOutDeviceName())) {
+				selectedMIDIOut = i;
+			}
 		}
+		
+		this.midiInDeviceCB.setSelectedIndex(selectedMIDIIn);
+		this.midiOutDeviceCB.setSelectedIndex(selectedMIDIOut);
 		
 		subPanel = new JPanel();
 		subPanel.setLayout(new GridLayout(1, 1));
