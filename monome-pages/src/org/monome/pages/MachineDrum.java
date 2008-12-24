@@ -152,7 +152,7 @@ public class MachineDrum {
 		if (output_device == null) {
 			return;
 		}
-
+		System.out.println("assigning machine " + track + " / " + machine);
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[12];
 		data[0] = (byte) 0xF0;
@@ -169,6 +169,7 @@ public class MachineDrum {
 		data[11] = (byte) 0x02;
 		try {
 			msg.setMessage(data, 12);
+			output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -221,12 +222,12 @@ public class MachineDrum {
 	 * Sends a request to initialize a new drum kit.  This means initializing all tracks with machines randomly selected from a pool.
 	 * 
 	 * @param output_device The MIDI output device
-	 * @param x Which pools to use when assigning machines, currently only pool 0 will work
+	 * @param machinePool Which pools to use when assigning machines, currently only pool 0 will work
 	 */
-	public void initKit(Receiver output_device, int x) {
+	public void initKit(Receiver output_device, int machinePool) {
 		byte[] choice = new byte[16];
-
-		if (x == 0) {
+		System.out.println("x is " + machinePool);
+		if (machinePool == 0) {
 			String[] bd = {
 					"TRX-BD",
 					"TRX-B2",
@@ -357,7 +358,23 @@ public class MachineDrum {
 			choice[12] = getMachine(m1[generator.nextInt(m1.length)]);
 			choice[13] = getMachine(m2[generator.nextInt(m2.length)]);
 		}
-		for (x = 0; x < 14; x++) {
+		if (machinePool == 1) {
+			choice[0] = getRandomMachineNumber();
+			choice[1] = getRandomMachineNumber();
+			choice[2] = getRandomMachineNumber();
+			choice[3] = getRandomMachineNumber();
+			choice[4] = getRandomMachineNumber();
+			choice[5] = getRandomMachineNumber();
+			choice[6] = getRandomMachineNumber();
+			choice[7] = getRandomMachineNumber();
+			choice[8] = getRandomMachineNumber();
+			choice[9] = getRandomMachineNumber();
+			choice[10] = getRandomMachineNumber();
+			choice[11] = getRandomMachineNumber();
+			choice[12] = getRandomMachineNumber();
+			choice[13] = getRandomMachineNumber();
+		}
+		for (int x = 0; x < 14; x++) {
 			sendAssignMachine(output_device, x, choice[x]);
 		}
 	}
@@ -530,5 +547,14 @@ public class MachineDrum {
 		}
 
 		return (byte) 0;
+	}
+	
+	private byte getRandomMachineNumber() {
+		byte[] choices = {01, 02, 03, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+				          32, 33, 34, 35, 36, 37, 38, 39, 48, 49, 50, 51, 52, 53, 54, 55,
+				          56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+				          72};
+		return choices[this.generator.nextInt(choices.length)];
+		
 	}
 }

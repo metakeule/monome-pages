@@ -370,10 +370,13 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		// handle a monome clear request from the external application
 		if (msg.getAddress().contains("clear")) {
 			Object[] args = msg.getArguments();
-			if (!(args[0] instanceof Integer)) {
-				return;
+			int int_arg = 0;
+			if (args.length > 0) {
+				if (!(args[0] instanceof Integer)) {
+					return;
+				}
+				int_arg = ((Integer) args[0]).intValue();
 			}
-			int int_arg = ((Integer) args[0]).intValue();
 			this.monome.clear(int_arg, this.index);
 		}
 
