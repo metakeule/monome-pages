@@ -467,9 +467,14 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (this.pageChangeMode == 1 && value == 1) {
 			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
 			int patternNum = x;
-			if (this.pages.size() > next_page && next_page < (this.sizeX * this.sizeY) / 2) {
+			int numPages = this.pages.size();
+			if (numPages > this.sizeY - 1) {
+				numPages++;
+			}
+			if (numPages > next_page && next_page < (this.sizeX * this.sizeY) / 2) {
+				System.out.println("next page is " + next_page);
 				// offset back by one because of the page change button
-				if (next_page > 7) {
+				if (next_page > this.sizeY - 1) {
 					next_page--;
 				}
 				this.curPage = next_page;

@@ -178,8 +178,8 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 							this.monome.led(x, i, 0, this.index);
 						}
 					}
+					this.stopNotes();
 				}
-				this.stopNotes();
 			}
 		}
 
@@ -322,6 +322,9 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public void playNote(int note_num, int velocity, int channel) {
 		ShortMessage note_out = new ShortMessage();
+		if (this.recv == null) {
+			return;
+		}
 		try {
 			if (velocity == 0) {
 				note_out.setMessage(ShortMessage.NOTE_OFF, channel, note_num, velocity);
