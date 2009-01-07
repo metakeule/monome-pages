@@ -47,4 +47,4 @@ For instance, you have a midi track with a pretty operator. You want to send mid
  * midi to <Midi Yoke output: 1> (only Midi Yoke Input can be handle in monome-pages apps)
 I mapped channel 9 to column 1, 10 to 2 etc etc
 
-In order to control a matrix bigger than 8x8 with a monome 64, it could be easy to alter the code to use an x clip offset in addition the the already y clip offset.
+In order to control a matrix bigger than 8x8 with a monome 64, it could be easy to alter the code to use an x-clip-offset in addition the the already y-clip-offset .
