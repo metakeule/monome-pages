@@ -6,10 +6,10 @@ The first thing you should do is make sure you have the latest version of Pages.
 
 Next, see if any stack traces are being generated.  This is the most useful information you can send in regards to a bug, as it allows me to pinpoint the particular lines of code that caused the issue.  When you run the pages.jar file by double clicking it then all stack traces will be suppressed and you won't see them.  To see the stack traces:
 
-# Go to a command prompt
-# Switch to the directory that the Pages JAR file is located (or copy the Pages JAR file to your current directory).
-# Run java -jar pages-0.1.11.jar
-# Replicate the bug, hopefully you'll see a stack trace in the command prompt window
-# Copy/paste the stack trace to me, either as an Issue here, an e-mail, or a post on the monome.org board.
+  # Go to a command prompt
+  # Switch to the directory that the Pages JAR file is located (or copy the Pages JAR file to your current directory).
+  # Run java -jar pages-0.1.11.jar
+  # Replicate the bug, hopefully you'll see a stack trace in the command prompt window
+  # Copy/paste the stack trace to me, either as an Issue here, an e-mail, or a post on the monome.org board.
 
 Thank you!
