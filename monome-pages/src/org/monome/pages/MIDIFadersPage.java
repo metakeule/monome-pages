@@ -313,7 +313,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		xml += "      <name>MIDI Faders</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <delayamount>" + this.delayAmount + "</delayamount>\n";
-		xml += "      <midichannel>" + this.midiChannel + "</midichannel>\n";
+		xml += "      <midichannel>" + (this.midiChannel + 1) + "</midichannel>\n";
 		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
 		xml += "    </page>\n";
 		return xml;
