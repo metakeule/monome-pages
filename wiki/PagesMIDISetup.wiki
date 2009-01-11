@@ -2,18 +2,15 @@
 
 = PagesMIDI Setup =
 
-= Download = 
-
-First, download the PagesMIDI-caching zip file.:
-
+  * First, download the PagesMIDI-caching zip file:
 
 [http://www.post-digital.net/~phortran/pages/pagesmidi/1-website.jpg]
 
-Unzip the file to a temporary location and copy the PagesMIDI folder inside of it to the MIDI Remote Scripts folder of your Ableton installation:
+  * Unzip the file to a temporary location and copy the PagesMIDI folder inside of it to the MIDI Remote Scripts folder of your Ableton installation:
 
 [http://www.post-digital.net/~phortran/pages/pagesmidi/2-copyfolder.jpg]
 
-First, choose which virtual MIDI devices you want to use for the integration.  In this example, MIDI Yoke 1 will be used for input from Pages, and MIDI Yoke 2 will be used for output to Pages.  Substitute IAC Devices for MIDI Yokes if you're on OSX.
+  * Choose which virtual MIDI devices you want to use for the integration.  In this example, MIDI Yoke 1 will be used for input from Pages, and MIDI Yoke 2 will be used for output to Pages.  Substitute IAC Devices for MIDI Yokes if you're on OSX.
 
   # Select PagesMIDI as a control surface.  Select MIDI Yoke 1 as the input and MIDI Yoke 2 as the output.
   # Turn off Track/Sync/Remote for MIDI Yoke 1, both the input and the output device.
@@ -21,15 +18,15 @@ First, choose which virtual MIDI devices you want to use for the integration.  I
 
 [http://www.post-digital.net/~phortran/pages/pagesmidi/3-abletonprefs.JPG]
 
-Load up pages and enable MIDI Yoke 2 as a MIDI input.
+  * Load up pages and enable MIDI Yoke 2 as a MIDI input:
 
 [http://www.post-digital.net/~phortran/pages/pagesmidi/4-pagesmidiin.JPG]
 
-Enable MIDI Yoke 1 as a MIDI Output.
+  * Enable MIDI Yoke 1 as a MIDI Output:
 
 [http://www.post-digital.net/~phortran/pages/pagesmidi/5-pagesmidiout.jpg]
 
-Set the Ableton settings in Pages to use MIDI with MIDI Yoke 2 as the input and MIDI Yoke 1 as the output.
+  * Set the Ableton settings in Pages to use MIDI with MIDI Yoke 2 as the input and MIDI Yoke 1 as the output:
 
 [http://www.post-digital.net/~phortran/pages/pagesmidi/6-pagesableton.JPG]
 
