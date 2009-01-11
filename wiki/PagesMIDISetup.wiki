@@ -1,0 +1,3 @@
+#summary Illustrated guide to setting up PagesMIDI
+
+= PagesMIDI Setup =
