@@ -1,3 +1,10 @@
 #summary Illustrated guide to setting up PagesMIDI
 
 = PagesMIDI Setup =
+
+[http://www.post-digital.net/~phortran/pages/pagesmidi/1-website.jpg]
+[http://www.post-digital.net/~phortran/pages/pagesmidi/2-copyfolder.jpg]
+[http://www.post-digital.net/~phortran/pages/pagesmidi/3-abletonprefs.jpg]
+[http://www.post-digital.net/~phortran/pages/pagesmidi/4-pagesmidiin.jpg]
+[http://www.post-digital.net/~phortran/pages/pagesmidi/5-pagesmidiout.jpg]
+[http://www.post-digital.net/~phortran/pages/pagesmidi/6-pagesableton.jpg]
