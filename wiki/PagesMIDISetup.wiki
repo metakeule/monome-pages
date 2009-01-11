@@ -2,9 +2,27 @@
 
 = PagesMIDI Setup =
 
+= Download = 
 [http://www.post-digital.net/~phortran/pages/pagesmidi/1-website.jpg]
+First, download the PagesMIDI-caching zip file.
+
 [http://www.post-digital.net/~phortran/pages/pagesmidi/2-copyfolder.jpg]
+Unzip the file to a temporary location and copy the PagesMIDI folder inside of it to the MIDI Remote Scripts folder of your Ableton installation.
+
 [http://www.post-digital.net/~phortran/pages/pagesmidi/3-abletonprefs.JPG]
+First, choose which virtual MIDI devices you want to use for the integration.  In this example, MIDI Yoke 1 will be used for input from Pages, and MIDI Yoke 2 will be used for output to Pages.  Substitute IAC Devices for MIDI Yokes if you're on OSX.
+
+  # Select PagesMIDI as a control surface.  Select MIDI Yoke 1 as the input and MIDI Yoke 2 as the output.
+  # Turn off Track/Sync/Remote for MIDI Yoke 1, both the input and the output device.
+  # Turn off Track/Remote for MIDI Yoke 2's output device but leave Sync on.  Turn off Track/Sync/Remote for MIDI Yoke 2's input device.  You should only have one button turned on for all MIDI Yoke 1 and 2 devices.
+
 [http://www.post-digital.net/~phortran/pages/pagesmidi/4-pagesmidiin.JPG]
+Load up pages and enable MIDI Yoke 2 as a MIDI input.
+
 [http://www.post-digital.net/~phortran/pages/pagesmidi/5-pagesmidiout.jpg]
+Enable MIDI Yoke 1 as a MIDI Output.
+
 [http://www.post-digital.net/~phortran/pages/pagesmidi/6-pagesableton.JPG]
+Set the Ableton settings in Pages to use MIDI with MIDI Yoke 2 as the input and MIDI Yoke 1 as the output.
+
+That's it! The Ableton pages should now work.
