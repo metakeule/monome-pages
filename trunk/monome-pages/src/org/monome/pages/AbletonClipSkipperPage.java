@@ -286,4 +286,12 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	public void destroyPage() {
 		return;
 	}
+	
+	public void clearPanel() {
+		this.panel = null;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

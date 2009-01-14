@@ -609,4 +609,12 @@ public class MIDITriggersPage implements Page, ActionListener {
 		jLabel1.setBounds(254, 0, 227, 14);
 		return jLabel1;
 	}
+	
+	public void clearPanel() {
+		this.panel = null;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}	
 }

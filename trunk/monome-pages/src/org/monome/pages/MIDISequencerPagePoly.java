@@ -1963,4 +1963,12 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 		}
 		return jLabel1;
 	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
+	public void clearPanel() {
+		this.panel = null;
+	}
 }

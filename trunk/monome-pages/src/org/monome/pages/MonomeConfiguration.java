@@ -246,6 +246,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			int index = Integer.parseInt(pieces[0]);
 			this.switchPage(this.pages.get(index - 1), index - 1, true);
 		}
+		// Delete page
+		if (e.getActionCommand().contains("Delete Page")) {
+			String[] pieces = e.getActionCommand().split(":");
+			int index = Integer.parseInt(pieces[0]);
+			this.deletePage((index - 1));
+		}
 		// Set quantization
 		if (e.getActionCommand().contains("Set Quantization")) {
 			String[] pieces = e.getActionCommand().split(":");
@@ -306,6 +312,37 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				nfe.printStackTrace();
 			}
 		}
+	}
+
+	private void deletePage(int i) {
+		this.pages.get(i).destroyPage();
+		this.pages.remove(i);
+		this.numPages--;
+		if (this.curPage >= i) {
+			this.curPage--;
+			System.out.println("cur page is " + this.curPage);
+		}
+		
+		for (int x=0; x < this.pages.size(); x++) {
+			this.pages.get(x).setIndex(x);
+		}
+		
+		if (this.curPage > -1) {
+			this.remove(this.curPanel);
+			pages.get(this.curPage).clearPanel();
+			this.curPanel = pages.get(this.curPage).getPanel();
+			this.curPanel.setVisible(true);
+			this.add(this.curPanel);
+			this.validate();
+			this.pack();
+		} else {
+			this.remove(this.curPanel);
+			this.curPanel = null;
+			this.validate();
+			this.pack();
+		}
+		
+		this.setJMenuBar(this.createMenuBar());
 	}
 
 	/**
@@ -565,6 +602,20 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		} else {
 			for (int i=0; i < this.numPages; i++) {
 				menuItem = new JMenuItem(i+1 + ": Show Page " + this.pages.get(i).getName());
+				menuItem.addActionListener(this);
+				subMenu.add(menuItem);
+			}
+		}
+		fileMenu.add(subMenu);
+		
+	    subMenu = new JMenu("Delete Page");
+
+		if (this.numPages == 0) {
+			menuItem = new JMenuItem("No Pages Defined");
+			subMenu.add(menuItem);
+		} else {
+			for (int i=0; i < this.numPages; i++) {
+				menuItem = new JMenuItem(i+1 + ": Delete Page " + this.pages.get(i).getName());
 				menuItem.addActionListener(this);
 				subMenu.add(menuItem);
 			}

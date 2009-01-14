@@ -514,4 +514,12 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			this.oscOut.close();
 		}
 	}
+	
+	public void clearPanel() {
+		this.panel = null;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }
