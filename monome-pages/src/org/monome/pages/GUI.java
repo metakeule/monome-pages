@@ -663,6 +663,53 @@ public class GUI implements ActionListener {
 								seqpage.redrawMonome();
 							}
 
+							// page-specific configuration for midi sequencer page
+							if (pageName.equals("MIDI Sequencer Poly")) {
+								// configure midi notes / rows
+								MIDISequencerPagePoly seqpage = (MIDISequencerPagePoly) page;
+
+								NodeList modeNL = pageElement.getElementsByTagName("holdmode");
+								el = (Element) modeNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String holdmode = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setHoldMode(holdmode);
+								}
+								
+								NodeList bankNL = pageElement.getElementsByTagName("banksize");
+								el = (Element) bankNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String banksize = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setBankSize(Integer.parseInt(banksize));
+								}
+								
+								NodeList channelNL = pageElement.getElementsByTagName("midichannel");
+								el = (Element) channelNL.item(0);
+								if (el != null) {
+									nl = el.getChildNodes();
+									String midiChannel = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setMidiChannel(midiChannel);
+								}
+								
+								NodeList rowNL = pageElement.getElementsByTagName("row");
+								for (int l=0; l < rowNL.getLength(); l++) {
+									el = (Element) rowNL.item(l);
+									nl = el.getChildNodes();
+									String midiNote = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setNoteValue(l, Integer.parseInt(midiNote));
+								}
+
+								NodeList seqNL = pageElement.getElementsByTagName("sequence");
+								for (int l=0; l < seqNL.getLength(); l++) {
+									el = (Element) seqNL.item(l);
+									nl = el.getChildNodes();
+									String sequence = ((Node) nl.item(0)).getNodeValue();
+									seqpage.setSequence(l, sequence);
+								}
+								seqpage.redrawMonome();
+							}	
+							
 							// page-specific configuration for midi triggers page
 							if (pageName.equals("MIDI Triggers")) {
 								// configure midi notes / rows

@@ -341,7 +341,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 						this.monome.led(x, y, 0, this.index);
 					}
 					// redraw the morph param state (next 3 rows)
-				} else if (y < 4) {
+				} else if (y < 5) {
 					int param_num = getMachineNum(x, y - 2);
 					if (morph_params[param_num] == 1) {
 						this.monome.led(x, y, 1, this.index);
@@ -358,6 +358,8 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 						}
 					} else if (x > 0 && x < 5) {
 						this.monome.led(x, y, fx_morph[x-1], this.index);
+					} else {
+						this.monome.led(x, y, 0, this.index);
 					}
 					// everything else should be off
 				} else {
