@@ -435,4 +435,12 @@ public class MIDIFadersPage implements Page, ActionListener {
 		this.getCcOffsetTF().setText(ccOffset2);
 	}
 	
+	public void clearPanel() {
+		this.panel = null;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
 }

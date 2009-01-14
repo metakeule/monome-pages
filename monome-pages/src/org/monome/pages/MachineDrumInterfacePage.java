@@ -550,4 +550,12 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		return;
 	}
 	
+	public void clearPanel() {
+		this.panel = null;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
 }

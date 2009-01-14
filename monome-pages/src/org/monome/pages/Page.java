@@ -68,6 +68,10 @@ public interface Page {
 	 * @return The GUI panel for the page
 	 */
 	public JPanel getPanel();
+	
+	public void clearPanel();
+	
+	public void setIndex(int index);
 
 	/**
 	 * Called whenever a MIDI message is received from the MIDI input device

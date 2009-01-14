@@ -502,4 +502,12 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		}
 		this.overdub = overdub;
 	}
+	
+	public void clearPanel() {
+		this.panel = null;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }

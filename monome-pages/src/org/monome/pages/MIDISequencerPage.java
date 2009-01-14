@@ -1525,4 +1525,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 		return jLabel1;
 	}
+	
+	public void clearPanel() {
+		this.panel = null;
+	}
+	
+	public void setIndex(int index) {
+		this.index = index;
+	}
 }
