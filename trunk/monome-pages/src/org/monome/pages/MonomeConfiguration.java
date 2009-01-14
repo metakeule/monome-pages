@@ -143,7 +143,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.options[7] = "Ableton Live Looper";
 		this.options[8] = "Machine Drum Interface";
 		this.options[9] = "Ableton Clip Control";
-		this.options[10] = "MIDI Keyboard Julienb (work in progress)";
+		this.options[10] = "MIDI Sequencer Poly";
 		
 		this.configuration = configuration;
 		this.prefix = prefix;
@@ -198,6 +198,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		else if (pageName.compareTo("MIDI Keyboard Julienb (work in progress)") == 0) {
 			page = new MIDIKeyboardJulienBPage(this, this.numPages);
+		}
+		else if (pageName.compareTo("MIDI Sequencer Poly") == 0) {
+			page = new MIDISequencerPagePoly(this, this.numPages);
 		}
 		else {
 			return null;
