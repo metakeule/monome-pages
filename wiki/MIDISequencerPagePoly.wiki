@@ -1,6 +1,4 @@
-#summary One-sentence summary of this page.
-
-#summary One-sentence summary of this page.
+#Detailed information about the MIDI Sequencer page.
 
 = Page Description =
 
