@@ -6,7 +6,7 @@
 The MIDI Sequencer page Poly is a polyphonic version of the great Midi Sequencer Page. 
 
   * You can trigger many bank at once.
-  * All fonctionnality of Midi Sequencer Page are kept: patterns recording, clear, paste... see [] for further informations.
+  * All fonctionnality of Midi Sequencer Page are kept: patterns recording, clear, paste... see [http://code.google.com/p/monome-pages/wiki/MIDISequencerPage] for further informations.
   * length, trigger mode (gate / toggle), hold mode, octave+2 mode,  and tempo*2 can be differents for each bank
 
 
