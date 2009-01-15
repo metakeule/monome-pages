@@ -29,7 +29,7 @@ like Midi Sequencer Page
 || note switch || note switch || note switch || note switch || note switch || note switch || note switch || tempo X2 ||
 || off1 || off2 || genp || altp || copy || clr  || bkmd || page ||
 
-=== 128 Layout ===
+=== 128 Layout (not tested) ===
 
 || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || len 8 ||
 || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || len 16 ||
@@ -40,7 +40,7 @@ like Midi Sequencer Page
 || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || tempo X2 ||
 || off1 || off2 || genp || altp || copy || clr  || bkmd || null || null || null || null || null || null || null || null || null ||
 
-=== 256 Layout ===
+=== 256 Layout (not tested)===
 
 || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || len 8 ||
 || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || len 16 ||
@@ -59,6 +59,9 @@ like Midi Sequencer Page
 || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank || bank ||
 || off1 || off2 || genp || altp || copy || clr  || bkmd || null || null || null || null || null || null || null || null || null ||
 
+
+=== Utilisation ===
+
   * len 8, len 16, len 32 allows to set length per bank.
   * gate / toggle allows to set trigger mode per bank. Light on=toggle. Light off = gate.
   * hold allows to set hold mode per bank. Light on=hold on , light off = hold off
@@ -68,9 +71,9 @@ like Midi Sequencer Page
   * note switchs are toggle buttons which switch off notes (for example for muting drum parts). Note switch are also light feedback of notes played.										
 							
   * Hold "oct +2" and "tempo X2" to see bliking active pattern							
-  * Hold "oct +2" and "tempo X2" and pattern to select a pattern for editing							
-	
-						
+  * Hold "oct +2" and "tempo X2" and pattern to select a pattern for editing						
+
+ 						
 *Exemple*							
   * hold len 8 + pattern to change length to 8 for pattern 1							
   * hold gate / toggle + pattern to change mode to gate (repeat to change to toggle mode)
