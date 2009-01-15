@@ -1,4 +1,4 @@
-#Detailed information about the MIDI Sequencer page.
+#Detailed information about the MIDI Sequencer page Poly.
 
 = Page Description =
 
