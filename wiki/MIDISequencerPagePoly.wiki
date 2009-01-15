@@ -71,11 +71,10 @@ like Midi Sequencer Page
   * note switchs are toggle buttons which switch off notes (for example for muting drum parts). Note switch are also light feedback of notes played.										
 							
   * Hold "oct +2" and "tempo X2" to see bliking active pattern							
-  * Hold "oct +2" and "tempo X2" and pattern to select a pattern for editing						
-
- 						
+  * Hold "oct +2" and "tempo X2" and pattern to select a pattern for editing							
+					
 *Exemple*							
-  * hold len 8 + pattern to change length to 8 for pattern 1							
-  * hold gate / toggle + pattern to change mode to gate (repeat to change to toggle mode)
+  * hold len 8 + bank to change length to 8 for pattern 1							
+  * hold gate / toggle + bank to change mode to gate (repeat to change to toggle mode)
 
 Enjoy!							
