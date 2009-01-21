@@ -16,7 +16,7 @@
 
   * Copy the _LiveAPICore folder within the LiveOSC-pages.zip file to C:\Python22\Lib
 
-[http://www.post-digital.net/~phortran/pages/liveosc/3-liveapicore_copy.jpg]
+[http://www.post-digital.net/~phortran/pages/liveosc/4-liveapicore_copy.jpg]
 
   * Copy the LiveOSC folder within the LiveOSC-pages.zip file to C:\Program Files\Ableton\Live 7.0.14\Resources\MIDI Remote Scripts
 
