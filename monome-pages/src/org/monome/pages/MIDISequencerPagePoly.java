@@ -158,14 +158,14 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	/**
 	 * sequence[bank_number][width][height] - the currently programmed sequences 
 	 */
-	private int[][][] sequence = new int[240][64][16];
-	private boolean[] bankSel = new boolean[240];
-	private boolean heldNotes[][]=new boolean[240][16];
-	private int[] patlength = new int[240];
-	private int[] patHold = new int[240];
-	private int[] patGate = new int[240];
-	private int[] patOctgUp= new int[240];
-	private int[] patSpeed= new int[240];
+	private int[][][] sequence = new int[256][64][16];
+	private boolean[] bankSel = new boolean[256];
+	private boolean heldNotes[][]=new boolean[256][16];
+	private int[] patlength = new int[256];
+	private int[] patHold = new int[256];
+	private int[] patGate = new int[256];
+	private int[] patOctgUp= new int[256];
+	private int[] patSpeed= new int[256];
 	private int patLengthMode = 0;
 	private int patHoldMode = 0;
 	private int patGateMode = 0;
@@ -174,7 +174,7 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	private boolean holdGate=false;
 	private boolean hold5=false;
 	private boolean hold6=false;
-	private boolean []gate=new boolean[240];
+	private boolean []gate=new boolean[256];
 	private int[] rowMode=new int[15];
 	private boolean[] noteSwitchs = new boolean[15];
 	private int quantize1=16;
@@ -183,8 +183,8 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	/**
 	 * flashSequence[bank_number][width][height] - the flashing state of leds 
 	 */
-	private int[][][] flashSequence = new int[240][64][16];
-	private int[] flashSequenceBank = new int[240];
+	private int[][][] flashSequence = new int[256][64][16];
+	private int[] flashSequenceBank = new int[256];
 	
 	/**
 	 * noteNumbers[row] - midi note numbers that are sent for each row 
@@ -267,7 +267,7 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 		//init pattern config
 		int globalHold=0;
 		if (this.getHoldModeCB().isSelected())  globalHold=1; else globalHold=0;
-		for (int  i=0;i<240;i++){
+		for (int  i=0;i<256;i++){
 			this.patlength[i]=4*this.monome.sizeX;
 			this.patHold[i]=globalHold;
 			this.patGate[i]=1;
@@ -1245,7 +1245,7 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 		int x,y;
 		for (int i=0;i<14;i++){
 			x=i%(this.monome.sizeX-1);
-			y=this.monome.sizeY-3+(i/7);
+			y=this.monome.sizeY-3 + (i / (this.monome.sizeX - 1));
 			if (this.noteSwitchs[i]==true){
 				this.monome.led(x, y, 1, this.index);
 			}
@@ -1444,7 +1444,7 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");
 		}
-		for (int i=0; i < 240; i++) {
+		for (int i=0; i < 256; i++) {
 			xml.append("      <sequence>");
 			for (int j=0; j < 64; j++) {
 				for (int k=0; k < 16; k++) {
