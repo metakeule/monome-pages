@@ -1,0 +1,7 @@
+#summary Information on getting started with Pages development.
+
+Pages is written in Java and I use the Eclipse IDE to develop/test it.  Eclipse is a powerful freeware application that can aid development in many programming languages.
+
+The framework has been designed to allow rapid development of new pages by adhering to a Page interface and exposing many utility classes to each page.  This means that all of the work involved in setting up the OSC connection with monome serial, handling button presses and LED messages, receiving MIDI clock signals, Ableton integration, etc. has already been done and is easy to utilize within a page.
+
+A template page has been included to help you get started, and each page class is a self-contained application that can be used for examples.  I highly recommend that you read over a few Java tutorials to get familiar with the language concepts and syntax.
