@@ -137,13 +137,13 @@ Repeat this process for a few page types; you will see a configuration panel for
 
 You can switch pages on the page menu or by holding down the bottom-right button on the monome and pushing another button on the bottom row.  The bottom-left button corresponds to page 1, the button to the right of it corresponds to page 2, etc.
 
-To test the MIDI clock sync, create a MIDI sequencer page.  It is currently the only page that receives MIDI clock sync.  When you press play in Ableton Live, you should see a vertical column move across the monome.  If you are not seeing the vertical bar, double check your MIDI settings in Ableton and in pages, and make sure that if you're on OS X you have installed the mmj.jar library correctly.  You may even try rebooting your computer if you're still having trouble.
+To test the MIDI clock sync, create a MIDI sequencer page.  When you press play in Ableton Live, you should see a vertical column move across the monome.  If you are not seeing the vertical column, double check your MIDI settings in Ableton and in Pages, and make sure that if you're on OSX you have installed the mmj.jar library correctly.  You may even try rebooting your computer if you're still having trouble.
 
 MIDI-related pages have an 'Add MIDI Output' button, you should click on this and select a MIDI device for the page to output on or it won't do much.  Make sure that Ableton Live is configured to receive MIDI on the device you select.
 
-You can save and load configurations from the File menu.  Configurations are stored in XML format.
+You can save and load configurations from the File menu.  Configurations are stored in XML format and can be edited with a text editor.
 
-See the individual page wiki pages for button layout and functionality.
+See the [http://code.google.com/p/monome-pages/wiki wiki] for button layout and documentation for each of the page types.
 
 == Ableton Live Setup ==
 
