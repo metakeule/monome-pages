@@ -7,3 +7,5 @@ The framework has been designed to allow rapid development of new pages by adher
 A template page has been included to help you get started, and each page class is a self-contained application that can be used for examples.  I highly recommend that you read over a few Java tutorials to get familiar with the language concepts and syntax.
 
 The first step is to download Eclipse from their [http://www.eclipse.org/downloads/ main website]:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/1-download.jpg]
