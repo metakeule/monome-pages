@@ -22,3 +22,28 @@ Next you'll need to download a JDK.  You can get a Windows or Linux JDK from sun
 Next, install the JDK.  For Windows, I generally put it in an easy to remember place, in this example I put it in c:\code\jdk.  It's up to you though:
 
 [http://www.post-digital.net/~phortran/pages/development-manual/3-jdk-install.jpg]
+
+Now unzip the Eclipse zip file you downloaded in the first step.  In this example, I put it in c:\code.  Unzip it and run eclipse.exe:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/4-eclipse-unzip.jpg]
+
+When you run eclipse.exe for the first time you'll be asked to select a workspace.  This is the folder where all of your code/etc. will be stored/compiled/run from.  You can pick wherever you'd like, in this example I picked c:\code\workspace:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/5-workspace.jpg]
+
+Next you'll get this strange screen with various icons in weird places.  Find the 'Workbench' icon and click on that:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/6-workbench.jpg]
+
+You'll now be in the main Eclipse environment.  The first thing you need to do is install a plugin called 'Subclipse'.  Subclipse is a subversion plugin for Eclipse that lets you easily pull down updates or commit your own patches to the main code base.  Subversion is a source code versioning and storage application that is used by code.google.com (and many, many other organizations).  To install the Subclipse plugin, go to the help menu and choose Software Updates...:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/7-software-updates.jpg]
+
+In the window that pops up, click on the 'Available Software' tab.  This is the interface for installing plugins and extensions into Eclipse.  From the Available Software tab, click on the 'Add Site...' button.  A dialog box will pop up asking you for the Location.  Put in http://subclipse.tigris.org/update_1.4.x:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/8-add-site.jpg]
+
+Now that the site is added we want to actually install the plugin from the site.  There are two components that are required for the plugin to function: Core SVNKit Library and Subclipse itself.  Check both of these and click on the 'Install...' button:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/9-select-subclipse.jpg]
+
