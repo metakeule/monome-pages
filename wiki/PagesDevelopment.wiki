@@ -54,3 +54,13 @@ You'll be asked to confirm the items to install.  Click Next, accept the license
 On the next page keep 'Create a new repository location' selected and click Next.  When it asks for the URL, give it this URL:
 
 http://monome-pages.googlecode.com/svn/trunk/
+
+[http://www.post-digital.net/~phortran/pages/development-manual/11-pages-svn.jpg]
+
+The next screen will show you a hierarchical view of the code repository, starting with the top-level folder named 'monome-pages'.  Click to highlight the monome-pages folder and click Next.  You will see a Check Out As window, keep all the defaults the same and click on Finish:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/12-check-out-as.jpg]
+
+You are now ready to start developing and testing.  You should see a new entry on the left entitled monome-pages, if you expand that you'll see src and doc, and if you expand src and org.monome.pages underneath it you'll see the Pages source code:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/13-code-view.jpg]
