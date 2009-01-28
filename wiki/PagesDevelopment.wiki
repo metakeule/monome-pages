@@ -39,11 +39,11 @@ You'll now be in the main Eclipse environment.  The first thing you need to do i
 
 [http://www.post-digital.net/~phortran/pages/development-manual/7-software-updates.jpg]
 
-In the window that pops up, click on the 'Available Software' tab.  This is the interface for installing plugins and extensions into Eclipse.  From the Available Software tab, click on the 'Add Site...' button.  A dialog box will pop up asking you for the Location.  Put in http://subclipse.tigris.org/update_1.4.x:
+In the window that pops up, click on the 'Available Software' tab.  This is the interface for installing plugins and extensions into Eclipse.  From the Available Software tab, click on the 'Add Site...' button.  A dialog box will pop up asking you for the Location.  Put in http://subclipse.tigris.org/update_1.2.x:
 
 [http://www.post-digital.net/~phortran/pages/development-manual/8-add-site.jpg]
 
-Now that the site is added we want to actually install the plugin from the site.  There are two components that are required for the plugin to function: Core SVNKit Library and Subclipse itself.  Check both of these and click on the 'Install...' button:
+Now that the site is added we want to actually install the plugin from the site.  You'll also see the URL you just entered in the list.  Click to expand it and select the Subclipse Plugin.  When that has been selected click on the 'Install...' button:
 
 [http://www.post-digital.net/~phortran/pages/development-manual/9-select-subclipse.jpg]
 
