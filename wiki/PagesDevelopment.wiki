@@ -47,3 +47,10 @@ Now that the site is added we want to actually install the plugin from the site.
 
 [http://www.post-digital.net/~phortran/pages/development-manual/9-select-subclipse.jpg]
 
+You'll be asked to confirm the items to install.  Click Next, accept the license terms, and click on Finish.  When it finishes installing, it will ask you to restart Eclipse for the changes to take effect.  Choose Yes to restart Eclipse.  Now you're ready to pull down the code.  First, create a new project by going to the File menu -> New -> Project... You will be see the new project wizard.  Expand the SVN folder and choose Checkout Projects from SVN and click Next:
+
+[http://www.post-digital.net/~phortran/pages/development-manual/10-new-project.jpg]
+
+On the next page keep 'Create a new repository location' selected and click Next.  When it asks for the URL, give it this URL:
+
+http://monome-pages.googlecode.com/svn/trunk/
