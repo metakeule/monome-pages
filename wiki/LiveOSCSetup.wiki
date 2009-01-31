@@ -31,3 +31,15 @@
 [http://www.post-digital.net/~phortran/pages/liveosc/7-pages_osc_settings.jpg]
 
 That's it! You can now create an Ableton Clip Launcher page to try it out.
+
+If you are getting runtime errors when you select LiveOSC in Ableton:
+
+I got the runtime error because the c:\python22\lib folder wasn't in the PYTHONPATH when live was running its scripts.
+
+Setting the PYTHONPATH fixed it.
+
+control panel -> system -> advanced tab -> environment variables button.
+
+Either edit your current PYTHONPATH, or add a new environment variable, and call it that.
+
+Make its value: [c:\python22;c:\python22\lib] (without the square brackets). Not sure if you strictly need both paths, but it works.
