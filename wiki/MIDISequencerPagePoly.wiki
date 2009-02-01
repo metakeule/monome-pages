@@ -10,7 +10,7 @@ The MIDI Sequencer page Poly is a polyphonic version of the great Midi Sequencer
   * length, trigger mode (gate / toggle), hold mode, octave+2 mode,  and tempo*2 can be differents for each bank
 
 
-
+Video tutorial is here http://www.vimeo.com/3013717
 
 == Sequence Mode ==
 
