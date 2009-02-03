@@ -43,6 +43,8 @@ public interface Page {
 	 * @param value The type of event (1 = button press, 0 = button release)
 	 */
 	public void handlePress(int x, int y, int value);
+	
+	public void handleADC(int adcNum, float value);
 
 	/**
 	 * Called whenever the monome needs to be redrawn from the current page state.  Should

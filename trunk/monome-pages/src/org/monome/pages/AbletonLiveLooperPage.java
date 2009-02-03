@@ -263,8 +263,9 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	public void playClip(int track, int clip) {
 		this.monome.configuration.getAbletonControl().playClip(track, clip);
 		if (this.clipState[track][clip] == CLIP_STATE_EMPTY) {
-			int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) + 
-					           (((96.0 - this.numTicks) * 2.0 * ((60000.0 / (double) this.tempo)) / 96)));
+			//int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) + 
+			//		           (((96.0 - this.numTicks) * 2.0 * ((60000.0 / (double) this.tempo)) / 96)));
+			int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) - 100.0);
 			AbletonClipDelay acd = new AbletonClipDelay(delay, track, clip, this.monome.configuration);
 			new Thread(acd).start();
 		}
@@ -491,5 +492,10 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
 	}
 }

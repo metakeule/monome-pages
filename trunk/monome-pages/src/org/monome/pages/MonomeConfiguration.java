@@ -121,6 +121,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	
 	private String[] quantizationOptions = {"1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/48", "1/96"};
 
+	private int tickNum = 0;
+
 	/**
 	 * @param configuration The main Configuration object
 	 * @param index The index of this monome
@@ -359,7 +361,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (redrawPanel == true) {
 			if (this.curPanel != null) {
 				this.curPanel.setVisible(false);
-				this.remove(this.curPanel);
+				//this.remove(this.curPanel);
 			}
 			this.curPanel = page.getPanel();
 			this.curPanel.setVisible(true);
@@ -555,6 +557,17 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pages.get(curPage).handlePress(x, y, value);
 		}
 	}
+	
+	public void handleADC(int adcNum, float value) {
+		// if we have no pages then dont handle any adc events
+		if (this.pages.size() == 0) {
+			return;
+		}
+		
+		for (int i=0; i < this.pages.size(); i++) {
+			this.pages.get(i).handleADC(adcNum, value);
+		}
+	}
 
 	public void drawPatternState() {
 		for (int x=0; x < this.sizeX; x++) {
@@ -673,8 +686,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pages.get(i).handleTick();
 			this.patternBanks.get(i).handleTick();
 		}
-		if (this.pageChangeMode == 1) {
+		if (this.pageChangeMode == 1 && this.tickNum % 12 == 0) {			
 			this.drawPatternState();
+		}
+		this.tickNum++;
+		if (this.tickNum == 96) {
+			this.tickNum = 0;
 		}
 	}
 
@@ -686,6 +703,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pages.get(i).handleReset();
 			this.patternBanks.get(i).handleReset();
 		}
+		this.tickNum = 0;
 	}
 
 	/**
