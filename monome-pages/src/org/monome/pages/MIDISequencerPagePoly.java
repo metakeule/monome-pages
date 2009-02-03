@@ -1971,4 +1971,10 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	public void clearPanel() {
 		this.panel = null;
 	}
+
+
+	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
 }

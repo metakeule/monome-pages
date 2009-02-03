@@ -510,4 +510,9 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+
+	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -204,4 +204,9 @@ public class PageTemplate implements Page, ActionListener {
 		this.index = index;
 	}
 
+	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

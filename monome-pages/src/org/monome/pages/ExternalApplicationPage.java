@@ -301,6 +301,21 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			e.printStackTrace();
 		}
 	}
+	
+	public void handleADC(int adcNum, float value) {
+		if (this.oscOut == null) {
+			return;
+		}
+		Object args[] = new Object[2];
+		args[0] = new Integer(adcNum);
+		args[1] = new Float(value);
+		OSCMessage msg = new OSCMessage(this.prefix + "/adc", args);
+		try {
+			this.oscOut.send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handleReset()

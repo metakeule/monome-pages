@@ -505,6 +505,7 @@ public class Configuration implements Receiver {
 			}
 
 			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
+			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
 			this.monomeSerialOSCPortIn.startListening();
 			monome.clearMonome();
 		} catch (SocketException e) {
