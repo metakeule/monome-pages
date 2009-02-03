@@ -3,6 +3,7 @@
 1. Start monomeserial
 
 2. Go to Audio Midi preferences and make sure IAC device is online
+
 [http://www.post-digital.net/~phortran/pages/pages-logic/1-iac.jpg]
 
 3. Start Pages - set up a new configuration, choose IAC bus as output and input. (At this point I also normally add the pages that I want but this can be done later - as an example though I will set up 3 midi sequencer pages transmitting midi on 3 different channels)
