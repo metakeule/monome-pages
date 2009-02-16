@@ -27,6 +27,8 @@ import java.awt.event.ActionEvent;
 import javax.sound.midi.MidiMessage;
 import javax.swing.JPanel;
 
+import org.w3c.dom.Element;
+
 /**
  * The Page interface.  All pages in the application must implement this interface.
  * 
@@ -34,7 +36,6 @@ import javax.swing.JPanel;
  *
  */
 public interface Page {
-
 	/**
 	 * Called whenever a press event is received on the monome this page belongs to.
 	 * 
@@ -115,6 +116,12 @@ public interface Page {
 	 * @return true if the LED cache should be disabled
 	 */
 	public boolean getCacheDisabled();
+	
+	/**
+	 * Configure this page instance from the configuration file
+	 * @param pageEl
+	 */
+	public void configure(Element pageElement);
 
 	/**
 	 * Should handle any cleanup needed when the page is destroyed (close open OSC ports, etc.)

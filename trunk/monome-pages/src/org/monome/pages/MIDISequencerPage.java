@@ -43,6 +43,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -66,7 +69,6 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  */
 public class MIDISequencerPage implements Page, ActionListener {
-
 	/**
 	 * The MonomeConfiguration that this page belongs to
 	 */
@@ -995,7 +997,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 	public String toXml() {
 		StringBuffer xml = new StringBuffer();
 		int holdmode = 0;
-		xml.append("    <page>\n");
 		xml.append("      <name>MIDI Sequencer</name>\n");
 		if (this.getHoldModeCB().isSelected() == true) {
 			holdmode = 1;
@@ -1016,7 +1017,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 			}
 			xml.append("</sequence>\n");
 		}
-		xml.append("    </page>\n");
 		return xml.toString();
 	}
 
@@ -1537,5 +1537,48 @@ public class MIDISequencerPage implements Page, ActionListener {
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void configure(Element pageElement) {
+		NodeList modeNL = pageElement.getElementsByTagName("holdmode");
+		Element el = (Element) modeNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String holdmode = ((Node) nl.item(0)).getNodeValue();
+			this.setHoldMode(holdmode);
+		}
+		
+		NodeList bankNL = pageElement.getElementsByTagName("banksize");
+		el = (Element) bankNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String banksize = ((Node) nl.item(0)).getNodeValue();
+			this.setBankSize(Integer.parseInt(banksize));
+		}
+		
+		NodeList channelNL = pageElement.getElementsByTagName("midichannel");
+		el = (Element) channelNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String midiChannel = ((Node) nl.item(0)).getNodeValue();
+			this.setMidiChannel(midiChannel);
+		}
+		
+		NodeList rowNL = pageElement.getElementsByTagName("row");
+		for (int l=0; l < rowNL.getLength(); l++) {
+			el = (Element) rowNL.item(l);
+			NodeList nl = el.getChildNodes();
+			String midiNote = ((Node) nl.item(0)).getNodeValue();
+			this.setNoteValue(l, Integer.parseInt(midiNote));
+		}
+
+		NodeList seqNL = pageElement.getElementsByTagName("sequence");
+		for (int l=0; l < seqNL.getLength(); l++) {
+			el = (Element) seqNL.item(l);
+			NodeList nl = el.getChildNodes();
+			String sequence = ((Node) nl.item(0)).getNodeValue();
+			this.setSequence(l, sequence);
+		}
+		this.redrawMonome();		
 	}
 }

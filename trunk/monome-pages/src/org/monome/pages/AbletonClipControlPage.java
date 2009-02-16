@@ -40,8 +40,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.w3c.dom.Element;
 
-import com.cloudgarden.layout.AnchorConstraint;
 import com.illposed.osc.OSCMessage;
 
 /**
@@ -578,9 +578,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		}*/
 
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>Ableton Clip Control</name>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 
@@ -690,6 +688,12 @@ public class AbletonClipControlPage implements ActionListener, Page {
 
 
 	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void configure(Element pageElement) {
 		// TODO Auto-generated method stub
 		
 	}

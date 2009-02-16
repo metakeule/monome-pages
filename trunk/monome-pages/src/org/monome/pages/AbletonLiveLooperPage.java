@@ -32,6 +32,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.w3c.dom.Element;
+
 import com.illposed.osc.OSCMessage;
 
 /**
@@ -403,11 +405,9 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 		}
 		
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>Ableton Live Looper</name>\n";
 		xml += "      <disablearm>" + disableArm + "</disablearm>\n";
 		xml += "      <disablestop>" + disableStop + "</disablestop>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 	
@@ -495,6 +495,11 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	}
 
 	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void configure(Element pageElement) {
 		// TODO Auto-generated method stub
 		
 	}

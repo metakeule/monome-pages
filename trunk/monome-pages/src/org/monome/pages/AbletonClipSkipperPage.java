@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Element;
 
 /**
  * The Template page, a good starting point for creating your own pages.  
@@ -266,10 +267,8 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 */
 	public String toXml() {
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>Ableton Clip Skipper</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 
@@ -296,6 +295,11 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	}
 
 	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void configure(Element pageElement) {
 		// TODO Auto-generated method stub
 		
 	}
