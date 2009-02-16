@@ -102,7 +102,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	/**
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
-	private String options[] = new String[11];
+	private String options[];
 
 	/**
 	 * The current page panel being displayed 
@@ -134,18 +134,19 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		// call the parent's constructor, build the window, initialize the options dropdown choices
 		super(prefix, true, false, true, true);
 		this.clearMonome();
-
-		this.options[0] = "MIDI Sequencer";
-		this.options[1] = "MIDI Keyboard";
-		this.options[2] = "MIDI Faders";
-		this.options[3] = "MIDI Triggers";
-		this.options[4] = "External Application";
-		this.options[5] = "Ableton Clip Launcher";
-		this.options[6] = "Ableton Clip Skipper";
-		this.options[7] = "Ableton Live Looper";
-		this.options[8] = "Machine Drum Interface";
-		this.options[9] = "Ableton Clip Control";
-		this.options[10] = "MIDI Sequencer Poly";
+		
+		this.options = PagesRepository.getPageNames();
+//		this.options[0] = "MIDI Sequencer";
+//		this.options[1] = "MIDI Keyboard";
+//		this.options[2] = "MIDI Faders";
+//		this.options[3] = "MIDI Triggers";
+//		this.options[4] = "External Application";
+//		this.options[5] = "Ableton Clip Launcher";
+//		this.options[6] = "Ableton Clip Skipper";
+//		this.options[7] = "Ableton Live Looper";
+//		this.options[8] = "Machine Drum Interface";
+//		this.options[9] = "Ableton Clip Control";
+//		this.options[10] = "MIDI Sequencer Poly";
 		
 		this.configuration = configuration;
 		this.prefix = prefix;
@@ -163,50 +164,13 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	/**
 	 * Adds a new page to this monome
 	 * 
-	 * @param pageName The name of the page to add
+	 * @param className The class name of the page to add
 	 * @return The new Page object
 	 */
-	public Page addPage(String pageName) {
+	public Page addPage(String className) {
 		Page page;
-		if (pageName.compareTo("MIDI Sequencer") == 0) {
-			page = new MIDISequencerPage(this, this.numPages);
-		} 
-		else if (pageName.compareTo("MIDI Keyboard") == 0) {
-			page = new MIDIKeyboardPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("MIDI Faders") == 0) {
-			page = new MIDIFadersPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("MIDI Triggers") == 0) {
-			page = new MIDITriggersPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("External Application") == 0) {
-			page = new ExternalApplicationPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("Ableton Clip Launcher") == 0) {
-			page = new AbletonClipLauncherPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("Ableton Clip Skipper") == 0) {
-			page = new AbletonClipSkipperPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("Ableton Live Looper") == 0) {
-			page = new AbletonLiveLooperPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("Machine Drum Interface") == 0) {
-			page = new MachineDrumInterfacePage(this, this.numPages);
-		}
-		else if (pageName.compareTo("Ableton Clip Control") == 0) {
-			page = new AbletonClipControlPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("MIDI Keyboard Julienb (work in progress)") == 0) {
-			page = new MIDIKeyboardJulienBPage(this, this.numPages);
-		}
-		else if (pageName.compareTo("MIDI Sequencer Poly") == 0) {
-			page = new MIDISequencerPagePoly(this, this.numPages);
-		}
-		else {
-			return null;
-		}
+
+		page = PagesRepository.getPageInstance(className, this, this.numPages);
 		this.pages.add(this.numPages, page);
 		this.switchPage(page, this.numPages, true);
 
@@ -219,6 +183,58 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		return page;
 	}
 
+	/**
+	 * Adds a new page to this monome.
+	 * only for compatibility with previous versions.
+	 * use addPage(String pageName) when possible.
+	 * 
+	 * @param pageName The name of the page to add
+	 * @return The new Page object
+	 * 
+	 */
+	public Page addPageByName(String pageName) {
+		Page page = null;
+		if (pageName.compareTo("MIDI Sequencer") == 0) {
+			page = addPage("org.monome.pages.MIDISequencerPage");
+		} 
+		else if (pageName.compareTo("MIDI Keyboard") == 0) {
+			page = addPage("org.monome.pages.MIDIKeyboardPage");
+		}
+		else if (pageName.compareTo("MIDI Faders") == 0) {
+			page = addPage("org.monome.pages.MIDIFadersPage");
+		}
+		else if (pageName.compareTo("MIDI Triggers") == 0) {
+			page = addPage("org.monome.pages.MIDITriggersPage");
+		}
+		else if (pageName.compareTo("External Application") == 0) {
+			page = addPage("org.monome.pages.ExternalApplicationPage");
+		}
+		else if (pageName.compareTo("Ableton Clip Launcher") == 0) {
+			page = addPage("org.monome.pages.AbletonClipLauncherPage");
+		}
+		else if (pageName.compareTo("Ableton Clip Skipper") == 0) {
+			page = addPage("org.monome.pages.AbletonClipSkipperPage");
+		}
+		else if (pageName.compareTo("Ableton Live Looper") == 0) {
+			page = addPage("org.monome.pages.AbletonLiveLooperPage");
+		}
+		else if (pageName.compareTo("Machine Drum Interface") == 0) {
+			page = addPage("org.monome.pages.MachineDrumInterfacePage");
+		}
+		else if (pageName.compareTo("Ableton Clip Control") == 0) {
+			page = addPage("org.monome.pages.AbletonClipControlPage");
+		}
+		else if (pageName.compareTo("MIDI Keyboard Julienb (work in progress)") == 0) {
+			page = addPage("org.monome.pages.MIDIKeyboardJulienBPage");
+		}
+		else if (pageName.compareTo("MIDI Sequencer Poly") == 0) {
+			page = addPage("org.monome.pages.MidiSequencerPagePoly");
+		}
+		
+		return page;
+	}
+	
+	
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -920,7 +936,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
 		for (int i=0; i < this.numPages; i++) {
 			if (this.pages.get(i).toXml() != null) {
+				xml += "    <page class=\"" + this.pages.get(i).getClass().getName() + "\">\n";
 				xml += this.pages.get(i).toXml();
+				xml += "    </page>\n";
 			}
 		}
 		for (int i=0; i < this.numPages; i++) {

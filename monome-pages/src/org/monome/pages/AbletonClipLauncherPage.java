@@ -32,6 +32,10 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import com.illposed.osc.OSCMessage;
 
 /**
@@ -420,11 +424,9 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		}
 		
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>Ableton Clip Launcher</name>\n";
 		xml += "      <disablearm>" + disableArm + "</disablearm>\n";
 		xml += "      <disablestop>" + disableStop + "</disablestop>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 	
@@ -514,5 +516,22 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void configure(Element pageElement) {
+		NodeList armNL = pageElement.getElementsByTagName("disablearm");
+		Element el = (Element) armNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String disableArm = ((Node) nl.item(0)).getNodeValue();
+			this.setDisableArm(disableArm);
+		}
+		NodeList stopNL = pageElement.getElementsByTagName("disablestop");
+		el = (Element) stopNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String disableStop = ((Node) nl.item(0)).getNodeValue();
+			this.setDisableStop(disableStop);
+		}		
 	}
 }

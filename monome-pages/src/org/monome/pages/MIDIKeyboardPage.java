@@ -37,6 +37,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Element;
 
 /**
  * The MIDI Faders page.  Usage information is available at:
@@ -497,10 +498,8 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public String toXml() {
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>MIDI Keyboard</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 
@@ -564,6 +563,11 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	}
 
 	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void configure(Element pageElement) {
 		// TODO Auto-generated method stub
 		
 	}

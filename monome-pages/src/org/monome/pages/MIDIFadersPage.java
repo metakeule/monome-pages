@@ -36,6 +36,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -309,13 +312,11 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 */
 	public String toXml() {
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>MIDI Faders</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <delayamount>" + this.delayAmount + "</delayamount>\n";
 		xml += "      <midichannel>" + (this.midiChannel + 1) + "</midichannel>\n";
 		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 
@@ -445,6 +446,33 @@ public class MIDIFadersPage implements Page, ActionListener {
 
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
+		
+	}
+
+	public void configure(Element pageElement) {
+		NodeList rowNL = pageElement.getElementsByTagName("delayamount");
+		Element el = (Element) rowNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String delayAmount = ((Node) nl.item(0)).getNodeValue();
+			this.setDelayAmount(Integer.parseInt(delayAmount));
+		}
+		
+		NodeList channelNL = pageElement.getElementsByTagName("midichannel");
+		el = (Element) channelNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String midiChannel = ((Node) nl.item(0)).getNodeValue();
+			this.setMidiChannel(midiChannel);
+		}
+
+		NodeList ccOffsetNL = pageElement.getElementsByTagName("ccoffset");
+		el = (Element) ccOffsetNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String ccOffset = ((Node) nl.item(0)).getNodeValue();
+			this.setCCOffset(ccOffset);
+		}
 		
 	}
 	

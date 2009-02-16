@@ -36,6 +36,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.cloudgarden.layout.AnchorConstraint;
 import com.cloudgarden.layout.AnchorLayout;
@@ -401,11 +404,9 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 */
 	public String toXml() {
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>Machine Drum Interface</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <speed>" + this.speed + "</speed>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 
@@ -561,6 +562,16 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void configure(Element pageElement) {
+		NodeList rowNL = pageElement.getElementsByTagName("speed");
+		Element el = (Element) rowNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String speed = ((Node) nl.item(0)).getNodeValue();
+			this.setSpeed(Integer.parseInt(speed));
+		}		
 	}
 	
 }

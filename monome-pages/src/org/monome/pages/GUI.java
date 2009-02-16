@@ -560,14 +560,19 @@ public class GUI implements ActionListener {
 						Node pageNode = pageNL.item(j);
 						if (pageNode.getNodeType() == Node.ELEMENT_NODE) {
 							Element pageElement = (Element) pageNode;
+							String pageClazz = pageElement.getAttribute("class");
 
 							// all pages have a name
 							nl = pageElement.getElementsByTagName("name");
 							el = (Element) nl.item(0);
 							nl = el.getChildNodes();
 							String pageName = ((Node) nl.item(0)).getNodeValue();
-							System.out.println("Page name is " + pageName);
-							Page page = monomeFrame.addPage(pageName);
+							System.out.println("Page name is " + pageName);		
+							Page page;
+							if (pageClazz == null || pageClazz.length() == 0)
+								page = monomeFrame.addPageByName(pageName);
+							else
+								page = monomeFrame.addPage(pageClazz);
 
 							// most pages have midi outputs
 							NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
@@ -578,223 +583,9 @@ public class GUI implements ActionListener {
 								System.out.println("selectedmidioutport is " + midioutport);
 								page.addMidiOutDevice(midioutport);
 							}
-
-							// page-specific configuration for external application page
-							if (pageName.equals("External Application")) {
-								ExternalApplicationPage extpage = (ExternalApplicationPage) page;
-
-								nl = pageElement.getElementsByTagName("prefix");
-								el = (Element) nl.item(0);
-								nl = el.getChildNodes();
-								String extPrefix = ((Node) nl.item(0)).getNodeValue();
-								extpage.setPrefix(extPrefix);
-
-								nl = pageElement.getElementsByTagName("oscinport");
-								el = (Element) nl.item(0);
-								nl = el.getChildNodes();
-								String extInPort = ((Node) nl.item(0)).getNodeValue();
-								extpage.setInPort(extInPort);
-
-								nl = pageElement.getElementsByTagName("oscoutport");
-								el = (Element) nl.item(0);
-								nl = el.getChildNodes();
-								String extOutPort = ((Node) nl.item(0)).getNodeValue();
-								extpage.setOutPort(extOutPort);
-
-								nl = pageElement.getElementsByTagName("hostname");
-								el = (Element) nl.item(0);
-								nl = el.getChildNodes();
-								String extHostname = ((Node) nl.item(0)).getNodeValue();
-								extpage.setHostname(extHostname);
-
-								nl = pageElement.getElementsByTagName("disablecache");
-								el = (Element) nl.item(0);
-								nl = el.getChildNodes();
-								String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
-								extpage.setCacheDisabled(cacheDisabled);
-
-								extpage.initOSC();
-							}
-
-							// page-specific configuration for midi sequencer page
-							if (pageName.equals("MIDI Sequencer")) {
-								// configure midi notes / rows
-								MIDISequencerPage seqpage = (MIDISequencerPage) page;
-
-								NodeList modeNL = pageElement.getElementsByTagName("holdmode");
-								el = (Element) modeNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String holdmode = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setHoldMode(holdmode);
-								}
-								
-								NodeList bankNL = pageElement.getElementsByTagName("banksize");
-								el = (Element) bankNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String banksize = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setBankSize(Integer.parseInt(banksize));
-								}
-								
-								NodeList channelNL = pageElement.getElementsByTagName("midichannel");
-								el = (Element) channelNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String midiChannel = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setMidiChannel(midiChannel);
-								}
-								
-								NodeList rowNL = pageElement.getElementsByTagName("row");
-								for (int l=0; l < rowNL.getLength(); l++) {
-									el = (Element) rowNL.item(l);
-									nl = el.getChildNodes();
-									String midiNote = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setNoteValue(l, Integer.parseInt(midiNote));
-								}
-
-								NodeList seqNL = pageElement.getElementsByTagName("sequence");
-								for (int l=0; l < seqNL.getLength(); l++) {
-									el = (Element) seqNL.item(l);
-									nl = el.getChildNodes();
-									String sequence = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setSequence(l, sequence);
-								}
-								seqpage.redrawMonome();
-							}
-
-							// page-specific configuration for midi sequencer page
-							if (pageName.equals("MIDI Sequencer Poly")) {
-								// configure midi notes / rows
-								MIDISequencerPagePoly seqpage = (MIDISequencerPagePoly) page;
-
-								NodeList modeNL = pageElement.getElementsByTagName("holdmode");
-								el = (Element) modeNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String holdmode = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setHoldMode(holdmode);
-								}
-								
-								NodeList bankNL = pageElement.getElementsByTagName("banksize");
-								el = (Element) bankNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String banksize = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setBankSize(Integer.parseInt(banksize));
-								}
-								
-								NodeList channelNL = pageElement.getElementsByTagName("midichannel");
-								el = (Element) channelNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String midiChannel = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setMidiChannel(midiChannel);
-								}
-								
-								NodeList rowNL = pageElement.getElementsByTagName("row");
-								for (int l=0; l < rowNL.getLength(); l++) {
-									el = (Element) rowNL.item(l);
-									nl = el.getChildNodes();
-									String midiNote = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setNoteValue(l, Integer.parseInt(midiNote));
-								}
-
-								NodeList seqNL = pageElement.getElementsByTagName("sequence");
-								for (int l=0; l < seqNL.getLength(); l++) {
-									el = (Element) seqNL.item(l);
-									nl = el.getChildNodes();
-									String sequence = ((Node) nl.item(0)).getNodeValue();
-									seqpage.setSequence(l, sequence);
-								}
-								seqpage.redrawMonome();
-							}	
 							
-							// page-specific configuration for midi triggers page
-							if (pageName.equals("MIDI Triggers")) {
-								// configure midi notes / rows
-								MIDITriggersPage trigpage = (MIDITriggersPage) page;
-
-								NodeList modeNL = pageElement.getElementsByTagName("mode");
-								el = (Element) modeNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String mode = ((Node) nl.item(0)).getNodeValue();
-									trigpage.setMode(mode);
-								}
-
-								NodeList seqNL = pageElement.getElementsByTagName("toggles");
-								for (int l=0; l < seqNL.getLength(); l++) {
-									el = (Element) seqNL.item(l);
-									nl = el.getChildNodes();
-									String mode = ((Node) nl.item(0)).getNodeValue();
-									if (mode.equals("on")) {
-										trigpage.enableToggle(l);
-									}
-								}
-								trigpage.redrawMonome();
-							}
-
-							// page-specific configuration for midi faders page
-							if (pageName.equals("MIDI Faders")) {
-								MIDIFadersPage faderpage = (MIDIFadersPage) page;
-								NodeList rowNL = pageElement.getElementsByTagName("delayamount");
-								el = (Element) rowNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String delayAmount = ((Node) nl.item(0)).getNodeValue();
-									faderpage.setDelayAmount(Integer.parseInt(delayAmount));
-								}
-								
-								NodeList channelNL = pageElement.getElementsByTagName("midichannel");
-								el = (Element) channelNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String midiChannel = ((Node) nl.item(0)).getNodeValue();
-									faderpage.setMidiChannel(midiChannel);
-								}
-
-								NodeList ccOffsetNL = pageElement.getElementsByTagName("ccoffset");
-								el = (Element) ccOffsetNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String ccOffset = ((Node) nl.item(0)).getNodeValue();
-									faderpage.setCCOffset(ccOffset);
-								}
-
-							}
-
-							// page-specific configuration for machine drum interface page
-							if (pageName.equals("Machine Drum Interface")) {
-								MachineDrumInterfacePage mdpage = (MachineDrumInterfacePage) page;
-								NodeList rowNL = pageElement.getElementsByTagName("speed");
-								el = (Element) rowNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String speed = ((Node) nl.item(0)).getNodeValue();
-									mdpage.setSpeed(Integer.parseInt(speed));
-								}
-							}
-							
-							if (pageName.equals("Ableton Clip Launcher")) {
-								// configure midi notes / rows
-								AbletonClipLauncherPage ablepage = (AbletonClipLauncherPage) page;
-
-								NodeList armNL = pageElement.getElementsByTagName("disablearm");
-								el = (Element) armNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String disableArm = ((Node) nl.item(0)).getNodeValue();
-									ablepage.setDisableArm(disableArm);
-								}
-								NodeList stopNL = pageElement.getElementsByTagName("disablestop");
-								el = (Element) stopNL.item(0);
-								if (el != null) {
-									nl = el.getChildNodes();
-									String disableStop = ((Node) nl.item(0)).getNodeValue();
-									ablepage.setDisableStop(disableStop);
-								}
-							}
+							// page-specific configuration
+							page.configure(pageElement);							
 
 						}
 					}

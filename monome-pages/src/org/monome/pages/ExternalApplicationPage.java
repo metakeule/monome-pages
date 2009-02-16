@@ -37,6 +37,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
@@ -363,14 +367,12 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>External Application</name>\n";
 		xml += "      <prefix>" + this.prefix + "</prefix>\n";
 		xml += "      <oscinport>" + this.inPort + "</oscinport>\n";
 		xml += "      <oscoutport>" + this.outPort + "</oscoutport>\n";
 		xml += "      <hostname>" + this.hostname + "</hostname>\n";
 		xml += "      <disablecache>" + disableCache + "</disablecache>\n";
-		xml += "    </page>\n";
 		return xml;
 	}
 
@@ -536,5 +538,39 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	
 	public void setIndex(int index) {
 		this.index = index;
+	}
+
+	public void configure(Element pageElement) {
+		NodeList nl = pageElement.getElementsByTagName("prefix");
+		Element el = (Element) nl.item(0);
+		nl = el.getChildNodes();
+		String extPrefix = ((Node) nl.item(0)).getNodeValue();
+		this.setPrefix(extPrefix);
+
+		nl = pageElement.getElementsByTagName("oscinport");
+		el = (Element) nl.item(0);
+		nl = el.getChildNodes();
+		String extInPort = ((Node) nl.item(0)).getNodeValue();
+		this.setInPort(extInPort);
+
+		nl = pageElement.getElementsByTagName("oscoutport");
+		el = (Element) nl.item(0);
+		nl = el.getChildNodes();
+		String extOutPort = ((Node) nl.item(0)).getNodeValue();
+		this.setOutPort(extOutPort);
+
+		nl = pageElement.getElementsByTagName("hostname");
+		el = (Element) nl.item(0);
+		nl = el.getChildNodes();
+		String extHostname = ((Node) nl.item(0)).getNodeValue();
+		this.setHostname(extHostname);
+
+		nl = pageElement.getElementsByTagName("disablecache");
+		el = (Element) nl.item(0);
+		nl = el.getChildNodes();
+		String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
+		this.setCacheDisabled(cacheDisabled);
+
+		this.initOSC();		
 	}
 }

@@ -39,6 +39,9 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -399,7 +402,6 @@ public class MIDITriggersPage implements Page, ActionListener {
 		}
 
 		String xml = "";
-		xml += "    <page>\n";
 		xml += "      <name>MIDI Triggers</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";		
 		xml += "      <mode>" + mode + "</mode>\n";
@@ -412,7 +414,6 @@ public class MIDITriggersPage implements Page, ActionListener {
 			}
 			xml += "      <toggles>" + state + "</toggles>\n";
 		}
-		xml += "    </page>\n";
 		return xml;
 
 	}
@@ -621,5 +622,26 @@ public class MIDITriggersPage implements Page, ActionListener {
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void configure(Element pageElement) {
+		NodeList modeNL = pageElement.getElementsByTagName("mode");
+		Element el = (Element) modeNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String mode = ((Node) nl.item(0)).getNodeValue();
+			this.setMode(mode);
+		}
+
+		NodeList seqNL = pageElement.getElementsByTagName("toggles");
+		for (int l=0; l < seqNL.getLength(); l++) {
+			el = (Element) seqNL.item(l);
+			NodeList nl = el.getChildNodes();
+			String mode = ((Node) nl.item(0)).getNodeValue();
+			if (mode.equals("on")) {
+				this.enableToggle(l);
+			}
+		}
+		this.redrawMonome();		
 	}	
 }

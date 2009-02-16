@@ -30,6 +30,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.w3c.dom.Element;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -207,6 +208,10 @@ public class PageTemplate implements Page, ActionListener {
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void configure(Element page) {
+	
 	}
 
 }
