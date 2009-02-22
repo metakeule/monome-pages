@@ -70,7 +70,8 @@ public class AbletonOSCListener implements OSCListener {
 			Object[] args = msg.getArguments();
 			float tempo = ((Float) args[0]).floatValue();
 			int overdub = ((Integer) args[1]).intValue();
-			this.configuration.updateAbletonState(tempo, overdub);
+			int selectedScene = ((Integer) args[2]).intValue();
+			this.configuration.updateAbletonState(tempo, overdub, selectedScene);
 		}
 	}
 }

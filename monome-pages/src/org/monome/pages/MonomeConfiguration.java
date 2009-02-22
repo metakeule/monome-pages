@@ -425,11 +425,14 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			} else if (pages.get(i) instanceof AbletonClipControlPage) {
 				 AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
 				page.updateClipState(track, clip, state);
+			} else if (pages.get(i) instanceof AbletonSceneLauncherPage) {
+				AbletonSceneLauncherPage page = (AbletonSceneLauncherPage) pages.get(i);
+				page.updateClipState(track, clip, state);
 			}
 		}
 	}
 	
-	public void updateAbletonState(float tempo, int overdub) {
+	public void updateAbletonState(float tempo, int overdub, int selectedScene) {
 		if (this.pages.size() == 0) {
 			return;
 		}
@@ -437,15 +440,19 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonLiveLooperPage) {
 				AbletonLiveLooperPage page = (AbletonLiveLooperPage) pages.get(i);
-				page.updateAbletonState(tempo, overdub);
+				page.updateAbletonState(tempo, overdub, selectedScene);
 			}
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
-				page.updateAbletonState(tempo, overdub);
+				page.updateAbletonState(tempo, overdub, selectedScene);
 			}
 			if (pages.get(i) instanceof AbletonClipControlPage) {
 				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
-				page.updateAbletonState(tempo, overdub);
+				page.updateAbletonState(tempo, overdub, selectedScene);
+			}
+			if (pages.get(i) instanceof AbletonSceneLauncherPage) {
+				AbletonSceneLauncherPage page = (AbletonSceneLauncherPage) pages.get(i);
+				page.updateAbletonState(tempo, overdub, selectedScene);
 			}
 		}
 	}
@@ -468,11 +475,16 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				AbletonClipSkipperPage page = (AbletonClipSkipperPage) pages.get(i);
 				page.redrawMonome();
 			}
+			if (pages.get(i) instanceof AbletonSceneLauncherPage) {
+				AbletonSceneLauncherPage page = (AbletonSceneLauncherPage) pages.get(i);
+				page.redrawMonome();
+			}
 			
 			if (pages.get(i) instanceof AbletonClipControlPage) {
 				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
 				page.redrawMonome();
 			}
+			
 		}
 	}
 
@@ -500,9 +512,13 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
 				page.updateTrackState(track, armed);
 			}
+			if (pages.get(i) instanceof AbletonSceneLauncherPage) {
+				AbletonSceneLauncherPage page = (AbletonSceneLauncherPage) pages.get(i);
+				page.updateTrackState(track, armed);
+			}
 		}
 	}
-
+	
 	/**
 	 * Handles a press event from the monome.
 	 * 

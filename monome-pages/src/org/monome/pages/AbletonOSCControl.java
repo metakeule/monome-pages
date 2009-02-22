@@ -201,4 +201,15 @@ public class AbletonOSCControl implements AbletonControl {
 			e.printStackTrace();
 		}
 	}
+	
+	public void launchScene(int scene_num) {
+		Object args[] = new Object[1];
+		args[0] = new Integer(scene_num);
+		OSCMessage msg = new OSCMessage("/live/play/scene", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

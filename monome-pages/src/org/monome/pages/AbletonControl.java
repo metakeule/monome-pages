@@ -24,4 +24,6 @@ public interface AbletonControl {
 	
 	public void tempoDown(float tempo);
 	
+	public void launchScene(int scene_num);
+	
 }

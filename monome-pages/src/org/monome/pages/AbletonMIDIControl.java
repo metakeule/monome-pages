@@ -134,4 +134,15 @@ public class AbletonMIDIControl implements AbletonControl {
 			e.printStackTrace();
 		}
 	}
+
+	
+	public void launchScene(int scene_num) {
+		ShortMessage msg = new ShortMessage();
+		try {
+			msg.setMessage(ShortMessage.CONTROL_CHANGE, 0, 10, scene_num);
+			this.abletonReceiver.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
 }

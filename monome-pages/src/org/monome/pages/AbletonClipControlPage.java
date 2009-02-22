@@ -674,7 +674,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		return;
 	}
 
-	public void updateAbletonState(float tempo, int overdub) {
+	public void updateAbletonState(float tempo, int overdub, int selectedScene) {
 		this.tempo = tempo;
 	}
 	

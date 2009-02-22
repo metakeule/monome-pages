@@ -6,6 +6,7 @@ org.monome.pages.ExternalApplicationPage
 org.monome.pages.AbletonClipLauncherPage
 org.monome.pages.AbletonClipSkipperPage
 org.monome.pages.AbletonLiveLooperPage
+org.monome.pages.AbletonSceneLauncherPage
 org.monome.pages.MachineDrumInterfacePage
 org.monome.pages.AbletonClipControlPage
 org.monome.pages.MIDIKeyboardJulienBPage

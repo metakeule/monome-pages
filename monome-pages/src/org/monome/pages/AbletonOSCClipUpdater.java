@@ -64,11 +64,14 @@ public class AbletonOSCClipUpdater implements Runnable {
 
 		// query Ableton for the record armed/disarmed status of each track
 		OSCMessage msg2 = new OSCMessage("/live/track/info");
+		
+		OSCMessage msg3 = new OSCMessage("/live/scene/selected");
 
 		while (this.running) {
 			try {
 				this.abletonOscOut.send(msg);
 				this.abletonOscOut.send(msg2);
+				this.abletonOscOut.send(msg3);
 				// sleep for 300ms in between calls
 				Thread.sleep(100);
 				this.configuration.redrawAbletonPages();

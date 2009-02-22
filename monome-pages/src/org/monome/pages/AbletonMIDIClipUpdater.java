@@ -62,15 +62,10 @@ public class AbletonMIDIClipUpdater implements Runnable {
 		while (this.running) {
 			// sleep for 300ms in between calls
 			try {
-				
-				byte[] msg = {(byte) SysexMessage.SYSTEM_EXCLUSIVE, (byte) 0x10, (byte) 0x12, (byte) 0x15, (byte) 0x16};
-				SysexMessage sysexMessage = new SysexMessage();
-				sysexMessage.setMessage(msg, msg.length);
-				this.abletonReceiver.send(sysexMessage, -1);				
 				ShortMessage songStateMessage = new ShortMessage();
 				songStateMessage.setMessage(ShortMessage.CONTROL_CHANGE, 0, 0, 0);
 				this.abletonReceiver.send(songStateMessage, -1);
-				Thread.sleep(300);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (InvalidMidiDataException e) {

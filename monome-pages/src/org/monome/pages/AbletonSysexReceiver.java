@@ -39,12 +39,15 @@ public class AbletonSysexReceiver implements Receiver {
 		if (!(msg instanceof SysexMessage)) {
 			return;
 		}
-				
+						
 		if (data[1] == 125) {
 			byte[] bytes = {data[2], data[3]};
 			float tempo = (float) (this.midiToInt(bytes) / 50.0);
 			int overdub = data[4];
-			this.configuration.updateAbletonState(tempo, overdub);
+			byte[] sceneBytes = {data[5], data[6]};
+			int scene_num = this.midiToInt(sceneBytes);
+			System.out.println("scene num is " + scene_num);
+			this.configuration.updateAbletonState(tempo, overdub, scene_num);
 		}
 		
 		if (data[1] == 126) {
