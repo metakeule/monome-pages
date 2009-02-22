@@ -1,5 +1,5 @@
 /*
- *  AbletonClipPage.java
+ *  AbletonSceneLauncherPage.java
  * 
  *  Copyright (c) 2008, Tom Dinchak
  * 
@@ -46,7 +46,7 @@ import com.illposed.osc.OSCMessage;
  * @author Tom Dinchak
  *
  */
-public class AbletonClipLauncherPage implements ActionListener, Page {
+public class AbletonSceneLauncherPage implements ActionListener, Page {
 
 	/**
 	 * Reference to the MonomeConfiguration this page belongs to.
@@ -86,12 +86,12 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	/**
 	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
 	 */
-	private boolean[][] flashState = new boolean[50][250];
+	private boolean[][] flashState = new boolean[100][1000];
 
 	/**
 	 * tracksArmed[track_number] - The record armed/disarmed state of all tracks, true if the track is armed for recording.
 	 */
-	private boolean[] tracksArmed = new boolean[50];
+	private boolean[] tracksArmed = new boolean[100];
 	
 	/**
 	 * The amount to offset the monome display of the clips
@@ -118,11 +118,13 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 
 	private int overdub;
 
+	private int selectedScene = -1;
+
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index This page's index number
 	 */
-	public AbletonClipLauncherPage(MonomeConfiguration monome, int index) {
+	public AbletonSceneLauncherPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		this.monome.configuration.initAbleton();
@@ -154,7 +156,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#getName()
 	 */
 	public String getName() {
-		return "Ableton Clip Launcher";
+		return "Ableton Scene Launcher";
 	}
 
 	/* (non-Javadoc)
@@ -170,7 +172,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
+		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Scene Launcher");
 		panel.add(label);
 		
 		disableArmCB.setText("Disable Arm");
@@ -227,8 +229,31 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					this.abletonUndo();
 				}
 			} else {
+				// left hand column scene operations
+				if (x == 0) {
+					// launch a scene
+					if (y < (this.monome.sizeY - this.numEnabledRows)) {
+						int scene_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
+						this.launchScene(scene_num);
+					} else {
+						// prev scene
+						if (y == this.monome.sizeY - 2) {
+							// this is wacky because the script starts counting scenes at 1, while
+							// pages starts at 0.  i couldn't get liveosc to send me a packet with
+							// an argument equal to (int) 0 (wtf?) so i had to start at 1.
+							this.launchScene(selectedScene - 2);
+						} 
+						// next scene	
+						else if (y == this.monome.sizeY - 1) {
+							// this is wacky because the script starts counting scenes at 1, while
+							// pages starts at 0.  i couldn't get liveosc to send me a packet with
+							// an argument equal to (int) 0 (wtf?) so i had to start at 1.
+							this.launchScene(selectedScene);
+						}
+					}
+				}
 				// if this is the bottom row then stop track number x
-				if (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false) {
+				else if (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
 					this.stopTrack(track_num);
 					this.viewTrack(track_num);
@@ -257,6 +282,10 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				}
 			}
 		}
+	}
+
+	private void launchScene(int scene_num) {
+		this.monome.configuration.getAbletonControl().launchScene(scene_num);
 	}
 
 	/**
@@ -355,23 +384,38 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
 	public void redrawMonome() {
+		for (int scene = 0; scene < (this.monome.sizeY - this.numEnabledRows); scene++) {
+			int scene_num = scene + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows)) + 1;
+			if (scene_num == this.selectedScene) {
+				if (this.flashState[0][scene] == true) {
+					this.flashState[0][scene] = false;
+					this.monome.led(0, scene, 1, this.index);
+				} else {
+					this.flashState[0][scene] = true;
+					this.monome.led(0, scene, 0, this.index);
+				}
+			} else {
+				this.monome.led(0, scene, 0, this.index);
+			}
+		}
+		
 		// redraw the upper part of the monome (the clip state)
-		for (int track = 0; track < this.monome.sizeX - 1; track++) {
+		for (int track = 0; track < this.monome.sizeX - 2; track++) {
 			for (int clip = 0; clip < (this.monome.sizeY - this.numEnabledRows); clip++) {
 				int clip_num = clip + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-				int track_num = track + (this.trackOffset * (this.monome.sizeX - 1));
+				int track_num = track + (this.trackOffset * (this.monome.sizeX - 2));
 				if (this.clipState[track_num][clip_num] == CLIP_STATE_PLAYING) {
-					if (this.flashState[track][clip] == true) {
-						this.flashState[track][clip] = false;
-						this.monome.led(track, clip, 1, this.index);
+					if (this.flashState[track + 1][clip] == true) {
+						this.flashState[track + 1][clip] = false;
+						this.monome.led(track + 1, clip, 1, this.index);
 					} else {
-						this.flashState[track][clip] = true;
-						this.monome.led(track, clip, 0, this.index);
+						this.flashState[track + 1][clip] = true;
+						this.monome.led(track + 1, clip, 0, this.index);
 					}
 				} else if (this.clipState[track_num][clip_num] == CLIP_STATE_STOPPED) {
-					this.monome.led(track, clip, 1, this.index);
+					this.monome.led(track + 1, clip, 1, this.index);
 				} else if (this.clipState[track_num][clip_num] == CLIP_STATE_EMPTY) {
-					this.monome.led(track, clip, 0, this.index);
+					this.monome.led(track + 1, clip, 0, this.index);
 				}
 			}
 		}
@@ -381,16 +425,16 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			for (int i = 0; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
 				if (this.tracksArmed[track_num] == true) {
-					this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 1, this.index);
+					this.monome.led(i + 1, this.monome.sizeY - this.numEnabledRows, 1, this.index);
 				} else {
-					this.monome.led(i, this.monome.sizeY - this.numEnabledRows, 0, this.index);
+					this.monome.led(i + 1, this.monome.sizeY - this.numEnabledRows, 0, this.index);
 				}
 			}
 		}
 
 		// clear the bottom row, stop buttons are never on
 		if (this.disableStopCB.isSelected() == false) {
-			for (int i=0; i < this.monome.sizeX; i++) {
+			for (int i=1; i < this.monome.sizeX; i++) {
 				this.monome.led(i, this.monome.sizeY - 1, 0, this.index);
 			}
 		}
@@ -424,7 +468,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		}
 		
 		String xml = "";
-		xml += "      <name>Ableton Clip Launcher</name>\n";
+		xml += "      <name>Ableton Scene Launcher</name>\n";
 		xml += "      <disablearm>" + disableArm + "</disablearm>\n";
 		xml += "      <disablestop>" + disableStop + "</disablestop>\n";
 		return xml;
@@ -503,6 +547,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			this.monome.led(this.monome.sizeX - 1, 6, overdub, this.index);
 		}
 		this.overdub = overdub;
+		
+		this.selectedScene = selectedScene;
 	}
 	
 	public void clearPanel() {

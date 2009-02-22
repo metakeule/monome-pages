@@ -610,12 +610,12 @@ public class Configuration implements Receiver {
 		}
 	}
 	
-	public void updateAbletonState(float tempo, int overdub) {
+	public void updateAbletonState(float tempo, int overdub, int selectedScene) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonState(tempo, overdub);
+			monomeConfigurations.get(i).updateAbletonState(tempo, overdub, selectedScene);
 		}
 	}
-
+	
 	/**
 	 * This is called by AbletonClipUpdater and passed along to all monomes, who pass it to
 	 * any Ableton Clip Launcher pages that belong to them.
@@ -754,5 +754,6 @@ public class Configuration implements Receiver {
 	public AbletonControl getAbletonControl() {
 		return this.abletonControl;
 	}
+
 
 }
