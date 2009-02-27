@@ -237,7 +237,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 						this.launchScene(scene_num);
 					} else {
 						// prev scene
-						if (y == this.monome.sizeY - 2) {
+						if (y == this.monome.sizeY - 2 && this.selectedScene >= 0) {
 							// this is wacky because the script starts counting scenes at 1, while
 							// pages starts at 0.  i couldn't get liveosc to send me a packet with
 							// an argument equal to (int) 0 (wtf?) so i had to start at 1.
@@ -254,14 +254,14 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 				}
 				// if this is the bottom row then stop track number x
 				else if (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					this.stopTrack(track_num);
 					this.viewTrack(track_num);
 				}
 				// if this is the 2nd from the bottom row then arm or disarm the track
 				else if ((y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableArmCB.isSelected() == false) ||
 						  y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == true && this.disableArmCB.isSelected() == false) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					if (this.tracksArmed[track_num] == false) {
 						this.armTrack(track_num);
 						this.tracksArmed[track_num] = true;
@@ -276,7 +276,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 				// otherwise play the clip
 				else {
 					int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					this.viewTrack(track_num);
 					this.playClip(track_num, clip_num);
 				}
