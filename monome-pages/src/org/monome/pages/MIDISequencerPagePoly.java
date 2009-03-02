@@ -2178,7 +2178,7 @@ globalRandomVelocityValue=0;*/
 	public String toXml() {
 		StringBuffer xml = new StringBuffer();
 		int holdmode = 0;
-		xml.append("    <page>\n");
+		//xml.append("    <page>\n");
 		xml.append("      <name>MIDI Sequencer Poly</name>\n");
 		if (this.getHoldModeCB().isSelected() == true) {
 			holdmode = 1;
@@ -2201,7 +2201,7 @@ globalRandomVelocityValue=0;*/
 			}
 			xml.append("</sequence>\n");
 		}
-		xml.append("    </page>\n");
+		//xml.append("    </page>\n");
 		return xml.toString();
 	}
 
