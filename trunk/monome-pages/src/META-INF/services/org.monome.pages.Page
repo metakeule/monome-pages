@@ -1,0 +1,12 @@
+org.monome.pages.AbletonClipControlPage
+org.monome.pages.AbletonClipLauncherPage
+org.monome.pages.AbletonClipSkipperPage
+org.monome.pages.AbletonLiveLooperPage
+org.monome.pages.AbletonSceneLauncherPage
+org.monome.pages.ExternalApplicationPage
+org.monome.pages.MachineDrumInterfacePage
+org.monome.pages.MIDIKeyboardPage
+org.monome.pages.MIDIFadersPage
+org.monome.pages.MIDISequencerPage
+org.monome.pages.MIDISequencerPagePoly
+org.monome.pages.MIDITriggersPage
