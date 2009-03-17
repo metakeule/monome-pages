@@ -189,7 +189,13 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void actionPerformed(ActionEvent e) {
 		// update the external application OSC configuration
-		if (e.getActionCommand().equals("Update Preferences")) {
+		if (e.getActionCommand().equals("Update Preferences")) {			
+			this.prefix = this.prefixTF.getText();
+			this.hostname = this.hostnameTF.getText();
+			this.inPort = Integer.parseInt(this.oscInTF.getText());
+			this.outPort = Integer.parseInt(this.oscOutTF.getText());
+			this.initOSC();
+			
 			this.ccOffset = Integer.parseInt(this.ccOffsetTF.getText());
 			this.ccADC[0] = this.ccOffset + 0;
 			this.ccADC[1] = this.ccOffset + 1;
@@ -204,12 +210,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 				this.addMidiOutDevice(this.midiDeviceName);
 			else if (!this.useMidi)
 				this.addMidiOutDevice(null);
-			
-			this.prefix = this.prefixTF.getText();
-			this.hostname = this.hostnameTF.getText();
-			this.inPort = Integer.parseInt(this.oscInTF.getText());
-			this.outPort = Integer.parseInt(this.oscOutTF.getText());
-			this.initOSC();
 		}
 		if (e.getActionCommand().equals("Set MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
