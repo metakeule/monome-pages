@@ -824,22 +824,23 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param index The index of the page making the request
 	 */
 	public void led(int x, int y, int value, int index) {
-		if (index > -1) {
-			this.pageState[index][x][y] = value;
-	
-			if (index != this.curPage) {
-				return;
-			}
-	
-			if (this.pages.get(index) == null) {
-				return;
-			}
+		if (index < 0 || x < 0 || y < 0 || value < 0) {
+			return;
+		}
+		this.pageState[index][x][y] = value;
 
-			if (this.pages.get(index).getCacheDisabled() == false) {
-				if (this.ledState[x][y] == value) {
-					return;
-				}	
-			}
+		if (index != this.curPage) {
+			return;
+		}
+
+		if (this.pages.get(index) == null) {
+			return;
+		}
+
+		if (this.pages.get(index).getCacheDisabled() == false) {
+			if (this.ledState[x][y] == value) {
+				return;
+			}	
 		}
 
 		this.ledState[x][y] = value;

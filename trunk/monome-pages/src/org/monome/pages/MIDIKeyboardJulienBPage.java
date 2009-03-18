@@ -571,4 +571,9 @@ public class MIDIKeyboardJulienBPage implements Page, ActionListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void handleADC(float x, float y) {
+		// TODO Auto-generated method stub
+		
+	}
 }
