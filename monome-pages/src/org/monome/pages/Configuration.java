@@ -36,6 +36,7 @@ import javax.sound.midi.Transmitter;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
@@ -506,6 +507,18 @@ public class Configuration implements Receiver {
 
 			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
 			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
+			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/tilt", oscListener);
+			
+			/*Object args[] = new Object[1];
+			args[0] = new Integer(1);
+			OSCMessage msg = new OSCMessage(monome.prefix + "/tiltmode", args);
+			try {
+				this.monomeSerialOSCPortOut.send(msg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}*/
+			
+			
 			this.monomeSerialOSCPortIn.startListening();
 			monome.clearMonome();
 		} catch (SocketException e) {

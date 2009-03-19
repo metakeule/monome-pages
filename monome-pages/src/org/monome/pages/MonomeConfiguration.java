@@ -171,17 +171,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));		
 		this.setJMenuBar(this.createMenuBar());
 		this.pack();
-		
-		/* let's test it without this first...
-		 * 
-		 * Object args[] = new Object[1];
-		args[0] = new Integer(1);
-		OSCMessage msg = new OSCMessage(this.prefix + "/tiltmode", args);
-		try {
-			this.configuration.monomeSerialOSCPortOut.send(msg);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
 	}
 
 	/**
@@ -824,23 +813,26 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param index The index of the page making the request
 	 */
 	public void led(int x, int y, int value, int index) {
-		if (index < 0 || x < 0 || y < 0 || value < 0) {
+		if (x < 0 || y < 0 || value < 0) {
 			return;
 		}
-		this.pageState[index][x][y] = value;
-
-		if (index != this.curPage) {
-			return;
-		}
-
-		if (this.pages.get(index) == null) {
-			return;
-		}
-
-		if (this.pages.get(index).getCacheDisabled() == false) {
-			if (this.ledState[x][y] == value) {
+		
+		if (index > -1) {
+			this.pageState[index][x][y] = value;
+	
+			if (index != this.curPage) {
 				return;
-			}	
+			}
+	
+			if (this.pages.get(index) == null) {
+				return;
+			}
+	
+			if (this.pages.get(index).getCacheDisabled() == false) {
+				if (this.ledState[x][y] == value) {
+					return;
+				}	
+			}
 		}
 
 		this.ledState[x][y] = value;
