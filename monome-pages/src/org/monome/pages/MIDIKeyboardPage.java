@@ -213,6 +213,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	}
 	
 	private final class Flasher implements Runnable {
+		// TODO properly kill this thread when monome configuration is removed
 	    public void run(){
 	    	try {
 	    		int i = 0;
@@ -247,8 +248,10 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			    			functionLock = false;
 			    			monome.led(monome.sizeX-1, monome.sizeY-1, 0, index);
 			    		}
+			    		
+			    		if (pressCount>0) i++;
 	    			}
-	    			if (pressCount>0) i++;
+	    			
 	    			Thread.sleep(50);
 	    		}			  	
 	    	} catch (InterruptedException e) {
@@ -659,9 +662,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 				
 		note = this.keys[this.myKey];
-		
-		System.out.println(note);
-		
+				
 		for (int i=0; i < y; i++) {
 			note += this.scales[this.myScale][i];
 		}
@@ -1060,7 +1061,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, adcNum, value);		 
 	}
 	
-	public void handleADC(float x, float y) {		
+	public void handleADC(float x, float y) {
 		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, x, y);
 	}
 
