@@ -477,7 +477,17 @@ public class GUI implements ActionListener {
 					rootNL2 = rootEL.getChildNodes();
 					String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
 					this.configuration.setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
-				}					
+				}
+				
+				// read <abletonoscupdatedelay> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonoscupdatedelay");
+				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
+				if (rootEL != null) {
+					rootNL2 = rootEL.getChildNodes();
+					String abletonOSCUpdateDelay = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonOSCUpdateDelay(Integer.valueOf(abletonOSCUpdateDelay).intValue());
+				}	
 			} else if (abletonmode.equals("MIDI")) {
 				// read <abletonmidiinport> from the configuration file
 				rootNL = doc.getElementsByTagName("abletonmidiinport");
@@ -498,6 +508,16 @@ public class GUI implements ActionListener {
 					String abletonmidioutport = ((Node) rootNL2.item(0)).getNodeValue();
 					this.configuration.setAbletonMIDIOutDeviceName(abletonmidioutport);
 				}
+				
+				// read <abletonmidiupdatedelay> from the configuration file
+				rootNL = doc.getElementsByTagName("abletonmidiupdatedelay");
+				rootEL = (Element) rootNL.item(0);
+				// old versions might not have this setting
+				if (rootEL != null) {
+					rootNL2 = rootEL.getChildNodes();
+					String abletonMidiUpdateDelay = ((Node) rootNL2.item(0)).getNodeValue();
+					this.configuration.setAbletonMIDIUpdateDelay(Integer.valueOf(abletonMidiUpdateDelay).intValue());
+				}	
 			}
 			
 			// read <midiinport> from the configuration file

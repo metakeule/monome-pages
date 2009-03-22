@@ -73,7 +73,8 @@ public class AbletonOSCClipUpdater implements Runnable {
 				this.abletonOscOut.send(msg2);
 				this.abletonOscOut.send(msg3);
 				// sleep for 300ms in between calls
-				Thread.sleep(100);
+				System.out.println("sleeping for " + this.configuration.getAbletonOSCUpdateDelay());
+				Thread.sleep(this.configuration.getAbletonOSCUpdateDelay());
 				this.configuration.redrawAbletonPages();
 			} catch (IOException e) {
 				running = false;

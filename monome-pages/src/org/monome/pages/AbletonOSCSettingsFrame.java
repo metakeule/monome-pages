@@ -76,6 +76,10 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 	private JComboBox midiInDeviceCB;
 	private JComboBox midiOutDeviceCB;
 
+	private JTextField oscUpdateDelay;
+
+	private JTextField midiUpdateDelay;
+
 	/**
 	 * @param configuration The main Configuration object
 	 */
@@ -166,6 +170,15 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		subPanel.add(label);
 		subPanel.add(midiOutDeviceCB);
 		settingsPanel.add(subPanel);
+		
+		subPanel = new JPanel();
+		subPanel.setLayout(new GridLayout(1, 1));
+		label = new JLabel("Update Delay");
+		subPanel.add(label);
+		this.midiUpdateDelay = new JTextField(String.valueOf(this.configuration.getAbletonMIDIUpdateDelay()));
+		this.midiUpdateDelay.setEditable(true);
+		subPanel.add(this.midiUpdateDelay);		
+		settingsPanel.add(subPanel);
 
 		subPanel = new JPanel();
 		button = new JButton("Save");
@@ -213,6 +226,15 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 		this.outport.setEditable(true);
 		subPanel.add(this.outport);		
 		settingsPanel.add(subPanel);
+		
+		subPanel = new JPanel();
+		subPanel.setLayout(new GridLayout(1, 1));
+		label = new JLabel("Update Delay");
+		subPanel.add(label);
+		this.oscUpdateDelay = new JTextField(String.valueOf(this.configuration.getAbletonOSCUpdateDelay()));
+		this.oscUpdateDelay.setEditable(true);
+		subPanel.add(this.oscUpdateDelay);		
+		settingsPanel.add(subPanel);
 
 		subPanel = new JPanel();
 		button = new JButton("Save");
@@ -240,18 +262,20 @@ public class AbletonOSCSettingsFrame extends JInternalFrame implements ActionLis
 			if (this.oscRB.isSelected()) {
 				int inport = Integer.parseInt(this.inport.getText());
 				int outport = Integer.parseInt(this.outport.getText());
+				int oscUpdateDelay = Integer.parseInt(this.oscUpdateDelay.getText());
 				String hostname = this.hostname.getText();
 				this.configuration.setAbletonOSCInPortNumber(inport);
 				this.configuration.setAbletonOSCOutPortNumber(outport);
 				this.configuration.setAbletonHostname(hostname);
+				this.configuration.setAbletonOSCUpdateDelay(oscUpdateDelay);
 				this.configuration.initAbleton();
 			} else if (this.midiRB.isSelected()) {
 				String midiInDevice = this.midiInDeviceCB.getSelectedItem().toString();
-				System.out.println("midi in device is " + midiInDevice);
 				this.configuration.setAbletonMIDIInDeviceName(midiInDevice);
 				String midiOutDevice = this.midiOutDeviceCB.getSelectedItem().toString();
 				this.configuration.setAbletonMIDIOutDeviceName(midiOutDevice);
-				System.out.println("midi out device is " + midiOutDevice);
+				int midiUpdateDelay = Integer.parseInt(this.midiUpdateDelay.getText());
+				this.configuration.setAbletonMIDIUpdateDelay(midiUpdateDelay);
 				this.configuration.initAbleton();
 			}
 			this.dispose();
