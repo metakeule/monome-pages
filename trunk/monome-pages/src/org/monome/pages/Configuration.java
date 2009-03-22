@@ -163,6 +163,10 @@ public class Configuration implements Receiver {
 	
 	private AbletonControl abletonControl;
 
+	private int abletonOSCUpdateDelay = 100;
+	
+	private int abletonMIDIUpdateDelay = 100;
+
 	/**
 	 * @param name The name of the configuration
 	 */
@@ -660,9 +664,11 @@ public class Configuration implements Receiver {
 			xml += "  <abletonhostname>" + this.abletonHostname + "</abletonhostname>\n";
 			xml += "  <abletonoscinport>" + this.abletonOSCInPortNumber + "</abletonoscinport>\n";
 			xml += "  <abletonoscoutport>" + this.abletonOSCOutPortNumber + "</abletonoscoutport>\n";
+			xml += "  <abletonoscupdatedelay>" + this.abletonOSCUpdateDelay + "</abletonoscupdatedelay>\n";
 		} else if (this.abletonMode.equals("MIDI")) {
 			xml += "  <abletonmidiinport>" + StringEscapeUtils.escapeXml(this.abletonMIDIInDeviceName) + "</abletonmidiinport>\n";
 			xml += "  <abletonmidioutport>" + StringEscapeUtils.escapeXml(this.abletonMIDIOutDeviceName) + "</abletonmidioutport>\n";
+			xml += "  <abletonmidiupdatedelay>" + this.abletonMIDIUpdateDelay + "</abletonmidiupdatedelay>\n";
 		}
 		for (int i=0; i < this.midiInDevices.size(); i++) {
 			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(this.midiInDevices.get(i).getDeviceInfo().toString()) + "</midiinport>\n";
@@ -766,6 +772,22 @@ public class Configuration implements Receiver {
 	
 	public AbletonControl getAbletonControl() {
 		return this.abletonControl;
+	}
+
+	public int getAbletonOSCUpdateDelay() {
+		return this.abletonOSCUpdateDelay;
+	}
+
+	public void setAbletonOSCUpdateDelay(int oscUpdateDelay) {
+		this.abletonOSCUpdateDelay = oscUpdateDelay;
+	}
+	
+	public int getAbletonMIDIUpdateDelay() {
+		return this.abletonMIDIUpdateDelay;
+	}
+
+	public void setAbletonMIDIUpdateDelay(int midiUpdateDelay) {
+		this.abletonMIDIUpdateDelay = midiUpdateDelay;
 	}
 
 

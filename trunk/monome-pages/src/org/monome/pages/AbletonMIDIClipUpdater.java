@@ -65,7 +65,7 @@ public class AbletonMIDIClipUpdater implements Runnable {
 				ShortMessage songStateMessage = new ShortMessage();
 				songStateMessage.setMessage(ShortMessage.CONTROL_CHANGE, 0, 0, 0);
 				this.abletonReceiver.send(songStateMessage, -1);
-				Thread.sleep(100);
+				Thread.sleep(this.configuration.getAbletonMIDIUpdateDelay());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (InvalidMidiDataException e) {
