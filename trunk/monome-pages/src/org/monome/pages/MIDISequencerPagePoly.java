@@ -188,8 +188,8 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	private boolean hold5=false;
 	private boolean hold6=false;
 	private boolean []gate=new boolean[256];
-	private int[] rowMode=new int[15];
-	private boolean[] noteSwitchs = new boolean[15];
+	private int[] rowMode=new int[16];
+	private boolean[] noteSwitchs = new boolean[16];
 	private int quantize1=16;
 	private int quantize2=32;
 	private int bankSize0=32;
