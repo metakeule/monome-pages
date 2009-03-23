@@ -66,7 +66,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	/**
 	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
 	 */
-	private int[][] clipState = new int[100][1000];
+	private int[][] clipState = new int[200][1000];
 	
 	/**
 	 * Used to represent an empty clip slot
@@ -86,12 +86,12 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	/**
 	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
 	 */
-	private boolean[][] flashState = new boolean[100][1000];
+	private boolean[][] flashState = new boolean[200][1000];
 
 	/**
 	 * tracksArmed[track_number] - The record armed/disarmed state of all tracks, true if the track is armed for recording.
 	 */
-	private boolean[] tracksArmed = new boolean[100];
+	private boolean[] tracksArmed = new boolean[200];
 	
 	/**
 	 * The amount to offset the monome display of the clips

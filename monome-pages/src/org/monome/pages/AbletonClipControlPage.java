@@ -72,7 +72,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	/**
 	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
 	 */
-	private int[][] clipState = new int[50][250];
+	private int[][] clipState = new int[200][250];
 
 	/**
 	 * Used to represent an empty clip slot
@@ -92,12 +92,12 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	/**
 	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
 	 */
-	private boolean[][] flashState = new boolean[50][250];
+	private boolean[][] flashState = new boolean[200][250];
 
 	/**
 	 * tracksStopped[track_number] - Table container the stopped tracks information, true if the track was stopped at least one time.
 	 */
-	private boolean[] tracksStopped = new boolean[50];
+	private boolean[] tracksStopped = new boolean[200];
 
 	/**
 	 * The amount to offset the monome display of the clips
