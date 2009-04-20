@@ -508,10 +508,6 @@ public class Configuration implements Receiver {
 			if (this.monomeSerialOSCPortOut == null) {
 				this.monomeSerialOSCPortOut = new OSCPortOut(InetAddress.getByName(this.monomeHostname), this.monomeSerialOSCOutPortNumber);
 			}
-
-			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
-			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
-			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/tilt", oscListener);
 			
 			Object args[] = new Object[1];
 			args[0] = new Integer(1);
@@ -521,6 +517,10 @@ public class Configuration implements Receiver {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
+			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
+			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/tilt", oscListener);
 			
 			
 			this.monomeSerialOSCPortIn.startListening();
