@@ -168,6 +168,7 @@ public class ADC  {
 			System.out.println("midi: adc3 = " + x);*/
 		return midi;
 	}
+	
 	public void sendCC(Receiver recv, int midiChannel, int [] ccADC, MonomeConfiguration monome, int adcNum, float value) 
 	{
 		ShortMessage msg = new ShortMessage();		
@@ -220,12 +221,13 @@ public class ADC  {
 		try 
 		{
 			//scale the raw value to midi range and send the message CC 
-			msg.setMessage(ShortMessage.CONTROL_CHANGE, midiChannel, ccADC[0], midi[0]);
-			if (recv != null) 
+			if (recv != null) {
+				msg.setMessage(ShortMessage.CONTROL_CHANGE, midiChannel, ccADC[0], midi[0]);			
 				recv.send(msg, -1);
-			msg2.setMessage(ShortMessage.CONTROL_CHANGE, midiChannel, ccADC[1], midi[1]);
-			if (recv != null) 
-				recv.send(msg, -1);			
+				
+				msg2.setMessage(ShortMessage.CONTROL_CHANGE, midiChannel, ccADC[1], midi[1]);	
+				recv.send(msg2, -1);		
+			}
 		} 
 		catch (InvalidMidiDataException e) 
 		{

@@ -957,7 +957,8 @@ this.patSpeed[iSeq]=0;
 					[this.bank]==x_seq)){
 				try {
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
-					this.recv.send(note_out, -1);
+					if (this.recv != null) 
+						this.recv.send(note_out, -1);
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}

@@ -423,11 +423,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	public void handleADC(int adcNum, float value) {
 		if (this.oscOut == null) {
 			return;
-		}
-		
-		if (useMidi)
-			this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, adcNum, value);
-		
+		}		
+				
 		switch (adcNum) {
 			case 0: 				
 				if(swapADC)	adcNum = 2;
@@ -456,7 +453,10 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			this.oscOut.send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}			
+		}
+		
+		if (useMidi)
+			this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, adcNum, value);
 	}
 	
 	public void handleADC(float x, float y) {		

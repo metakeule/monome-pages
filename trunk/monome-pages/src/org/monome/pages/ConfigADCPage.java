@@ -317,8 +317,8 @@ public class ConfigADCPage implements Page, ActionListener{
 		
 		scale1.setText(Integer.toString(scale[0]));
 		scale2.setText(Integer.toString(scale[1]));
-		scale1.setText("0");
-		scale2.setText("0");
+		scale3.setText("0");
+		scale4.setText("0");
 		
 		 
 		if(configCB.isSelected())
