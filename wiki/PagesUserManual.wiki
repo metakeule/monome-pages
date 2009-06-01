@@ -69,6 +69,10 @@ See: MachineDrumInterfacePage
 
 = Setup Guide =
 
+egon77 has put together a wonderful video that guides you through the setup process for Mac/OSX and Ableton/PagesMIDI.  You can view it here:
+
+[http://www.vimeo.com/4939759 tutorial video]
+
 == Downloading Pages ==
 
 The latest version of pages can be downloaded from the Downloads page of this project:
