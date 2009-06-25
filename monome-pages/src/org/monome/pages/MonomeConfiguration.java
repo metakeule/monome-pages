@@ -575,7 +575,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				numPages++;
 			}
 			if (numPages > next_page && next_page < (this.sizeX * this.sizeY) / 2) {
-				System.out.println("next page is " + next_page);
 				// offset back by one because of the page change button
 				if (next_page > this.sizeY - 1) {
 					next_page--;
