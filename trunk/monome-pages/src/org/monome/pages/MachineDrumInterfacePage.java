@@ -394,6 +394,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 				}
 				break;
 			default:
+				this.recv.send(message, timeStamp);
 				break;
 			}
 		}

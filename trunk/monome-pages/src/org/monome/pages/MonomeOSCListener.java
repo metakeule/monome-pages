@@ -71,9 +71,9 @@ public class MonomeOSCListener implements OSCListener {
 		}
 		if (message.getAddress().contains("tilt") && !(message.getAddress().contains("mode"))) {
 			Object[] args = message.getArguments();
-			float x = ((Float) args[0]).floatValue();
-			float y = ((Float) args[1]).floatValue();
-			monome.handleADC(x, y);
+			int x = ((Integer) args[0]).intValue();
+			int y = ((Integer) args[1]).intValue();
+			monome.handleADC((float) x, (float) y);
 		}
 	}
 }
