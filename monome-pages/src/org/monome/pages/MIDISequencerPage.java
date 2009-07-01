@@ -485,7 +485,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 					} else {
 						value2 = 0;
 					}
-					this.monome.led_col(this.sequencePosition % (this.monome.sizeX), 255, value2, this.index);
+					ArrayList<Integer> colArgs = new ArrayList<Integer>();
+					colArgs.add(this.sequencePosition % (this.monome.sizeX));
+					colArgs.add(255);
+					colArgs.add(value2);
+					this.monome.led_col(colArgs, this.index);
 					this.redrawCol(this.sequencePosition % (this.monome.sizeX), 255);
 				}
 			}
@@ -495,7 +499,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 		if (this.tickNum == 5) {
 			if (this.sequencePosition >= (this.pattern * (this.monome.sizeX)) && this.sequencePosition < ((this.pattern + 1) * (this.monome.sizeX))) {
 				if (this.bankMode == 0) {
-					this.monome.led_col(this.sequencePosition % (this.monome.sizeX), 0, 0, this.index);
+					ArrayList<Integer> colArgs = new ArrayList<Integer>();
+					colArgs.add(this.sequencePosition % (this.monome.sizeX));
+					colArgs.add(0);
+					colArgs.add(0);
+					this.monome.led_col(colArgs, this.index);
 					this.redrawCol(this.sequencePosition % (this.monome.sizeX), 0);
 				}
 			}

@@ -386,9 +386,15 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 			shortMessage = (ShortMessage) message;
 			switch (shortMessage.getCommand()) {
 			case 0xF0:
-				if (shortMessage.getChannel() == 8) {
+				// midi clock message
+				if (shortMessage.getChannel() == 0x08) {
 					this.recv.send(message, timeStamp);
 				}
+				// midi start message
+				if (shortMessage.getChannel() == 0x0A) {
+					this.recv.send(message, timeStamp);
+				}
+				// midi stop message
 				if (shortMessage.getChannel() == 0x0C) {
 					this.recv.send(message, timeStamp);
 				}

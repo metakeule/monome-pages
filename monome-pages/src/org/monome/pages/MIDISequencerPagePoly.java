@@ -1275,7 +1275,11 @@ this.patSpeed[iSeq]=0;
 					} else {
 						value2 = 0;
 					}
-					this.monome.led_col(sequencePositionBank % (this.monome.sizeX), 255, value2, this.index);
+					ArrayList<Integer> colArgs = new ArrayList<Integer>();
+					colArgs.add(sequencePositionBank % (this.monome.sizeX));
+					colArgs.add(255);
+					colArgs.add(value2);
+					this.monome.led_col(colArgs, this.index);
 					this.redrawCol(sequencePositionBank % (this.monome.sizeX), 255);
 					//System.out.println("this.patlength[this.bank] " + this.patlength[this.bank]);						
 					if(sequencePositionBank % (this.monome.sizeX)==0)
@@ -1285,8 +1289,12 @@ this.patSpeed[iSeq]=0;
 						sequencePositionPrec=(sequencePositionBank % (this.monome.sizeX))-
 
 						1;
-
-					this.monome.led_col(sequencePositionPrec, 0, 0, this.index);
+					
+					colArgs = new ArrayList<Integer>();
+					colArgs.add(sequencePositionPrec);
+					colArgs.add(0);
+					colArgs.add(0);
+					this.monome.led_col(colArgs, this.index);
 					this.redrawCol(sequencePositionPrec, 0);
 				}			
 			}
@@ -1300,7 +1308,11 @@ this.patSpeed[iSeq]=0;
 					this.bankMode == 0){
 				//sequencePositionPrec=this.monome.sizeX*this.patlength[this.bank]/8-1;
 				sequencePositionPrec=this.monome.sizeX-1;
-				this.monome.led_col(sequencePositionPrec, 0, 0, this.index);
+				ArrayList<Integer> colArgs = new ArrayList<Integer>();
+				colArgs.add(sequencePositionPrec);
+				colArgs.add(0);
+				colArgs.add(0);
+				this.monome.led_col(colArgs, this.index);
 				this.redrawCol(sequencePositionPrec, 0);	
 			}
 		}
