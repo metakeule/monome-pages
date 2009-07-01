@@ -24,6 +24,7 @@ package org.monome.pages;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -183,7 +184,11 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 				this.trackJump[y] = y;
 				this.trackMovement[y] = movement;
 				this.jumpClip[y] = clip;
-				this.monome.led_row(y, 0, 0, this.index);
+				ArrayList<Integer> rowArgs = new ArrayList<Integer>();
+				rowArgs.add(y);
+				rowArgs.add(0);
+				rowArgs.add(0);
+				this.monome.led_row(rowArgs, this.index);
 			}
 		}		
 	}
@@ -197,7 +202,11 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 */
 	public void handleReset() {
 		for (int y=0; y < this.monome.sizeY; y++) {
-			this.monome.led_row(y, 0, 0, this.index);
+			ArrayList<Integer> rowArgs = new ArrayList<Integer>();
+			rowArgs.add(y);
+			rowArgs.add(0);
+			rowArgs.add(0);
+			this.monome.led_row(rowArgs, this.index);
 			for (int clip=0; clip < 250; clip++) {
 				this.clipPosition[y][clip] = (float) 0.0;
 			}

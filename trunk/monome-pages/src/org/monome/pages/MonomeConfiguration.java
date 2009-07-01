@@ -877,8 +877,18 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param value2 The second 8 bits of the value
 	 * @param index The index of the page making the call
 	 */
-	public void led_col(int col, int value1, int value2, int index) {
-		int fullvalue = (value2 << 8) + value1;
+	public void led_col(ArrayList<Integer> intArgs, int index) {
+		int col = intArgs.get(0);
+		int[] values = {0, 0, 0, 0};
+		int numValues = 0;
+		for (int i = 1; i < intArgs.size(); i++) {
+			if (i > 4) {
+				break;
+			}
+			values[i] = intArgs.get(i);
+			numValues++;
+		}
+		int fullvalue = (values[3] << 24) + (values[2] << 16) + (values[1] << 8) + values[0];
 		for (int y=0; y < this.sizeY; y++) {
 			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 			this.pageState[index][col][y] = bit;
@@ -888,16 +898,16 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return;
 		}
 
-		fullvalue = (value2 << 8) + value1;
 		for (int y=0; y < this.sizeY; y++) {
 			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 			this.ledState[col][y] = bit;
 		}
 
-		Object args[] = new Object[3];
+		Object args[] = new Object[numValues + 1];
 		args[0] = new Integer(col);
-		args[1] = new Integer(value1);
-		args[2] = new Integer(value2);
+		for (int i = 1; i < numValues + 1; i++) {
+			args[i] = (Integer) intArgs.get(i);
+		}
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_col", args);
 
 		try {
@@ -915,8 +925,18 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param value2 The second 8 bits of the value
 	 * @param index The index of the page making the call
 	 */
-	public void led_row(int row, int value1, int value2, int index) {
-		int fullvalue = (value2 << 8) + value1;
+	public void led_row(ArrayList<Integer> intArgs, int index) {
+		int row = intArgs.get(0);
+		int[] values = {0, 0, 0, 0};
+		int numValues = 0;
+		for (int i = 1; i < intArgs.size(); i++) {
+			if (i > 4) {
+				break;
+			}
+			values[i] = intArgs.get(i);
+			numValues++;
+		}
+		int fullvalue = (values[3] << 24) + (values[2] << 16) + (values[1] << 8) + values[0];
 		for (int x=0; x < this.sizeX; x++) {
 			int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
 			this.pageState[index][x][row] = bit;
@@ -926,17 +946,16 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return;
 		}
 
-		fullvalue = (value2 << 8) + value1;
 		for (int x=0; x < this.sizeX; x++) {
 			int bit = (fullvalue >> (this.sizeX - x - 1)) & 1;
 			this.ledState[x][row] = bit;
 		}
 
-
-		Object args[] = new Object[3];
+		Object args[] = new Object[numValues + 1];
 		args[0] = new Integer(row);
-		args[1] = new Integer(value1);
-		args[2] = new Integer(value2);
+		for (int i = 1; i < numValues + 1; i++) {
+			args[i] = (Integer) intArgs.get(i);
+		}
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_row", args);
 
 		try {

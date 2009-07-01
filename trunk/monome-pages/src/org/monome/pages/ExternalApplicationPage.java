@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.sound.midi.MidiMessage;
@@ -564,27 +565,28 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		// handle a monome led_col request from the external application
 		if (msg.getAddress().contains("led_col")) {
 			Object[] args = msg.getArguments();
-			int[] int_args = {0, 0, 0};
+			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {
-					return;
+					continue;
 				}
-				int_args[i] = ((Integer) args[i]).intValue();
+				intArgs.add((Integer) args[i]);
 			}
-			this.monome.led_col(int_args[0], int_args[1], int_args[2], this.index);
+			this.monome.led_col(intArgs, this.index);
 		}
 
 		// handle a monome led_row request from the external application
 		if (msg.getAddress().contains("led_row")) {
 			Object[] args = msg.getArguments();
 			int[] int_args = {0, 0, 0};
+			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {
-					return;
+					continue;
 				}
-				int_args[i] = ((Integer) args[i]).intValue();
+				intArgs.add((Integer) args[i]);
 			}
-			this.monome.led_row(int_args[0], int_args[1], int_args[2], this.index);
+			this.monome.led_row(intArgs, this.index);
 		}
 
 		// handle a monome led request from the external application
