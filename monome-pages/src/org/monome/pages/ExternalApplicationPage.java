@@ -238,14 +238,11 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void stopOSC() {
 		if (this.oscIn != null) {
-			if (this.oscIn.isListening()) {
-				this.oscIn.stopListening();				
-			}
-			this.oscIn.close();
-		}
-
-		if (this.oscOut != null) {
-			this.oscOut.close();
+			this.oscIn.removeListener(this.prefix + "/led");
+			this.oscIn.removeListener(this.prefix + "/led_col");
+			this.oscIn.removeListener(this.prefix + "/led_row");
+			this.oscIn.removeListener(this.prefix + "/clear");
+			this.oscIn.removeListener(this.prefix + "/frame");
 		}
 	}
 
@@ -254,20 +251,13 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void initOSC() {
 		this.stopOSC();
-		try {
-			this.oscOut = new OSCPortOut(InetAddress.getByName(this.hostname), this.outPort);
-			this.oscIn = new OSCPortIn(this.inPort);
-			this.oscIn.addListener(this.prefix + "/led", this);
-			this.oscIn.addListener(this.prefix + "/led_col", this);
-			this.oscIn.addListener(this.prefix + "/led_row", this);
-			this.oscIn.addListener(this.prefix + "/clear", this);
-			this.oscIn.addListener(this.prefix + "/frame", this);
-			this.oscIn.startListening();
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+		this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, String.valueOf(this.outPort));
+		this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(String.valueOf(this.inPort));
+		this.oscIn.addListener(this.prefix + "/led", this);
+		this.oscIn.addListener(this.prefix + "/led_col", this);
+		this.oscIn.addListener(this.prefix + "/led_row", this);
+		this.oscIn.addListener(this.prefix + "/clear", this);
+		this.oscIn.addListener(this.prefix + "/frame", this);
 	}
 	
 	/* (non-Javadoc)
@@ -701,17 +691,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 * @see org.monome.pages.Page#destroyPage()
 	 */
 	public void destroyPage() {
-		// close OSC communication with the external application
-		if (this.oscIn != null) {
-			if (this.oscIn.isListening()) {
-				this.oscIn.stopListening();				
-			}
-			this.oscIn.close();
-		}
-
-		if (this.oscOut != null) {
-			this.oscOut.close();
-		}
+		this.stopOSC();
 	}
 	
 	public void clearPanel() {
