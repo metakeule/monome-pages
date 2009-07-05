@@ -589,6 +589,10 @@ public class Configuration implements Receiver {
 			}
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
 			this.abletonOSCPortIn.addListener("/live/track/info", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/clip/info", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/mute", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/arm", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/solo", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/state", this.abletonOSCListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
@@ -630,6 +634,24 @@ public class Configuration implements Receiver {
 	public void updateAbletonState(float tempo, int overdub, int selectedScene) {
 		for (int i=0; i < this.numMonomeConfigurations; i++) {
 			monomeConfigurations.get(i).updateAbletonState(tempo, overdub, selectedScene);
+		}
+	}
+	
+	public void updateAbletonArmState(int track, int state) {
+		for (int i=0; i < this.numMonomeConfigurations; i++) {
+			monomeConfigurations.get(i).updateAbletonArmState(track, state);
+		}
+	}
+	
+	public void updateAbletonMuteState(int track, int state) {
+		for (int i=0; i < this.numMonomeConfigurations; i++) {
+			monomeConfigurations.get(i).updateAbletonMuteState(track, state);
+		}
+	}
+	
+	public void updateAbletonSoloState(int track, int state) {
+		for (int i=0; i < this.numMonomeConfigurations; i++) {
+			monomeConfigurations.get(i).updateAbletonSoloState(track, state);
 		}
 	}
 	

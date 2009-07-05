@@ -58,32 +58,19 @@ public class AbletonOSCClipUpdater implements Runnable {
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {
-		// query Ableton for the tempo
-		OSCMessage msg = new OSCMessage("/live/state");
+    public void run() {
+        while (this.running) {
+                try {
+                        // sleep for 300ms in between calls
+                        Thread.sleep(this.configuration.getAbletonOSCUpdateDelay());
+                        this.configuration.redrawAbletonPages();
+                } catch (InterruptedException e) {
+                        running = false;
+                        e.printStackTrace();
+                }
+        }
+}
 
-		// query Ableton for the record armed/disarmed status of each track
-		OSCMessage msg2 = new OSCMessage("/live/track/info");
-		
-		OSCMessage msg3 = new OSCMessage("/live/scene/selected");
-
-		while (this.running) {
-			try {
-				this.abletonOscOut.send(msg);
-				this.abletonOscOut.send(msg2);
-				this.abletonOscOut.send(msg3);
-				// sleep for 300ms in between calls
-				Thread.sleep(this.configuration.getAbletonOSCUpdateDelay());
-				this.configuration.redrawAbletonPages();
-			} catch (IOException e) {
-				running = false;
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				running = false;
-				e.printStackTrace();
-			}
-		}
-	}
 
 	public void stop() {
 		this.running = false;

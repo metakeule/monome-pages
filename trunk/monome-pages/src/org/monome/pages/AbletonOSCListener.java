@@ -55,6 +55,7 @@ public class AbletonOSCListener implements OSCListener {
 	public void acceptMessage(Date arg0, OSCMessage msg) {
 		// received message from LiveOSC about a clip currently playing
 		if (msg.getAddress().contains("/live/track/info")) {
+			System.out.println("received /live/track/info");
 			Object[] args = msg.getArguments();
 			int track = ((Integer) args[0]).intValue();
 			int armed = ((Integer) args[1]).intValue();
@@ -64,14 +65,53 @@ public class AbletonOSCListener implements OSCListener {
 				int clipstate = ((Integer) args[i+1]).intValue();
 				float length = ((Float) args[i+2]).floatValue();
 				this.configuration.updateAbletonClipState(track, clip, clipstate, length);
+				System.out.println("updateAbletonClipState(" + track + ", " + clip + ", " + clipstate + ", " + length);
 			}
+			this.configuration.redrawAbletonPages();
 		}
-		if (msg.getAddress().contains("/live/state")) {
+		
+		if (msg.getAddress().contains("/live/clip/info")) {
+			System.out.println("received /live/clip/info");
 			Object[] args = msg.getArguments();
-			float tempo = ((Float) args[0]).floatValue();
-			int overdub = ((Integer) args[1]).intValue();
-			int selectedScene = ((Integer) args[2]).intValue();
-			this.configuration.updateAbletonState(tempo, overdub, selectedScene);
+			int track = ((Integer) args[0]).intValue();
+			int clip = ((Integer) args[1]).intValue();
+			int clipstate = ((Integer) args[2]).intValue();
+			System.out.println("updateAbletonClipState(" + track + ", " + clip + ", " + clipstate + ")");
+			this.configuration.updateAbletonClipState(track, clip, clipstate, (float) -1.0);
+			this.configuration.redrawAbletonPages();
 		}
+		
+        if (msg.getAddress().contains("/live/state")) {
+            Object[] args = msg.getArguments();
+            float tempo = ((Float) args[0]).floatValue();
+            int overdub = ((Integer) args[1]).intValue();
+            int selectedScene = ((Integer) args[2]).intValue();
+            this.configuration.updateAbletonState(tempo, overdub, selectedScene);
+    		this.configuration.redrawAbletonPages();
+        }
+        
+        if (msg.getAddress().contains("/live/arm")) {
+        	Object[] args = msg.getArguments();
+        	int trackNum = ((Integer) args[0]).intValue();
+        	int armState = ((Integer) args[1]).intValue();
+        	System.out.println("/live/arm " + trackNum + " " + armState);
+        	this.configuration.updateAbletonArmState(trackNum, armState);
+        }
+
+        if (msg.getAddress().contains("/live/solo")) {
+        	Object[] args = msg.getArguments();
+        	int trackNum = ((Integer) args[0]).intValue();
+        	int soloState = ((Integer) args[1]).intValue();
+        	System.out.println("/live/solo " + trackNum + " " + soloState);
+        	this.configuration.updateAbletonSoloState(trackNum, soloState);
+        }
+		
+        if (msg.getAddress().contains("/live/mute")) {
+        	Object[] args = msg.getArguments();
+        	int trackNum = ((Integer) args[0]).intValue();
+        	int muteState = ((Integer) args[1]).intValue();
+        	System.out.println("/live/mute " + trackNum + " " + muteState);
+        	this.configuration.updateAbletonMuteState(trackNum, muteState);
+        }
 	}
 }
