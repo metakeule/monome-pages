@@ -244,8 +244,10 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				} else if (y == 6) {
 					if (this.overdub == 1) {
 						this.abletonOverdub(0);
+						this.overdub = 0;
 					} else {
 						this.abletonOverdub(1);
+						this.overdub = 1;
 					}					
 				} else if (y == 7) {
 					this.abletonUndo();
