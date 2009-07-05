@@ -64,6 +64,6 @@ public class LEDBlink implements Runnable {
 			e.printStackTrace();
 		}
 		this.monome.led(this.x, this.y, 0, this.pageIndex);
-		}
+	}
 
 }

@@ -8,6 +8,10 @@ public interface AbletonControl {
 	
 	public void disarmTrack(int track);
 	
+	public void muteTrack(int track);
+	
+	public void unmuteTrack(int track);
+	
 	public void stopTrack(int track);
 	
 	public void viewTrack(int track);
@@ -25,5 +29,10 @@ public interface AbletonControl {
 	public void tempoDown(float tempo);
 	
 	public void launchScene(int scene_num);
+
+	public void refreshAbleton();
+
+	public void soloTrack(int track);
 	
+	public void unsoloTrack(int track);
 }

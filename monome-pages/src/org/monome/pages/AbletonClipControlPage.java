@@ -700,4 +700,22 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	public void updateAbletonArmState(int track, int state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void updateAbletonMuteState(int track, int state) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void updateAbletonSoloState(int track, int state) {
+		// TODO Auto-generated method stub
+		
+	}
 }

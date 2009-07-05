@@ -147,4 +147,29 @@ public class AbletonMIDIControl implements AbletonControl {
 			}
 		}
 	}
+
+	public void muteTrack(int track) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void unmuteTrack(int track) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void refreshAbleton() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void soloTrack(int track) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void unsoloTrack(int track) {
+		// TODO Auto-generated method stub
+		
+	}
 }

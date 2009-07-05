@@ -237,6 +237,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 * Stops OSC communication with the external application
 	 */
 	public void stopOSC() {
+		/*
 		if (this.oscIn != null) {
 			this.oscIn.removeListener(this.prefix + "/led");
 			this.oscIn.removeListener(this.prefix + "/led_col");
@@ -244,6 +245,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			this.oscIn.removeListener(this.prefix + "/clear");
 			this.oscIn.removeListener(this.prefix + "/frame");
 		}
+		*/
 	}
 
 	/**

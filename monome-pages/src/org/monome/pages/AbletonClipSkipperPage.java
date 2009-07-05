@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -51,6 +52,9 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 * The MonomeConfiguration this page belongs to
 	 */
 	private MonomeConfiguration monome;
+	
+	private static final int NUM_CLIPS = 1000;
+	private static final int NUM_TRACKS = 50;
 
 	/**
 	 * This page's index (page number) 
@@ -70,10 +74,10 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	/**
 	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
 	 */
-	private int[][] clipState = new int[50][250];
+	private int[][] clipState = new int[NUM_TRACKS][NUM_CLIPS];
 	
-	private float[][] clipPosition = new float[50][250];
-	private float[][] clipLength = new float[50][250];
+	private float[][] clipPosition = new float[NUM_TRACKS][NUM_CLIPS];
+	private float[][] clipLength = new float[NUM_TRACKS][NUM_CLIPS];
 
 	private int[] trackJump = {-1, -1, -1, -1, -1, -1, -1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1};
 
@@ -94,7 +98,12 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	/**
 	 * Used to represent a clip slot with a clip that is playing 
 	 */
+	private static final int CLIP_STATE_TRIGGERED = 3;
 	private static final int CLIP_STATE_PLAYING = 2;
+	
+	private JButton refreshButton = new JButton();
+	
+	
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index The index of this page (the page number)
@@ -125,6 +134,15 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 			}
 			this.addMidiOutDevice(deviceName);	
 		}
+		
+		if (e.getActionCommand().equals("Refresh from Ableton")) {
+			this.refreshAbleton();
+		}
+	}
+	
+	public void refreshAbleton() {
+		clipState = new int[200][1000];
+		this.monome.configuration.getAbletonControl().refreshAbleton();
 	}
 
 	/* (non-Javadoc)
@@ -155,19 +173,23 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 
 		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Skipper");
 		panel.add(label);
+		
+		refreshButton.setText("Refresh from Ableton");
+		refreshButton.addActionListener(this);
+		panel.add(refreshButton);
 
 		this.panel = panel;
 		return panel;
 	}
 	
 	public void updateClipState(int track, int clip, int state, float length) {
-		this.clipLength[track][clip] = length;
-		if (state == CLIP_STATE_PLAYING) {
-			if (this.clipState[track][clip] == CLIP_STATE_STOPPED ||
-				this.clipState[track][clip] == CLIP_STATE_EMPTY) {
-				this.clipPosition[track][clip] = (float) 0.0;
-			}
+		if (length != -1.0) {
+			this.clipLength[track][clip] = length;
 		}
+		if (state == CLIP_STATE_STOPPED || state == CLIP_STATE_EMPTY) {
+				this.clipPosition[track][clip] = (float) 0.0;
+		}
+		//this.clipPosition[track][clip] = (float) 0.0;
 		this.clipState[track][clip] = state;
 	}
 

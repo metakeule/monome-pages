@@ -18,8 +18,9 @@ public class AbletonOSCControl implements AbletonControl {
 	 * @param track The track number to arm (0 = first track)
 	 */
 	public void armTrack(int track) {
-		Object args[] = new Object[1];
+		Object args[] = new Object[2];
 		args[0] = new Integer(track);
+		args[1] = new Integer(1);
 		OSCMessage msg = new OSCMessage("/live/arm", args);
 		// send the message 5 times because Ableton doesn't always respond to
 		// this for some reason
@@ -32,6 +33,15 @@ public class AbletonOSCControl implements AbletonControl {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		args = new Object[2];
+		args[0] = new Integer(track);
+		msg = new OSCMessage("/live/arm", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -40,16 +50,24 @@ public class AbletonOSCControl implements AbletonControl {
 	 * @param track The track number to disarm (0 = first track)
 	 */
 	public void disarmTrack(int track) {
-		Object args[] = new Object[1];
+		Object args[] = new Object[2];
 		args[0] = new Integer(track);
-		OSCMessage msg = new OSCMessage("/live/disarm", args);
-		// send the message 5 times because Ableton doesn't always respond to
-		// this for some reason
+		args[1] = new Integer(0);
+		OSCMessage msg = new OSCMessage("/live/arm", args);
 		try {
 			this.configuration.getAbletonOSCPortOut().send(msg);
 			this.configuration.getAbletonOSCPortOut().send(msg);
 			this.configuration.getAbletonOSCPortOut().send(msg);
 			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		args = new Object[2];
+		args[0] = new Integer(track);
+		msg = new OSCMessage("/live/arm", args);
+		try {
 			this.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -72,6 +90,7 @@ public class AbletonOSCControl implements AbletonControl {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.refreshClipInfo(track, clip);
 	}
 
 	/**
@@ -84,6 +103,7 @@ public class AbletonOSCControl implements AbletonControl {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.refreshAbleton();
 	}
 
 	public void setOverdub(int overdub) {
@@ -95,9 +115,14 @@ public class AbletonOSCControl implements AbletonControl {
 		// this for some reason
 		try {
 			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.refreshState();
 	}
 
 	public void tempoUp(float tempo) {
@@ -114,13 +139,14 @@ public class AbletonOSCControl implements AbletonControl {
 			this.configuration.getAbletonOSCPortOut().send(msg);
 			this.configuration.getAbletonOSCPortOut().send(msg);
 			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.refreshState();
+		this.refreshState();
+		this.refreshState();
+		this.refreshState();
+		this.refreshState();
 	}
 
 	public void tempoDown(float tempo) {
@@ -133,17 +159,15 @@ public class AbletonOSCControl implements AbletonControl {
 		OSCMessage msg = new OSCMessage("/live/tempo", args);
 		try {
 			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
-			this.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		this.refreshState();
+		this.refreshState();
+		this.refreshState();
+		this.refreshState();
+		this.refreshState();
 	}
 	/**
 	 * Sends "/live/stop/track track" to LiveOSC.
@@ -154,6 +178,107 @@ public class AbletonOSCControl implements AbletonControl {
 		Object args[] = new Object[1];
 		args[0] = new Integer(track);
 		OSCMessage msg = new OSCMessage("/live/stop/track", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.refreshTrackInfo(track);
+	}
+	
+	public void muteTrack(int track) {
+		Object args[] = new Object[2];
+		args[0] = new Integer(track);
+		args[1] = new Integer(1);
+		OSCMessage msg = new OSCMessage("/live/mute", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		args = new Object[1];
+		args[0] = new Integer(track);
+		msg = new OSCMessage("/live/mute", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void unmuteTrack(int track) {
+		Object args[] = new Object[2];
+		args[0] = new Integer(track);
+		args[1] = new Integer(0);
+		OSCMessage msg = new OSCMessage("/live/mute", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		args = new Object[1];
+		args[0] = new Integer(track);
+		msg = new OSCMessage("/live/mute", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void soloTrack(int track) {
+		Object args[] = new Object[2];
+		args[0] = new Integer(track);
+		args[1] = new Integer(1);
+		OSCMessage msg = new OSCMessage("/live/solo", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		args = new Object[1];
+		args[0] = new Integer(track);
+		msg = new OSCMessage("/live/solo", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void unsoloTrack(int track) {
+		Object args[] = new Object[2];
+		args[0] = new Integer(track);
+		args[1] = new Integer(0);
+		OSCMessage msg = new OSCMessage("/live/solo", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		args = new Object[1];
+		args[0] = new Integer(track);
+		msg = new OSCMessage("/live/solo", args);
 		try {
 			this.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
@@ -200,6 +325,7 @@ public class AbletonOSCControl implements AbletonControl {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.refreshAbleton();
 	}
 	
 	public void launchScene(int scene_num) {
@@ -211,5 +337,52 @@ public class AbletonOSCControl implements AbletonControl {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.refreshState();
+	}
+
+	public void refreshClipInfo(int trackNum, int clipNum) {
+		Object args[] = new Object[2];
+		args[0] = trackNum;
+		args[1] = clipNum;
+		OSCMessage msg = new OSCMessage("/live/clip/info", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	public void refreshAllTracks() {
+		OSCMessage msg = new OSCMessage("/live/track/info");
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	public void refreshTrackInfo(int trackNum) {
+		Object args[] = new Object[1];
+		args[0] = trackNum;
+		OSCMessage msg = new OSCMessage("/live/track/info", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	public void refreshState() {
+		OSCMessage msg = new OSCMessage("/live/state");
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
+	}
+
+	public void refreshAbleton() {
+		refreshAllTracks();
+		refreshState();
 	}
 }
