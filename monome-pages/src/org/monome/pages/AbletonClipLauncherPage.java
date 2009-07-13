@@ -116,12 +116,13 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	private JCheckBox disableMuteCB = new JCheckBox();
 	private JCheckBox disableSoloCB = new JCheckBox();
 	private JCheckBox disableArmCB = new JCheckBox();
+	private JCheckBox disableStopCB = new JCheckBox();
 	private JButton refreshButton = new JButton();
 
 	/**
 	 * The number of control rows (track arm, track stop) that are enabled currently
 	 */
-	private int numEnabledRows = 3;
+	private int numEnabledRows = 4;
 
 	private int overdub;
 
@@ -148,6 +149,9 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			numEnabledRows++;
 		}
 		if (this.disableArmCB.isSelected() == false) {
+			numEnabledRows++;
+		}
+		if (this.disableStopCB.isSelected() == false) {
 			numEnabledRows++;
 		}
 		this.numEnabledRows = numEnabledRows;
@@ -200,6 +204,10 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		disableArmCB.setText("Disable Arm");
 		disableArmCB.addActionListener(this);
 		panel.add(disableArmCB);
+		
+		disableStopCB.setText("Disable Stop");
+		disableStopCB.addActionListener(this);
+		panel.add(disableStopCB);
 
 		refreshButton.setText("Refresh from Ableton");
 		refreshButton.addActionListener(this);
@@ -281,7 +289,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					}
 					this.viewTrack(track_num);
 				}
-				// if this is the 3nd from the bottom row then mute or unmute the track
+				// if this is the 3rd from the bottom row then mute or unmute the track
 				else if ((y == this.monome.sizeY - 3 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == false) ||
 						 (y == this.monome.sizeY - 2 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == true) ||
 						 (y == this.monome.sizeY - 2 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == false) ||
@@ -296,6 +304,24 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 						this.monome.led(x, y, 0, this.index);
 						this.tracksMuted[track_num] = false;
 					}
+					this.viewTrack(track_num);
+				}
+				
+				// if this is the 4th from the bottom row then mute or unmute the track
+				else if (
+						 (y == this.monome.sizeY - 4 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == false) ||
+						 
+						 (y == this.monome.sizeY - 3 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == false) ||
+						 (y == this.monome.sizeY - 3 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == false) ||
+						 (y == this.monome.sizeY - 3 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == true) ||
+						 
+						 (y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == false) ||
+						 (y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == true) ||
+						 (y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == true) ||
+						 
+                         (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == true)) {
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+					this.stopTrack(track_num);
 					this.viewTrack(track_num);
 				}
 				// otherwise play the clip
@@ -418,6 +444,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		flashState = new boolean[200][250];
 		tracksArmed = new boolean[200];
 		tracksMuted = new boolean[200];
+		tracksSoloed = new boolean[200];
 		this.monome.configuration.getAbletonControl().refreshAbleton();
 	}
 	
@@ -512,6 +539,15 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			}
 		}
 		
+		// clear out stop buttons
+		if (this.disableStopCB.isSelected() == false) {
+			for (int i = 0; i < this.monome.sizeX - 1; i++) {
+				int yRow;
+				yRow = this.monome.sizeY - this.numEnabledRows;
+				this.monome.led(i, yRow, 0, this.index);				
+			}
+		}
+		
 		if (this.overdub == 1) {
 			this.monome.led(this.monome.sizeX - 1, 6, 1, this.index);
 		} else {
@@ -533,6 +569,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		String disableArm = "false";
 		String disableSolo = "false";
 		String disableMute = "false";
+		String disableStop = "false";
 		if (disableArmCB.isSelected() == true) {
 			disableArm = "true";
 		}
@@ -545,11 +582,16 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			disableMute = "true";
 		}
 		
+		if (disableStopCB.isSelected() == true) {
+			disableStop = "true";
+		}
+		
 		String xml = "";
 		xml += "      <name>Ableton Clip Launcher</name>\n";
 		xml += "      <disablearm>" + disableArm + "</disablearm>\n";
 		xml += "      <disablesolo>" + disableSolo + "</disablesolo>\n";
 		xml += "      <disablemute>" + disableMute + "</disablemute>\n";
+		xml += "      <disablestop>" + disableStop + "</disablestop>\n";
 		return xml;
 	}
 	
@@ -568,6 +610,12 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void setDisableMute(String disableMute) {
 		if (disableMute.equals("true")) {
 			this.disableMuteCB.doClick();
+		}
+	}
+	
+	public void setDisableStop(String disableStop) {
+		if (disableStop.equals("true")) {
+			this.disableStopCB.doClick();
 		}
 	}
 
@@ -661,8 +709,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			String disableArm = ((Node) nl.item(0)).getNodeValue();
 			this.setDisableArm(disableArm);
 		}
-		NodeList stopNL = pageElement.getElementsByTagName("disablesolo");
-		el = (Element) stopNL.item(0);
+		NodeList soloNL = pageElement.getElementsByTagName("disablesolo");
+		el = (Element) soloNL.item(0);
 		if (el != null) {
 			NodeList nl = el.getChildNodes();
 			String disableSolo = ((Node) nl.item(0)).getNodeValue();
@@ -675,6 +723,14 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 			String disableMute = ((Node) nl.item(0)).getNodeValue();
 			this.setDisableMute(disableMute);
 		}	
+		
+		NodeList stopNL = pageElement.getElementsByTagName("disablestop");
+		el = (Element) stopNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String disableStop = ((Node) nl.item(0)).getNodeValue();
+			this.setDisableStop(disableStop);
+		}
 	}
 
 	public void updateAbletonArmState(int track, int state) {
