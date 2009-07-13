@@ -80,9 +80,9 @@ public class MonomeOSCListener implements OSCListener {
 			
 			float y = 0.0f;
 			if (args[1] instanceof Integer) {
-				x = (float) ((Integer) args[1]).intValue();
+				y = (float) ((Integer) args[1]).intValue();
 			} else if (args[1] instanceof Float) {
-				x = ((Float) args[1]).floatValue();
+				y = ((Float) args[1]).floatValue();
 			}
 			
 			monome.handleADC(x, y);
