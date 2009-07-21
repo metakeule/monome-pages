@@ -656,7 +656,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 		return;
 	}
 
-	public void updateAbletonState(float tempo, int overdub, int selectedScene) {
+	public void updateAbletonState(float tempo, int overdub) {
 		this.tempo = tempo;
 		
 		if (this.overdub != overdub) {
