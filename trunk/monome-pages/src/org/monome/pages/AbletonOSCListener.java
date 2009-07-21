@@ -53,6 +53,7 @@ public class AbletonOSCListener implements OSCListener {
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
+	    System.out.println("OSC received: " + msg.getAddress());
 		// received message from LiveOSC about a clip currently playing
 		if (msg.getAddress().contains("/live/track/info")) {
 			System.out.println("received /live/track/info");
@@ -85,9 +86,15 @@ public class AbletonOSCListener implements OSCListener {
             Object[] args = msg.getArguments();
             float tempo = ((Float) args[0]).floatValue();
             int overdub = ((Integer) args[1]).intValue();
-            int selectedScene = ((Integer) args[2]).intValue();
-            this.configuration.updateAbletonState(tempo, overdub, selectedScene);
+            this.configuration.updateAbletonState(tempo, overdub);
     		this.configuration.redrawAbletonPages();
+        }
+        
+        if (msg.getAddress().contains("/live/scene")) {
+        	System.out.println("received scene msg");
+        	Object[] args = msg.getArguments();
+        	int sceneNum = ((Integer) args[0]).intValue();
+        	this.configuration.updateAbletonSceneState(sceneNum);
         }
         
         if (msg.getAddress().contains("/live/arm")) {

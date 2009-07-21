@@ -461,7 +461,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 	}
 	
-	public void updateAbletonState(float tempo, int overdub, int selectedScene) {
+	public void updateAbletonState(float tempo, int overdub) {
 		if (this.pages.size() == 0) {
 			return;
 		}
@@ -469,19 +469,19 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonLiveLooperPage) {
 				AbletonLiveLooperPage page = (AbletonLiveLooperPage) pages.get(i);
-				page.updateAbletonState(tempo, overdub, selectedScene);
+				page.updateAbletonState(tempo, overdub);
 			}
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
-				page.updateAbletonState(tempo, overdub, selectedScene);
+				page.updateAbletonState(tempo, overdub);
 			}
 			if (pages.get(i) instanceof AbletonClipControlPage) {
 				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
-				page.updateAbletonState(tempo, overdub, selectedScene);
+				page.updateAbletonState(tempo, overdub);
 			}
 			if (pages.get(i) instanceof AbletonSceneLauncherPage) {
 				AbletonSceneLauncherPage page = (AbletonSceneLauncherPage) pages.get(i);
-				page.updateAbletonState(tempo, overdub, selectedScene);
+				page.updateAbletonState(tempo, overdub);
 			}
 		}
 	}
@@ -622,6 +622,20 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			}
 		}
 	}
+	
+	public void updateAbletonSceneState(int sceneNum) {
+		if (this.pages.size() == 0) {
+			return;
+		}
+
+		for (int i = 0; i < this.pages.size(); i++) {
+			if (pages.get(i) instanceof AbletonSceneLauncherPage) {
+				AbletonSceneLauncherPage page = (AbletonSceneLauncherPage) pages.get(i);
+				page.updateSceneState(sceneNum);
+			}
+		}
+	}
+
 	
 	/**
 	 * Handles a press event from the monome.
@@ -1177,4 +1191,5 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	public void deletePageX(int index) {
 		deletePage(index);
 	}
+
 }

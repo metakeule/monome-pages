@@ -719,15 +719,13 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		return;
 	}
 
-	public void updateAbletonState(float tempo, int overdub, int selectedScene) {
+	public void updateAbletonState(float tempo, int overdub) {
 		this.tempo = tempo;
 		
 		if (this.overdub != overdub) {
 			this.monome.led(this.monome.sizeX - 1, 6, overdub, this.index);
 		}
 		this.overdub = overdub;
-		
-		this.selectedScene = selectedScene;
 	}
 	
 	public void clearPanel() {
@@ -801,5 +799,9 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		} else {
 			this.tracksSoloed[track] = true;
 		}
+	}
+
+	public void updateSceneState(int sceneNum) {
+		selectedScene = sceneNum;
 	}	
 }

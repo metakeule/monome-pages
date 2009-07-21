@@ -46,7 +46,8 @@ public class AbletonSysexReceiver implements Receiver {
 			int overdub = data[4];
 			byte[] sceneBytes = {data[5], data[6]};
 			int scene_num = this.midiToInt(sceneBytes);
-			this.configuration.updateAbletonState(tempo, overdub, scene_num);
+			this.configuration.updateAbletonState(tempo, overdub);
+			this.configuration.updateAbletonSceneState(scene_num);
 		}
 		
 		if (data[1] == 126) {
