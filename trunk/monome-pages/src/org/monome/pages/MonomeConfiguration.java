@@ -372,7 +372,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		
 		// set page name
 		if (e.getActionCommand().contains("Tilt Options")) {
-			if (!this.pages.get(this.curPage).isTiltPage()) {
+			if (this.curPage<1) {
+				JOptionPane.showMessageDialog(this, "Please add a page that uses tilt.");
+			} else if (!this.pages.get(this.curPage).isTiltPage()) {
 				JOptionPane.showMessageDialog(this, "Sorry, tilt has not been implemented on this page.");
 			} else {
 				this.calibrationMode = true;
@@ -417,6 +419,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (this.configPageDel) {
 			this.configPageDel = false;
 			this.curPage = this.prevPage;
+			if(this.pages.size() == 0)
+				this.curPage = -1;
 			System.out.println("cur page is " + this.curPage);
 		} else if (this.curPage >= i) {
 			this.curPage--;
