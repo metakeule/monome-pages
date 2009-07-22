@@ -46,8 +46,8 @@ public class AbletonSysexReceiver implements Receiver {
 			int overdub = data[4];
 			byte[] sceneBytes = {data[5], data[6]};
 			int scene_num = this.midiToInt(sceneBytes);
-			this.configuration.updateAbletonState(tempo, overdub);
-			this.configuration.updateAbletonSceneState(scene_num);
+			this.configuration.abletonState.setTempo(tempo);
+			this.configuration.abletonState.setOverdub(overdub);
 		}
 		
 		if (data[1] == 126) {
@@ -66,7 +66,7 @@ public class AbletonSysexReceiver implements Receiver {
 				if (data[i] == 126) {
 					tracknum = data[i+1];
 					track_armed = data[i+2];
-					this.configuration.updateAbletonTrackState(tracknum, track_armed);
+					this.configuration.abletonState.getTrack(tracknum, true).setArm(track_armed);
 					get_clip_num = true;
 					i+=2;
 					continue;
@@ -89,7 +89,7 @@ public class AbletonSysexReceiver implements Receiver {
 					} else {
 						get_clip_state = false;
 						get_clip_num = true;
-						this.configuration.updateAbletonClipState(tracknum, clipnum, clip_state, 0);
+						this.configuration.abletonState.getTrack(tracknum, true).getClip(clipnum, true).setState(clip_state);
 					}
 					continue;
 				}
@@ -99,7 +99,7 @@ public class AbletonSysexReceiver implements Receiver {
 					byte[] bytes = {data[i], data[i+1]};
 					float length = (float) ((double) this.midiToInt(bytes) / 100.0);
 					i++;
-					this.configuration.updateAbletonClipState(tracknum, clipnum, clip_state, length);
+					this.configuration.abletonState.getTrack(tracknum, true).getClip(clipnum, true).setLength(length);
 					get_clip_num = true;
 				}
 				
