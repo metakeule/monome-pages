@@ -71,39 +71,16 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 */
 	private String midiDeviceName;
 
-	/**
-	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
-	 */
-	private int[][] clipState = new int[NUM_TRACKS][NUM_CLIPS];
-	
-	private float[][] clipPosition = new float[NUM_TRACKS][NUM_CLIPS];
-	private float[][] clipLength = new float[NUM_TRACKS][NUM_CLIPS];
-
 	private int[] trackJump = {-1, -1, -1, -1, -1, -1, -1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1 ,-1};
 
 	private float[] trackMovement = new float[16];
 
 	private int[] jumpClip = new int[16];
-
-	/**
-	 * Used to represent an empty clip slot
-	 */
-	private static final int CLIP_STATE_EMPTY = 0;
-	
-	/**
-	 * Used to represent a clip slot with a clip that is stopped 
-	 */
-	private static final int CLIP_STATE_STOPPED = 1;
-	
-	/**
-	 * Used to represent a clip slot with a clip that is playing 
-	 */
-	private static final int CLIP_STATE_TRIGGERED = 3;
-	private static final int CLIP_STATE_PLAYING = 2;
 	
 	private JButton refreshButton = new JButton();
 	
-	
+	private AbletonState abletonState;
+		
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index The index of this page (the page number)
@@ -112,6 +89,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 		this.monome = monome;
 		this.index = index;
 		this.monome.configuration.initAbleton();
+		this.abletonState = this.monome.configuration.abletonState;
 	}
 
 	/* (non-Javadoc)
@@ -141,7 +119,6 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	}
 	
 	public void refreshAbleton() {
-		clipState = new int[200][1000];
 		this.monome.configuration.getAbletonControl().refreshAbleton();
 	}
 
@@ -183,34 +160,30 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	}
 	
 	public void updateClipState(int track, int clip, int state, float length) {
-		if (length != -1.0) {
-			this.clipLength[track][clip] = length;
-		}
-		if (state == CLIP_STATE_STOPPED || state == CLIP_STATE_EMPTY) {
-				this.clipPosition[track][clip] = (float) 0.0;
-		}
-		//this.clipPosition[track][clip] = (float) 0.0;
-		this.clipState[track][clip] = state;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handlePress(int, int, int)
 	 */
 	public void handlePress(int x, int y, int value) {
-		for (int clip=0; clip < 250; clip++) {
-			if (clipState[y][clip] == CLIP_STATE_PLAYING) {
-				int xPos = (int) ((float) (this.clipPosition[y][clip] / this.clipLength[y][clip]) * (float) this.monome.sizeX);
-				int xDiff = x - xPos;
-				float beatsPerButton = (float) (this.clipLength[y][clip] / (float) this.monome.sizeX);
-				float movement = xDiff * beatsPerButton;
-				this.trackJump[y] = y;
-				this.trackMovement[y] = movement;
-				this.jumpClip[y] = clip;
-				ArrayList<Integer> rowArgs = new ArrayList<Integer>();
-				rowArgs.add(y);
-				rowArgs.add(0);
-				rowArgs.add(0);
-				this.monome.led_row(rowArgs, this.index);
+		AbletonTrack track = this.abletonState.getTrack(y, false);
+		if (track != null) {
+			for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
+				AbletonClip clip = track.getClip(clipNum, false);
+				if (clip.getState() == AbletonClip.STATE_PLAYING) {
+					int xPos = (int) ((float) (clip.getPosition() / clip.getLength()) * (float) this.monome.sizeX);
+					int xDiff = x - xPos;
+					float beatsPerButton = (float) (clip.getLength() / (float) this.monome.sizeX);
+					float movement = xDiff * beatsPerButton;
+					this.trackJump[y] = y;
+					this.trackMovement[y] = movement;
+					this.jumpClip[y] = clipNum;
+					ArrayList<Integer> rowArgs = new ArrayList<Integer>();
+					rowArgs.add(y);
+					rowArgs.add(0);
+					rowArgs.add(0);
+					this.monome.led_row(rowArgs, this.index);
+				}
 			}
 		}		
 	}
@@ -229,8 +202,14 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 			rowArgs.add(0);
 			rowArgs.add(0);
 			this.monome.led_row(rowArgs, this.index);
-			for (int clip=0; clip < 250; clip++) {
-				this.clipPosition[y][clip] = (float) 0.0;
+			AbletonTrack track = this.abletonState.getTrack(y, false);
+			if (track != null) {
+				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
+					AbletonClip clip = track.getClip(clipNum, false);
+					if (clip != null) {
+						clip.setPosition(0.0f);
+					}
+				}
 			}
 		}
 	}
@@ -239,20 +218,26 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#handleTick()
 	 */
 	public void handleTick() {
-		for (int y=0; y < this.monome.sizeY; y++) {
-			if (this.trackJump[y] != -1) {
-				this.clipPosition[this.trackJump[y]][this.jumpClip[y]] += this.trackMovement[y];
-				this.trackJump(this.trackJump[y], this.trackMovement[y]);
-				this.trackJump[y] = -1;
-			}			
-		}
-		for (int y=0; y < this.monome.sizeY; y++) {
-			for (int clip=0; clip < 250; clip++) {
-				if (this.clipState[y][clip] == CLIP_STATE_PLAYING) {
-					this.clipPosition[y][clip] += (float) (4.0 / 96.0);					
-				}
-				if (this.clipPosition[y][clip] > this.clipLength[y][clip]) {
-					this.clipPosition[y][clip] -= this.clipLength[y][clip];
+		for (int y = 0; y < this.monome.sizeY; y++) {
+			AbletonTrack track = this.abletonState.getTrack(y, false);
+			if (track != null) {
+				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
+					AbletonClip clip = track.getClip(clipNum, false);
+					if (clip != null) {
+						if (clip.getState() == AbletonClip.STATE_PLAYING) {
+							clip.setPosition(clip.getPosition() + (4.0f / 96.0f));
+						} else {
+							clip.setPosition(0.0f);
+						}
+						if (this.trackJump[y] != -1) {
+							clip.setPosition(clip.getPosition() + this.trackMovement[y]);
+							this.trackJump(this.trackJump[y], this.trackMovement[y]);
+							this.trackJump[y] = -1;
+						}			
+						if (clip.getPosition() > clip.getLength()) {
+							clip.setPosition(clip.getPosition() - clip.getLength());
+						}
+					}
 				}
 			}
 		}
@@ -263,25 +248,43 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
 	public void redrawMonome() {
-		for (int y=0; y < this.monome.sizeY; y++) {
-			int foundPlayingClip = 0;
-			for (int clip=0; clip < 250; clip++) {
-				if (this.clipState[y][clip] == CLIP_STATE_PLAYING) {
-					foundPlayingClip = 1;
-					int x = (int) ((float) (this.clipPosition[y][clip] / this.clipLength[y][clip]) * (float) this.monome.sizeX);
-					for (int leds=0; leds < this.monome.sizeX; leds++) {
-						if (leds == x) {
-							this.monome.led(leds, y, 1, this.index);							
-						} else {
-							this.monome.led(leds, y, 0, this.index);
+		for (int y = 0; y < this.monome.sizeY; y++) {
+			AbletonTrack track = this.abletonState.getTrack(y, false);
+			if (track != null) {
+				int foundPlayingClip = 0;
+				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
+					AbletonClip clip = track.getClip(clipNum, false);
+					if (clip != null) {
+						if (clip.getState() == AbletonClip.STATE_PLAYING) {
+							foundPlayingClip = 1;
+							int x = (int) ((float) (clip.getPosition() / clip.getLength()) * (float) this.monome.sizeX);
+							for (int leds = 0; leds < this.monome.sizeX; leds++) {
+								if (leds == x) {
+									this.monome.led(leds, y, 1, this.index);							
+								} else {
+									this.monome.led(leds, y, 0, this.index);
+								}
+							}
 						}
+					} else {
+						ArrayList<Integer> rowParams = new ArrayList<Integer>();
+						rowParams.add(y);
+						rowParams.add(0);
+						rowParams.add(0);
+						this.monome.led_row(rowParams, index);
 					}
 				}
-			}
-			if (foundPlayingClip == 0) {
-				for (int x=0; x < this.monome.sizeX; x++) {
-					this.monome.led(x, y, 0, this.index);
+				if (foundPlayingClip == 0) {
+					for (int x=0; x < this.monome.sizeX; x++) {
+						this.monome.led(x, y, 0, this.index);
+					}
 				}
+			} else {
+				ArrayList<Integer> rowParams = new ArrayList<Integer>();
+				rowParams.add(y);
+				rowParams.add(0);
+				rowParams.add(0);
+				this.monome.led_row(rowParams, index);
 			}
 		}
 	}

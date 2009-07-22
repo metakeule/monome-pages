@@ -63,40 +63,6 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	 * This page's GUI / control panel.
 	 */
 	private JPanel panel;
-
-	/**
-	 * clipState[track_number][clip_number] - The current state of all clips in Ableton.
-	 */
-	private int[][] clipState = new int[200][1000];
-	
-	/**
-	 * Used to represent an empty clip slot
-	 */
-	private static final int CLIP_STATE_EMPTY = 0;
-	
-	/**
-	 * Used to represent a clip slot with a clip that is stopped 
-	 */
-	private static final int CLIP_STATE_STOPPED = 1;
-	
-	/**
-	 * Used to represent a clip slot with a clip that is playing 
-	 */
-	private static final int CLIP_STATE_PLAYING = 2;
-	
-	/**
-	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
-	 */
-	private boolean[][] flashState = new boolean[200][250];
-
-	/**
-	 * tracksArmed[track_number] - The record armed/disarmed state of all tracks, true if the track is armed for recording.
-	 */
-	private boolean[] tracksArmed = new boolean[200];
-	
-	private boolean[] tracksMuted = new boolean[200];
-	
-	private boolean[] tracksSoloed = new boolean[200];
 	
 	/**
 	 * The amount to offset the monome display of the clips
@@ -124,13 +90,13 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	 */
 	private int numEnabledRows = 4;
 
-	private int overdub;
-
 	private int loopLength = 1;
 
 	private int loopButton = 4;
 
-	private int numTicks;
+	private int tickNum;
+	
+	private AbletonState abletonState;
 	
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -140,6 +106,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 		this.monome = monome;
 		this.index = index;
 		this.monome.configuration.initAbleton();
+		this.abletonState = this.monome.configuration.abletonState;
 		this.refreshAbleton();
 	}
 
@@ -262,30 +229,28 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 				// if this is the bottom row then arm/disarm track number x
 				if (y == this.monome.sizeY - 1 && this.disableArmCB.isSelected() == false) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					if (this.tracksArmed[track_num] == false) {
-						this.armTrack(track_num);
-						this.tracksArmed[track_num] = true;
-						this.monome.led(x, y, 1, this.index);
-					} else {
-						this.disarmTrack(track_num);
-						this.monome.led(x, y, 0, this.index);
-						this.tracksArmed[track_num] = false;
+					AbletonTrack track = this.abletonState.getTrack(track_num, false);
+					if (track != null) {
+						if (track.getArm() == 0) {
+							this.armTrack(track_num);
+						} else {
+							this.disarmTrack(track_num);
+						}
 					}
 				}
 				// if this is the 2nd from the bottom row then solo/unsolo
 				else if ((y == this.monome.sizeY - 2 && this.disableSoloCB.isSelected() == false && this.disableArmCB.isSelected() == false) ||
 						  y == this.monome.sizeY - 1 && this.disableSoloCB.isSelected() == false && this.disableArmCB.isSelected() == true) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					if (this.tracksSoloed[track_num] == false) {
-						this.soloTrack(track_num);
-						this.tracksSoloed[track_num] = true;
-						this.monome.led(x, y, 1, this.index);
-					} else {
-						this.unsoloTrack(track_num);
-						this.monome.led(x, y, 0, this.index);
-						this.tracksSoloed[track_num] = false;
+					AbletonTrack track = this.abletonState.getTrack(track_num, false);
+					if (track != null) {
+						if (track.getSolo() == 0) {
+							this.soloTrack(track_num);
+						} else {
+							this.unsoloTrack(track_num);
+						}
+						this.viewTrack(track_num);
 					}
-					this.viewTrack(track_num);
 				}
 				// if this is the 3nd from the bottom row then mute or unmute the track
 				else if ((y == this.monome.sizeY - 3 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == false) ||
@@ -293,16 +258,15 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 						 (y == this.monome.sizeY - 2 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == false) ||
                          (y == this.monome.sizeY - 1 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == true)) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					if (this.tracksMuted[track_num] == false) {
-						this.muteTrack(track_num);
-						this.tracksMuted[track_num] = true;
-						this.monome.led(x, y, 1, this.index);
-					} else {
-						this.unmuteTrack(track_num);
-						this.monome.led(x, y, 0, this.index);
-						this.tracksMuted[track_num] = false;
+					AbletonTrack track = this.abletonState.getTrack(track_num, false);
+					if (track != null) {
+						if (track.getMute() == 0) {
+							this.muteTrack(track_num);
+						} else {
+							this.unmuteTrack(track_num);
+						}
+						this.viewTrack(track_num);
 					}
-					this.viewTrack(track_num);
 				}
 				
 				// if this is the 4th from the bottom row then mute or unmute the track
@@ -340,14 +304,20 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	 * @param track The track number to play (0 = first track)
 	 * @param clip The clip number to play (0 = first clip)
 	 */
-	public void playClip(int track, int clip) {
-		this.monome.configuration.getAbletonControl().playClip(track, clip);
-		if (this.clipState[track][clip] == CLIP_STATE_EMPTY) {
-			//int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) + 
-			//		           (((96.0 - this.numTicks) * 2.0 * ((60000.0 / (double) this.tempo)) / 96)));
-			int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) - 100.0);
-			AbletonClipDelay acd = new AbletonClipDelay(delay, track, clip, this.monome.configuration);
-			new Thread(acd).start();
+	public void playClip(int trackNum, int clipNum) {
+		AbletonTrack track = this.abletonState.getTrack(trackNum, false);
+		if (track != null) {
+			AbletonClip clip = track.getClip(clipNum, false);
+			if (clip != null) {
+				if (clip.getState() == AbletonClip.STATE_EMPTY) {
+					//int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) + 
+					//		           (((96.0 - this.numTicks) * 2.0 * ((60000.0 / (double) this.tempo)) / 96)));
+					int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) - 100.0);
+					AbletonClipDelay acd = new AbletonClipDelay(delay, trackNum, clipNum, this.monome.configuration);
+					new Thread(acd).start();
+				}
+				this.monome.configuration.getAbletonControl().playClip(trackNum, clipNum);				
+			}
 		}
 	}
 
@@ -406,11 +376,6 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	}
 	
 	public void refreshAbleton() {
-		clipState = new int[200][1000];
-		flashState = new boolean[200][250];
-		tracksArmed = new boolean[200];
-		tracksMuted = new boolean[200];
-		tracksSoloed = new boolean[200];
 		this.monome.configuration.getAbletonControl().refreshAbleton();
 	}
 
@@ -427,6 +392,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#handleReset()
 	 */
 	public void handleReset() {
+		tickNum = 0;
 		return;
 	}
 
@@ -434,10 +400,40 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#handleTick()
 	 */
 	public void handleTick() {
-		this.numTicks++;
-		if (this.numTicks == 95) {
-			System.out.println("bar");
-			this.numTicks = 0;
+		tickNum++;
+		if (tickNum == 96) {
+			tickNum = 0;
+		}
+		
+		// iterate over the monome, adjust for the current offset, check
+		// track state and flash if appropriate
+		for (int x = 0; x < this.monome.sizeX; x++) {
+			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 1));
+			AbletonTrack track = this.abletonState.getTrack(trackNum, false);
+			if (track != null) {
+				for (int y = 0; y < this.monome.sizeY - numEnabledRows; y++) {
+					int clipNum = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
+					AbletonClip clip = track.getClip(clipNum, false);
+					if (clip != null) {
+						if (clip.getState() == AbletonClip.STATE_PLAYING) {
+							if (tickNum % 24 == 0) {
+								this.monome.led(x, y, 1, this.index);
+							}
+							if ((tickNum + 12) % 24 == 0) {
+								this.monome.led(x, y, 0, this.index);
+							}
+						}
+						if (clip.getState() == AbletonClip.STATE_TRIGGERED) {
+							if (tickNum % 12 == 0) {
+								this.monome.led(x, y, 1, this.index);
+							}
+							if ((tickNum + 6) % 12 == 0) {
+								this.monome.led(x, y, 0, this.index);
+							}
+						}
+					}
+				}
+			}
 		}
 		return;
 	}
@@ -447,22 +443,20 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 	 */
 	public void redrawMonome() {
 		// redraw the upper part of the monome (the clip state)
-		for (int track = 0; track < this.monome.sizeX - 1; track++) {
-			for (int clip = 0; clip < (this.monome.sizeY - this.numEnabledRows); clip++) {
-				int clip_num = clip + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-				int track_num = track + (this.trackOffset * (this.monome.sizeX - 1));
-				if (this.clipState[track_num][clip_num] == CLIP_STATE_PLAYING) {
-					if (this.flashState[track][clip] == true) {
-						this.flashState[track][clip] = false;
-						this.monome.led(track, clip, 1, this.index);
-					} else {
-						this.flashState[track][clip] = true;
-						this.monome.led(track, clip, 0, this.index);
+		for (int x = 0; x < this.monome.sizeX - 1; x++) {
+			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 1));
+			AbletonTrack track = this.abletonState.getTrack(trackNum, false);
+			if (track != null) {
+				for (int y = 0; y < (this.monome.sizeY - this.numEnabledRows); y++) {
+					int clipNum = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
+					AbletonClip clip = track.getClip(clipNum, false);
+					if (clip != null) {
+						if (clip.getState() == AbletonClip.STATE_STOPPED) {
+							this.monome.led(x, y, 1, this.index);
+						} else if (clip.getState() == AbletonClip.STATE_EMPTY) {
+							this.monome.led(x, y, 0, this.index);
+						}
 					}
-				} else if (this.clipState[track_num][clip_num] == CLIP_STATE_STOPPED) {
-					this.monome.led(track, clip, 1, this.index);
-				} else if (this.clipState[track_num][clip_num] == CLIP_STATE_EMPTY) {
-					this.monome.led(track, clip, 0, this.index);
 				}
 			}
 		}
@@ -472,10 +466,13 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 			for (int i = 0; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
 				int yRow = this.monome.sizeY - 1;
-				if (this.tracksArmed[track_num] == true) {
-					this.monome.led(i, yRow, 1, this.index);
-				} else {
-					this.monome.led(i, yRow, 0, this.index);
+				AbletonTrack track = this.abletonState.getTrack(track_num, false);
+				if (track != null) {
+					if (track.getArm() == 1) {
+						this.monome.led(i, yRow, 1, this.index);
+					} else {
+						this.monome.led(i, yRow, 0, this.index);
+					}
 				}
 			}
 		}
@@ -490,10 +487,13 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 				} else {
 					yRow = this.monome.sizeY - 1;
 				}
-				if (this.tracksSoloed[track_num] == true) {
-					this.monome.led(i, yRow, 1, this.index);
-				} else {
-					this.monome.led(i, yRow, 0, this.index);
+				AbletonTrack track = this.abletonState.getTrack(track_num, false);
+				if (track != null) {
+					if (track.getSolo() == 1) {
+						this.monome.led(i, yRow, 1, this.index);
+					} else {
+						this.monome.led(i, yRow, 0, this.index);
+					}
 				}
 			}
 		}
@@ -510,10 +510,13 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 				} else {
 					yRow = this.monome.sizeY - 3;
 				}
-				if (this.tracksMuted[track_num] == false) {
-					this.monome.led(i, yRow, 1, this.index);
-				} else {
-					this.monome.led(i, yRow, 0, this.index);
+				AbletonTrack track = this.abletonState.getTrack(track_num, false);
+				if (track != null) {
+					if (track.getMute() == 0) {
+						this.monome.led(i, yRow, 1, this.index);
+					} else {
+						this.monome.led(i, yRow, 0, this.index);
+					}
 				}
 			}
 		}
@@ -602,46 +605,6 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 		}
 	}
 
-	/**
-	 * Called by AbletonClipUpdater based on messages received by LiveOSC.
-	 * 
-	 * @param track The track number to update
-	 * @param clip The clip number to update
-	 * @param state The new state
-	 */
-	public void updateClipState(int track, int clip, int state) {
-		if (this.clipState[track][clip] != state) {
-			for (int x = 0; x < this.monome.sizeX - 1; x++) {
-				for (int y = 0; y < this.monome.sizeY - this.numEnabledRows; y++) {
-					int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-					this.flashState[x][clip_num] = false;
-				}
-			}
-		}
-		this.clipState[track][clip] = state;
-	}
-
-	/**
-	 * Called by AbletonClipUpdater based on messages received by LiveOSC.
-	 * 
-	 * @param track The track number to update
-	 * @param armed The state of the track (true = armed)
-	 */
-	public void updateTrackState(int track, int armed) {
-		boolean redrawNeeded = false;
-		boolean state = (armed != 0);
-
-		if (this.tracksArmed[track] != state) {
-			redrawNeeded = true;
-		}
-
-		this.tracksArmed[track] = state;
-
-		if (redrawNeeded) {
-			this.redrawMonome();
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheEnabled()
 	 */
@@ -656,15 +619,6 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 		return;
 	}
 
-	public void updateAbletonState(float tempo, int overdub) {
-		this.tempo = tempo;
-		
-		if (this.overdub != overdub) {
-			this.monome.led(this.monome.sizeX - 1, 6, overdub, this.index);
-		}
-		this.overdub = overdub;
-	}
-	
 	public void clearPanel() {
 		this.panel = null;
 	}
@@ -713,28 +667,4 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 			this.setDisableStop(disableStop);
 		}
 	}
-
-	public void updateAbletonArmState(int track, int state) {
-		if (state == 0) {
-			this.tracksArmed[track] = false;
-		} else {
-			this.tracksArmed[track] = true;
-		}
-	}
-
-	public void updateAbletonMuteState(int track, int state) {
-		if (state == 0) {
-			this.tracksMuted[track] = false;
-		} else {
-			this.tracksMuted[track] = true;
-		}
-	}
-
-	public void updateAbletonSoloState(int track, int state) {
-		if (state == 0) {
-			this.tracksSoloed[track] = false;
-		} else {
-			this.tracksSoloed[track] = true;
-		}
-	}	
 }

@@ -162,6 +162,8 @@ public class Configuration implements Receiver {
 	private String abletonMIDIOutDeviceName;
 	
 	private AbletonControl abletonControl;
+	
+	public AbletonState abletonState;
 
 	private int abletonOSCUpdateDelay = 100;
 	
@@ -172,6 +174,7 @@ public class Configuration implements Receiver {
 	 */
 	public Configuration(String name) {
 		this.name = name;
+		this.abletonState = new AbletonState();
 	}
 
 	/**
@@ -590,11 +593,15 @@ public class Configuration implements Receiver {
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
 			this.abletonOSCPortIn.addListener("/live/track/info", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/clip/info", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/state", this.abletonOSCListener);
+			
 			this.abletonOSCPortIn.addListener("/live/mute", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/arm", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/solo", this.abletonOSCListener);
-			this.abletonOSCPortIn.addListener("/live/state", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/scene", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/tempo", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/overdub", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/refresh", this.abletonOSCListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
 			e.printStackTrace();
@@ -615,63 +622,6 @@ public class Configuration implements Receiver {
 		if (this.abletonOSCClipUpdater != null) {
 			this.abletonOSCClipUpdater.stop();
 			this.abletonOSCClipUpdater = null;
-		}
-	}
-
-	/**
-	 * This is called by AbletonClipUpdater and passed along to all monomes, who pass it to
-	 * any Ableton Clip Launcher pages that belong to them.
-	 * 
-	 * @param track
-	 * @param clip
-	 * @param state
-	 */
-	public void updateAbletonClipState(int track, int clip, int state, float length) {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonClipState(track, clip, state, length);
-		}
-	}
-	
-	public void updateAbletonState(float tempo, int overdub) {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonState(tempo, overdub);
-		}
-	}
-	
-	public void updateAbletonSceneState(int sceneNum) {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonSceneState(sceneNum);
-		}
-	}
-	
-	public void updateAbletonArmState(int track, int state) {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonArmState(track, state);
-		}
-	}
-	
-	public void updateAbletonMuteState(int track, int state) {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonMuteState(track, state);
-		}
-	}
-	
-	public void updateAbletonSoloState(int track, int state) {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateAbletonSoloState(track, state);
-		}
-	}
-	
-	/**
-	 * This is called by AbletonClipUpdater and passed along to all monomes, who pass it to
-	 * any Ableton Clip Launcher pages that belong to them.
-	 * 
-	 * @param track
-	 * @param armed
-	 */
-	public void updateAbletonTrackState(int track, int armed) {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).updateTrackState(track, armed);
 		}
 	}
 
@@ -818,6 +768,5 @@ public class Configuration implements Receiver {
 	public void setAbletonMIDIUpdateDelay(int midiUpdateDelay) {
 		this.abletonMIDIUpdateDelay = midiUpdateDelay;
 	}
-
 
 }

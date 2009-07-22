@@ -373,15 +373,22 @@ public class AbletonOSCControl implements AbletonControl {
 	}
 	
 	public void refreshState() {
-		OSCMessage msg = new OSCMessage("/live/state");
+		OSCMessage msg  = new OSCMessage("/live/state");
+		OSCMessage msg2 = new OSCMessage("/live/tempo");
+		OSCMessage msg3 = new OSCMessage("/live/overdub");
+		OSCMessage msg4 = new OSCMessage("/live/scene");
 		try {
 			this.configuration.getAbletonOSCPortOut().send(msg);
+			this.configuration.getAbletonOSCPortOut().send(msg2);
+			this.configuration.getAbletonOSCPortOut().send(msg3);
+			this.configuration.getAbletonOSCPortOut().send(msg4);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
 	}
 
 	public void refreshAbleton() {
+		this.configuration.abletonState.reset();
 		refreshAllTracks();
 		refreshState();
 	}
