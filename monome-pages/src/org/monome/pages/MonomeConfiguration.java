@@ -372,7 +372,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		
 		// set page name
 		if (e.getActionCommand().contains("Tilt Options")) {
-			if (this.curPage<1) {
+			if (this.curPage<0) {
 				JOptionPane.showMessageDialog(this, "Please add a page that uses tilt.");
 			} else if (!this.pages.get(this.curPage).isTiltPage()) {
 				JOptionPane.showMessageDialog(this, "Sorry, tilt has not been implemented on this page.");
@@ -421,7 +421,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.curPage = this.prevPage;
 			if(this.pages.size() == 0)
 				this.curPage = -1;
-			System.out.println("cur page is " + this.curPage);
+			System.out.println("cur paged is " + this.curPage);
 		} else if (this.curPage >= i) {
 			this.curPage--;
 			System.out.println("cur page is " + this.curPage);
@@ -537,7 +537,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return;
 		}
 		// if page change mode is on and this is a button on the bottom row then change page and return
-		if (this.pageChangeMode == 1 && value == 1) {
+		if (this.pageChangeMode == 1 && value == 1 && !calibrationMode) {
 			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
 			int patternNum = x;
 			int numPages = this.pages.size();
@@ -559,7 +559,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 
 		// if this is the bottom right button and we pressed the button (value == 1), turn page change mode on
-		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
+		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1 && !calibrationMode) {
 			this.pageChangeMode = 1;
 			this.pageChanged = false;
 			this.drawPatternState();
@@ -568,7 +568,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 
 		// if this is the bottom right button and we let go turn it off
 		// and send the value == 1 press along to the page
-		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0) {
+		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0 && !calibrationMode) {
 			this.pageChangeMode = 0;
 			if (this.pageChanged == false) {
 				if (this.pages.get(curPage) != null) {
