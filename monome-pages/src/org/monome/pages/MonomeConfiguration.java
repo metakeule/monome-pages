@@ -447,6 +447,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		
 		this.setJMenuBar(this.createMenuBar());
+		this.pack();
 	}
 
 	/**
@@ -639,11 +640,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 
 		menuBar = new JMenuBar();
 		
-		if(this.calibrationMode)
-		{
+		if(this.calibrationMode) {
 			//do nothing...menu disabled
-		} else
-		{	
+			return null;
+		} else {	
 			fileMenu = new JMenu("Page");
 			fileMenu.setMnemonic(KeyEvent.VK_P);
 			fileMenu.getAccessibleContext().setAccessibleDescription("Page Menu");
