@@ -45,8 +45,26 @@ public interface Page {
 	 */
 	public void handlePress(int x, int y, int value);
 	
+	/**
+	 * Called when the 40h sends tilt/adc data
+	 */
 	public void handleADC(int adcNum, float value);
+	/**
+	 * Called when the 64 sends tilt/adc data
+	 */
 	public void handleADC(float x, float y);
+	/**
+	 * Returns true if tilt code has been implemented for this page (set by page author)
+	 */
+	public boolean isTiltPage();
+	/**
+	 * Get the ADC/tilt options for this page
+	 */
+	public ADCOptions getAdcOptions();
+	/**
+	 * Set the ADC/tilt options for this page
+	 */
+	public void setAdcOptions(ADCOptions options);
 
 	/**
 	 * Called whenever the monome needs to be redrawn from the current page state.  Should
@@ -63,8 +81,14 @@ public interface Page {
 	 * Returns the name of the page.
 	 * 
 	 * @return The name of the page
+	 * @param optional: "type" will return page type instead of name
 	 */
 	public String getName();
+	
+	/**
+	 * Sets the name of the page.
+	 */
+	public void setName(String name);
 
 	/**
 	 * Returns the page's GUI panel.

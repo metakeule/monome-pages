@@ -98,7 +98,16 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * The currently selected page
 	 */
 	public int curPage = 0;
+	
+	/**
+	 * The previously selected page
+	 */
+	private int prevPage = 0; 
 
+	/**
+	 * Configuration page was deleted, switch to the previous page instead of last
+	 */
+	private boolean configPageDel = false;
 	/**
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
@@ -272,13 +281,13 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.configuration.closeMonome(this.index);
 		}
 		// Switch page
-		if (e.getActionCommand().contains("Show Page")) {
+		if (e.getActionCommand().contains("Show ")) {
 			String[] pieces = e.getActionCommand().split(":");
 			int index = Integer.parseInt(pieces[0]);
 			this.switchPage(this.pages.get(index - 1), index - 1, true);
 		}
 		// Delete page
-		if (e.getActionCommand().contains("Delete Page")) {
+		if (e.getActionCommand().contains("Delete ")) {
 			String[] pieces = e.getActionCommand().split(":");
 			int index = Integer.parseInt(pieces[0]);
 			this.deletePage((index - 1));
@@ -345,11 +354,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		
 		// tilt/adc configuration
-		if (e.getActionCommand().contains("Configure Tilt/ADC")) {
+		if (e.getActionCommand().contains("Tilt Calibration")) {
 			this.calibrationMode = true;
 			Page page = new ConfigADCPage(this, this.numPages);		
 			
-			this.pages.add(this.numPages, page);
+			this.prevPage = this.curPage;
+			this.pages.add(this.numPages, page);			
 			this.switchPage(page, this.numPages, true);
 
 			int numPatterns = this.sizeX;
@@ -359,13 +369,56 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			// recreate the menu bar to include this page in the show page list
 			this.setJMenuBar(this.createMenuBar());			
 		}
+		
+		// set page name
+		if (e.getActionCommand().contains("Tilt Options")) {
+			if (!this.pages.get(this.curPage).isTiltPage()) {
+				JOptionPane.showMessageDialog(this, "Sorry, tilt has not been implemented on this page.");
+			} else {
+				this.calibrationMode = true;
+				Page page = new ADCOptionsPage(this, this.numPages, this.pages.get(curPage));		
+				
+				this.prevPage = this.curPage;
+				this.pages.add(this.numPages, page);
+				this.switchPage(page, this.numPages, true);
+
+				int numPatterns = this.sizeX;
+				this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
+				
+				this.numPages++;
+				// recreate the menu bar to include this page in the show page list
+				this.setJMenuBar(this.createMenuBar());	
+			}			
+		}
+		
+		// set page name
+		if (e.getActionCommand().contains("Set Current Page Name")) {
+			String option = (String)JOptionPane.showInputDialog(
+					this,
+					"Choose a new name for this page.",
+					"Set Page Name",
+					JOptionPane.PLAIN_MESSAGE,
+					null,
+					null,
+					"");
+			if (option == null) {
+				return;
+			} else {
+				this.pages.get(this.curPage).setName(option);
+			}
+			
+		}
 	}
 
 	private void deletePage(int i) {
 		this.pages.get(i).destroyPage();
 		this.pages.remove(i);
 		this.numPages--;
-		if (this.curPage >= i) {
+		if (this.configPageDel) {
+			this.configPageDel = false;
+			this.curPage = this.prevPage;
+			System.out.println("cur page is " + this.curPage);
+		} else if (this.curPage >= i) {
 			this.curPage--;
 			System.out.println("cur page is " + this.curPage);
 		}
@@ -605,7 +658,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				subMenu.add(menuItem);
 			} else {
 				for (int i=0; i < this.numPages; i++) {
-					menuItem = new JMenuItem(i+1 + ": Show Page " + this.pages.get(i).getName());
+					menuItem = new JMenuItem(i+1 + ": Show " + this.pages.get(i).getName());
 					menuItem.addActionListener(this);
 					subMenu.add(menuItem);
 				}
@@ -619,7 +672,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				subMenu.add(menuItem);
 			} else {
 				for (int i=0; i < this.numPages; i++) {
-					menuItem = new JMenuItem(i+1 + ": Delete Page " + this.pages.get(i).getName());
+					menuItem = new JMenuItem(i+1 + ": Delete " + this.pages.get(i).getName());
 					menuItem.addActionListener(this);
 					subMenu.add(menuItem);
 				}
@@ -654,11 +707,21 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			}
 			fileMenu.add(subMenu);
 			
-			menuItem = new JMenuItem ("Configure Tilt/ADC");
-			menuItem.getAccessibleContext().setAccessibleDescription("Configure Tilt/ADC");	
+			menuItem = new JMenuItem ("Set Current Page Name");
+			menuItem.getAccessibleContext().setAccessibleDescription("Set Current Page Name");	
 			menuItem.addActionListener(this);
 			fileMenu.add(menuItem);
 			
+			menuItem = new JMenuItem ("Tilt Options");
+			menuItem.getAccessibleContext().setAccessibleDescription("Setup Tilt for this Page");	
+			menuItem.addActionListener(this);
+			fileMenu.add(menuItem);
+			
+			menuItem = new JMenuItem ("Tilt Calibration");
+			menuItem.getAccessibleContext().setAccessibleDescription("Setup Tilt for this Monome");	
+			menuItem.addActionListener(this);
+			fileMenu.add(menuItem);
+					
 			menuItem = new JMenuItem("Remove Configuration", KeyEvent.VK_R);
 			menuItem.getAccessibleContext().setAccessibleDescription("Create a new configuration");
 			menuItem.addActionListener(this);
@@ -953,6 +1016,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		xml += "    <max>" + max[2] + "</max>\n";
 		xml += "    <max>" + max[3] + "</max>\n";
 		
+		xml += "    <adcEnabled>" + this.adcObj.isEnabled() + "</adcEnabled>\n";
+		
 		for (int i=0; i < this.numPages; i++) {
 			if (this.pages.get(i).toXml() != null) {
 				xml += "    <page class=\"" + this.pages.get(i).getClass().getName() + "\">\n";
@@ -1009,9 +1074,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	}
 	
 	/**
-	 * Used so the ConfigADCPage can delete it's self on exit
+	 * Used so the ConfigADCPage can delete its self on exit
 	 */
 	public void deletePageX(int index) {
+		this.configPageDel = true;
 		deletePage(index);
 	}
 

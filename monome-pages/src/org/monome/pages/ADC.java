@@ -20,7 +20,7 @@ public class ADC  {
 	 */
 	private float[] min = {0f, 0f, .45f, .45f};
 	private float[] max = {1f, 1f, .60f, .60f};
-	//private int version = 0;
+	private Boolean enabled = false;
 		
 	//setting the max and min values (configure for 40h)
 	public void configure (int adcNum, float  value)
@@ -91,10 +91,6 @@ public class ADC  {
 	{
 		return min;
 	}
-	/*public int getMonomeVersion()
-	{
-		return version;
-	}*/
 	public void setMax (float[] max)
 	{
 		this.max = max;
@@ -103,11 +99,16 @@ public class ADC  {
 	{
 		this.min = min;
 	}
-	/*public void setMonomeVersion(int version)
-	{
-		this.version = version;
+	
+	public boolean isEnabled()
+	{ 
+		return enabled;
 	}
-	*/
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+	
 	
 	//converts raw value to value in midi range 0-127  (for 40h)
 	public int getMidi(int adcNum, float value)
@@ -172,10 +173,11 @@ public class ADC  {
 	public void sendCC(Receiver recv, int midiChannel, int [] ccADC, MonomeConfiguration monome, int adcNum, float value) 
 	{
 		ShortMessage msg = new ShortMessage();		
-		
+		if (adcNum > 3) adcNum = 3;
+		if (adcNum < 0) adcNum = 0;
 		try 
 		{
-			switch (adcNum) 
+			/*switch (adcNum) 
 			{
 				case 0: 			
 					//System.out.println(x + "case  R knob");
@@ -205,7 +207,11 @@ public class ADC  {
 					break;
 				default:
 					break;
-			}		
+			}	*/
+			msg.setMessage(ShortMessage.CONTROL_CHANGE, midiChannel, ccADC[adcNum], monome.adcObj.getMidi(adcNum, value));
+			if (recv != null) {
+				recv.send(msg, -1);
+			}
 		} 
 		catch (InvalidMidiDataException e) 
 		{

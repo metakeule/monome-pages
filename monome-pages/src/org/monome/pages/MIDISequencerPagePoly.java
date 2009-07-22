@@ -299,10 +299,16 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	private Receiver recv;
 
 	private String midiDeviceName;
+
+	// tilt stuff 
+	private ADCOptions pageADCOptions = new ADCOptions();
+
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "MIDI Sequencer Poly";
+	private JLabel pageNameLBL;
 	
-	private JTextField ccOffsetTF;
-	private int ccOffset = 0;		
-	private int [] ccADC = {0, 1, 2, 3}; 
 
 	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
@@ -2036,12 +2042,21 @@ globalRandomVelocityValue=0;*/
 			}
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
+	 */	
+	public String getName() 
+	{		
+		return pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
 	 */
-	public String getName() {
-		return "MIDI Sequencer Poly";
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -2066,8 +2081,8 @@ globalRandomVelocityValue=0;*/
 
 				AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Sequencer Poly");
-		panel.add(label, new AnchorConstraint(0, 382, 82, 0, AnchorConstraint.ANCHOR_REL, 
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": MIDI Sequencer Poly");
+		panel.add(pageNameLBL, new AnchorConstraint(0, 382, 82, 0, AnchorConstraint.ANCHOR_REL, 
 
 				AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getUpdatePrefsButton(), new AnchorConstraint(717, 345, 837, 1, 
@@ -2094,18 +2109,7 @@ globalRandomVelocityValue=0;*/
 		midiout.setPreferredSize(new java.awt.Dimension(180, 14));
 		
 		
-		
-		JLabel ccLable = new JLabel("<html>CC Offset (for tilt/adc)</html>");
-		panel.add(ccLable, new AnchorConstraint(717, 760, 880, 610, AnchorConstraint.ANCHOR_REL, 
-				AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		//ccLable.setPreferredSize(new java.awt.Dimension(180, 14));
-		
-		ccOffsetTF = new JTextField();
-		ccOffsetTF.setText(Integer.toString(ccOffset));
-		panel.add(ccOffsetTF, new AnchorConstraint(717, 800, 837, 760, AnchorConstraint.ANCHOR_REL, 
-				AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		//ccOffsetTF.setPreferredSize(new java.awt.Dimension(180, 14));
-		
+				
 		this.getAddMidiOutButton().addActionListener(this);
 		this.getUpdatePrefsButton().addActionListener(this);
 		this.panel = panel;
@@ -2215,6 +2219,7 @@ globalRandomVelocityValue=0;*/
 		StringBuffer xml = new StringBuffer();
 		int holdmode = 0;
 		xml.append("      <name>MIDI Sequencer Poly</name>\n");
+		xml.append("      <pageName>" + this.pageName + "</pageName>\n");
 		if (this.getHoldModeCB().isSelected() == true) {
 			holdmode = 1;
 		}
@@ -2222,7 +2227,13 @@ globalRandomVelocityValue=0;*/
 		xml.append("      <banksize>" + this.bankSize + "</banksize>\n");
 		xml.append("      <midichannel>" + this.midiChannel + "</midichannel>\n");
 		xml.append("      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n");
-		xml.append("      <ccoffset>" + this.ccOffset + "</ccoffset>\n");
+		
+		xml.append("      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n");
+		xml.append("      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n");
+		xml.append("      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n");
+		xml.append("      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n");
+		xml.append("      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"); 	
+		
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");
 		}
@@ -2277,22 +2288,17 @@ globalRandomVelocityValue=0;*/
 			this.noteNumbers[13] = this.noteToMidiNumber(this.row14tf.getText());
 			this.noteNumbers[14] = this.noteToMidiNumber(this.row15tf.getText());
 			this.midiChannel  = this.channelTF.getText();
+			if (Integer.parseInt(this.midiChannel) < 1) {
+				this.midiChannel = "1";
+				this.channelTF.setText("1");
+			}
 			
 			try {
 				this.setBankSize(Integer.parseInt(this.bankSizeTF.getText()));
-				this.setCCOffset(Integer.parseInt(this.ccOffsetTF.getText()));
 			} catch (NumberFormatException nfe) {
 				nfe.printStackTrace();
 			}
 		}
-	}
-	
-	public void setCCOffset(int offset) {		
-		this.ccOffset = offset;
-		this.ccADC[0] = this.ccOffset + 0;
-		this.ccADC[1] = this.ccOffset + 1;
-		this.ccADC[2] = this.ccOffset + 2;
-		this.ccADC[3] = this.ccOffset + 3;
 	}
 
 	public void setBankSize(int banksize) {
@@ -2903,17 +2909,53 @@ globalRandomVelocityValue=0;*/
 	}
 
 
-	public void handleADC(int adcNum, float value) {		
-		this.monome.adcObj.sendCC(this.recv, Integer.parseInt(midiChannel), ccADC, monome, adcNum, value);		 
+	public void handleADC(int adcNum, float value) {
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi != -1) {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}  else {
+				int chan = Integer.parseInt(midiChannel)-1;
+				if (chan < 0) chan = 0;
+				this.monome.adcObj.sendCC(this.recv, chan, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}
+		}
 	}
 	
-	public void handleADC(float x, float y) {		
-		this.monome.adcObj.sendCC(this.recv, Integer.parseInt(midiChannel), ccADC, monome, x, y);
+	public void handleADC(float x, float y) {
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi != -1) {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, x, y);
+			} else {
+				int chan = Integer.parseInt(midiChannel)-1;
+				if (chan < 0) chan = 0;
+				this.monome.adcObj.sendCC(this.recv, chan, this.pageADCOptions.getCcADC(), monome, x, y);
+			}			
+		}
+	}
+	public boolean isTiltPage() {
+		return true;
+	}
+	public ADCOptions getAdcOptions() {
+		return this.pageADCOptions;
 	}
 
+	public void setAdcOptions(ADCOptions options) { 
+		this.pageADCOptions = options;
+	}	
+	
 	public void configure(Element pageElement) {
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
+		
 		NodeList modeNL = pageElement.getElementsByTagName("holdmode");
-		Element el = (Element) modeNL.item(0);
+		el = (Element) modeNL.item(0);
 		if (el != null) {
 			NodeList nl = el.getChildNodes();
 			String holdmode = ((Node) nl.item(0)).getNodeValue();
@@ -2959,10 +3001,43 @@ globalRandomVelocityValue=0;*/
 		el = (Element) nl.item(0);
 		if (el != null) {
 			nl = el.getChildNodes();
-			String ccOffset = ((Node) nl.item(0)).getNodeValue();
-			ccOffsetTF.setText(ccOffset);
-			this.setCCOffset(Integer.parseInt(ccOffset));
+			String	ccOffset = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setCcOffset(Integer.parseInt(ccOffset));
+		}	
+		
+		nl = pageElement.getElementsByTagName("sendADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	sendADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setSendADC(Boolean.parseBoolean(sendADC));
 		}
+		
+		nl = pageElement.getElementsByTagName("adcTranspose");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	adcTranspose = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setAdcTranspose(Integer.parseInt(adcTranspose));
+		}
+		
+		nl = pageElement.getElementsByTagName("midiChannelADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	midiChannelADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setMidiChannel(Integer.parseInt(midiChannelADC));
+		}
+		
+		nl = pageElement.getElementsByTagName("recv");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	recv = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setRecv(recv);
+		}
+		
+		
 		this.redrawMonome();
 	}
 }

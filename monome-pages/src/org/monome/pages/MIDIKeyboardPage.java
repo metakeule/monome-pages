@@ -47,6 +47,7 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak, Stephen McLeod
  *
  */
+
 public class MIDIKeyboardPage implements Page, ActionListener {
 
 	/**
@@ -74,6 +75,21 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	private int[] octave = new int[16];
 
+	
+
+	private JTextField scaleTF1;
+	private JTextField scaleTF2;
+	private JTextField scaleTF3;	
+	private JTextField scaleTF4;
+	private JTextField scaleTF5;
+	private JTextField scaleTF6;
+	
+	private JButton resetScales;
+	
+	/**
+	 * The selected key 
+	 */
+	private int myKey = 0;
 	/**
 	 * The selected scale
 	 */
@@ -128,21 +144,6 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	Major pentatonic scale:    {2,2,3,2,3,2,2}   {2,2,3,2,3}
 
 	****************** alternative scales ***************/
-
-	private JTextField scaleTF1;
-	private JTextField scaleTF2;
-	private JTextField scaleTF3;	
-	private JTextField scaleTF4;
-	private JTextField scaleTF5;
-	private JTextField scaleTF6;
-	
-	private JButton resetScales;
-	
-	/**
-	 * The selected key 
-	 */
-	private int myKey = 0;
-	
 	/**
 	 * Natural:0, Sharp:1, Flat:-1 
 	 */
@@ -180,19 +181,26 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 * The Update Preferences button 
 	 */
 	private JButton updatePrefsButton;
-	private JTextField ccOffsetTF;
-	private int ccOffset = 0;
 	
-	private int [] ccADC = {0, 1, 2, 3}; 
-	private int adcTranspose  = 0;
+	
 	
 	private Thread thread;
 	private boolean blinkNow = true;
 	
 	private int pressCount = 0;
 	
+	
 	private boolean functionLock = false;
-
+	
+	// tilt stuff 
+	private ADCOptions pageADCOptions = new ADCOptions();
+		
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "MIDI Keyboard";
+	private JLabel pageNameLBL;
+	
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
 	 * @param index The index of this page (the page number)
@@ -380,7 +388,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 				if (!(y == 6 && x == 7) && !(y == 7 && x < 2) && !this.functionLock) this.stopNotes();
 				// select the midi channel
 			} else {		
-				if (x == 7 && y < 4 && !this.functionLock) {
+				if (x == 7 && y < 4 && !this.functionLock) {					
 					this.midiChannel = y; 
 					for (int i = 0; i < 4; i++) {
 						if (this.midiChannel == i) {
@@ -390,31 +398,29 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						}
 					}
 					if (!(y == 6 && x == 7) && !(y == 7 && x < 2) && !this.functionLock) this.stopNotes();
-				} else if (x == 7 && y == 4) {
-					if (this.adcTranspose == 1) {
+				} else if (x == 7 && y == 4) {					
+					//set the offset for the adc sends
+					if (this.pageADCOptions.getAdcTranspose() == 1) {
 						this.monome.led(7, 4, 0, this.index);
 						this.monome.led(7, 5, 0, this.index);
-						this.adcTranspose = 0;
-						setADCOffset();
-					} else if (this.adcTranspose == 2){
+						this.pageADCOptions.setAdcTranspose(0);
+					} else if (this.pageADCOptions.getAdcTranspose() == 2){
 						this.monome.led(7, 4, 1, this.index);
 						this.monome.led(7, 5, 0, this.index);
-						this.adcTranspose = 1;
-						setADCOffset();
+						this.pageADCOptions.setAdcTranspose(1);
 					} else {
 						this.monome.led(x, y, 1, this.index);
-						this.adcTranspose = 1;
-						setADCOffset();
+						this.pageADCOptions.setAdcTranspose(1);
 					} 					
 				} else if (x == 7 && y == 5) {
 					this.monome.led(7, 4, 1, this.index);
 					this.monome.led(7, 5, 1, this.index);
-					this.adcTranspose = 2;
-					setADCOffset();
+					this.pageADCOptions.setAdcTranspose(2);
 				}
 			}
 		} else {
-			 if (y == 6 && x == 7) {
+			if (y == 6 && x == 7) {
+				//turn off sustain
 				this.monome.led(x, y, 0, this.index);
 				this.sustain = 0;
 				this.doSustain();
@@ -697,14 +703,14 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						this.monome.led(x, y, 0, this.index);
 					}
 				} else if (x == 7 && y == 4) {
-					if (this.adcTranspose == 1) {
+					if (this.pageADCOptions.getAdcTranspose() == 1) {
 						this.monome.led(x, y, 1, this.index);
 					} else {
 						this.monome.led(x, y, 0, this.index);
 					}
 						
 				} else if (x == 7 && y == 5) {
-					if (this.adcTranspose == 2){
+					if (this.pageADCOptions.getAdcTranspose() == 2){
 						this.monome.led(7, 4, 1, this.index);
 						this.monome.led(7, 5, 1, this.index);
 					} else {
@@ -808,11 +814,22 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		}
 	}
 
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */
-	public String getName() {
-		return "MIDI Keyboard Extended";
+	
+	public String getName() 
+	{		
+		return this.pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
+	 */
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);	
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -827,25 +844,14 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		panel.setLayout(null);
 		panel.setPreferredSize(new java.awt.Dimension(220, 240));
 		
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Keyboard Extended");
-		panel.add(label);
-		label.setBounds(0, 0, 245, 14);
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": " + pageName);
+		panel.add(pageNameLBL);
+		pageNameLBL.setBounds(0, 0, 245, 14);
 		
-		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
+		JLabel midiout = new JLabel("<html>MIDI Out: " + this.midiDeviceName + "</html>");
 		panel.add(midiout);
-		midiout.setBounds(20, 25, 200, 14);
-		
-		JLabel ccLable = new JLabel("CC Offset (for tilt/adc)");
-		panel.add(ccLable);
-		ccLable.setBounds(20, 50, 130, 14);
-		
-		ccOffsetTF = new JTextField();
-		ccOffsetTF.setText(Integer.toString(ccOffset));
-		panel.add(ccOffsetTF);
-		ccOffsetTF.setBounds(150, 50, 30, 20);
-		
-		
-		
+		midiout.setBounds(20, 25, 200, 35);
+				
 		JLabel scalelbl = new JLabel("Scales:");
 		panel.add(scalelbl);
 		scalelbl.setBounds(20, 75, 100, 14);
@@ -907,15 +913,22 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public String toXml() {
 		String xml = "";
-		xml += "      <name>MIDI Keyboard Extended</name>\n";
+		xml += "      <name>MIDI Keyboard</name>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
-		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <scaleStr1>" + this.scaleStr[0].toString() + "</scaleStr1>\n";
 		xml += "      <scaleStr2>" + this.scaleStr[1].toString() + "</scaleStr2>\n";
 		xml += "      <scaleStr3>" + this.scaleStr[2].toString() + "</scaleStr3>\n";
 		xml += "      <scaleStr4>" + this.scaleStr[3].toString() + "</scaleStr4>\n";
 		xml += "      <scaleStr5>" + this.scaleStr[4].toString() + "</scaleStr5>\n";
 		xml += "      <scaleStr6>" + this.scaleStr[5].toString() + "</scaleStr6>\n";
+		
+		xml += "      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n";
+		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
+		xml += "      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n";
+		xml += "      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n";
+		xml += "      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"; 	
+		
 		return xml;
 	}
 
@@ -942,8 +955,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			this.addMidiOutDevice(deviceName);
 
 		}
-		if (e.getActionCommand().equals("Update Preferences")) {
-			setCCOffset(Integer.parseInt(ccOffsetTF.getText()));
+		if (e.getActionCommand().equals("Update Preferences")) {			
 			String s[] = new String[6];			
 			s[0] = this.scaleTF1.getText();
 			s[1] = this.scaleTF2.getText();
@@ -953,6 +965,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			s[5] = this.scaleTF6.getText();					
 			setScales(s);
 		}
+		
 		if (e.getActionCommand().equals("Reset Scales")) {
 			this.scales = this.scalesDefault;
 			this.getScales();
@@ -1017,17 +1030,6 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		this.panel = null;			
 		this.monome.redrawPanel();
 	}
-	public void setCCOffset(int offset)  {		
-		this.ccOffset = offset;
-		setADCOffset();		
-	}
-	public void setADCOffset () {
-		int x = adcTranspose * 4;
-		this.ccADC[0] = this.ccOffset + 0 + x;
-		this.ccADC[1] = this.ccOffset + 1 + x;
-		this.ccADC[2] = this.ccOffset + 2 + x;
-		this.ccADC[3] = this.ccOffset + 3 + x;
-	}
 		
 
 	/* (non-Javadoc)
@@ -1053,23 +1055,49 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		this.index = index;
 	}
 
+	
+	
 	public void handleADC(int adcNum, float value) {
-		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, adcNum, value);		 
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi == -1) {
+				this.monome.adcObj.sendCC(this.recv, this.midiChannel, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}  else {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}
+		}
 	}
 	
 	public void handleADC(float x, float y) {
-		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, x, y);
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi == -1) {
+				this.monome.adcObj.sendCC(this.recv, this.midiChannel, this.pageADCOptions.getCcADC(), monome, x, y);
+			} else {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, x, y);
+			}			
+		}
+	}
+	public boolean isTiltPage() {
+		return true;
+	}
+	public ADCOptions getAdcOptions() {
+		return this.pageADCOptions;
 	}
 
+	public void setAdcOptions(ADCOptions options) { 
+		this.pageADCOptions = options;
+	}	
+		
+
 	public void configure(Element pageElement) {		
-		NodeList nl = pageElement.getElementsByTagName("ccoffset");
+		NodeList nl = pageElement.getElementsByTagName("pageName");
 		Element el = (Element) nl.item(0);
 		if (el != null) {
 			nl = el.getChildNodes();
-			String	ccOffset = ((Node) nl.item(0)).getNodeValue();
-			ccOffsetTF.setText(ccOffset);
-			this.setCCOffset(Integer.parseInt(ccOffset));
-		}			
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
 		
 		String s[] = new String[6];
 		for(int i=1; i<7; i++) {
@@ -1083,6 +1111,46 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		if (el != null) {
 			this.setScales(s);
 			this.getScales();
+		}	
+		
+		nl = pageElement.getElementsByTagName("ccoffset");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	ccOffset = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setCcOffset(Integer.parseInt(ccOffset));
+		}	
+		
+		nl = pageElement.getElementsByTagName("sendADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	sendADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setSendADC(Boolean.parseBoolean(sendADC));
 		}
+		
+		nl = pageElement.getElementsByTagName("adcTranspose");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	adcTranspose = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setAdcTranspose(Integer.parseInt(adcTranspose));
+		}
+		
+		nl = pageElement.getElementsByTagName("midiChannelADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	midiChannelADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setMidiChannel(Integer.parseInt(midiChannelADC));
+		}
+		
+		nl = pageElement.getElementsByTagName("recv");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	recv = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setRecv(recv);
+		}			
 	}	
 }

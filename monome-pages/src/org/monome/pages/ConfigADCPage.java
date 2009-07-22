@@ -32,7 +32,7 @@ import javax.sound.midi.MidiMessage;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
-//import javax.swing.ButtonGroup;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -89,8 +89,8 @@ public class ConfigADCPage implements Page, ActionListener{
 	 * start/stop calibration mode
 	 */
 	private JCheckBox configCB;
-	/*private JRadioButton rb64;
-	private JRadioButton rb40h;*/
+	private JRadioButton tiltRB;
+	private JRadioButton noTiltRB;
 
 	private JButton saveBtn;
 	
@@ -98,7 +98,11 @@ public class ConfigADCPage implements Page, ActionListener{
 
 	private Boolean configMode = false;
 	
-	
+
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "Configure ADC Page";
 	
 	
 	/**
@@ -128,13 +132,12 @@ public class ConfigADCPage implements Page, ActionListener{
 			} 
 			else
 				configMode = false;
+		}if (e.getActionCommand().equals("Enable Tilt.")) {
+			this.monome.adcObj.setEnabled(true);
 		}
-		/*if (e.getActionCommand().equals("I have a 40h.")) {
-			this.monome.adcObj.setMonomeVersion(0);
+		if (e.getActionCommand().equals("Disable Tilt.")) {
+			this.monome.adcObj.setEnabled(false);
 		}
-		if (e.getActionCommand().equals("I have a 64.")) {
-			this.monome.adcObj.setMonomeVersion(1);
-		}*/
 		
 		if (e.getActionCommand().equals("Click to save and exit config mode.")) 
 		{
@@ -160,7 +163,7 @@ public class ConfigADCPage implements Page, ActionListener{
 		float [] min = this.monome.adcObj.getMin();
 		
 		panel.setLayout(null);
-		panel.setPreferredSize(new java.awt.Dimension(300, 230));
+		panel.setPreferredSize(new java.awt.Dimension(300, 250));
 
 		JLabel label = new JLabel("ADC/Tilt Configuration Page");
 		panel.add(label);
@@ -222,38 +225,39 @@ public class ConfigADCPage implements Page, ActionListener{
 		configCB.setBounds(10, 100, 250, 14);
 		this.configCB.addActionListener(this);	
 		JLabel info = new JLabel("<html><em>While in calibration mode, tilt your monome in all directions.  " +
-				"If you have knobs turn them from low to high. (Switching from this page using your monome will mess things up...so don't do it!)</em></html>");
+				"If you have knobs turn them from low to high.</em></html>");
 		panel.add(info);
 		info.setBounds(10, 130, 280, 60);
 		
 		
-		/*
-		rb40h = new JRadioButton("I have a 40h."); 		
-		panel.add(rb40h);
-		rb40h.setBounds(10, 180, 100, 14);		
 		
-		rb64 = new JRadioButton("I have a 64.");
-		panel.add(rb64);
-		rb64.setBounds(120, 180, 100, 14);
+		tiltRB = new JRadioButton("Enable Tilt."); 		
+		panel.add(tiltRB);
+		tiltRB.setBounds(10, 200, 140, 20);		
+		
+		noTiltRB = new JRadioButton("Disable Tilt.");
+		panel.add(noTiltRB);
+		noTiltRB.setBounds(160, 200, 140, 20);
 		
 		ButtonGroup group = new ButtonGroup();
-		group.add(rb40h);
-	    group.add(rb64);
- 		this.rb40h.addActionListener(this);
-		this.rb64.addActionListener(this);
+		group.add(tiltRB);
+	    group.add(noTiltRB);
+ 		this.tiltRB.addActionListener(this);
+		this.noTiltRB.addActionListener(this);
 		
-		if(this.monome.adcObj.getMonomeVersion() == 1)
+		if (this.monome.adcObj.isEnabled() == true)
 		{
-			rb64.setSelected(true);
-		} else
+			tiltRB.setSelected(true);
+		} 
+		else
 		{
-			rb40h.setSelected(true);
-		}*/
+			noTiltRB.setSelected(true);
+		}
 		
 		
 		saveBtn = new JButton("Click to save and exit config mode.");
 		panel.add(saveBtn);
-		saveBtn.setBounds(10, 210, 280, 20);
+		saveBtn.setBounds(10, 230, 280, 20);
 		this.saveBtn.addActionListener(this);
 		
 		this.panel = panel;
@@ -266,6 +270,8 @@ public class ConfigADCPage implements Page, ActionListener{
 		float [] max = this.monome.adcObj.getMax();
 		float [] min = this.monome.adcObj.getMin();
 		int scale = this.monome.adcObj.getMidi(adcNum, value);
+		
+		if(min4 == null) return;
 		
 		max1.setText(Float.toString(max[0]));
 		max2.setText(Float.toString(max[1]));
@@ -307,18 +313,18 @@ public class ConfigADCPage implements Page, ActionListener{
 		
 		max1.setText(Float.toString(max[0]));
 		max2.setText(Float.toString(max[1]));
-		max3.setText(Float.toString(max[2]));
-		max4.setText(Float.toString(max[3]));
+		scale3.setText("");
+		scale4.setText("");
 			
 		min1.setText(Float.toString(min[0]));
 		min2.setText(Float.toString(min[1]));
-		min3.setText(Float.toString(min[2]));
-		min4.setText(Float.toString(min[3]));
+		scale3.setText("");
+		scale4.setText("");
 		
 		scale1.setText(Integer.toString(scale[0]));
 		scale2.setText(Integer.toString(scale[1]));
-		scale3.setText("0");
-		scale4.setText("0");
+		scale3.setText("");
+		scale4.setText("");
 		
 		 
 		if(configCB.isSelected())
@@ -351,9 +357,16 @@ public class ConfigADCPage implements Page, ActionListener{
 
 
 	public String getName() 
-	{		
-		return "Configure ADC Page";
+	{	
+		return pageName;
 	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
+	 */
+	public void setName(String name) {
+		this.pageName = name;
+	}
+	
 
 
 	public void handlePress(int x, int y, int value) {
@@ -397,6 +410,18 @@ public class ConfigADCPage implements Page, ActionListener{
 		return null;
 	}
 	public void configure(Element pageElement) {
+		// TODO Auto-generated method stub
+		
+	}
+	public boolean isTiltPage() {
+		return true;
+	}
+	public ADCOptions getAdcOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setAdcOptions(ADCOptions options)  {
 		// TODO Auto-generated method stub
 		
 	}

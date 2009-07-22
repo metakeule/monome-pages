@@ -24,6 +24,7 @@
 
 package org.monome.pages;
 
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -41,6 +42,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.illposed.osc.OSCMessage;
 
@@ -150,6 +153,12 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	 * The number of control rows (track stop/midi notes feedback line + multi command line) that are enabled currently
 	 */
 	private int numEnabledRows = 2;
+	
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "Ableton Clip Controller";
+	private JLabel pageNameLBL;
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -197,9 +206,18 @@ public class AbletonClipControlPage implements ActionListener, Page {
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
+	 */	
+	public String getName() 
+	{		
+		return pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
 	 */
-	public String getName() {
-		return "Ableton Clip Launcher";
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -214,8 +232,8 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// create the panel
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Controller");
-		panel.add(label);
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Controller");
+		panel.add(pageNameLBL);
 
 		//TODO: change delay feature
 		/*panel.add(delayBlinking);
@@ -579,6 +597,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 
 		String xml = "";
 		xml += "      <name>Ableton Clip Control</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		return xml;
 	}
 
@@ -694,11 +713,30 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	public void handleADC(float x, float y) {		
 		// TODO Auto-generated method stub
 	}
+	
+	public boolean isTiltPage() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public ADCOptions getAdcOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setAdcOptions(ADCOptions options)  {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 	public void configure(Element pageElement) {
-		// TODO Auto-generated method stub
-		
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
 	}
 
 

@@ -222,6 +222,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 	private String midiDeviceName;
 
 	/**
+	 * The name of the page 
+	 */
+	private String pageName = "MIDI Sequencer";
+	private JLabel pageNameLBL;
+
+	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
 	 * @param index The index of this page (the page number)
 	 */
@@ -890,12 +896,21 @@ public class MIDISequencerPage implements Page, ActionListener {
 			}
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
+	 */	
+	public String getName() 
+	{		
+		return pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
 	 */
-	public String getName() {
-		return "MIDI Sequencer";
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -914,8 +929,8 @@ public class MIDISequencerPage implements Page, ActionListener {
 		panel.add(getBankSizeLabel(), new AnchorConstraint(734, 519, 814, 380, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getJPanel1(), new AnchorConstraint(117, 947, 700, 15, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Sequencer");
-		panel.add(label, new AnchorConstraint(0, 382, 82, 0, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": MIDI Sequencer");
+		panel.add(pageNameLBL, new AnchorConstraint(0, 382, 82, 0, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getUpdatePrefsButton(), new AnchorConstraint(717, 345, 837, 1, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getAddMidiOutButton(), new AnchorConstraint(865, 345, 985, 1, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getChannelL(), new AnchorConstraint(865, 519, 945, 380, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
@@ -923,7 +938,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 
 		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
 		panel.add(midiout, new AnchorConstraint(2, 786, 82, 419, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		label.setPreferredSize(new java.awt.Dimension(180, 14));
+		pageNameLBL.setPreferredSize(new java.awt.Dimension(180, 14));
 
 		this.getAddMidiOutButton().addActionListener(this);
 		this.getUpdatePrefsButton().addActionListener(this);
@@ -1006,6 +1021,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		StringBuffer xml = new StringBuffer();
 		int holdmode = 0;
 		xml.append("      <name>MIDI Sequencer</name>\n");
+		xml.append("      <pageName>" + this.pageName + "</pageName>\n");
 		if (this.getHoldModeCB().isSelected() == true) {
 			holdmode = 1;
 		}
@@ -1551,10 +1567,31 @@ public class MIDISequencerPage implements Page, ActionListener {
 		// TODO Auto-generated method stub
 		
 	}
+	public boolean isTiltPage() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public ADCOptions getAdcOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setAdcOptions(ADCOptions options)  {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	public void configure(Element pageElement) {
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
+		
 		NodeList modeNL = pageElement.getElementsByTagName("holdmode");
-		Element el = (Element) modeNL.item(0);
+		el = (Element) modeNL.item(0);
 		if (el != null) {
 			NodeList nl = el.getChildNodes();
 			String holdmode = ((Node) nl.item(0)).getNodeValue();
@@ -1594,6 +1631,4 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 		this.redrawMonome();		
 	}
-
-	
 }
