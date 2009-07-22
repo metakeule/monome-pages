@@ -160,15 +160,16 @@ public class MIDITriggersPage implements Page, ActionListener {
 	private JLabel row3Label;
 	private JLabel row2Label;
 	private JLabel row1Label;
+	
+	// tilt stuff 
+	private ADCOptions pageADCOptions = new ADCOptions();
+		
 
-	
-	//ADC cc stuff
-	private JTextField ccOffsetTF;
-	private JButton updatePrefsButton;
-	private int midiChannel = 0;
-	private int ccOffset = 0; 
-	private int [] ccADC = {0, 1, 2, 3};
-	
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "MIDI Triggers";
+	private JLabel pageNameLBL;
 	
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -241,9 +242,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 			row15Label.setText("Row 15");
 			row16Label.setText("Row 16");
 			this.redrawMonome();
-		} else if (e.getActionCommand().equals("Update CC Offset Number")) {
-			setCCOffset(Integer.parseInt(ccOffsetTF.getText()));
-		} 
+		}
 	}
 
 	/* (non-Javadoc)
@@ -257,12 +256,21 @@ public class MIDITriggersPage implements Page, ActionListener {
 		this.panel = null;			
 		this.monome.redrawPanel();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
+	 */	
+	public String getName() 
+	{		
+		return pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
 	 */
-	public String getName() {
-		return "MIDI Triggers";
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/**
@@ -415,9 +423,16 @@ public class MIDITriggersPage implements Page, ActionListener {
 
 		String xml = "";
 		xml += "      <name>MIDI Triggers</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";		
 		xml += "      <mode>" + mode + "</mode>\n";
-		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
+		
+		xml += "      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n";
+		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
+		xml += "      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n";
+		xml += "      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n";
+		xml += "      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"; 	
+		
 		for (int i=0; i < 16; i++) {
 			String state;
 			if (this.toggles[i].isSelected()) {
@@ -453,7 +468,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 		panel.setLayout(null);
 		panel.setPreferredSize(new java.awt.Dimension(531, 180));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": MIDI Triggers");
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": MIDI Triggers");
 
 		row16Label = new JLabel();
 		row16Label.setText("Row 16");
@@ -560,9 +575,9 @@ public class MIDITriggersPage implements Page, ActionListener {
 		panel.add(row9Label);
 		panel.add(toggles[12]);
 		panel.add(row13Label);
-		panel.add(label);
+		panel.add(pageNameLBL);
 		panel.add(getJLabel1());
-		label.setBounds(0, 0, 189, 14);
+		pageNameLBL.setBounds(0, 0, 189, 14);
 		row13Label.setBounds(405, 20, 46, 14);
 		toggles[12].setBounds(451, 18, 74, 18);
 		row9Label.setBounds(274, 20, 46, 14);
@@ -575,22 +590,7 @@ public class MIDITriggersPage implements Page, ActionListener {
 
 		rowRB.addActionListener(this);
 		colRB.addActionListener(this);
-		
-		
-		
-		JLabel ccLable = new JLabel("CC Offset (for tilt/adc)");
-		panel.add(ccLable);
-		ccLable.setBounds(20, 150, 130, 14);
-		
-		ccOffsetTF = new JTextField();
-		ccOffsetTF.setText(Integer.toString(ccOffset));
-		panel.add(ccOffsetTF);
-		ccOffsetTF.setBounds(150, 150, 30, 20);
-		
-		updatePrefsButton = new JButton("Update CC Offset Number");
-		updatePrefsButton.addActionListener(this);
-		panel.add(this.updatePrefsButton);
-		updatePrefsButton.setBounds(250, 150, 200, 20);		
+			
 		
 		this.panel = panel;
 		return panel;
@@ -640,14 +640,6 @@ public class MIDITriggersPage implements Page, ActionListener {
 		return jLabel1;
 	}
 	
-	public void setCCOffset(int offset) 
-	{		
-		this.ccOffset = offset;
-		this.ccADC[0] = this.ccOffset + 0;
-		this.ccADC[1] = this.ccOffset + 1;
-		this.ccADC[2] = this.ccOffset + 2;
-		this.ccADC[3] = this.ccOffset + 3;
-	}
 	
 	public void clearPanel() {
 		this.panel = null;
@@ -658,32 +650,54 @@ public class MIDITriggersPage implements Page, ActionListener {
 	}
 
 	public void handleADC(int adcNum, float value) {
-		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, adcNum, value);		 
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi == -1) {
+				this.monome.adcObj.sendCC(this.recv, 0, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}  else {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}
+		}
 	}
 	
-	public void handleADC(float x, float y) {	
-		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, x, y);
+	public void handleADC(float x, float y) {
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi == -1) {
+				this.monome.adcObj.sendCC(this.recv, 0, this.pageADCOptions.getCcADC(), monome, x, y);
+			} else {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, x, y);
+			}			
+		}
+	}
+	public boolean isTiltPage() {
+		return true;
+	}
+	public ADCOptions getAdcOptions() {
+		return this.pageADCOptions;
 	}
 
+	public void setAdcOptions(ADCOptions options) { 
+		this.pageADCOptions = options;
+	}
 
 	public void configure(Element pageElement) {		
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
+				
 		NodeList nl = pageElement.getElementsByTagName("mode");
-		Element el = (Element) nl.item(0);
+		el = (Element) nl.item(0);
 		if (el != null) {
 			nl = el.getChildNodes();
 			String mode = ((Node) nl.item(0)).getNodeValue();
 			this.setMode(mode);
 		}
 		
-		nl = pageElement.getElementsByTagName("ccoffset");
-		el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String ccOffset = ((Node) nl.item(0)).getNodeValue();
-			ccOffsetTF.setText(ccOffset);
-			this.setCCOffset(Integer.parseInt(ccOffset));
-		}
-
 		NodeList seqNL = pageElement.getElementsByTagName("toggles");
 		for (int l=0; l < seqNL.getLength(); l++) {
 			el = (Element) seqNL.item(l);
@@ -694,8 +708,51 @@ public class MIDITriggersPage implements Page, ActionListener {
 					this.enableToggle(l);
 				}
 			}
+		}		
+		
+		nl = pageElement.getElementsByTagName("ccoffset");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	ccOffset = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setCcOffset(Integer.parseInt(ccOffset));
+		}	
+		
+		nl = pageElement.getElementsByTagName("sendADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	sendADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setSendADC(Boolean.parseBoolean(sendADC));
 		}
 		
+		nl = pageElement.getElementsByTagName("adcTranspose");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	adcTranspose = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setAdcTranspose(Integer.parseInt(adcTranspose));
+		}
+		
+		nl = pageElement.getElementsByTagName("midiChannelADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	midiChannelADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setMidiChannel(Integer.parseInt(midiChannelADC));
+		}
+		
+		nl = pageElement.getElementsByTagName("recv");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	recv = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setRecv(recv);
+			if (recv != null) this.addMidiOutDevice(recv);
+		}	
+		
 		this.redrawMonome();		
-	}	
+	}
+
+	
 }

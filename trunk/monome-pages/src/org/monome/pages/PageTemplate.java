@@ -31,6 +31,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -70,7 +72,16 @@ public class PageTemplate implements Page, ActionListener {
 	 * The name of the selected MIDI output device 
 	 */
 	private String midiDeviceName;
-
+	
+	// tilt stuff 
+	private ADCOptions pageADCOptions = new ADCOptions();
+	
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "Ableton Clip Controller";
+	private JLabel pageNameLBL;
+	
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index The index of this page (the page number)
@@ -109,12 +120,21 @@ public class PageTemplate implements Page, ActionListener {
 		this.recv = this.monome.getMidiReceiver(deviceName);
 		this.midiDeviceName = deviceName;
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
+	 */	
+	public String getName() 
+	{		
+		return pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
 	 */
-	public String getName() {
-		return "Page Name";
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -129,8 +149,8 @@ public class PageTemplate implements Page, ActionListener {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 		panel.setPreferredSize(new java.awt.Dimension(464, 156));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": Page Name");
-		panel.add(label);
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": Page Name");
+		panel.add(pageNameLBL);
 
 		this.panel = panel;
 		return panel;
@@ -149,6 +169,20 @@ public class PageTemplate implements Page, ActionListener {
 	}
 	
 	public void handleADC(float x, float y) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public boolean isTiltPage() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public ADCOptions getAdcOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setAdcOptions(ADCOptions options)  {
 		// TODO Auto-generated method stub
 		
 	}
@@ -188,6 +222,7 @@ public class PageTemplate implements Page, ActionListener {
 		String xml = "";
 		xml += "    <page>\n";
 		xml += "      <name>Template Page</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "    </page>\n";
 		return xml;
@@ -215,8 +250,13 @@ public class PageTemplate implements Page, ActionListener {
 		this.index = index;
 	}	
 	
-	public void configure(Element page) {
-	
-	}
-
+	public void configure(Element pageElement) {
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
+	}	
 }

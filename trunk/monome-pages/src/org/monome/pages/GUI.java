@@ -598,7 +598,17 @@ public class GUI implements ActionListener {
 							monomeFrame.adcObj.setMax(max);
 						}
 					}
-										
+					
+					// enable tilt
+					nl = monomeElement.getElementsByTagName("adcEnabled");
+					el = (Element) nl.item(0);
+					if (el != null) {
+						nl = el.getChildNodes();
+						String enabled = ((Node) nl.item(0)).getNodeValue();
+						monomeFrame.adcObj.setEnabled(Boolean.parseBoolean(enabled));
+					}
+					
+					
 					// read in each page of the monome
 					NodeList pageNL = monomeElement.getElementsByTagName("page");
 					for (int j=0; j < pageNL.getLength(); j++) {

@@ -151,6 +151,14 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 * How often random param changes are sent. 
 	 */
 	private int speed = 100;
+	
+
+
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "Machine Drum Interface";
+	private JLabel pageNameLBL;
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -165,9 +173,18 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
+	 */	
+	public String getName() 
+	{		
+		return pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
 	 */
-	public String getName() {
-		return "Machine Drum Interface";
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -412,6 +429,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	public String toXml() {
 		String xml = "";
 		xml += "      <name>Machine Drum Interface</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <speed>" + this.speed + "</speed>\n";
 		return xml;
@@ -437,12 +455,12 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		this.getUpdatePrefsButton().addActionListener(this);
 		this.getAddMidiOutButton().addActionListener(this);
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": Machine Drum Interface");
-		panel.add(label, new AnchorConstraint(0, 600, 120, 0, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": Machine Drum Interface");
+		panel.add(pageNameLBL, new AnchorConstraint(0, 600, 120, 0, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		
 		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
 		panel.add(midiout, new AnchorConstraint(271, 948, 429, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
-		label.setPreferredSize(new java.awt.Dimension(296, 20));
+		pageNameLBL.setPreferredSize(new java.awt.Dimension(296, 20));
 
 		this.panel = panel;
 		return panel;
@@ -575,15 +593,36 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public boolean isTiltPage() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public ADCOptions getAdcOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setAdcOptions(ADCOptions options)  {
+		// TODO Auto-generated method stub
+		
+	}
 
 	public void configure(Element pageElement) {
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
+		
 		NodeList rowNL = pageElement.getElementsByTagName("speed");
-		Element el = (Element) rowNL.item(0);
+		el = (Element) rowNL.item(0);
 		if (el != null) {
 			NodeList nl = el.getChildNodes();
 			String speed = ((Node) nl.item(0)).getNodeValue();
 			this.setSpeed(Integer.parseInt(speed));
 		}		
-	}
-	
+	}	
 }

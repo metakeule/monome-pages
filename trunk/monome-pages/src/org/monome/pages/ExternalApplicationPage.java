@@ -157,23 +157,18 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	
 	private Receiver recv;
 	
+	
+	
+
+	// tilt stuff 
+	private ADCOptions pageADCOptions = new ADCOptions();
+		
+
 	/**
-	 * The selected MIDI channel (8x8 only)
+	 * The name of the page 
 	 */
-	private int midiChannel = 0;
-	
-	private String midiDeviceName;
-	private JButton midiOutButton;
-	
-	private JTextField ccOffsetTF;	
-	private int ccOffset = 0;	
-	private int [] ccADC = {0, 1, 2, 3}; 
-	
-	private JCheckBox swapADCnum;	
-	private boolean swapADC = false;
-	
-	private JCheckBox useMidiCB;
-	private boolean useMidi = false;
+	private String pageName = "External Application";
+	private JLabel pageNameLBL;
 	
 	//private Receiver recv;
 	/**
@@ -196,39 +191,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			this.inPort = Integer.parseInt(this.oscInTF.getText());
 			this.outPort = Integer.parseInt(this.oscOutTF.getText());
 			this.initOSC();
-			
-			this.ccOffset = Integer.parseInt(this.ccOffsetTF.getText());
-			this.ccADC[0] = this.ccOffset + 0;
-			this.ccADC[1] = this.ccOffset + 1;
-			this.ccADC[2] = this.ccOffset + 2;
-			this.ccADC[3] = this.ccOffset + 3;
-			this.swapADC = this.swapADCnum.isSelected();
-			this.useMidi = this.useMidiCB.isSelected();
-			
-			if (this.useMidi && this.midiDeviceName == null)
-				this.midiOutButton.doClick();
-			else if (this.useMidi)
-				this.addMidiOutDevice(this.midiDeviceName);
-			else if (!this.useMidi)
-				this.addMidiOutDevice(null);
-		}
-		if (e.getActionCommand().equals("Set MIDI Output")) {
-			String[] midiOutOptions = this.monome.getMidiOutOptions();
-			String deviceName = (String)JOptionPane.showInputDialog(
-					this.monome,
-					"Choose a MIDI Output to use",
-					"Set MIDI Output",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					midiOutOptions,
-					"");
-
-			if (deviceName == null) {
-				return;
-			}
-
-			this.addMidiOutDevice(deviceName);
-
 		}
 		return;
 	}
@@ -266,36 +228,31 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
-		if (deviceName == null || deviceName.equals("null")) {
-			this.midiDeviceName = null;
-			this.useMidi = false;
-			this.useMidiCB.setSelected(this.useMidi);
-		} else {					
-			this.recv = this.monome.getMidiReceiver(deviceName);				
-			this.midiDeviceName = deviceName;
-			this.useMidi = true;
-			this.useMidiCB.setSelected(this.useMidi);
-		}
-		this.midiOutButton.removeActionListener(this);
+		this.recv = this.monome.getMidiReceiver(deviceName);	
 		this.updatePrefsButton.removeActionListener(this);
 		this.panel.removeAll();
 		this.panel = null;			
 		this.monome.redrawPanel();
-	}
-	public void setCCOffset(int offset)  {		
-		this.ccOffset = offset;
-		this.ccADC[0] = this.ccOffset + 0;
-		this.ccADC[1] = this.ccOffset + 1;
-		this.ccADC[2] = this.ccOffset + 2;
-		this.ccADC[3] = this.ccOffset + 3;
+		this.initOSC();
 	}
 
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */
-	public String getName() {
-		return "External Application";
+	
+	public String getName() 
+	{		
+		return pageName;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
+	 */
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);		
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -307,12 +264,11 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 
 		// builds the page GUI
-
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
-		panel.setPreferredSize(new java.awt.Dimension(460, 175));
+		panel.setPreferredSize(new java.awt.Dimension(220, 180));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": External Application");
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": " + this.getName());
 		prefixLabel = new JLabel();
 		prefixLabel.setText("OSC Prefix");
 		hostnameLabel = new JLabel();
@@ -343,51 +299,18 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		panel.add(hostnameLabel);
 		panel.add(prefixTF);
 		panel.add(prefixLabel);
-		panel.add(label);
+		panel.add(pageNameLBL);
 		panel.add(updatePrefsButton);
 		panel.add(getDisableCache());
-		updatePrefsButton.setBounds(12, 130, 169, 21);		
-		label.setBounds(0, 0, 250, 14);
+		updatePrefsButton.setBounds(12, 140, 169, 21);		
+		pageNameLBL.setBounds(0, 0, 250, 14);
 		prefixLabel.setBounds(12, 23, 85, 14);
 		prefixTF.setBounds(97, 20, 100, 21);
 		hostnameLabel.setBounds(12, 44, 85, 14);
 		hostnameTF.setText(this.hostname);
 		hostnameTF.setBounds(97, 41, 100, 21);
 		
-		swapADCnum = new JCheckBox("Swap adc 1 and 2 for 2 and 3. (for 40h)");
-		panel.add(swapADCnum);
-		swapADCnum.setBounds(210, 20, 250, 20); 
-		swapADCnum.addActionListener(this);
-		swapADCnum.setSelected(this.swapADC);
 		
-		useMidiCB = new JCheckBox("Tilt sends MIDI messages.");
-		panel.add(useMidiCB);
-		useMidiCB.setBounds(210, 70, 200, 20); 
-		useMidiCB.addActionListener(this);		
-		useMidiCB.setSelected(this.useMidi);
-		
-		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
-		panel.add(midiout);
-		midiout.setBounds(210, 105, 200, 20);
-		
-		midiOutButton = new JButton("Set MIDI Output");
-		midiOutButton.addActionListener(this);
-		panel.add(midiOutButton);
-		midiOutButton.setBounds(210, 130, 169, 21);
-		
-		midiOutButton.setVisible(useMidi);
-		midiout.setVisible(useMidi);
-		
-		
-		JLabel ccLable = new JLabel("CC Offset (for tilt/adc)");
-		panel.add(ccLable);
-		ccLable.setBounds(12, 106, 180, 18);
-		
-		ccOffsetTF = new JTextField();
-		ccOffsetTF.setText(Integer.toString(ccOffset));
-		panel.add(ccOffsetTF);
-		ccOffsetTF.setBounds(147, 106, 50, 18);		
-			
 		
 		this.panel = panel;
 		return panel;
@@ -413,6 +336,17 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 	}
 	
+	public boolean isTiltPage() {
+		return true;
+	}
+	public ADCOptions getAdcOptions() {
+		return this.pageADCOptions;
+	}
+
+	public void setAdcOptions(ADCOptions options) { 
+		this.pageADCOptions = options;
+	}	
+	
 	public void handleADC(int adcNum, float value) {
 		if (this.oscOut == null) {
 			return;
@@ -420,16 +354,16 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 				
 		switch (adcNum) {
 			case 0: 				
-				if(swapADC)	adcNum = 2;
+				if(this.pageADCOptions.isSwapADC())	adcNum = 2;
 				break;
 			case 1:				
-				if(swapADC)	adcNum = 3;
+				if(this.pageADCOptions.isSwapADC())	adcNum = 3;
 				break;
 			case 2:
-				if(swapADC) adcNum = 0;
+				if(this.pageADCOptions.isSwapADC()) adcNum = 0;
 				break;
 			case 3:
-				if(swapADC) adcNum = 1;
+				if(this.pageADCOptions.isSwapADC()) adcNum = 1;
 				break;
 			default:
 				break;
@@ -448,8 +382,9 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			e.printStackTrace();
 		}
 		
-		if (useMidi)
-			this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, adcNum, value);
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			this.monome.adcObj.sendCC(this.recv, this.pageADCOptions.getMidiChannel(), this.pageADCOptions.getCcADC(), monome, adcNum, value);
+		}
 	}
 	
 	public void handleADC(float x, float y) {		
@@ -470,8 +405,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 			e.printStackTrace();
 		}
 		
-		if (useMidi)
-			this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, x, y);
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled())
+			this.monome.adcObj.sendCC(this.recv, this.pageADCOptions.getMidiChannel(), this.pageADCOptions.getCcADC(), monome, x, y);
 	}
 
 	/* (non-Javadoc)
@@ -521,15 +456,19 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 
 		String xml = "";
 		xml += "      <name>External Application</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <prefix>" + this.prefix + "</prefix>\n";
 		xml += "      <oscinport>" + this.inPort + "</oscinport>\n";
 		xml += "      <oscoutport>" + this.outPort + "</oscoutport>\n";
 		xml += "      <hostname>" + this.hostname + "</hostname>\n";
 		xml += "      <disablecache>" + disableCache + "</disablecache>\n";
-		xml += "      <swapADC>" + this.swapADC + "</swapADC>\n";
-		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
-		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
-		xml += "      <useMidi>" + this.useMidi + "</useMidi>\n";
+		
+		xml += "      <swapADC>" + this.pageADCOptions.isSwapADC() + "</swapADC>\n";		
+		xml += "      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n";
+		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
+		xml += "      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n";
+		xml += "      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n";
+		xml += "      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"; 	
 		return xml;
 	}
 
@@ -639,22 +578,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		this.hostnameTF.setText(extHostname);
 	}
 	
-	/**
-	 * @param swapADC "true" to switch adc number 0 and 1 for 2 and 3 (only applicable to 40h...for if you've wired yours differently)
-	 */
-	public void swapADC(String swapADC) {		
-		this.swapADC = Boolean.parseBoolean(swapADC);
-		this.swapADCnum.setSelected(this.swapADC);
-	}
 	
-	/**
-	 * @param useMidi "true" if tilt messages should send midi CCs
-	 */
-	public void useMidi(String useMidi) {		
-		this.useMidi = Boolean.parseBoolean(useMidi);
-		this.useMidiCB.setSelected(this.useMidi);
-	}
-
 	/**
 	 * @return The Disable LED Cache checkbox
 	 */
@@ -662,7 +586,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		if(disableCache == null) {
 			disableCache = new JCheckBox();
 			disableCache.setText("Disable LED Cache");
-			disableCache.setBounds(210, 45, 200, 20);
+			disableCache.setBounds(12, 110, 200, 20);
 		}
 		return disableCache;
 	}
@@ -705,8 +629,17 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	}
 
 	public void configure(Element pageElement) {
-		NodeList nl = pageElement.getElementsByTagName("prefix");
+		NodeList nl = pageElement.getElementsByTagName("pageName");
 		Element el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);
+			
+		}
+		
+		nl = pageElement.getElementsByTagName("prefix");
+		el = (Element) nl.item(0);
 		if (el != null){
 			nl = el.getChildNodes();
 			String extPrefix = ((Node) nl.item(0)).getNodeValue();
@@ -750,26 +683,50 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		if (el != null){			
 			nl = el.getChildNodes();
 			String swapADC = ((Node) nl.item(0)).getNodeValue();
-			this.swapADC(swapADC);
+			this.pageADCOptions.setSwapADC(Boolean.parseBoolean(swapADC));
 		}
 		
 		nl = pageElement.getElementsByTagName("ccoffset");
-		el = (Element) nl.item(0);		
-		if (el != null){
-			nl = el.getChildNodes();
-			String ccOffset = ((Node) nl.item(0)).getNodeValue();
-			ccOffsetTF.setText(ccOffset);
-			this.setCCOffset(Integer.parseInt(ccOffset));
-		}			
-		
-		nl = pageElement.getElementsByTagName("useMidi");
 		el = (Element) nl.item(0);
-		if (el != null){
+		if (el != null) {
 			nl = el.getChildNodes();
-			String useMidi = ((Node) nl.item(0)).getNodeValue();
-			this.useMidi(useMidi);	
-		}					
-
+			String	ccOffset = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setCcOffset(Integer.parseInt(ccOffset));
+		}	
+		
+		nl = pageElement.getElementsByTagName("sendADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	sendADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setSendADC(Boolean.parseBoolean(sendADC));
+		}
+		
+		nl = pageElement.getElementsByTagName("adcTranspose");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	adcTranspose = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setAdcTranspose(Integer.parseInt(adcTranspose));
+		}
+		
+		nl = pageElement.getElementsByTagName("midiChannelADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	midiChannelADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setMidiChannel(Integer.parseInt(midiChannelADC));
+		}
+		
+		nl = pageElement.getElementsByTagName("recv");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	recv = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setRecv(recv);
+			this.addMidiOutDevice(this.pageADCOptions.getRecv());
+		}
+		
 		this.initOSC();		
 	}	
 }

@@ -31,6 +31,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -78,7 +79,6 @@ public class MIDIFadersPage implements Page, ActionListener {
 	 * The GUI for this page
 	 */
 	JPanel panel;
-	private JLabel jLabel1;
 	private JTextField ccOffsetTF;
 	private JLabel ccOffsetLabel;
 	private JTextField channelTF;
@@ -138,7 +138,15 @@ public class MIDIFadersPage implements Page, ActionListener {
 	private int midiChannel;
 
 	private int ccOffset;
-	private int [] ccADC = {17, 18, 19, 20};
+
+	// tilt stuff 
+	private ADCOptions pageADCOptions = new ADCOptions();
+	
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "MIDI Faders";
+	private JLabel pageNameLBL;
 	
 	/**
 	 * Constructor.
@@ -181,14 +189,11 @@ public class MIDIFadersPage implements Page, ActionListener {
 		if (e.getActionCommand().equals("Update Preferences")) {
 			this.delayAmount = Integer.parseInt(this.getDelayTF().getText());
 			this.midiChannel = Integer.parseInt(this.getChannelTF().getText()) - 1;
-			this.ccOffset = Integer.parseInt(this.getCcOffsetTF().getText());
-			this.ccADC[0] = this.ccOffset + 17;
-			this.ccADC[1] = this.ccOffset + 18;
-			this.ccADC[2] = this.ccOffset + 19;
-			this.ccADC[3] = this.ccOffset + 20;
+			if (this.midiChannel<0) this.midiChannel = 0;
+			this.ccOffset = Integer.parseInt(this.getCcOffsetTF().getText());			
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
@@ -204,9 +209,18 @@ public class MIDIFadersPage implements Page, ActionListener {
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
+	 */	
+	public String getName() 
+	{		
+		return pageName;
+	}
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
 	 */
-	public String getName() {
-		return "MIDI Faders";
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -228,8 +242,8 @@ public class MIDIFadersPage implements Page, ActionListener {
 		this.getUpdatePrefsButton().addActionListener(this);
 		this.getAddMidiOutButton().addActionListener(this);
 
- 		JLabel label = new JLabel("Page " + (this.index + 1) + ":  MIDI Faders");
-		panel.add(label, new AnchorConstraint(0, 382, 82, 0, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
+ 		pageNameLBL = new JLabel("Page " + (this.index + 1) + ":  MIDI Faders");
+		panel.add(pageNameLBL, new AnchorConstraint(0, 800, 82, 0, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getChannelL(), new AnchorConstraint(347, 710, 489, 500, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getChannelTF(), new AnchorConstraint(354, 813, 483, 710, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		panel.add(getCcOffsetLabel(), new AnchorConstraint(489, 268, 638, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
@@ -238,8 +252,8 @@ public class MIDIFadersPage implements Page, ActionListener {
 		JLabel midiout = new JLabel("MIDI Out: " + this.midiDeviceName);
 		panel.add(midiout, new AnchorConstraint(179, 894, 307, 20, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL, AnchorConstraint.ANCHOR_REL));
 		midiout.setPreferredSize(new java.awt.Dimension(279, 19));
-		label.setPreferredSize(new java.awt.Dimension(272, 20));
-
+		pageNameLBL.setPreferredSize(new java.awt.Dimension(272, 20));
+		
 		this.panel = panel;
 		return panel;
 	}
@@ -254,13 +268,15 @@ public class MIDIFadersPage implements Page, ActionListener {
 		int startVal = 0;
 		int endVal = 0;
 		int cc = this.ccOffset + x;
+		
 		if (value == 1) {
+					
 			int startY = this.buttonFaders[x];
 			int endY = y;
 			if (startY == endY) {
 				return;
 			}
-
+				
 			if (this.monome.sizeY == 8) {
 				startVal = this.buttonValuesSmall[startY];
 				endVal = this.buttonValuesSmall[endY];
@@ -276,17 +292,11 @@ public class MIDIFadersPage implements Page, ActionListener {
 				MIDIFader fader = new MIDIFader(this.recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount);
 				new Thread(fader).start();
 			}
+			
 			this.buttonFaders[x] = y;
-		}
+		} 
 	}
 	
-	public void handleADC(int adcNum, float value) {
-		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, adcNum, value);		 
-	}
-	
-	public void handleADC(float x, float y) {		
-		this.monome.adcObj.sendCC(this.recv, midiChannel, ccADC, monome, x, y);
-	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handleReset()
@@ -330,10 +340,17 @@ public class MIDIFadersPage implements Page, ActionListener {
 	public String toXml() {
 		String xml = "";
 		xml += "      <name>MIDI Faders</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <delayamount>" + this.delayAmount + "</delayamount>\n";
 		xml += "      <midichannel>" + (this.midiChannel + 1) + "</midichannel>\n";
 		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
+		
+		xml += "      <ccoffsetADC>" + this.pageADCOptions.getCcOffset() + "</ccoffsetADC>\n";
+		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
+		xml += "      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n";
+		xml += "      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n";
+		xml += "      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"; 	
 		return xml;
 	}
 
@@ -460,13 +477,55 @@ public class MIDIFadersPage implements Page, ActionListener {
 	public void setIndex(int index) {
 		this.index = index;
 	}
+	
 
+	public void handleADC(int adcNum, float value) {
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi != -1) {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}  else {
+				this.monome.adcObj.sendCC(this.recv, midiChannel, this.pageADCOptions.getCcADC(), monome, adcNum, value);
+			}
+		}
+	}
+	
+	public void handleADC(float x, float y) {
+		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
+			int midi = this.pageADCOptions.getMidiChannel();
+			if(midi != -1) {
+				this.monome.adcObj.sendCC(this.recv, midi, this.pageADCOptions.getCcADC(), monome, x, y);
+			} else {
+				this.monome.adcObj.sendCC(this.recv, midiChannel, this.pageADCOptions.getCcADC(), monome, x, y);
+			}			
+		}
+	}
+	public boolean isTiltPage() {
+		return true;
+	}
+	public ADCOptions getAdcOptions() {
+		return this.pageADCOptions;
+	}
 
+	public void setAdcOptions(ADCOptions options) { 
+		this.pageADCOptions = options;
+	}	
+
+	
 	public void configure(Element pageElement) {
-		NodeList rowNL = pageElement.getElementsByTagName("delayamount");
-		Element el = (Element) rowNL.item(0);
+		NodeList nl = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nl.item(0);
 		if (el != null) {
-			NodeList nl = el.getChildNodes();
+			nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);
+			
+		}
+		
+		NodeList rowNL = pageElement.getElementsByTagName("delayamount");
+		el = (Element) rowNL.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
 			String delayAmount = ((Node) nl.item(0)).getNodeValue();
 			this.setDelayAmount(Integer.parseInt(delayAmount));
 		}
@@ -474,7 +533,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 		NodeList channelNL = pageElement.getElementsByTagName("midichannel");
 		el = (Element) channelNL.item(0);
 		if (el != null) {
-			NodeList nl = el.getChildNodes();
+			nl = el.getChildNodes();
 			String midiChannel = ((Node) nl.item(0)).getNodeValue();
 			this.setMidiChannel(midiChannel);
 		}
@@ -482,11 +541,53 @@ public class MIDIFadersPage implements Page, ActionListener {
 		NodeList ccOffsetNL = pageElement.getElementsByTagName("ccoffset");
 		el = (Element) ccOffsetNL.item(0);
 		if (el != null) {
-			NodeList nl = el.getChildNodes();
+			nl = el.getChildNodes();
 			String ccOffset = ((Node) nl.item(0)).getNodeValue();
 			this.setCCOffset(ccOffset);
 		}
 		
+		
+		nl = pageElement.getElementsByTagName("ccoffsetADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	ccOffset = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setCcOffset(Integer.parseInt(ccOffset));
+		}	
+		
+		nl = pageElement.getElementsByTagName("sendADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	sendADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setSendADC(Boolean.parseBoolean(sendADC));
+		}
+		
+		nl = pageElement.getElementsByTagName("adcTranspose");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	adcTranspose = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setAdcTranspose(Integer.parseInt(adcTranspose));
+		}
+		
+		nl = pageElement.getElementsByTagName("midiChannelADC");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	midiChannelADC = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setMidiChannel(Integer.parseInt(midiChannelADC));
+		}
+		
+		nl = pageElement.getElementsByTagName("recv");
+		el = (Element) nl.item(0);
+		if (el != null) {
+			nl = el.getChildNodes();
+			String	recv = ((Node) nl.item(0)).getNodeValue();
+			this.pageADCOptions.setRecv(recv);
+		}
 	}
+
+	
 	
 }

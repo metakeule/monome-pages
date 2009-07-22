@@ -38,6 +38,8 @@ import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * The MIDI Faders page.  Usage information is available at:
@@ -118,6 +120,14 @@ public class MIDIKeyboardJulienBPage implements Page, ActionListener {
 	 */
 	private ArrayList<String> midiDeviceNames = new ArrayList<String>();
 
+
+
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "MIDI Keyboard Julien";
+	private JLabel pageNameLBL;
+	
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
 	 * @param index The index of this page (the page number)
@@ -446,14 +456,23 @@ public class MIDIKeyboardJulienBPage implements Page, ActionListener {
 			}
 		}
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
-	 */
-	public String getName() {
-		return "MIDI Keyboard";
+	 */	
+	public String getName() 
+	{		
+		return pageName;
 	}
-
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
+	 */
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.monome.setJMenuBar(this.monome.createMenuBar());
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
@@ -466,8 +485,8 @@ public class MIDIKeyboardJulienBPage implements Page, ActionListener {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
 		JPanel subPanel = new JPanel();
-		JLabel label = new JLabel((this.index + 1) + ": MIDI Keyboard");
-		subPanel.add(label);
+		pageNameLBL = new JLabel((this.index + 1) + ": MIDI Keyboard");
+		subPanel.add(pageNameLBL);
 		panel.add(subPanel);
 
 		subPanel = new JPanel();
@@ -493,6 +512,7 @@ public class MIDIKeyboardJulienBPage implements Page, ActionListener {
 	public String toXml() {
 		String xml = "";
 		xml += "      <name>MIDI Keyboard JulienB Page</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		for (int i=0; i < this.midiDeviceNames.size(); i++) {
 			xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceNames.get(i)) + "</selectedmidioutport>\n";
 		}
@@ -568,11 +588,30 @@ public class MIDIKeyboardJulienBPage implements Page, ActionListener {
 	}
 
 	public void configure(Element pageElement) {
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
+	}
+
+	public void handleADC(float x, float y) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void handleADC(float x, float y) {
+	public boolean isTiltPage() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public ADCOptions getAdcOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setAdcOptions(ADCOptions options)  {
 		// TODO Auto-generated method stub
 		
 	}

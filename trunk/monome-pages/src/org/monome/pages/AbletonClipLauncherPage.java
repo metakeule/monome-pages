@@ -93,6 +93,13 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * The number of control rows (track arm, track stop) that are enabled currently
 	 */
 	private int numEnabledRows = 4;
+	
+	/**
+	 * The name of the page 
+	 */
+	private String pageName = "Ableton Clip Launcher";
+	private JLabel pageNameLBL;
+	
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -142,10 +149,19 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */
-	public String getName() {
-		return "Ableton Clip Launcher";
+	public String getName() 
+	{		
+		return pageName;
 	}
-
+	/* (non-Javadoc)
+	 * @see org.monome.pages.Page#setName()
+	 */
+	public void setName(String name) {
+		this.pageName = name;
+		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);		
+		this.monome.setJMenuBar(this.monome.createMenuBar());
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
@@ -159,8 +175,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
-		JLabel label = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
-		panel.add(label);
+		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
+		panel.add(pageNameLBL);
 		
 		disableMuteCB.setText("Disable Mute");
 		disableMuteCB.addActionListener(this);
@@ -595,6 +611,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		
 		String xml = "";
 		xml += "      <name>Ableton Clip Launcher</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
+		
 		xml += "      <disablearm>" + disableArm + "</disablearm>\n";
 		xml += "      <disablesolo>" + disableSolo + "</disablesolo>\n";
 		xml += "      <disablemute>" + disableMute + "</disablemute>\n";
@@ -656,10 +674,31 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void handleADC(float x, float y) {
 		// TODO Auto-generated method stub		
 	}
+	public boolean isTiltPage() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	public ADCOptions getAdcOptions() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setAdcOptions(ADCOptions options)  {
+		// TODO Auto-generated method stub
+		
+	}
 
 	public void configure(Element pageElement) {
+		NodeList nameNL = pageElement.getElementsByTagName("pageName");
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String	name = ((Node) nl.item(0)).getNodeValue();
+			this.setName(name);			
+		}
+		
 		NodeList armNL = pageElement.getElementsByTagName("disablearm");
-		Element el = (Element) armNL.item(0);
+		el = (Element) armNL.item(0);
 		if (el != null) {
 			NodeList nl = el.getChildNodes();
 			String disableArm = ((Node) nl.item(0)).getNodeValue();
