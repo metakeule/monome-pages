@@ -170,6 +170,8 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 * Stores the note on / off state of all MIDI notes
 	 */
 	private int[][] notesOn = new int[16][128];
+	
+	private int[][] buttonPress = new int[7][6];
 
 	private Receiver recv;
 
@@ -296,6 +298,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 					this.monome.led(this.myKey, 6, 0, this.index);					
 					this.myKey = x;
 					this.monome.led(this.myKey, y, 1, this.index);
+					
 				} else if (y == 6 && x == 7) {
 					this.monome.led(x, y, 1, this.index);
 					this.sustain = 1;
@@ -385,7 +388,12 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						this.pressCount++;
 					}
 				}
-				if (!(y == 6 && x == 7) && !(y == 7 && x < 2) && !this.functionLock) this.stopNotes();
+				if (!(y == 6 && x == 7) && !(y == 7 && x < 2) && !this.functionLock) {
+					
+					this.stopNotes();
+					retriggerNotes();
+				}
+					
 				// select the midi channel
 			} else {		
 				if (x == 7 && y < 4 && !this.functionLock) {					
@@ -444,7 +452,27 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			
 			this.playNote(note_num, velocity, channel);
 			this.notesOn[channel][note_num] = value;
+			this.buttonPress[x][y] = value;
 			this.monome.led(x, y, value, this.index);
+		}
+	}
+	
+	//allows for playing notes by pressing different key/accidental/scale buttons
+	private void retriggerNotes() {
+		for (int i=0; i<128; i++) {
+			this.notesOn[this.midiChannel][i] = 0;
+		}
+		for (int x=0; x<7; x++) {
+			for (int y=0; y<6; y++) {
+				if (this.buttonPress[x][y] == 1) {
+					int note_num = this.getNoteNumber(x) + ((y - 3) * 12);
+					if (note_num > 127) note_num = 127;
+					if (note_num < 0) note_num = 0;
+					
+					this.notesOn[this.midiChannel][note_num] = 1;
+					this.playNote(note_num, 127, this.midiChannel);
+				}
+			}
 		}
 	}
 	

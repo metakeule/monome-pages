@@ -19,6 +19,7 @@ public class ADCOptions  {
 	private boolean sendADC = false;
 	private String midiDeviceName = null;
 	private int midiChannel = -1;
+	private boolean [] isAdcTranspose = {true, true, true, true};
 	
 	//switch ADC num 0->2 1->3   3->2 2->1
 	private boolean swapADC = false;
@@ -33,10 +34,11 @@ public class ADCOptions  {
 	
 	private void setADCOffset () {
 		int x = adcTranspose * 4;
-		this.ccADC[0] = this.ccOffset + 0 + x;
-		this.ccADC[1] = this.ccOffset + 1 + x;
-		this.ccADC[2] = this.ccOffset + 2 + x;
-		this.ccADC[3] = this.ccOffset + 3 + x;
+		
+		for (int i=0; i<4; i++) {
+			if (this.isAdcTranspose(i))
+				this.ccADC[i] = this.ccOffset + i + x;
+		}
 	}
 	/**
 	 * @return the offset of the CC value
@@ -120,5 +122,20 @@ public class ADCOptions  {
 	 */
 	public boolean isSwapADC() {
 		return swapADC;
+	}
+
+	
+	/**
+	 * @param isAdcTranspose the isAdcTranspose to set
+	 */
+	public void setIsAdcTranspose(int index, boolean value) {
+		this.isAdcTranspose[index] = value;
+	}
+
+	/**
+	 * @return the isAdcTranspose
+	 */
+	public boolean isAdcTranspose(int index) {
+		return isAdcTranspose[index];
 	}
 }

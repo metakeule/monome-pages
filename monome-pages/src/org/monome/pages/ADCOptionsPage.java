@@ -74,7 +74,11 @@ public class ADCOptionsPage implements Page, ActionListener {
 	 */
 	private JCheckBox sendADCCB;
 	private JCheckBox midiChannelCB;
-	private JCheckBox swapADCnumCB;		
+	private JCheckBox swapADCnumCB;	
+	private JCheckBox adcTranspose1CB;
+	private JCheckBox adcTranspose2CB;
+	private JCheckBox adcTranspose3CB;
+	private JCheckBox adcTranspose4CB;
 	private JButton saveBtn;
 	private JButton cancelBtn;
 	private JButton midiOutButton;
@@ -133,6 +137,11 @@ public class ADCOptionsPage implements Page, ActionListener {
 				int chan = Integer.parseInt(this.midiChannelTF.getText()) - 1;
 				if (chan < 0) chan = 0;
 				this.options.setMidiChannel(chan);
+			} else if (page instanceof MIDIKeyboardPage) {
+				this.options.setIsAdcTranspose(0, this.adcTranspose1CB.isSelected());
+				this.options.setIsAdcTranspose(1, this.adcTranspose2CB.isSelected());
+				this.options.setIsAdcTranspose(2, this.adcTranspose3CB.isSelected());
+				this.options.setIsAdcTranspose(3, this.adcTranspose4CB.isSelected());
 			} else {
 				if (this.midiChannelCB.isSelected()) {
 					if (Integer.parseInt(this.midiChannelTF.getText()) == 0) midiChannelTF.setText("1");
@@ -169,7 +178,11 @@ public class ADCOptionsPage implements Page, ActionListener {
 		JPanel panel = new JPanel();
 				
 		panel.setLayout(null);
-		panel.setPreferredSize(new java.awt.Dimension(300, 190));
+		if (page instanceof MIDIKeyboardPage) {
+			panel.setPreferredSize(new java.awt.Dimension(300, 280));
+		} else {
+			panel.setPreferredSize(new java.awt.Dimension(300, 190));
+		}
 
 		pageNameLBL = new JLabel("ADC Options: " + this.page.getName());
 		panel.add(pageNameLBL);
@@ -222,28 +235,67 @@ public class ADCOptionsPage implements Page, ActionListener {
 				this.midiChannelCB.setSelected(true);
 		}
 		
-		
-		
 		sendADCCB = new JCheckBox("Tilt sends MIDI messages.");
 		panel.add(sendADCCB);
 		sendADCCB.setBounds(20, 105, 220, 20); 
 		sendADCCB.addActionListener(this);
 		this.sendADCCB.setSelected(this.options.isSendADC());
 		
-		midiOutButton = new JButton("Set MIDI Output");
-		midiOutButton.addActionListener(this);
-		panel.add(midiOutButton);
-		midiOutButton.setBounds(20, 130, 260, 20);
-		
-		saveBtn = new JButton("Commit Changes");
-		panel.add(saveBtn);
-		saveBtn.setBounds(20, 160, 120, 20);
-		this.saveBtn.addActionListener(this);
-		
-		cancelBtn = new JButton("Return to Page");
-		panel.add(cancelBtn);
-		cancelBtn.setBounds(160, 160, 120, 20);
-		this.cancelBtn.addActionListener(this);
+		if (this.page instanceof MIDIKeyboardPage) {
+			adcTranspose1CB = new JCheckBox("ADC Transpose: Port 1");
+			panel.add(adcTranspose1CB);
+			adcTranspose1CB.setBounds(20, 130, 220, 20); 
+			adcTranspose1CB.addActionListener(this);
+			this.adcTranspose1CB.setSelected(this.options.isAdcTranspose(0));
+			
+			adcTranspose2CB = new JCheckBox("ADC Transpose: Port 2");
+			panel.add(adcTranspose2CB);
+			adcTranspose2CB.setBounds(20, 150, 220, 20); 
+			adcTranspose2CB.addActionListener(this);
+			this.adcTranspose2CB.setSelected(this.options.isAdcTranspose(1));
+			
+			adcTranspose3CB = new JCheckBox("ADC Transpose: Port 3");
+			panel.add(adcTranspose3CB);
+			adcTranspose3CB.setBounds(20, 170, 220, 20); 
+			adcTranspose3CB.addActionListener(this);
+			this.adcTranspose3CB.setSelected(this.options.isAdcTranspose(2));
+			
+			adcTranspose4CB = new JCheckBox("ADC Transpose: Port 4");
+			panel.add(adcTranspose4CB);
+			adcTranspose4CB.setBounds(20, 190, 220, 20); 
+			adcTranspose4CB.addActionListener(this);
+			this.adcTranspose4CB.setSelected(this.options.isAdcTranspose(3));
+			
+			midiOutButton = new JButton("Set MIDI Output");
+			midiOutButton.addActionListener(this);
+			panel.add(midiOutButton);
+			midiOutButton.setBounds(20, 215, 260, 20);
+			
+			saveBtn = new JButton("Commit Changes");
+			panel.add(saveBtn);
+			saveBtn.setBounds(20, 240, 120, 20);
+			this.saveBtn.addActionListener(this);
+			
+			cancelBtn = new JButton("Return to Page");
+			panel.add(cancelBtn);
+			cancelBtn.setBounds(160, 240, 120, 20);
+			this.cancelBtn.addActionListener(this);
+		} else {
+			midiOutButton = new JButton("Set MIDI Output");
+			midiOutButton.addActionListener(this);
+			panel.add(midiOutButton);
+			midiOutButton.setBounds(20, 130, 260, 20);
+			
+			saveBtn = new JButton("Commit Changes");
+			panel.add(saveBtn);
+			saveBtn.setBounds(20, 160, 120, 20);
+			this.saveBtn.addActionListener(this);
+			
+			cancelBtn = new JButton("Return to Page");
+			panel.add(cancelBtn);
+			cancelBtn.setBounds(160, 160, 120, 20);
+			this.cancelBtn.addActionListener(this);
+		}
 		
 		this.panel = panel;
 		this.redrawMonome();
