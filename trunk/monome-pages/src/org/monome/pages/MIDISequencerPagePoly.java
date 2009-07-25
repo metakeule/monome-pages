@@ -1489,7 +1489,6 @@ globalRandomVelocityValue=0;*/
 									if (this.bankMode == 1) this.monome.led(y%
 
 											(this.monome.sizeX-1), this.monome.sizeY-3+(y/(this.monome.sizeX-1)), 0, this.index);
-									System.out.println("Sent note on " + midiChannel + " note was: " + heldNotesNum[iSeq][y]);
 									this.recv.send(note_out, -1);
 								}
 							} catch (InvalidMidiDataException e) {
@@ -1508,7 +1507,6 @@ globalRandomVelocityValue=0;*/
 								if (this.bankMode == 1) this.monome.led(y%
 
 										(this.monome.sizeX-1), this.monome.sizeY-3+(y/(this.monome.sizeX-1)), 1, this.index);
-								System.out.println("Sent note on " + midiChannel + " note was: " + note_num);
 								this.recv.send(note_out, -1);
 							} catch (InvalidMidiDataException e) {
 								e.printStackTrace();
@@ -1537,7 +1535,6 @@ globalRandomVelocityValue=0;*/
 									note_out.setMessage(ShortMessage.NOTE_OFF, 
 
 											midiChannel, heldNotesNum[iSeq][y], 0);	
-									System.out.println("Sent note on " + midiChannel + " note was: " + heldNotesNum[iSeq][y]);
 									this.recv.send(note_out, -1);
 								}
 								if (this.bankMode == 1) this.monome.led(y%
@@ -1555,7 +1552,6 @@ globalRandomVelocityValue=0;*/
 
 										midiChannel, note_num, velocity);	
 								heldNotesNum[iSeq][y]=note_num;
-								System.out.println("Sent note on " + midiChannel + " note was: " + note_num);
 								this.recv.send(note_out, -1);
 								if (this.bankMode == 1) this.monome.led(y%
 
@@ -1739,8 +1735,9 @@ globalRandomVelocityValue=0;*/
 
 		// redraw if we're in bank mode
 		if (this.bankMode == 1) {
+			System.out.println("bank mode is 1");
 			for (int x = 0; x < (this.monome.sizeX-1); x++) {
-				for (int y = 0; y < (this.monome.sizeY - 3); y++) {
+				for (int y = 0; y < (this.monome.sizeY); y++) {
 					if (this.bankSel[this.monome.sizeX*y+x]==true) {
 						this.monome.led(x, y, 1, this.index);
 					} else {

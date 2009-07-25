@@ -25,6 +25,7 @@ package org.monome.pages;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
 import javax.swing.BoxLayout;
@@ -73,11 +74,6 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * The amount to offset the monome display of the tracks
 	 */
 	private int trackOffset;
-
-	/**
-	 * Ableton's current tempo/BPM setting
-	 */
-	private float tempo = (float) 120.0;
 	
 	private JCheckBox disableMuteCB = new JCheckBox();
 	private JCheckBox disableSoloCB = new JCheckBox();
@@ -384,14 +380,14 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * Sends "/live/tempo tempo-1" to LiveOSC. 
 	 */
 	public void tempoDown() {
-		this.monome.configuration.getAbletonControl().tempoDown(this.tempo);
+		this.monome.configuration.getAbletonControl().tempoDown(this.abletonState.getTempo());
 	}
 	
 	/**
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
 	public void tempoUp() {
-		this.monome.configuration.getAbletonControl().tempoUp(this.tempo);
+		this.monome.configuration.getAbletonControl().tempoUp(this.abletonState.getTempo());
 	}
 	
 	/**
@@ -518,7 +514,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
 	public void redrawMonome() {
-		for (int scene = 0; scene < (this.monome.sizeY - this.numEnabledRows); scene++) {
+		for (int scene = 0; scene < this.monome.sizeY; scene++) {
 			int scene_num = scene + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows)) + 1;
 			if (scene_num == this.abletonState.getSelectedScene()) {
 				// let handleTick flash it
@@ -541,8 +537,16 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 						} else if (clip.getState() == AbletonClip.STATE_EMPTY) {
 							this.monome.led(x + 1, y, 0, this.index);
 						}
+					} else {
+						this.monome.led(x + 1, y, 0, this.index);
 					}
 				}
+			} else {
+				ArrayList<Integer> colParams = new ArrayList<Integer>();
+				colParams.add(x + 1);
+				colParams.add(0);
+				colParams.add(0);
+				this.monome.led_col(colParams, this.index);
 			}
 		}
 		

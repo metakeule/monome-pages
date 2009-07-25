@@ -860,14 +860,14 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		int col = intArgs.get(0);
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
-		for (int i = 1; i < intArgs.size(); i++) {
+		for (int i = 0; i < intArgs.size(); i++) {
 			if (i > 4) {
 				break;
 			}
 			values[i] = intArgs.get(i);
 			numValues++;
 		}
-		int fullvalue = (values[3] << 24) + (values[2] << 16) + (values[1] << 8) + values[0];
+		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
 		for (int y=0; y < this.sizeY; y++) {
 			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 			this.pageState[index][col][y] = bit;
@@ -882,9 +882,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.ledState[col][y] = bit;
 		}
 
-		Object args[] = new Object[numValues + 1];
+		Object args[] = new Object[numValues];
 		args[0] = new Integer(col);
-		for (int i = 1; i < numValues + 1; i++) {
+		for (int i = 1; i < numValues; i++) {
 			args[i] = (Integer) intArgs.get(i);
 		}
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_col", args);
@@ -908,14 +908,14 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		int row = intArgs.get(0);
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
-		for (int i = 1; i < intArgs.size(); i++) {
+		for (int i = 0; i < intArgs.size(); i++) {
 			if (i > 4) {
 				break;
 			}
 			values[i] = intArgs.get(i);
 			numValues++;
 		}
-		int fullvalue = (values[3] << 24) + (values[2] << 16) + (values[1] << 8) + values[0];
+		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
 		for (int x=0; x < this.sizeX; x++) {
 			int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
 			this.pageState[index][x][row] = bit;
@@ -930,9 +930,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.ledState[x][row] = bit;
 		}
 
-		Object args[] = new Object[numValues + 1];
+		Object args[] = new Object[numValues];
 		args[0] = new Integer(row);
-		for (int i = 1; i < numValues + 1; i++) {
+		for (int i = 0; i < numValues; i++) {
 			args[i] = (Integer) intArgs.get(i);
 		}
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_row", args);

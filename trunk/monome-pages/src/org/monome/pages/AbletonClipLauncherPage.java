@@ -491,7 +491,15 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 						} else if (clip.getState() == AbletonClip.STATE_EMPTY) {
 							this.monome.led(x, y, 0, this.index);
 						}
+					} else {
+						this.monome.led(x, y, 0, this.index);					
 					}
+				} else {
+					ArrayList<Integer> colParams = new ArrayList<Integer>();
+					colParams.add(x);
+					colParams.add(0);
+					colParams.add(0);
+					this.monome.led_col(colParams, this.index);
 				}
 			}
 		}
