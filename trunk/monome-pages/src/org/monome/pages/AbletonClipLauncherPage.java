@@ -110,7 +110,6 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 		this.index = index;
 		this.monome.configuration.initAbleton();
 		abletonState = this.monome.configuration.abletonState;
-		this.refreshAbleton();
 	}
 
 	/* (non-Javadoc)
@@ -312,6 +311,12 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					this.playClip(track_num, clip_num);
 				}
 			}
+		} else {
+			int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
+			int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+			this.viewTrack(track_num);
+			this.stopClip(track_num, clip_num);
+			System.out.println("stop clip");
 		}
 	}
 
@@ -323,6 +328,10 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	public void playClip(int track, int clip) {
 		this.monome.configuration.getAbletonControl().playClip(track, clip);
+	}
+	
+	public void stopClip(int track, int clip) {
+		this.monome.configuration.getAbletonControl().stopClip(track, clip);
 	}
 
 	/**
@@ -479,12 +488,12 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	public void redrawMonome() {
 		// redraw the upper part of the monome (the clip state)
 		for (int x = 0; x < this.monome.sizeX - 1; x++) {
-			for (int y = 0; y < (this.monome.sizeY - this.numEnabledRows); y++) {
-				int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-				int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-				AbletonTrack track = this.abletonState.getTrack(track_num, false);
-				if (track != null) {
-					AbletonClip clip = track.getClip(clip_num, false);
+			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 1));
+			AbletonTrack track = this.abletonState.getTrack(trackNum, false);
+			if (track != null) {
+				for (int y = 0; y < (this.monome.sizeY - this.numEnabledRows); y++) {
+					int clipNum = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
+					AbletonClip clip = track.getClip(clipNum, false);
 					if (clip != null) {
 						if (clip.getState() == AbletonClip.STATE_STOPPED) {
 							this.monome.led(x, y, 1, this.index);
@@ -492,15 +501,15 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 							this.monome.led(x, y, 0, this.index);
 						}
 					} else {
-						this.monome.led(x, y, 0, this.index);					
+						this.monome.led(x, y, 0, this.index);
 					}
-				} else {
-					ArrayList<Integer> colParams = new ArrayList<Integer>();
-					colParams.add(x);
-					colParams.add(0);
-					colParams.add(0);
-					this.monome.led_col(colParams, this.index);
 				}
+			} else {
+				ArrayList<Integer> colParams = new ArrayList<Integer>();
+				colParams.add(x);
+				colParams.add(0);
+				colParams.add(0);
+				this.monome.led_col(colParams, this.index);
 			}
 		}
 		
@@ -578,11 +587,13 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 				this.monome.led(i, yRow, 0, this.index);				
 			}
 		}
-		
-		if (this.abletonState.getOverdub() == 1) {
-			this.monome.led(this.monome.sizeX - 1, 6, 1, this.index);
-		} else {
-			this.monome.led(this.monome.sizeX - 1, 6, 0, this.index);
+
+		for (int y = 0; y < this.monome.sizeX; y++) {
+			if (y == 6 && this.abletonState.getOverdub() == 1) {
+				this.monome.led(this.monome.sizeX - 1, y, 1, this.index);
+			} else {
+				this.monome.led(this.monome.sizeX - 1, y, 0, this.index);
+			}
 		}
 	}
 
