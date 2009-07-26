@@ -114,7 +114,6 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 		this.index = index;
 		this.monome.configuration.initAbleton();
 		this.abletonState = this.monome.configuration.abletonState;
-		this.refreshAbleton();
 	}
 
 	/* (non-Javadoc)
@@ -554,7 +553,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 			}
 		}
 		
-		for (int y = 4; y < 8; y++) {
+		for (int y = 0; y < this.monome.sizeY; y++) {
 			if (this.loopButton == y) {
 				this.monome.led(this.monome.sizeX - 1, y, 1, this.index);
 			} else {

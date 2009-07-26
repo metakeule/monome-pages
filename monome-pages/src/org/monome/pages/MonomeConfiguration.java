@@ -86,7 +86,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	/**
 	 * The pages that belong to this monome
 	 */
-	private ArrayList<Page> pages = new ArrayList<Page>();
+	public ArrayList<Page> pages = new ArrayList<Page>();
 	private ArrayList<PatternBank> patternBanks = new ArrayList<PatternBank>();
 
 	/**
@@ -457,7 +457,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param pageIndex The index of the page to switch to
 	 * @param redrawPanel true if the GUI panel should be redrawn
 	 */
-	private void switchPage(Page page, int pageIndex, boolean redrawPanel) {
+	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
 		page.redrawMonome();
 
@@ -1040,10 +1040,16 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	}
 	
 	public void setPatternLength(int pageNum, int length) {
+		if (this.patternBanks.size() <= pageNum) {
+			this.patternBanks.add(pageNum, new PatternBank(this.sizeX));
+		}
 		this.patternBanks.get(pageNum).setPatternLength(length);
 	}
 	
 	public void setQuantization(int pageNum, int quantization) {
+		if (this.patternBanks.size() <= pageNum) {
+			this.patternBanks.add(pageNum, new PatternBank(this.sizeX));
+		}
 		this.patternBanks.get(pageNum).setQuantization(quantization);
 	}
 

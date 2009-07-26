@@ -210,8 +210,7 @@ public class MIDIFadersPage implements Page, ActionListener {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */	
-	public String getName() 
-	{		
+	public String getName() {		
 		return pageName;
 	}
 	/* (non-Javadoc)
