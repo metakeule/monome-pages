@@ -311,12 +311,6 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 					this.playClip(track_num, clip_num);
 				}
 			}
-		} else {
-			int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-			int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-			this.viewTrack(track_num);
-			this.stopClip(track_num, clip_num);
-			System.out.println("stop clip");
 		}
 	}
 
