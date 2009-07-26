@@ -4,6 +4,8 @@ public interface AbletonControl {
 	
 	public void playClip(int track, int clip);
 	
+	public void stopClip(int track, int clip);
+	
 	public void armTrack(int track);
 	
 	public void disarmTrack(int track);
