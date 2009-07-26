@@ -168,6 +168,8 @@ public class Configuration implements Receiver {
 	private int abletonOSCUpdateDelay = 100;
 	
 	private int abletonMIDIUpdateDelay = 100;
+	
+	private boolean abletonInitialized = false;
 
 	/**
 	 * @param name The name of the configuration
@@ -544,11 +546,21 @@ public class Configuration implements Receiver {
 	 * @return true if initialization was successful
 	 */
 	public void initAbleton() {
-		this.stopAbletonClipUpdaters();
-		if (this.abletonMode.equals("OSC")) {
-			this.initAbletonOSCMode();
-		} else if (this.abletonMode.equals("MIDI")) {
-			this.initAbletonMIDIMode();
+		if (!abletonInitialized) {
+			this.stopAbletonClipUpdaters();
+			if (this.abletonMode.equals("OSC")) {
+				this.initAbletonOSCMode();
+			} else if (this.abletonMode.equals("MIDI")) {
+				this.initAbletonMIDIMode();
+			}
+			abletonInitialized = true;
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.abletonControl.refreshAbleton();
 		}
 	}
 	

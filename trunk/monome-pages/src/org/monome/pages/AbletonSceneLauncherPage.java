@@ -105,7 +105,6 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		this.index = index;
 		this.monome.configuration.initAbleton();
 		this.abletonState = this.monome.configuration.abletonState;
-		this.refreshAbleton();
 	}
 
 	/* (non-Javadoc)
@@ -625,10 +624,12 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 			}
 		}
 		
-		if (this.abletonState.getOverdub() == 1) {
-			this.monome.led(this.monome.sizeX - 1, 6, 1, this.index);
-		} else {
-			this.monome.led(this.monome.sizeX - 1, 6, 0, this.index);
+		for (int y = 0; y < this.monome.sizeX; y++) {
+			if (y == 6 && this.abletonState.getOverdub() == 1) {
+				this.monome.led(this.monome.sizeX - 1, y, 1, this.index);
+			} else {
+				this.monome.led(this.monome.sizeX - 1, y, 0, this.index);
+			}
 		}
 	}
 

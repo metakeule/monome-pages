@@ -92,6 +92,19 @@ public class AbletonOSCControl implements AbletonControl {
 		}
 		this.refreshClipInfo(track, clip);
 	}
+	
+	public void stopClip(int track, int clip) {
+		Object args[] = new Object[2];
+		args[0] = new Integer(track);
+		args[1] = new Integer(clip);
+		OSCMessage msg = new OSCMessage("/live/stop/clip", args);
+		try {
+			this.configuration.getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.refreshClipInfo(track, clip);
+	}
 
 	/**
 	 * Sends "/live/redo" to LiveOSC. 
