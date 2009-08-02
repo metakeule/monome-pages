@@ -614,6 +614,7 @@ public class Configuration implements Receiver {
 			this.abletonOSCPortIn.addListener("/live/tempo", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/overdub", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/refresh", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/reset", this.abletonOSCListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
 			e.printStackTrace();

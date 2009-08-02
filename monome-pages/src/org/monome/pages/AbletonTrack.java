@@ -23,7 +23,9 @@ public class AbletonTrack {
 	public AbletonClip getClip(int i, boolean create) {
 		if (clips.size() <= i) {
 			if (create) {
-				clips.ensureCapacity(i);
+				for (int x = clips.size(); x < i; x++) {
+					clips.add(x, new AbletonClip());
+				}
 				clips.add(i, new AbletonClip());
 			} else {
 				return null;
