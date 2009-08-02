@@ -177,4 +177,9 @@ public class AbletonMIDIControl implements AbletonControl {
 		// TODO Auto-generated method stub
 		
 	}
+
+	public void resetAbleton() {
+		// TODO Auto-generated method stub
+		
+	}
 }

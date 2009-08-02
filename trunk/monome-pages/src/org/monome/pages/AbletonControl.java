@@ -37,4 +37,6 @@ public interface AbletonControl {
 	public void soloTrack(int track);
 	
 	public void unsoloTrack(int track);
+
+	public void resetAbleton();
 }

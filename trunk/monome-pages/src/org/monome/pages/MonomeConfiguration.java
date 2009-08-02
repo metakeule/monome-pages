@@ -135,6 +135,11 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	
 	public ADC adcObj = new ADC();
 	public boolean calibrationMode = false;
+	public boolean pageChangeConfigMode = false;
+	
+	public boolean usePageChangeButton = true;
+
+	public boolean useMIDIPageChanging = false;
 	
 	
 
@@ -410,6 +415,23 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			}
 			
 		}
+		
+		if (e.getActionCommand().contains("Page Change Configuration")) {
+			this.pageChangeConfigMode = true;
+			Page page = new PageChangeConfigurationPage(this, this.numPages);		
+			
+			this.prevPage = this.curPage;
+			this.pages.add(this.numPages, page);			
+			this.switchPage(page, this.numPages, true);
+
+			int numPatterns = this.sizeX;
+			this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
+			
+			this.numPages++;
+			// recreate the menu bar to include this page in the show page list
+			this.setJMenuBar(this.createMenuBar());			
+		}
+		
 	}
 
 	private void deletePage(int i) {
@@ -640,7 +662,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 
 		menuBar = new JMenuBar();
 		
-		if(this.calibrationMode) {
+		if(this.calibrationMode || this.pageChangeConfigMode) {
 			//do nothing...menu disabled
 			return null;
 		} else {	
@@ -713,6 +735,11 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			
 			menuItem = new JMenuItem ("Set Current Page Name");
 			menuItem.getAccessibleContext().setAccessibleDescription("Set Current Page Name");	
+			menuItem.addActionListener(this);
+			fileMenu.add(menuItem);
+			
+			menuItem = new JMenuItem ("Page Change Configuration");
+			menuItem.getAccessibleContext().setAccessibleDescription("Page Change Configuration");	
 			menuItem.addActionListener(this);
 			fileMenu.add(menuItem);
 			

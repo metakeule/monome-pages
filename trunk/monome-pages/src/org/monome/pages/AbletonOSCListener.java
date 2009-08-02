@@ -53,7 +53,12 @@ public class AbletonOSCListener implements OSCListener {
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
-	    System.out.println("OSC received: " + msg.getAddress());
+	    System.out.print("OSC received: " + msg.getAddress());
+	    Object[] tmpargs = msg.getArguments();
+	    for (int x = 0; x < tmpargs.length; x++) {
+	    	System.out.print(" " + tmpargs[x].toString());
+	    }
+	    System.out.println();
 	    
 		if (msg.getAddress().contains("/live/track/info")) {
 			Object[] args = msg.getArguments();
@@ -137,6 +142,10 @@ public class AbletonOSCListener implements OSCListener {
         
         if (msg.getAddress().contains("/live/refresh")) {
         	this.configuration.getAbletonControl().refreshAbleton();
+        }
+        
+        if (msg.getAddress().contains("/live/reset")) {
+        	this.configuration.getAbletonControl().resetAbleton();
         }
         
 	}

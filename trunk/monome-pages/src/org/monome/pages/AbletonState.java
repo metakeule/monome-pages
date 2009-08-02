@@ -19,6 +19,9 @@ public class AbletonState {
 	public AbletonTrack getTrack(int i, boolean create) {
 		if (tracks.size() <= i) {
 			if (create) {
+				for (int x = tracks.size(); x < i; x++) {
+					tracks.add(x, new AbletonTrack());
+				}
 				tracks.add(i, new AbletonTrack());
 			} else {
 				return null;

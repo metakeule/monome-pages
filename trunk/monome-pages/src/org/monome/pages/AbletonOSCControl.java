@@ -405,4 +405,8 @@ public class AbletonOSCControl implements AbletonControl {
 		refreshAllTracks();
 		refreshState();
 	}
+	
+	public void resetAbleton() {
+		this.configuration.abletonState.reset();
+	}
 }
