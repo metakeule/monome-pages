@@ -25,6 +25,7 @@ package org.monome.pages;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -137,7 +138,8 @@ public class NewMonomeFrame extends JInternalFrame implements ActionListener {
 			int sizeX = Integer.parseInt(this.sizeX.getText());
 			int sizeY = Integer.parseInt(this.sizeY.getText());
 			String prefix = this.prefix.getText();
-			int index = this.configuration.addMonomeConfiguration(prefix, sizeX, sizeY);
+			ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+			int index = this.configuration.addMonomeConfiguration(prefix, sizeX, sizeY, true, false, midiPageChangeRules);
 			MonomeConfiguration monomeFrame = this.configuration.getMonomeConfigurationFrame(index);
 			monomeFrame.setVisible(true);
 			this.frame.add(monomeFrame);

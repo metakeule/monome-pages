@@ -39,11 +39,15 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 	
 	private ArrayList<JTextField> midiChannels;
 	private ArrayList<JTextField> midiNotes;
+	
+	private JLabel lastMsgLbl;
+	
+	private JPanel panel;
+	private JPanel gridPanel;
 
 	public PageChangeConfigurationPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		
 	}
 	
 	public void actionPerformed(ActionEvent e) {
@@ -60,6 +64,14 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 			}
 		}
 		if (e.getActionCommand().equals("Click to save and exit config mode.")) {
+			this.monome.midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+			for (int i = 0; i < this.midiChannels.size(); i++) {
+				int channel = Integer.parseInt(this.midiChannels.get(i).getText());
+				int note = Integer.parseInt(this.midiNotes.get(i).getText());
+				MIDIPageChangeRule mpcr = new MIDIPageChangeRule(note, channel, i);
+				this.monome.midiPageChangeRules.add(mpcr);
+			}
+			
 			this.monome.pageChangeConfigMode = false;
 			this.monome.deletePageX(this.index);
 		}
@@ -101,13 +113,24 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 	}
 
 	public JPanel getPanel() {
+
+		if (panel != null) {
+			if (lastMsgLbl != null) {
+				gridPanel.remove(lastMsgLbl);
+			}
+			lastMsgLbl = new JLabel("Last MIDI Message: Channel " + this.lastMIDIChannel + ", Note: " + this.lastMIDINote);
+			gridPanel.add(lastMsgLbl);
+			return panel;
+		}
 		
 		this.midiChannels = new ArrayList<JTextField>();
 		this.midiNotes = new ArrayList<JTextField>();
 		
-		JPanel panel = new JPanel();
-
-		JPanel gridPanel = new JPanel();
+		panel = new JPanel();
+		panel.setLayout(new GridLayout(0, 1));
+		
+		//JPanel gridPanel = new JPanel();
+		gridPanel = new JPanel();
 		gridPanel.setLayout(new GridLayout(0, 1));
 		JCheckBox checkBox = new JCheckBox();
 		checkBox.setText("Enable Page Change Button");
@@ -125,12 +148,17 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 		
 		panel.add(gridPanel);
 		
-		JLabel lbl = new JLabel("Last MIDI Message: Channel " + this.lastMIDIChannel + ", Note: " + this.lastMIDINote);
-		gridPanel.add(lbl);
-		
 		JPanel pagePanel = new JPanel();
 		pagePanel.setLayout(new BoxLayout(pagePanel, BoxLayout.PAGE_AXIS));
 		for (int i = 0; i < this.monome.pages.size() - 1; i++) {
+			int note = 0;
+			int channel = 0;
+			if (this.monome.midiPageChangeRules.size() > i) {
+				MIDIPageChangeRule mpcr = this.monome.midiPageChangeRules.get(i);
+				note = mpcr.getNote();
+				channel = mpcr.getChannel();
+			}
+
 			JPanel subPanel = new JPanel();
 			subPanel.setLayout(new GridLayout(1, 1));
 			//subPanel.setLayout(new GridBagLayout());
@@ -145,6 +173,7 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 			
 			JTextField tf = new JTextField();
 			tf.setName("" + i);
+			tf.setText("" + channel);
 			this.midiChannels.add(i, tf);
 			subPanel.add(tf);
 			
@@ -154,6 +183,7 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 
 			tf = new JTextField();
 			tf.setName("" + i);
+			tf.setText("" + note);
 			this.midiNotes.add(i, tf);
 			subPanel.add(tf);
 
@@ -209,12 +239,11 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 		if (message instanceof ShortMessage) {
 			ShortMessage msg = (ShortMessage) message;
 			int velocity = msg.getData2();
-			if (velocity != 0) {
+			if (msg.getCommand() == ShortMessage.NOTE_ON && velocity != 0) {
 				int channel = msg.getChannel();
 				lastMIDIChannel = channel;
 				int note = msg.getData1();
 				lastMIDINote = note;
-				System.out.println("midi in on channel " + channel + ", note " + note + ", velocity " + velocity);
 				this.monome.redrawPanel();
 			}
 		}

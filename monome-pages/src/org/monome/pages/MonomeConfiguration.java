@@ -30,6 +30,7 @@ import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
+import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 import javax.swing.BoxLayout;
 import javax.swing.JInternalFrame;
@@ -137,6 +138,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	public boolean calibrationMode = false;
 	public boolean pageChangeConfigMode = false;
 	
+	public ArrayList<MIDIPageChangeRule> midiPageChangeRules;
+	
 	public boolean usePageChangeButton = true;
 
 	public boolean useMIDIPageChanging = false;
@@ -150,7 +153,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param sizeX The width of this monome
 	 * @param sizeY The height of this monome
 	 */
-	public MonomeConfiguration(Configuration configuration, int index, String prefix, int sizeX, int sizeY) {
+	public MonomeConfiguration(Configuration configuration, int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
 		// call the parent's constructor, build the window, initialize the options dropdown choices
 		super(prefix, true, false, true, true);
 		this.clearMonome();
@@ -180,6 +183,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.sizeY = sizeY;
 
 		this.ledState = new int[32][32];
+		this.midiPageChangeRules = midiPageChangeRules;
+		this.usePageChangeButton = usePageChangeButton;
+		this.useMIDIPageChanging = useMIDIPageChanging;
 
 		JPanel monomePanel = new JPanel();
 		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));		
@@ -552,12 +558,23 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		if (this.pages.size() == 0) {
 			return;
 		}
-
+		
 		// if the monome isn't configured to handle this button then don't handle it
 		// ie if you config a 256 as a 64 and hit a button out of range
 		if (y >= this.sizeY || x >= this.sizeX) {
 			return;
 		}
+				
+		// stop here if we don't want to use the page change button
+		if (this.usePageChangeButton == false) {
+			// pass presses to the current page and record them in the pattern bank
+			if (this.pages.get(curPage) != null) {
+				this.patternBanks.get(curPage).recordPress(x, y, value);
+				this.pages.get(curPage).handlePress(x, y, value);
+			}
+			return;
+		}
+		
 		// if page change mode is on and this is a button on the bottom row then change page and return
 		if (this.pageChangeMode == 1 && value == 1 && !calibrationMode) {
 			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
@@ -603,7 +620,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.pages.get(curPage).redrawMonome();
 			return;
 		}
-
+		
+		// pass presses to the current page and record them in the pattern bank
 		if (this.pages.get(curPage) != null) {
 			this.patternBanks.get(curPage).recordPress(x, y, value);
 			this.pages.get(curPage).handlePress(x, y, value);
@@ -804,6 +822,25 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param timeStamp The timestamp of the MIDI message
 	 */
 	public void send(MidiMessage message, long timeStamp) {
+		if (this.useMIDIPageChanging && this.pageChangeConfigMode == false) {
+			if (message instanceof ShortMessage) {
+				ShortMessage msg = (ShortMessage) message;
+				int velocity = msg.getData1();
+				if (msg.getCommand() == ShortMessage.NOTE_ON && velocity > 0) {
+					int channel = msg.getChannel();
+					int note = msg.getData1();
+					
+					for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
+						MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
+						if (mpcr.checkRule(note, channel) == true) {
+							int switchToPageIndex = mpcr.getPageIndex();
+							Page page = this.pages.get(switchToPageIndex);
+							this.switchPage(page, switchToPageIndex, true);
+						}
+					}
+				}
+			}
+		}
 		for (int i=0; i < this.numPages; i++) {
 			this.pages.get(i).send(message, timeStamp);
 		}
@@ -1032,6 +1069,18 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		xml += "    <prefix>" + this.prefix + "</prefix>\n";
 		xml += "    <sizeX>" + this.sizeX + "</sizeX>\n";
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
+		xml += "    <usePageChangeButton>" + (this.usePageChangeButton ? "true" : "false") + "</usePageChangeButton>\n";
+		xml += "    <useMIDIPageChanging>" + (this.useMIDIPageChanging ? "true" : "false") + "</useMIDIPageChanging>\n";
+		for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
+			MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
+			if (mpcr != null) {
+				xml += "    <MIDIPageChangeRule>\n";
+				xml += "      <pageIndex>" + mpcr.getPageIndex() + "</pageIndex>\n";
+				xml += "      <note>" + mpcr.getNote() + "</note>\n";
+				xml += "      <channel>" + mpcr.getChannel() + "</channel>\n";
+				xml += "    </MIDIPageChangeRule>\n";
+			}
+		}
 		
 		//xml += "    <adcVersion>" + this.adcObj.getMonomeVersion() + "</adcVersion>\n";
 		

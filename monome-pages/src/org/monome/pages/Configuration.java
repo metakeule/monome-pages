@@ -209,8 +209,8 @@ public class Configuration implements Receiver {
 	 * @param sizeY The height of the monome (ie. 8 or 16)
 	 * @return The new monome's index
 	 */
-	public int addMonomeConfiguration(String prefix, int sizeX, int sizeY) {
-		MonomeConfiguration monome = new MonomeConfiguration(this, this.numMonomeConfigurations, prefix, sizeX, sizeY);
+	public int addMonomeConfiguration(String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+		MonomeConfiguration monome = new MonomeConfiguration(this, this.numMonomeConfigurations, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
 		this.monomeConfigurations.add(this.numMonomeConfigurations, monome);
 		this.initMonome(monome);
 		this.numMonomeConfigurations++;
