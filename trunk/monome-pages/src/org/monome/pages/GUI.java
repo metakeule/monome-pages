@@ -567,14 +567,63 @@ public class GUI implements ActionListener {
 					nl = el.getChildNodes();
 					String sizeY = ((Node) nl.item(0)).getNodeValue();
 					
+					boolean boolUsePageChangeButton = true;
+					nl = monomeElement.getElementsByTagName("usePageChangeButton");
+					el = (Element) nl.item(0);
+					if (el != null) {
+						nl = el.getChildNodes();
+						String usePageChangeButton = ((Node) nl.item(0)).getNodeValue();
+						if (usePageChangeButton.equals("false")) {
+							boolUsePageChangeButton = false;
+						}
+					}
+					
+					boolean boolUseMIDIPageChanging = false;
+					nl = monomeElement.getElementsByTagName("useMIDIPageChanging");
+					el = (Element) nl.item(0);
+					if (el != null) {
+						nl = el.getChildNodes();
+						String useMIDIPageChanging = ((Node) nl.item(0)).getNodeValue();
+						if (useMIDIPageChanging.equals("true")) {
+							boolUseMIDIPageChanging = true;
+						}
+					}
+					
+					NodeList rootNL3 = doc.getElementsByTagName("MIDIPageChangeRule");
+					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+					for (int i2=0; i2 < rootNL3.getLength(); i2++) {
+						Node node2 = rootNL3.item(i2);					
+						if (node2.getNodeType() == Node.ELEMENT_NODE) {
+							Element monomeElement2 = (Element) node2;
+						
+							NodeList nl2 = monomeElement2.getElementsByTagName("pageIndex");
+							Element el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String pageIndex = ((Node) nl2.item(0)).getNodeValue();
+							
+							nl2 = monomeElement2.getElementsByTagName("note");
+							el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String note = ((Node) nl2.item(0)).getNodeValue();
+							
+							nl2 = monomeElement2.getElementsByTagName("channel");
+							el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String channel = ((Node) nl2.item(0)).getNodeValue();
+							MIDIPageChangeRule mpcr = new MIDIPageChangeRule(Integer.valueOf(note).intValue(), Integer.valueOf(channel).intValue(), Integer.valueOf(pageIndex).intValue());
+							midiPageChangeRules.add(mpcr);
+						}
+					}
+
+					
 					// create the new monome configuration and display it's window
 					int index = this.configuration.addMonomeConfiguration(prefix, Integer.valueOf(sizeX).intValue(), 
-							Integer.valueOf(sizeY).intValue());
+							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
 					MonomeConfiguration monomeFrame = this.configuration.getMonomeConfigurationFrame(index);
 					monomeFrame.setVisible(true);
 					this.frame.add(monomeFrame);
 										
-					String s = ((Node) nl.item(0)).getNodeValue();					
+					String s;
 					float [] min = {0,0,0,0};
 					NodeList minNL = monomeElement.getElementsByTagName("min");
 					for (int j=0; j < minNL.getLength(); j++) {

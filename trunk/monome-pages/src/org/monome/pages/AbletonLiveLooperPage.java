@@ -77,9 +77,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 
 	/**
 	 * Ableton's current tempo/BPM setting
-	 */
-	private float tempo = (float) 120.0;
-	
+	 */	
 	private JCheckBox disableMuteCB = new JCheckBox();
 	private JCheckBox disableSoloCB = new JCheckBox();
 	private JCheckBox disableArmCB = new JCheckBox();
@@ -327,7 +325,7 @@ public class AbletonLiveLooperPage implements ActionListener, Page {
 				if (clip.getState() == AbletonClip.STATE_EMPTY) {
 					//int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) + 
 					//		           (((96.0 - this.numTicks) * 2.0 * ((60000.0 / (double) this.tempo)) / 96)));
-					int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) - 100.0);
+					int delay = (int) (((60000.0 / (double) this.abletonState.getTempo()) * 2.0 * this.loopLength) - 100.0);
 					AbletonClipDelay acd = new AbletonClipDelay(delay, trackNum, clipNum, this.monome.configuration);
 					new Thread(acd).start();
 				}
