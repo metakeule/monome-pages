@@ -318,7 +318,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 						 (y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == true) ||
 						 
                          (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == true)) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					this.stopTrack(track_num);
 					this.viewTrack(track_num);
 				}

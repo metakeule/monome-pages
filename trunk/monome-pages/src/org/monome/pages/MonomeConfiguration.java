@@ -145,6 +145,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	public boolean useMIDIPageChanging = false;
 	
 	
+	
+	
 
 	/**
 	 * @param configuration The main Configuration object
