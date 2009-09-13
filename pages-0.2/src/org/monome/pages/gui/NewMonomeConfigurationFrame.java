@@ -143,9 +143,10 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 		int sizeY = Integer.parseInt(this.sizeY.getText());
 		String prefix = this.prefix.getText();
 		ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-		int index = ConfigurationFactory.getConfiguration().addMonomeConfiguration(prefix, sizeX, sizeY, true, false, midiPageChangeRules);
-		MonomeConfiguration monomeFrame = ConfigurationFactory.getConfiguration().getMonomeConfigurationFrame(index);
-		monomeFrame.setVisible(true);
+				
+		Configuration config = ConfigurationFactory.getConfiguration();
+		int index = config.addMonomeConfiguration(prefix, sizeX, sizeY, true, false, midiPageChangeRules);
+		
 		//this.frame.add(monomeFrame);
 		//this.frame.validate();
 		this.dispose();

@@ -25,12 +25,16 @@ import org.monome.pages.configuration.ConfigurationFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.awt.Rectangle;
 
 public class Main extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JDesktopPane jDesktopPane = null;
+	private static JDesktopPane jDesktopPane = null;
 	private NewMonomeConfigurationFrame showNewMonomeFrame = null;
+	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
+	private static ArrayList<MonomeFrame> monomeFrames = null;
 	
 	private JMenuBar mainMenuBar = null;
 	
@@ -43,6 +47,7 @@ public class Main extends JFrame {
 	private JMenuItem exitItem = null;
 	
 	private JMenu configurationMenu = null;
+	private JMenuItem monomeSerialSetupItem = null;
 	private JMenuItem newMonomeItem = null;
 	
 	private Configuration configuration = null;  //  @jve:decl-index=0:
@@ -77,6 +82,7 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		super();
+		monomeFrames = new ArrayList<MonomeFrame>();
 		initialize();
 	}
 	
@@ -91,7 +97,7 @@ public class Main extends JFrame {
 	        Toolkit.getDefaultToolkit().getScreenSize();
 
 	    this.setSize(screenSize);
-		this.setContentPane(getJContentPane());
+		this.setContentPane(getDesktopPane());
 		this.setJMenuBar(getMainMenuBar());
 		this.setTitle("Pages");
 		// maximize the window
@@ -103,10 +109,9 @@ public class Main extends JFrame {
 	 * 
 	 * @return javax.swing.JPanel
 	 */
-	private JDesktopPane getJContentPane() {
+	private static JDesktopPane getDesktopPane() {
 		if (jDesktopPane == null) {
 			jDesktopPane = new JDesktopPane();
-			jDesktopPane.setSize(this.getSize());
 			jDesktopPane.setOpaque(true);
 			jDesktopPane.setVisible(true);
 			jDesktopPane.setBackground(Color.GRAY);
@@ -350,10 +355,52 @@ public class Main extends JFrame {
 			configurationMenu.setMnemonic(KeyEvent.VK_C);
 			configurationMenu.getAccessibleContext().setAccessibleDescription("Configuration Menu");
 			configurationMenu.setText("Configuration");
+			configurationMenu.add(getMonomeSerialSetupItem());
 			configurationMenu.add(getNewMonomeItem());
 			configurationMenu.setEnabled(false);
 		}
 		return configurationMenu;
+	}
+	
+	/**
+	 * This method initializes monomeSerialSetupItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getMonomeSerialSetupItem() {
+		if (monomeSerialSetupItem == null) {
+			monomeSerialSetupItem = new JMenuItem();
+			monomeSerialSetupItem.setText("Monome Serial Setup...");
+			monomeSerialSetupItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showMonomeSerialSetup();
+				}
+			});
+		}
+		return monomeSerialSetupItem;
+	}
+	
+	private void showMonomeSerialSetup() {
+		if (monomeSerialSetupFrame != null) {
+			try {
+				monomeSerialSetupFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		monomeSerialSetupFrame = new MonomeSerialSetupFrame();
+		monomeSerialSetupFrame.setVisible(true);
+		jDesktopPane.add(monomeSerialSetupFrame);
+		try {
+			monomeSerialSetupFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		
+		jDesktopPane.validate();
+		
 	}
 
 	/**
@@ -367,6 +414,7 @@ public class Main extends JFrame {
 			newMonomeItem.setMnemonic(KeyEvent.VK_N);
 			newMonomeItem.getAccessibleContext().setAccessibleDescription("New Monome Configuration");
 			newMonomeItem.setText("New Monome Configuration");
+			newMonomeItem.setEnabled(false);
 			newMonomeItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					showNewMonomeConfiguration();
@@ -405,5 +453,16 @@ public class Main extends JFrame {
 	private void setConfigurationFile(File cf) {
 		configurationFile = cf;
 	}
-
+	
+	public static void addMonomeFrame(MonomeFrame frame) {
+		monomeFrames.add(frame);
+		getDesktopPane().add(frame);
+	}
+	
+	public static void removeMonomeFrame(int index) {
+		MonomeFrame frame = monomeFrames.get(index);
+		monomeFrames.remove(index);
+		frame.dispose();
+	}
+	
 }

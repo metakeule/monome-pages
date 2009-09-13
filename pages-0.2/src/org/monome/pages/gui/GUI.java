@@ -599,7 +599,7 @@ public class GUI implements ActionListener {
 					// create the new monome configuration and display it's window
 					int index = this.configuration.addMonomeConfiguration(prefix, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
-					MonomeConfiguration monomeFrame = this.configuration.getMonomeConfigurationFrame(index);
+					MonomeConfiguration monomeFrame = this.configuration.getMonomeConfiguration(index);
 					monomeFrame.setVisible(true);
 					this.frame.add(monomeFrame);
 										
