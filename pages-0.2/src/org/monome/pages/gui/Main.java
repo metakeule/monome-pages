@@ -1,6 +1,8 @@
 package org.monome.pages.gui;
 
 import javax.swing.SwingUtilities;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -105,6 +107,9 @@ public class Main extends JFrame {
 		if (jDesktopPane == null) {
 			jDesktopPane = new JDesktopPane();
 			jDesktopPane.setSize(this.getSize());
+			jDesktopPane.setOpaque(true);
+			jDesktopPane.setVisible(true);
+			jDesktopPane.setBackground(Color.GRAY);
 		}
 		return jDesktopPane;
 	}
