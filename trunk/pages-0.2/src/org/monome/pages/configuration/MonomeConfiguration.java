@@ -22,33 +22,19 @@
 
 package org.monome.pages.configuration;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
-import javax.swing.BoxLayout;
-import javax.swing.JInternalFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
-import org.monome.pages.pages.ADCOptionsPage;
 import org.monome.pages.pages.AbletonClipControlPage;
 import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.AbletonClipSkipperPage;
 import org.monome.pages.pages.AbletonLiveLooperPage;
 import org.monome.pages.pages.AbletonSceneLauncherPage;
-import org.monome.pages.pages.ConfigADCPage;
 import org.monome.pages.pages.Page;
-import org.monome.pages.pages.PageChangeConfigurationPage;
 
 import com.illposed.osc.OSCMessage;
 
@@ -56,8 +42,7 @@ import com.illposed.osc.OSCMessage;
  * @author Administrator
  *
  */
-@SuppressWarnings("serial")
-public class MonomeConfiguration extends JInternalFrame implements ActionListener {
+public class MonomeConfiguration {
 
 	/**
 	 * The monome's prefix (ie. "/40h")
@@ -78,11 +63,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * The main Configuration object 
 	 */
 	public Configuration configuration;
-
-	/**
-	 * This monome's index 
-	 */
-	private int index;
 
 	/**
 	 * ledState[x][y] - The LED state cache for the monome
@@ -125,11 +105,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	private String options[];
 
 	/**
-	 * The current page panel being displayed 
-	 */
-	private JPanel curPanel;
-
-	/**
 	 * 1 when the page change button is held down (bottom right button) 
 	 */
 	private int pageChangeMode = 0;
@@ -139,11 +114,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 */
 	private boolean pageChanged = false;
 	
-	private String[] quantizationOptions = {"1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/48", "1/96"};
-
 	private int tickNum = 0;
-	
-	
+		
 	public ADC adcObj = new ADC();
 	public boolean calibrationMode = false;
 	public boolean pageChangeConfigMode = false;
@@ -154,10 +126,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 
 	public boolean useMIDIPageChanging = false;
 	
-	
-	
-	
-
 	/**
 	 * @param configuration The main Configuration object
 	 * @param index The index of this monome
@@ -166,29 +134,12 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	 * @param sizeY The height of this monome
 	 */
 	public MonomeConfiguration(Configuration configuration, int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		// call the parent's constructor, build the window, initialize the options dropdown choices
-		super(prefix, true, false, true, true);
-		this.clearMonome();
 		
-		this.options = PagesRepository.getPageNames();
-		
-		//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
+		this.options = PagesRepository.getPageNames();		
 		for (int i=0; i<options.length; i++) {
 			options[i] = options[i].substring(17);					
 		}
-		
-//		this.options[0] = "MIDI Sequencer";
-//		this.options[1] = "MIDI Keyboard";
-//		this.options[2] = "MIDI Faders";
-//		this.options[3] = "MIDI Triggers";
-//		this.options[4] = "External Application";
-//		this.options[5] = "Ableton Clip Launcher";
-//		this.options[6] = "Ableton Clip Skipper";
-//		this.options[7] = "Ableton Live Looper";
-//		this.options[8] = "Machine Drum Interface";
-//		this.options[9] = "Ableton Clip Control";
-//		this.options[10] = "MIDI Sequencer Poly";
-		
+				
 		this.configuration = configuration;
 		this.prefix = prefix;
 		this.sizeX = sizeX;
@@ -199,10 +150,7 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		this.usePageChangeButton = usePageChangeButton;
 		this.useMIDIPageChanging = useMIDIPageChanging;
 
-		JPanel monomePanel = new JPanel();
-		monomePanel.setLayout(new BoxLayout(monomePanel, BoxLayout.PAGE_AXIS));		
-		this.setJMenuBar(this.createMenuBar());
-		this.pack();
+		this.clearMonome();
 	}
 
 	/**
@@ -223,235 +171,9 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		
 		this.numPages++;
 		// recreate the menu bar to include this page in the show page list
-		this.setJMenuBar(this.createMenuBar());
-		return page;
-	}
-
-	/**
-	 * Adds a new page to this monome.
-	 * only for compatibility with previous versions.
-	 * use addPage(String pageName) when possible.
-	 * 
-	 * @param pageName The name of the page to add
-	 * @return The new Page object
-	 * 
-	 */
-	public Page addPageByName(String pageName) {
-		Page page = null;
-		if (pageName.compareTo("MIDI Sequencer") == 0) {
-			page = addPage("org.monome.pages.MIDISequencerPage");
-		} 
-		else if (pageName.compareTo("MIDI Keyboard") == 0) {
-			page = addPage("org.monome.pages.MIDIKeyboardPage");
-		}
-		else if (pageName.compareTo("MIDI Faders") == 0) {
-			page = addPage("org.monome.pages.MIDIFadersPage");
-		}
-		else if (pageName.compareTo("MIDI Triggers") == 0) {
-			page = addPage("org.monome.pages.MIDITriggersPage");
-		}
-		else if (pageName.compareTo("External Application") == 0) {
-			page = addPage("org.monome.pages.ExternalApplicationPage");
-		}
-		else if (pageName.compareTo("Ableton Clip Launcher") == 0) {
-			page = addPage("org.monome.pages.AbletonClipLauncherPage");
-		}
-		else if (pageName.compareTo("Ableton Clip Skipper") == 0) {
-			page = addPage("org.monome.pages.AbletonClipSkipperPage");
-		}
-		else if (pageName.compareTo("Ableton Live Looper") == 0) {
-			page = addPage("org.monome.pages.AbletonLiveLooperPage");
-		}
-		else if (pageName.compareTo("Machine Drum Interface") == 0) {
-			page = addPage("org.monome.pages.MachineDrumInterfacePage");
-		}
-		else if (pageName.compareTo("Ableton Clip Control") == 0) {
-			page = addPage("org.monome.pages.AbletonClipControlPage");
-		}
-		else if (pageName.compareTo("MIDI Keyboard Julienb (work in progress)") == 0) {
-			page = addPage("org.monome.pages.MIDIKeyboardJulienBPage");
-		}
-		else if (pageName.compareTo("MIDI Sequencer Poly") == 0) {
-			page = addPage("org.monome.pages.MidiSequencerPagePoly");
-		}
-		
 		return page;
 	}
 	
-	
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		// create a new page
-		if (e.getActionCommand().equals("New Page")) {
-			String name = (String)JOptionPane.showInputDialog(
-					this,
-					"Select a new page type",
-					"New Page",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					options,
-					"");
-			if (name == null) {
-				return;
-			}
-			name = "org.monome.pages." + name; 
-			this.addPage(name);
-		}
-		// remove this monome configuration
-		if (e.getActionCommand().equals("Remove Configuration")) {
-			this.configuration.closeMonome(this.index);
-		}
-		// Switch page
-		if (e.getActionCommand().contains("Show ")) {
-			String[] pieces = e.getActionCommand().split(":");
-			int index = Integer.parseInt(pieces[0]);
-			this.switchPage(this.pages.get(index - 1), index - 1, true);
-		}
-		// Delete page
-		if (e.getActionCommand().contains("Delete ")) {
-			String[] pieces = e.getActionCommand().split(":");
-			int index = Integer.parseInt(pieces[0]);
-			this.deletePage((index - 1));
-		}
-		// Set quantization
-		if (e.getActionCommand().contains("Set Quantization")) {
-			String[] pieces = e.getActionCommand().split(":");
-			int index = Integer.parseInt(pieces[0]) - 1;
-			String option = (String)JOptionPane.showInputDialog(
-					this,
-					"Select new pattern quantization value",
-					"Set Quantization",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					quantizationOptions,
-					"");
-			if (option == null) {
-				return;
-			}
-			
-			if (option.equals("1/96")) {
-				this.patternBanks.get(index).setQuantization(1);
-			} else if (option.equals("1/48")) {
-				this.patternBanks.get(index).setQuantization(2);
-			} else if (option.equals("1/32")) {
-				this.patternBanks.get(index).setQuantization(3);
-			} else if (option.equals("1/16")) {
-				this.patternBanks.get(index).setQuantization(6);
-			} else if (option.equals("1/8")) {
-				this.patternBanks.get(index).setQuantization(12);
-			} else if (option.equals("1/4")) {
-				this.patternBanks.get(index).setQuantization(24);
-			} else if (option.equals("1/2")) {
-				this.patternBanks.get(index).setQuantization(48);
-			} else if (option.equals("1")) {
-				this.patternBanks.get(index).setQuantization(96);
-			}
-		}
-			// Set quantization
-		if (e.getActionCommand().contains("Set Pattern Length")) {
-			String[] pieces = e.getActionCommand().split(":");
-			int index = Integer.parseInt(pieces[0]) - 1;
-			String option = (String)JOptionPane.showInputDialog(
-					this,
-					"Set new pattern length in bars (between 1 and 16)",
-					"Set Pattern Length",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					null,
-					"");
-			
-			if (option == null) {
-				return;
-			}
-			
-			try {
-				int patternLength = Integer.parseInt(option);
-				if (patternLength > 0 && patternLength <= 16) {
-					this.patternBanks.get(index).setPatternLength(patternLength);
-				}
-			} catch (NumberFormatException nfe) {
-				nfe.printStackTrace();
-			}
-		}
-		
-		// tilt/adc configuration
-		if (e.getActionCommand().contains("Tilt Calibration")) {
-			this.calibrationMode = true;
-			Page page = new ConfigADCPage(this, this.numPages);		
-			
-			this.prevPage = this.curPage;
-			this.pages.add(this.numPages, page);			
-			this.switchPage(page, this.numPages, true);
-
-			int numPatterns = this.sizeX;
-			this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
-			
-			this.numPages++;
-			// recreate the menu bar to include this page in the show page list
-			this.setJMenuBar(this.createMenuBar());			
-		}
-		
-		// set page name
-		if (e.getActionCommand().contains("Tilt Options")) {
-			if (this.pages.size()<1) {
-				JOptionPane.showMessageDialog(this, "Please add a page that uses tilt.");
-			} else if (!this.pages.get(this.curPage).isTiltPage()) {
-				JOptionPane.showMessageDialog(this, "Sorry, tilt has not been implemented on this page.");
-			} else {
-				this.calibrationMode = true;
-				Page page = new ADCOptionsPage(this, this.numPages, this.pages.get(curPage));		
-				
-				this.prevPage = this.curPage;
-				this.pages.add(this.numPages, page);
-				this.switchPage(page, this.numPages, true);
-
-				int numPatterns = this.sizeX;
-				this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
-				
-				this.numPages++;
-				// recreate the menu bar to include this page in the show page list
-				this.setJMenuBar(this.createMenuBar());	
-			}			
-		}
-		
-		// set page name
-		if (e.getActionCommand().contains("Set Current Page Name")) {
-			String option = (String)JOptionPane.showInputDialog(
-					this,
-					"Choose a new name for this page.",
-					"Set Page Name",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					null,
-					"");
-			if (option == null) {
-				return;
-			} else {
-				this.pages.get(this.curPage).setName(option);
-			}
-			
-		}
-		
-		if (e.getActionCommand().contains("Page Change Configuration")) {
-			this.pageChangeConfigMode = true;
-			Page page = new PageChangeConfigurationPage(this, this.numPages);		
-			
-			this.prevPage = this.curPage;
-			this.pages.add(this.numPages, page);			
-			this.switchPage(page, this.numPages, true);
-
-			int numPatterns = this.sizeX;
-			this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
-			
-			this.numPages++;
-			// recreate the menu bar to include this page in the show page list
-			this.setJMenuBar(this.createMenuBar());			
-		}
-		
-	}
-
 	private void deletePage(int i) {
 		this.pages.get(i).destroyPage();
 		this.pages.remove(i);
@@ -461,10 +183,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			this.curPage = this.prevPage;
 			if(this.pages.size() == 0)
 				this.curPage = -1;
-			System.out.println("cur paged is " + this.curPage);
 		} else if (this.curPage >= i) {
 			this.curPage--;
-			System.out.println("cur page is " + this.curPage);
 		}
 		
 		for (int x=0; x < this.pages.size(); x++) {
@@ -472,22 +192,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 		}
 		
 		if (this.curPage > -1) {
-			this.remove(this.curPanel);
 			pages.get(this.curPage).clearPanel();
-			this.curPanel = pages.get(this.curPage).getPanel();
-			this.curPanel.setVisible(true);
-			this.add(this.curPanel);
-			this.validate();
-			this.pack();
-		} else {
-			this.remove(this.curPanel);
-			this.curPanel = null;
-			this.validate();
-			this.pack();
-		}
-		
-		this.setJMenuBar(this.createMenuBar());
-		this.pack();
+		}		
 	}
 
 	/**
@@ -500,33 +206,8 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
 		page.redrawMonome();
-
-		if (redrawPanel == true) {
-			if (this.curPanel != null) {
-				this.curPanel.setVisible(false);
-				//this.remove(this.curPanel);
-			}
-			this.curPanel = page.getPanel();
-			this.curPanel.setVisible(true);
-			this.add(this.curPanel);
-			this.validate();
-			this.pack();
-		}
 	}
-	
-	public void redrawPanel() {
-		if (this.curPanel != null) {
-			this.curPanel.setVisible(false);
-			this.curPanel.setEnabled(false);
-			this.remove(this.curPanel);
-		}
-		this.curPanel = this.pages.get(this.curPage).getPanel();
-		this.curPanel.setVisible(true);
-		this.add(this.curPanel);
-		this.validate();
-		this.pack();
-	}
-	
+		
 	public void redrawAbletonPages() {
 		if (this.pages.size() == 0) {
 			return;
@@ -679,117 +360,6 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 				this.led(x, 0, 0, -1);
 			}
 		}
-	}
-	/**
-	 * Builds the monome configuration window's Page menu
-	 * 
-	 * @return The Page menu
-	 */
-	public JMenuBar createMenuBar() {
-		JMenuBar menuBar;
-		JMenu fileMenu;
-		JMenuItem menuItem;
-
-		menuBar = new JMenuBar();
-		
-		if(this.calibrationMode || this.pageChangeConfigMode) {
-			//do nothing...menu disabled
-			return null;
-		} else {	
-			fileMenu = new JMenu("Page");
-			fileMenu.setMnemonic(KeyEvent.VK_P);
-			fileMenu.getAccessibleContext().setAccessibleDescription("Page Menu");
-	
-			menuBar.add(fileMenu);
-	
-			menuItem = new JMenuItem("New Page", KeyEvent.VK_N);
-			menuItem.getAccessibleContext().setAccessibleDescription("Create a new page");
-			menuItem.addActionListener(this);
-			fileMenu.add(menuItem);
-	
-			JMenu subMenu = new JMenu("Show Page");
-	
-			if (this.numPages == 0) {
-				menuItem = new JMenuItem("No Pages Defined");
-				subMenu.add(menuItem);
-			} else {
-				for (int i=0; i < this.numPages; i++) {
-					menuItem = new JMenuItem(i+1 + ": Show " + this.pages.get(i).getName());
-					menuItem.addActionListener(this);
-					subMenu.add(menuItem);
-				}
-			}
-			fileMenu.add(subMenu);
-			
-		    subMenu = new JMenu("Delete Page");
-	
-			if (this.numPages == 0) {
-				menuItem = new JMenuItem("No Pages Defined");
-				subMenu.add(menuItem);
-			} else {
-				for (int i=0; i < this.numPages; i++) {
-					menuItem = new JMenuItem(i+1 + ": Delete " + this.pages.get(i).getName());
-					menuItem.addActionListener(this);
-					subMenu.add(menuItem);
-				}
-			}
-			fileMenu.add(subMenu);
-	
-			subMenu = new JMenu("Set Quantization");
-	
-			if (this.numPages == 0) {
-				menuItem = new JMenuItem("No Pages Defined");
-				subMenu.add(menuItem);
-			} else {
-				for (int i=0; i < this.numPages; i++) {
-					menuItem = new JMenuItem(i+1 + ": Set Quantization for " + this.pages.get(i).getName());
-					menuItem.addActionListener(this);
-					subMenu.add(menuItem);
-				}
-			}
-			fileMenu.add(subMenu);
-	
-			subMenu = new JMenu("Set Pattern Length");
-	
-			if (this.numPages == 0) {
-				menuItem = new JMenuItem("No Pages Defined");
-				subMenu.add(menuItem);
-			} else {
-				for (int i=0; i < this.numPages; i++) {
-					menuItem = new JMenuItem(i+1 + ": Set Pattern Length for " + this.pages.get(i).getName());
-					menuItem.addActionListener(this);
-					subMenu.add(menuItem);
-				}
-			}
-			fileMenu.add(subMenu);
-			
-			menuItem = new JMenuItem ("Set Current Page Name");
-			menuItem.getAccessibleContext().setAccessibleDescription("Set Current Page Name");	
-			menuItem.addActionListener(this);
-			fileMenu.add(menuItem);
-			
-			menuItem = new JMenuItem ("Page Change Configuration");
-			menuItem.getAccessibleContext().setAccessibleDescription("Page Change Configuration");	
-			menuItem.addActionListener(this);
-			fileMenu.add(menuItem);
-			
-			menuItem = new JMenuItem ("Tilt Options");
-			menuItem.getAccessibleContext().setAccessibleDescription("Setup Tilt for this Page");	
-			menuItem.addActionListener(this);
-			fileMenu.add(menuItem);
-			
-			menuItem = new JMenuItem ("Tilt Calibration");
-			menuItem.getAccessibleContext().setAccessibleDescription("Setup Tilt for this Monome");	
-			menuItem.addActionListener(this);
-			fileMenu.add(menuItem);
-					
-			menuItem = new JMenuItem("Remove Configuration", KeyEvent.VK_R);
-			menuItem.getAccessibleContext().setAccessibleDescription("Create a new configuration");
-			menuItem.addActionListener(this);
-			fileMenu.add(menuItem);
-		}
-
-		return menuBar;
 	}
 
 	/**

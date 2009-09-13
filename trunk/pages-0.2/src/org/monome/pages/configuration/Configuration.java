@@ -24,6 +24,8 @@ import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.ableton.AbletonOSCControl;
 import org.monome.pages.ableton.AbletonOSCListener;
 import org.monome.pages.ableton.AbletonState;
+import org.monome.pages.gui.Main;
+import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.pages.Page;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -168,22 +170,15 @@ public class Configuration implements Receiver {
 	 * @return The new monome's index
 	 */
 	public int addMonomeConfiguration(String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		MonomeConfiguration monome = new MonomeConfiguration(this, this.numMonomeConfigurations, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
-		this.monomeConfigurations.add(this.numMonomeConfigurations, monome);
-		this.initMonome(monome);
+		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(this, this.numMonomeConfigurations, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
+		this.monomeConfigurations.add(this.numMonomeConfigurations, monomeConfiguration);
+		this.initMonome(monomeConfiguration);
 		this.numMonomeConfigurations++;
+		MonomeFrame monomeFrame = new MonomeFrame(monomeConfiguration);
+		Main.addMonomeFrame(monomeFrame);
 		return this.numMonomeConfigurations - 1;
 	}
 
-	/**
-	 * Closes a monome configuration window.
-	 * 
-	 * @param index The index of the monome window to close
-	 */
-	public void closeMonome(int index) {
-		this.monomeConfigurations.get(index).dispose();
-	}
-	
 	/**
 	 * Close MonomeSerial OSC Connections. 
 	 */
@@ -213,7 +208,7 @@ public class Configuration implements Receiver {
 	 * @param index The index of the MonomeConfiguration to get
 	 * @return The indexed MonomeConfiguration object
 	 */
-	public MonomeConfiguration getMonomeConfigurationFrame(int index) {
+	public MonomeConfiguration getMonomeConfiguration(int index) {
 		return monomeConfigurations.get(index);
 	}
 
@@ -868,8 +863,7 @@ public class Configuration implements Receiver {
 					// create the new monome configuration and display it's window
 					int index = addMonomeConfiguration(prefix, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
-					MonomeConfiguration monomeFrame = getMonomeConfigurationFrame(index);
-					monomeFrame.setVisible(true);
+					MonomeConfiguration monomeFrame = getMonomeConfiguration(index);
 					//this.frame.add(monomeFrame);
 										
 					String s;
@@ -922,10 +916,7 @@ public class Configuration implements Receiver {
 							String pageName = ((Node) nl.item(0)).getNodeValue();
 							System.out.println("Page name is " + pageName);		
 							Page page;
-							if (pageClazz == null || pageClazz.length() == 0)
-								page = monomeFrame.addPageByName(pageName);
-							else
-								page = monomeFrame.addPage(pageClazz);
+							page = monomeFrame.addPage(pageClazz);
 
 							// most pages have midi outputs
 							NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");

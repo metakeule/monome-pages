@@ -120,7 +120,7 @@ public class NewMonomeFrame extends JInternalFrame implements ActionListener {
 			String prefix = this.prefix.getText();
 			ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 			int index = this.configuration.addMonomeConfiguration(prefix, sizeX, sizeY, true, false, midiPageChangeRules);
-			MonomeConfiguration monomeFrame = this.configuration.getMonomeConfigurationFrame(index);
+			MonomeConfiguration monomeFrame = this.configuration.getMonomeConfiguration(index);
 			monomeFrame.setVisible(true);
 			this.frame.add(monomeFrame);
 			this.frame.validate();
