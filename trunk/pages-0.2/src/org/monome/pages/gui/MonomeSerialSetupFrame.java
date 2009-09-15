@@ -3,12 +3,29 @@ package org.monome.pages.gui;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import java.awt.Rectangle;
+import javax.swing.JButton;
+import javax.swing.JTextField;
+
+import org.monome.pages.configuration.Configuration;
+import org.monome.pages.configuration.ConfigurationFactory;
+
+import java.awt.Dimension;
 
 public class MonomeSerialSetupFrame extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
-
+	private JLabel hostLabel = null;
+	private JLabel inPortLabel = null;
+	private JLabel outPortLabel = null;
+	private JTextField host = null;
+	private JTextField inPort = null;
+	private JTextField outPort = null;
+	private JButton saveButton = null;
+	private JButton cancelButton = null;
+	private JButton autoConfigButton = null;
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -23,7 +40,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(300, 200);
+		this.setSize(217, 195);
 		this.setContentPane(getJContentPane());
 	}
 
@@ -34,10 +51,132 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
+			outPortLabel = new JLabel();
+			outPortLabel.setBounds(new Rectangle(15, 75, 76, 16));
+			outPortLabel.setText("Listen Port");
+			inPortLabel = new JLabel();
+			inPortLabel.setBounds(new Rectangle(15, 45, 76, 16));
+			inPortLabel.setText("Host Port");
+			hostLabel = new JLabel();
+			hostLabel.setBounds(new Rectangle(15, 15, 76, 16));
+			hostLabel.setText("Host Address");
 			jContentPane = new JPanel();
-			jContentPane.setLayout(new BorderLayout());
+			jContentPane.setLayout(null);
+			jContentPane.add(hostLabel, null);
+			jContentPane.add(inPortLabel, null);
+			jContentPane.add(outPortLabel, null);
+			jContentPane.add(getHost(), null);
+			jContentPane.add(getInPort(), null);
+			jContentPane.add(getOutPort(), null);
+			jContentPane.add(getSaveButton(), null);
+			jContentPane.add(getCancelButton(), null);
+			jContentPane.add(getAutoConfigButton(), null);
 		}
 		return jContentPane;
 	}
 
-}
+	/**
+	 * This method initializes host	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getHost() {
+		if (host == null) {
+			host = new JTextField();
+			host.setBounds(new Rectangle(105, 15, 91, 16));
+			host.setText("127.0.0.1");
+		}
+		return host;
+	}
+
+	/**
+	 * This method initializes inPort	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getInPort() {
+		if (inPort == null) {
+			inPort = new JTextField();
+			inPort.setBounds(new Rectangle(105, 45, 46, 16));
+			inPort.setText("8000");
+		}
+		return inPort;
+	}
+
+	/**
+	 * This method initializes outPort	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getOutPort() {
+		if (outPort == null) {
+			outPort = new JTextField();
+			outPort.setBounds(new Rectangle(105, 75, 46, 16));
+			outPort.setText("8080");
+		}
+		return outPort;
+	}
+
+	/**
+	 * This method initializes saveButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getSaveButton() {
+		if (saveButton == null) {
+			saveButton = new JButton();
+			saveButton.setBounds(new Rectangle(15, 105, 76, 16));
+			saveButton.setText("Save");
+			saveButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+				}
+			});
+		}
+		return saveButton;
+	}
+
+	/**
+	 * This method initializes cancelButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getCancelButton() {
+		if (cancelButton == null) {
+			cancelButton = new JButton();
+			cancelButton.setBounds(new Rectangle(105, 105, 76, 16));
+			cancelButton.setText("Cancel");
+			cancelButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+				}
+			});
+		}
+		return cancelButton;
+	}
+
+	/**
+	 * This method initializes autoConfigButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getAutoConfigButton() {
+		if (autoConfigButton == null) {
+			autoConfigButton = new JButton();
+			autoConfigButton.setBounds(new Rectangle(30, 135, 136, 16));
+			autoConfigButton.setText("Discover Monomes");
+			autoConfigButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					discover();
+				}
+			});
+		}
+		return autoConfigButton;
+	}
+	
+	private void discover() {
+		Configuration config = ConfigurationFactory.getConfiguration();
+		config.discoverMonomes();
+	}
+
+}  //  @jve:decl-index=0:visual-constraint="10,10"
