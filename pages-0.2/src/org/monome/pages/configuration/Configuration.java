@@ -994,5 +994,9 @@ public class Configuration implements Receiver {
 		xml += "</configuration>\n";
 		return xml;
 	}
+
+	public void discoverMonomes() {
+		
+	}
 	
 }
