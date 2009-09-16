@@ -129,11 +129,23 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 			saveButton.setText("Save");
 			saveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					save();
 				}
 			});
 		}
 		return saveButton;
+	}
+	
+	private void save() {
+		int inport = Integer.parseInt(this.inPort.getText());
+		int outport = Integer.parseInt(this.outPort.getText());
+		String hostname = this.host.getText();
+		
+		Configuration config = ConfigurationFactory.getConfiguration();
+		config.setMonomeSerialOSCInPortNumber(inport);
+		config.setMonomeSerialOSCOutPortNumber(outport);
+		config.setMonomeHostname(hostname);
+		config.startMonomeSerialOSC();
 	}
 
 	/**
@@ -148,11 +160,15 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 			cancelButton.setText("Cancel");
 			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					cancel();
 				}
 			});
 		}
 		return cancelButton;
+	}
+	
+	private void cancel() {
+		this.dispose();
 	}
 
 	/**
@@ -175,7 +191,14 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	}
 	
 	private void discover() {
+		int inport = Integer.parseInt(this.inPort.getText());
+		int outport = Integer.parseInt(this.outPort.getText());
+		String hostname = this.host.getText();
+		
 		Configuration config = ConfigurationFactory.getConfiguration();
+		config.setMonomeSerialOSCInPortNumber(inport);
+		config.setMonomeSerialOSCOutPortNumber(outport);
+		config.setMonomeHostname(hostname);
 		config.discoverMonomes();
 	}
 
