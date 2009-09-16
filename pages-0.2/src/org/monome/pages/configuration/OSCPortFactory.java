@@ -11,12 +11,12 @@ import com.illposed.osc.OSCPortOut;
 public class OSCPortFactory {
 	static OSCPortFactory instance;
 	
-	Hashtable<String, OSCPortIn> oscInPorts;
-	Hashtable<String, OSCPortOut> oscOutPorts;
+	Hashtable<Integer, OSCPortIn> oscInPorts;
+	Hashtable<Integer, OSCPortOut> oscOutPorts;
 	
 	public OSCPortFactory() {
-		oscInPorts = new Hashtable<String, OSCPortIn>();
-		oscOutPorts = new Hashtable<String, OSCPortOut>();
+		oscInPorts = new Hashtable<Integer, OSCPortIn>();
+		oscOutPorts = new Hashtable<Integer, OSCPortOut>();
 	}
 	
 	public static OSCPortFactory getInstance() {
@@ -26,14 +26,14 @@ public class OSCPortFactory {
 		return instance;
 	}
 	
-	public OSCPortIn getOSCPortIn(String portNum) {
+	public OSCPortIn getOSCPortIn(Integer portNum) {
 		if (oscInPorts.containsKey(portNum)) {
 			return oscInPorts.get(portNum);
 		}
 		
 		OSCPortIn newPort;
 		try {
-			newPort = new OSCPortIn(Integer.parseInt(portNum));
+			newPort = new OSCPortIn(portNum);
 			newPort.startListening();
 			oscInPorts.put(portNum, newPort);
 			return newPort;
@@ -46,14 +46,14 @@ public class OSCPortFactory {
 		return null;
 	}
 	
-	public OSCPortOut getOSCPortOut(String hostName, String portNum) {
+	public OSCPortOut getOSCPortOut(String hostName, Integer portNum) {
 		if (oscInPorts.containsKey(portNum)) {
 			return oscOutPorts.get(portNum);
 		}
 		
 		OSCPortOut newPort;
 		try {
-			newPort = new OSCPortOut(InetAddress.getByName(hostName), Integer.parseInt(portNum));
+			newPort = new OSCPortOut(InetAddress.getByName(hostName), portNum);
 			oscOutPorts.put(portNum, newPort);
 			return newPort;
 		} catch (NumberFormatException e) {

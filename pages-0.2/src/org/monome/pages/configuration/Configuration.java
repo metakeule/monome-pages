@@ -57,6 +57,7 @@ public class Configuration implements Receiver {
 	 */
 	private int numMonomeConfigurations = 0;
 
+
 	/**
 	 * An array containing the MonomeConfiguration objects.
 	 */
@@ -169,14 +170,28 @@ public class Configuration implements Receiver {
 	 * @param sizeY The height of the monome (ie. 8 or 16)
 	 * @return The new monome's index
 	 */
-	public int addMonomeConfiguration(String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(this, this.numMonomeConfigurations, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
-		this.monomeConfigurations.add(this.numMonomeConfigurations, monomeConfiguration);
+	public void addMonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(this, index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
+		this.monomeConfigurations.add(index, monomeConfiguration);
 		this.initMonome(monomeConfiguration);
-		this.numMonomeConfigurations++;
 		MonomeFrame monomeFrame = new MonomeFrame(monomeConfiguration);
-		Main.addMonomeFrame(monomeFrame);
-		return this.numMonomeConfigurations - 1;
+		Main.addMonomeFrame(index, monomeFrame);
+	}
+	
+	public void startMonomeSerialOSC() {
+		try {
+			if (this.monomeSerialOSCPortIn == null) {
+				this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
+				this.monomeSerialOSCPortIn.startListening();
+			}
+			if (this.monomeSerialOSCPortOut == null) {
+				this.monomeSerialOSCPortOut = new OSCPortOut(InetAddress.getByName(this.monomeHostname), this.monomeSerialOSCOutPortNumber);
+			}
+		} catch (SocketException e) {
+			e.printStackTrace();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -211,7 +226,7 @@ public class Configuration implements Receiver {
 	public MonomeConfiguration getMonomeConfiguration(int index) {
 		return monomeConfigurations.get(index);
 	}
-
+	
 	/**
 	 * @param inport The port number to receive OSC messages from MonomeSerial 
 	 */
@@ -254,6 +269,19 @@ public class Configuration implements Receiver {
 		return this.monomeHostname;
 	}
 
+	public void discoverMonomes() {
+		startMonomeSerialOSC();
+		DiscoverOSCListener oscListener = new DiscoverOSCListener();
+		this.monomeSerialOSCPortIn.addListener("/sys/prefix", oscListener);
+		this.monomeSerialOSCPortIn.addListener("/sys/type", oscListener);
+		OSCMessage msg = new OSCMessage("/sys/report");
+		try {
+			this.monomeSerialOSCPortOut.send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Initializes a new monome configuration.  Starts OSC communication with MonomeSerial if needed.
 	 * 
@@ -261,40 +289,23 @@ public class Configuration implements Receiver {
 	 * @return true of initialization was successful
 	 */
 	private boolean initMonome(MonomeConfiguration monome) {
+		startMonomeSerialOSC();
+		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
+		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
+		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
+		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/tilt", oscListener);
+
+		Object args[] = new Object[1];
+		args[0] = new Integer(1);
+		OSCMessage msg = new OSCMessage(monome.prefix + "/tiltmode", args);
+
 		try {
-			MonomeOSCListener oscListener = new MonomeOSCListener(monome);
-
-			if (this.monomeSerialOSCPortIn == null) {
-				this.monomeSerialOSCPortIn = new OSCPortIn(this.monomeSerialOSCInPortNumber);
-			}
-
-			if (this.monomeSerialOSCPortOut == null) {
-				this.monomeSerialOSCPortOut = new OSCPortOut(InetAddress.getByName(this.monomeHostname), this.monomeSerialOSCOutPortNumber);
-			}
-			
-			Object args[] = new Object[1];
-			args[0] = new Integer(1);
-			OSCMessage msg = new OSCMessage(monome.prefix + "/tiltmode", args);
-			try {
-				this.monomeSerialOSCPortOut.send(msg);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
-			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
-			this.monomeSerialOSCPortIn.addListener(monome.prefix + "/tilt", oscListener);
-			
-			
-			this.monomeSerialOSCPortIn.startListening();
-			monome.clearMonome();
-		} catch (SocketException e) {
+			this.monomeSerialOSCPortOut.send(msg);
+		} catch (IOException e) {
 			e.printStackTrace();
-			return false;
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-			return false;
 		}
+
+		monome.clearMonome();
 		return true;
 	}
 	
@@ -699,7 +710,6 @@ public class Configuration implements Receiver {
 	 */
 	public void readConfigurationFile(File file) {
 		try {
-			
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(file);
@@ -861,10 +871,9 @@ public class Configuration implements Receiver {
 
 					
 					// create the new monome configuration and display it's window
-					int index = addMonomeConfiguration(prefix, Integer.valueOf(sizeX).intValue(), 
+					addMonomeConfiguration(i, prefix, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
-					MonomeConfiguration monomeFrame = getMonomeConfiguration(index);
-					//this.frame.add(monomeFrame);
+					MonomeConfiguration monomeConfig = getMonomeConfiguration(i);
 										
 					String s;
 					float [] min = {0,0,0,0};
@@ -875,7 +884,7 @@ public class Configuration implements Receiver {
 							nl = el.getChildNodes();
 							s = ((Node) nl.item(0)).getNodeValue();
 							min[j] = Float.parseFloat(s.trim());
-							monomeFrame.adcObj.setMin(min);
+							monomeConfig.adcObj.setMin(min);
 						}
 					}
 					
@@ -887,7 +896,7 @@ public class Configuration implements Receiver {
 							nl = el.getChildNodes();
 							s = ((Node) nl.item(0)).getNodeValue();
 							max[j] = Float.parseFloat(s.trim());
-							monomeFrame.adcObj.setMax(max);
+							monomeConfig.adcObj.setMax(max);
 						}
 					}
 					
@@ -897,7 +906,7 @@ public class Configuration implements Receiver {
 					if (el != null) {
 						nl = el.getChildNodes();
 						String enabled = ((Node) nl.item(0)).getNodeValue();
-						monomeFrame.adcObj.setEnabled(Boolean.parseBoolean(enabled));
+						monomeConfig.adcObj.setEnabled(Boolean.parseBoolean(enabled));
 					}
 					
 					
@@ -916,7 +925,7 @@ public class Configuration implements Receiver {
 							String pageName = ((Node) nl.item(0)).getNodeValue();
 							System.out.println("Page name is " + pageName);		
 							Page page;
-							page = monomeFrame.addPage(pageClazz);
+							page = monomeConfig.addPage(pageClazz);
 
 							// most pages have midi outputs
 							NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
@@ -943,7 +952,7 @@ public class Configuration implements Receiver {
 						nl = el.getChildNodes();
 						String patternLength = ((Node) nl.item(0)).getNodeValue();
 						int length = Integer.parseInt(patternLength);
-						monomeFrame.setPatternLength(k, length);
+						monomeConfig.setPatternLength(k, length);
 					}
 					NodeList quantifyNL = monomeElement.getElementsByTagName("quantization");
 					for (int k=0; k < quantifyNL.getLength(); k++) {
@@ -951,7 +960,7 @@ public class Configuration implements Receiver {
 						nl = el.getChildNodes();
 						String quantization = ((Node) nl.item(0)).getNodeValue();
 						int quantify = Integer.parseInt(quantization);
-						monomeFrame.setQuantization(k, quantify);
+						monomeConfig.setQuantization(k, quantify);
 					}
 				}
 			}
@@ -993,10 +1002,6 @@ public class Configuration implements Receiver {
 		}
 		xml += "</configuration>\n";
 		return xml;
-	}
-
-	public void discoverMonomes() {
-		
 	}
 	
 }

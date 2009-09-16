@@ -79,6 +79,7 @@ public class Main extends JFrame {
 	
 	/**
 	 * This is the default constructor
+	 * 
 	 */
 	public Main() {
 		super();
@@ -400,7 +401,6 @@ public class Main extends JFrame {
 		}
 		
 		jDesktopPane.validate();
-		
 	}
 
 	/**
@@ -454,8 +454,8 @@ public class Main extends JFrame {
 		configurationFile = cf;
 	}
 	
-	public static void addMonomeFrame(MonomeFrame frame) {
-		monomeFrames.add(frame);
+	public static void addMonomeFrame(int index, MonomeFrame frame) {
+		monomeFrames.add(index, frame);
 		getDesktopPane().add(frame);
 	}
 	
