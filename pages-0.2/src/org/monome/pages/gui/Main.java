@@ -97,12 +97,13 @@ public class Main extends JFrame {
 	    Dimension screenSize = 
 	        Toolkit.getDefaultToolkit().getScreenSize();
 
-	    this.setSize(screenSize);
+	    //this.setSize(screenSize);
+	    this.setSize(400, 600);
 		this.setContentPane(getDesktopPane());
 		this.setJMenuBar(getMainMenuBar());
 		this.setTitle("Pages");
 		// maximize the window
-	    this.setExtendedState(this.getExtendedState() | Frame.MAXIMIZED_BOTH);
+	    //this.setExtendedState(this.getExtendedState() | Frame.MAXIMIZED_BOTH);
 	}
 	
 	/**

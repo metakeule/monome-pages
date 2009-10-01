@@ -57,7 +57,6 @@ public class Configuration implements Receiver {
 	 */
 	private int numMonomeConfigurations = 0;
 
-
 	/**
 	 * An array containing the MonomeConfiguration objects.
 	 */
@@ -108,6 +107,8 @@ public class Configuration implements Receiver {
 	 */
 	private String monomeHostname = "localhost";
 
+	private DiscoverOSCListener discoverOSCListener = null;
+	
 	/**
 	 * The port number to receive OSC messages from Ableton.
 	 */
@@ -160,6 +161,15 @@ public class Configuration implements Receiver {
 	public Configuration(String name) {
 		this.name = name;
 		this.abletonState = new AbletonState();
+		startMonomeSerialOSC();
+		OSCMessage msg = new OSCMessage("/sys/report");
+		try {
+			for (int i = 0; i < 50; i++) {
+				this.monomeSerialOSCPortOut.send(msg);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -182,6 +192,13 @@ public class Configuration implements Receiver {
 		try {
 			if (this.monomeSerialOSCPortIn == null) {
 				this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
+				discoverOSCListener = new DiscoverOSCListener();
+				this.monomeSerialOSCPortIn.addListener("/sys/devices", discoverOSCListener);
+				this.monomeSerialOSCPortIn.addListener("/sys/prefix", discoverOSCListener);
+				this.monomeSerialOSCPortIn.addListener("/sys/type", discoverOSCListener);
+				this.monomeSerialOSCPortIn.addListener("/sys/cable", discoverOSCListener);
+				this.monomeSerialOSCPortIn.addListener("/sys/offset", discoverOSCListener);
+				this.monomeSerialOSCPortIn.addListener("/sys/serial", discoverOSCListener);
 				this.monomeSerialOSCPortIn.startListening();
 			}
 			if (this.monomeSerialOSCPortOut == null) {
@@ -270,10 +287,8 @@ public class Configuration implements Receiver {
 	}
 
 	public void discoverMonomes() {
-		startMonomeSerialOSC();
-		DiscoverOSCListener oscListener = new DiscoverOSCListener();
-		this.monomeSerialOSCPortIn.addListener("/sys/prefix", oscListener);
-		this.monomeSerialOSCPortIn.addListener("/sys/type", oscListener);
+		this.discoverOSCListener.setDiscoverMode(true);
+		System.out.println("Requesting device list (/sys/report)");
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
 			this.monomeSerialOSCPortOut.send(msg);
