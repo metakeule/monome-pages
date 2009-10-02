@@ -88,7 +88,8 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		if (host == null) {
 			host = new JTextField();
 			host.setBounds(new Rectangle(105, 15, 76, 16));
-			host.setText("127.0.0.1");
+			Configuration config = ConfigurationFactory.getConfiguration();
+			host.setText(config.getMonomeHostname());
 		}
 		return host;
 	}
@@ -102,7 +103,8 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		if (inPort == null) {
 			inPort = new JTextField();
 			inPort.setBounds(new Rectangle(105, 45, 46, 16));
-			inPort.setText("8000");
+			Configuration config = ConfigurationFactory.getConfiguration();
+			inPort.setText("" + config.getMonomeSerialOSCInPortNumber());
 		}
 		return inPort;
 	}
@@ -116,7 +118,8 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		if (outPort == null) {
 			outPort = new JTextField();
 			outPort.setBounds(new Rectangle(105, 75, 46, 16));
-			outPort.setText("8080");
+			Configuration config = ConfigurationFactory.getConfiguration();
+			outPort.setText("" + config.getMonomeSerialOSCOutPortNumber());
 		}
 		return outPort;
 	}

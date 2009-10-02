@@ -20,11 +20,6 @@ public class DiscoverOSCListener implements OSCListener {
 		Object[] args = message.getArguments();
 
 		if (discoverMode) {
-			msgs++;
-			if (msgs < 100) {
-				return;
-			}
-			
 			int index;
 			try {
 				index = ((Integer) args[0]).intValue();
@@ -47,7 +42,12 @@ public class DiscoverOSCListener implements OSCListener {
 				} catch (IndexOutOfBoundsException e) {
 					return;
 				}
-				MonomeConfiguration monomeConfig = config.getMonomeConfiguration(index);
+				
+				if (prefix == null) {
+					return;
+				}
+				
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
 				if (monomeConfig == null) {
 					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 					config.addMonomeConfiguration(index, prefix, 0, 0, true, false, midiPageChangeRules);
@@ -76,7 +76,7 @@ public class DiscoverOSCListener implements OSCListener {
 					sizeX = 16;
 					sizeY = 16;
 				}
-				MonomeConfiguration monomeConfig = config.getMonomeConfiguration(index);
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
 				if (monomeConfig != null) {
 					monomeConfig.sizeX = sizeX;
 					monomeConfig.sizeY = sizeY;
@@ -91,7 +91,7 @@ public class DiscoverOSCListener implements OSCListener {
 				} catch (IndexOutOfBoundsException e) {
 					return;
 				}
-				MonomeConfiguration monomeConfig = config.getMonomeConfiguration(index);
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
 				if (monomeConfig != null) {
 					monomeConfig.serial = serial;
 					monomeConfig.setFrameTitle();				
