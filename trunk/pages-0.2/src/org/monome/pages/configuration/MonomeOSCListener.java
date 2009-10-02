@@ -41,6 +41,7 @@ public class MonomeOSCListener implements OSCListener {
 			int x = ((Integer) args[0]).intValue();
 			int y = ((Integer) args[1]).intValue();
 			int value = ((Integer) args[2]).intValue();
+			System.out.println("press received on " + x + ", " + y + ", " + value);
 			monome.handlePress(x, y, value);
 		}
 		if (message.getAddress().contains("adc")) { 

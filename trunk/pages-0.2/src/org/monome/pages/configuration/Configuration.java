@@ -164,7 +164,7 @@ public class Configuration implements Receiver {
 		startMonomeSerialOSC();
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			for (int i = 0; i < 50; i++) {
+			for (int i = 0; i < 500; i++) {
 				this.monomeSerialOSCPortOut.send(msg);
 			}
 		} catch (IOException e) {
@@ -181,11 +181,20 @@ public class Configuration implements Receiver {
 	 * @return The new monome's index
 	 */
 	public void addMonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(this, index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
-		this.monomeConfigurations.add(index, monomeConfiguration);
-		this.initMonome(monomeConfiguration);
-		MonomeFrame monomeFrame = new MonomeFrame(monomeConfiguration);
+		for (int i = 0; i < monomeConfigurations.size(); i++) {
+			if (monomeConfigurations.get(i).prefix.compareTo(prefix) == 0) {
+				System.out.println("already created monome w/ prefix " + prefix);
+				return;
+			}
+		}
+		MonomeFrame monomeFrame = new MonomeFrame();
 		Main.addMonomeFrame(index, monomeFrame);
+		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(this, index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
+		monomeConfiguration.index = index;
+		monomeConfiguration.monomeFrame = monomeFrame;
+		this.initMonome(monomeConfiguration);
+		this.monomeConfigurations.add(null);
+		this.monomeConfigurations.add(index, monomeConfiguration);
 	}
 	
 	public void startMonomeSerialOSC() {
@@ -241,9 +250,21 @@ public class Configuration implements Receiver {
 	 * @return The indexed MonomeConfiguration object
 	 */
 	public MonomeConfiguration getMonomeConfiguration(int index) {
-		return monomeConfigurations.get(index);
+		try {
+			return monomeConfigurations.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 	
+	public int getNumMonomeConfigurations() {
+		return numMonomeConfigurations;
+	}
+
+	public void setNumMonomeConfigurations(int numMonomeConfigurations) {
+		this.numMonomeConfigurations = numMonomeConfigurations;
+	}
+
 	/**
 	 * @param inport The port number to receive OSC messages from MonomeSerial 
 	 */
@@ -291,7 +312,9 @@ public class Configuration implements Receiver {
 		System.out.println("Requesting device list (/sys/report)");
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			this.monomeSerialOSCPortOut.send(msg);
+			for (int i = 0; i < 50; i++) {
+				this.monomeSerialOSCPortOut.send(msg);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

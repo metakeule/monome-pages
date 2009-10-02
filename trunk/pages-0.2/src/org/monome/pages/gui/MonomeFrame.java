@@ -8,6 +8,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.monome.pages.configuration.MonomeConfiguration;
+import java.awt.Rectangle;
 
 public class MonomeFrame extends JInternalFrame {
 
@@ -17,13 +18,13 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenuBar monomeMenuBar = null;
 	private JMenu pageMenu = null;  //  @jve:decl-index=0:visual-constraint="365,110"
 	private JMenuItem newPageItem = null;
+	private JMonomeDisplay jMonomeDisplay = null;
 	
 	/**
 	 * This is the xxx default constructor
 	 */
-	public MonomeFrame(MonomeConfiguration monomeConfiguration) {
+	public MonomeFrame() {
 		super();
-		this.monomeConfiguration = monomeConfiguration;
 		initialize();
 	}
 
@@ -36,7 +37,6 @@ public class MonomeFrame extends JInternalFrame {
 		this.setSize(300, 200);
 		this.setJMenuBar(getMonomeMenuBar());
 		this.setContentPane(getJContentPane());
-		this.setTitle(monomeConfiguration.prefix);
 		this.setVisible(true);
 	}
 
@@ -49,6 +49,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
+			jContentPane.add(getJMonomeDisplay(), null);
 		}
 		return jContentPane;
 	}
@@ -96,6 +97,19 @@ public class MonomeFrame extends JInternalFrame {
 			});
 		}
 		return newPageItem;
+	}
+
+	/**
+	 * This method initializes jMonomeDisplay	
+	 * 	
+	 * @return org.monome.pages.gui.JMonomeDisplay	
+	 */
+	public JMonomeDisplay getJMonomeDisplay() {
+		if (jMonomeDisplay == null) {
+			jMonomeDisplay = new JMonomeDisplay(8, 8);
+			jMonomeDisplay.setBounds(new Rectangle(0, 0, 112, 112));
+		}
+		return jMonomeDisplay;
 	}
 
 }
