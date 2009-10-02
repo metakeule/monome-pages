@@ -29,6 +29,7 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
+import org.monome.pages.gui.MonomeDisplayFrame;
 import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.pages.AbletonClipControlPage;
 import org.monome.pages.pages.AbletonClipLauncherPage;
@@ -69,11 +70,6 @@ public class MonomeConfiguration {
 	 * The monome's index in MonomeSerial
 	 */
 	public int index;
-
-	/**
-	 * The main Configuration object 
-	 */
-	public Configuration configuration;
 	
 	/**
 	 * The monome GUI window
@@ -149,14 +145,13 @@ public class MonomeConfiguration {
 	 * @param sizeX The width of this monome
 	 * @param sizeY The height of this monome
 	 */
-	public MonomeConfiguration(Configuration configuration, int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+	public MonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
 		
 		this.options = PagesRepository.getPageNames();		
 		for (int i=0; i<options.length; i++) {
 			options[i] = options[i].substring(17);					
 		}
 				
-		this.configuration = configuration;
 		this.prefix = prefix;
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
@@ -165,6 +160,7 @@ public class MonomeConfiguration {
 		this.midiPageChangeRules = midiPageChangeRules;
 		this.usePageChangeButton = usePageChangeButton;
 		this.useMIDIPageChanging = useMIDIPageChanging;
+		this.monomeFrame = monomeFrame;
 
 		this.clearMonome();
 	}
@@ -264,7 +260,10 @@ public class MonomeConfiguration {
 	 */
 	public void handlePress(int x, int y, int value) {
 		
-		monomeFrame.getJMonomeDisplay().led(x, y, value);
+		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+		if (monomeDisplayFrame != null) {
+			monomeDisplayFrame.press(x, y, value);
+		}
 		
 		// if we have no pages then dont handle any button presses
 		if (this.pages.size() == 0) {
@@ -459,7 +458,7 @@ public class MonomeConfiguration {
 		if (x < 0 || y < 0 || value < 0) {
 			return;
 		}
-		
+				
 		if (index > -1) {
 			this.pageState[index][x][y] = value;
 	
@@ -479,6 +478,11 @@ public class MonomeConfiguration {
 		}
 
 		this.ledState[x][y] = value;
+		
+		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+		if (monomeDisplayFrame != null) {
+			monomeDisplayFrame.setLedState(ledState);
+		}
 
 		Object args[] = new Object[3];
 		args[0] = new Integer(x);
@@ -486,7 +490,7 @@ public class MonomeConfiguration {
 		args[2] = new Integer(value);
 		OSCMessage msg = new OSCMessage(this.prefix + "/led", args);
 		try {
-			this.configuration.monomeSerialOSCPortOut.send(msg);
+			ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -505,7 +509,7 @@ public class MonomeConfiguration {
 				args[2] = new Integer(0);
 				OSCMessage msg = new OSCMessage(this.prefix + "/led", args);
 				try {
-					this.configuration.monomeSerialOSCPortOut.send(msg);
+					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -546,6 +550,11 @@ public class MonomeConfiguration {
 			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 			this.ledState[col][y] = bit;
 		}
+		
+		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+		if (monomeDisplayFrame != null) {
+			monomeDisplayFrame.setLedState(ledState);
+		}
 
 		Object args[] = new Object[numValues];
 		args[0] = new Integer(col);
@@ -555,7 +564,7 @@ public class MonomeConfiguration {
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_col", args);
 
 		try {
-			this.configuration.monomeSerialOSCPortOut.send(msg);
+			ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -594,6 +603,11 @@ public class MonomeConfiguration {
 			int bit = (fullvalue >> (this.sizeX - x - 1)) & 1;
 			this.ledState[x][row] = bit;
 		}
+		
+		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+		if (monomeDisplayFrame != null) {
+			monomeDisplayFrame.setLedState(ledState);
+		}
 
 		Object args[] = new Object[numValues];
 		args[0] = new Integer(row);
@@ -603,7 +617,7 @@ public class MonomeConfiguration {
 		OSCMessage msg = new OSCMessage(this.prefix + "/led_row", args);
 
 		try {
-			this.configuration.monomeSerialOSCPortOut.send(msg);
+			ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -646,13 +660,18 @@ public class MonomeConfiguration {
 					this.ledState[x][y] = state;
 				}
 			}
+			
+			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+			if (monomeDisplayFrame != null) {
+				monomeDisplayFrame.setLedState(ledState);
+			}
 
 			Object args[] = new Object[1];
 			args[0] = new Integer(state);
 			OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
 
 			try {
-				this.configuration.monomeSerialOSCPortOut.send(msg);
+				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -734,7 +753,7 @@ public class MonomeConfiguration {
 	 * @return The MIDI outputs that have been enabled in the main configuration.
 	 */
 	public String[] getMidiOutOptions() {
-		return this.configuration.getMidiOutOptions();
+		return ConfigurationFactory.getConfiguration().getMidiOutOptions();
 	}
 
 	/**
@@ -744,11 +763,11 @@ public class MonomeConfiguration {
 	 * @return The MIDI receiver
 	 */
 	public Receiver getMidiReceiver(String midiDeviceName) {
-		return this.configuration.getMIDIReceiverByName(midiDeviceName);
+		return ConfigurationFactory.getConfiguration().getMIDIReceiverByName(midiDeviceName);
 	}
 	
 	public Transmitter getMidiTransmitter(String midiDeviceName) {
-		return this.configuration.getMIDITransmitterByName(midiDeviceName);
+		return ConfigurationFactory.getConfiguration().getMIDITransmitterByName(midiDeviceName);
 	}
 
 	/**

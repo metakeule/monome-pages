@@ -16,7 +16,8 @@ public class JMonomeDisplay extends JComponent {
 	
 	private int sizeX;
 	private int sizeY;
-	private int[][] ledState = new int[16][16];
+	private int[][] ledState = new int[32][32];
+	private int[][] pressState = new int[32][32];
 		
 	public JMonomeDisplay(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
@@ -33,15 +34,14 @@ public class JMonomeDisplay extends JComponent {
 		paintMonome(g);
 	}
 	
-    public void led(int x, int y, int state) {
+    public void press(int x, int y, int state) {
     	if (x < 16 && x >= 0 && y < 16 && y >= 0) {
-    		ledState[x][y] = state;
+    		pressState[x][y] = state;
     		repaint();
     	}
     }
 	
 	public void paintMonome(Graphics g) {
-		System.out.println("paintMonome()");
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
 				if (ledState[x][y] == 0) {
@@ -53,7 +53,15 @@ public class JMonomeDisplay extends JComponent {
 					g.setColor(Color.ORANGE);
 					g.fillRect((x * 14) + 3, (y * 14) + 3, 8, 8);
 				}
+				if (pressState[x][y] == 1) {
+					g.setColor(Color.BLACK);
+					g.drawOval((x * 14) + 4, (y * 14) + 4, 6, 6); 
+				}
 			}
 		}
-	}	
+	}
+	
+	public void setLedState(int[][] ledState) {
+		this.ledState = ledState;
+	}
 }

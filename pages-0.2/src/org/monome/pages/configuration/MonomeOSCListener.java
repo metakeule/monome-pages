@@ -31,6 +31,7 @@ public class MonomeOSCListener implements OSCListener {
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
 	public void acceptMessage(Date time, OSCMessage message) {
+		System.out.println(message.getAddress());
 
 		// only act if the message has our monome prefix
 		if (!message.getAddress().contains(monome.prefix)) {

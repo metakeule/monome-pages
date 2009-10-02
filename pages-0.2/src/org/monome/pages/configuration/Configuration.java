@@ -162,14 +162,6 @@ public class Configuration implements Receiver {
 		this.name = name;
 		this.abletonState = new AbletonState();
 		startMonomeSerialOSC();
-		OSCMessage msg = new OSCMessage("/sys/report");
-		try {
-			for (int i = 0; i < 500; i++) {
-				this.monomeSerialOSCPortOut.send(msg);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -181,20 +173,9 @@ public class Configuration implements Receiver {
 	 * @return The new monome's index
 	 */
 	public void addMonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		for (int i = 0; i < monomeConfigurations.size(); i++) {
-			if (monomeConfigurations.get(i).prefix.compareTo(prefix) == 0) {
-				System.out.println("already created monome w/ prefix " + prefix);
-				return;
-			}
+		if (MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules)) {
+			this.initMonome(index);
 		}
-		MonomeFrame monomeFrame = new MonomeFrame();
-		Main.addMonomeFrame(index, monomeFrame);
-		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(this, index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
-		monomeConfiguration.index = index;
-		monomeConfiguration.monomeFrame = monomeFrame;
-		this.initMonome(monomeConfiguration);
-		this.monomeConfigurations.add(null);
-		this.monomeConfigurations.add(index, monomeConfiguration);
 	}
 	
 	public void startMonomeSerialOSC() {
@@ -218,6 +199,15 @@ public class Configuration implements Receiver {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
+		
+		OSCMessage msg = new OSCMessage("/sys/report");
+		try {
+			for (int i = 0; i < 500; i++) {
+				this.monomeSerialOSCPortOut.send(msg);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -226,13 +216,14 @@ public class Configuration implements Receiver {
 	public void stopMonomeSerialOSC() {
 		if (this.monomeSerialOSCPortIn != null) {
 			if (this.monomeSerialOSCPortIn.isListening()) {
+				this.monomeSerialOSCPortIn.removeAllListeners();
 				this.monomeSerialOSCPortIn.stopListening();				
 			}
-			this.monomeSerialOSCPortIn.close();
+			this.monomeSerialOSCPortIn = null;
 		}
 
 		if (this.monomeSerialOSCPortOut != null) {
-			this.monomeSerialOSCPortOut.close();
+			this.monomeSerialOSCPortOut = null;
 		}
 	}
 
@@ -244,27 +235,7 @@ public class Configuration implements Receiver {
 			this.monomeConfigurations.get(i).destroyPage();
 		}
 	}
-
-	/**
-	 * @param index The index of the MonomeConfiguration to get
-	 * @return The indexed MonomeConfiguration object
-	 */
-	public MonomeConfiguration getMonomeConfiguration(int index) {
-		try {
-			return monomeConfigurations.get(index);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
-	}
 	
-	public int getNumMonomeConfigurations() {
-		return numMonomeConfigurations;
-	}
-
-	public void setNumMonomeConfigurations(int numMonomeConfigurations) {
-		this.numMonomeConfigurations = numMonomeConfigurations;
-	}
-
 	/**
 	 * @param inport The port number to receive OSC messages from MonomeSerial 
 	 */
@@ -308,11 +279,25 @@ public class Configuration implements Receiver {
 	}
 
 	public void discoverMonomes() {
+		this.stopMonomeSerialOSC();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		this.startMonomeSerialOSC();
+		try {
+			Thread.sleep(50);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		this.discoverOSCListener.setDiscoverMode(true);
 		System.out.println("Requesting device list (/sys/report)");
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			for (int i = 0; i < 50; i++) {
+			for (int i = 0; i < 500; i++) {
 				this.monomeSerialOSCPortOut.send(msg);
 			}
 		} catch (IOException e) {
@@ -326,8 +311,9 @@ public class Configuration implements Receiver {
 	 * @param monome The MonomeConfiguration object to initialize
 	 * @return true of initialization was successful
 	 */
-	private boolean initMonome(MonomeConfiguration monome) {
+	private boolean initMonome(int index) {
 		startMonomeSerialOSC();
+		MonomeConfiguration monome = MonomeConfigurationFactory.getMonomeConfiguration(index);
 		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
 		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
 		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
@@ -911,7 +897,7 @@ public class Configuration implements Receiver {
 					// create the new monome configuration and display it's window
 					addMonomeConfiguration(i, prefix, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
-					MonomeConfiguration monomeConfig = getMonomeConfiguration(i);
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
 										
 					String s;
 					float [] min = {0,0,0,0};

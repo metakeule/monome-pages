@@ -14,6 +14,7 @@ import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.configuration.MonomeConfigurationFactory;
 
 public class NewMonomeConfigurationFrame extends JInternalFrame {
 
@@ -145,10 +146,8 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 		ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 				
 		Configuration config = ConfigurationFactory.getConfiguration();
-		config.addMonomeConfiguration(config.getNumMonomeConfigurations(), prefix, sizeX, sizeY, true, false, midiPageChangeRules);
+		config.addMonomeConfiguration(MonomeConfigurationFactory.getNumMonomeConfigurations(), prefix, sizeX, sizeY, true, false, midiPageChangeRules);
 		
-		//this.frame.add(monomeFrame);
-		//this.frame.validate();
 		this.dispose();
 	}
 

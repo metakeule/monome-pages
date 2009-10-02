@@ -35,6 +35,7 @@ public class Main extends JFrame {
 	private NewMonomeConfigurationFrame showNewMonomeFrame = null;
 	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
 	private static ArrayList<MonomeFrame> monomeFrames = null;
+	private static ArrayList<MonomeDisplayFrame> monomeDisplayFrames = null;
 	
 	private JMenuBar mainMenuBar = null;
 	
@@ -84,6 +85,7 @@ public class Main extends JFrame {
 	public Main() {
 		super();
 		monomeFrames = new ArrayList<MonomeFrame>();
+		monomeDisplayFrames = new ArrayList<MonomeDisplayFrame>();
 		initialize();
 	}
 	
@@ -461,7 +463,7 @@ public class Main extends JFrame {
 		monomeFrames.add(index, frame);
 		getDesktopPane().add(frame);
 	}
-	
+		
 	public static MonomeFrame getMonomeFrame(int index) {
 		try {
 			return monomeFrames.get(index);
@@ -475,6 +477,27 @@ public class Main extends JFrame {
 		monomeFrames.remove(index);
 		frame.dispose();
 	}
+	
+	public static void addMonomeDisplayFrame(int index, MonomeDisplayFrame frame) {
+		monomeDisplayFrames.add(null);
+		monomeDisplayFrames.add(index, frame);
+		getDesktopPane().add(frame);
+	}
+	
+	public static MonomeDisplayFrame getMonomeDisplayFrame(int index) {
+		try {
+			return monomeDisplayFrames.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
+	}
+	
+	public static void removeMonomeDisplayFrame(int index) {
+		MonomeDisplayFrame frame = monomeDisplayFrames.get(index);
+		monomeDisplayFrames.remove(index);
+		frame.dispose();
+	}
+
 
 	public void setNewMonomeItem(JMenuItem newMonomeItem) {
 		this.newMonomeItem = newMonomeItem;

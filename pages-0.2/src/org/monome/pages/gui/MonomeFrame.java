@@ -8,23 +8,27 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.configuration.MonomeConfigurationFactory;
+
 import java.awt.Rectangle;
 
 public class MonomeFrame extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
-	private MonomeConfiguration monomeConfiguration = null;
 	private JPanel jContentPane = null;
 	private JMenuBar monomeMenuBar = null;
 	private JMenu pageMenu = null;  //  @jve:decl-index=0:visual-constraint="365,110"
 	private JMenuItem newPageItem = null;
-	private JMonomeDisplay jMonomeDisplay = null;
-	
+	private JMenu configurationMenu = null;
+	private JMenuItem monomeDisplayItem = null;
+	private MonomeDisplayFrame monomeDisplayFrame = null;
+	private int index = 0;
 	/**
 	 * This is the xxx default constructor
 	 */
-	public MonomeFrame() {
+	public MonomeFrame(int index) {
 		super();
+		this.index = index;
 		initialize();
 	}
 
@@ -49,7 +53,6 @@ public class MonomeFrame extends JInternalFrame {
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
-			jContentPane.add(getJMonomeDisplay(), null);
 		}
 		return jContentPane;
 	}
@@ -63,6 +66,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (monomeMenuBar == null) {
 			monomeMenuBar = new JMenuBar();
 			monomeMenuBar.add(getPageMenu());
+			monomeMenuBar.add(getConfigurationMenu());
 		}
 		return monomeMenuBar;
 	}
@@ -100,16 +104,47 @@ public class MonomeFrame extends JInternalFrame {
 	}
 
 	/**
-	 * This method initializes jMonomeDisplay	
+	 * This method initializes configurationMenu	
 	 * 	
-	 * @return org.monome.pages.gui.JMonomeDisplay	
+	 * @return javax.swing.JMenu	
 	 */
-	public JMonomeDisplay getJMonomeDisplay() {
-		if (jMonomeDisplay == null) {
-			jMonomeDisplay = new JMonomeDisplay(8, 8);
-			jMonomeDisplay.setBounds(new Rectangle(0, 0, 112, 112));
+	private JMenu getConfigurationMenu() {
+		if (configurationMenu == null) {
+			configurationMenu = new JMenu();
+			configurationMenu.setText("Configuration");
+			configurationMenu.add(getMonomeDisplayItem());
 		}
-		return jMonomeDisplay;
+		return configurationMenu;
+	}
+
+	/**
+	 * This method initializes monomeDisplayItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getMonomeDisplayItem() {
+		if (monomeDisplayItem == null) {
+			monomeDisplayItem = new JMenuItem();
+			monomeDisplayItem.setText("Show Monome Display...");
+			monomeDisplayItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showMonomeDisplay();
+				}
+			});
+		}
+		return monomeDisplayItem;
+	}
+	
+	private void showMonomeDisplay() {
+		if (monomeDisplayFrame == null) {
+			MonomeConfiguration monomeConfiguration = MonomeConfigurationFactory.getMonomeConfiguration(index);
+			monomeDisplayFrame = new MonomeDisplayFrame(monomeConfiguration.sizeX, monomeConfiguration.sizeY);
+			Main.addMonomeDisplayFrame(index, monomeDisplayFrame);
+		}
+	}
+	
+	public MonomeDisplayFrame getMonomeDisplayFrame() {
+		return monomeDisplayFrame;
 	}
 
 }
