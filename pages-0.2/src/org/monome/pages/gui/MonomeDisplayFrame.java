@@ -1,5 +1,7 @@
 package org.monome.pages.gui;
 
+import java.awt.Dimension;
+
 import javax.swing.JInternalFrame;
 
 public class MonomeDisplayFrame extends JInternalFrame {
@@ -12,9 +14,11 @@ public class MonomeDisplayFrame extends JInternalFrame {
 	}
 	
 	private void initialize(int sizeX, int sizeY) {
-		this.setSize(300, 200);
 		monomeDisplay = new JMonomeDisplay(sizeX, sizeY);
+		this.setSize(monomeDisplay.getSize());
 		this.add(monomeDisplay);
+		this.setClosable(true);
+		this.setResizable(true);
 		this.setVisible(true);
 	}
 	

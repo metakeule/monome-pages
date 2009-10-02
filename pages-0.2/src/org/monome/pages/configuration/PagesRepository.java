@@ -31,6 +31,7 @@ public class PagesRepository {
 		int i = 0;
 		for (Class clz : pageTypes){
 			res[i++] = clz.getName();
+			System.out.println(clz.getName());
 		}
 		return res;
 	}

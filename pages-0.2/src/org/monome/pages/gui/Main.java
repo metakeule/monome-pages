@@ -429,7 +429,7 @@ public class Main extends JFrame {
 	}
 	
 	private void showNewMonomeConfiguration() {
-		if (showNewMonomeFrame != null) {
+		if (showNewMonomeFrame != null && showNewMonomeFrame.isShowing()) {
 			try {
 				showNewMonomeFrame.setSelected(true);
 			} catch (PropertyVetoException e) {
@@ -457,47 +457,6 @@ public class Main extends JFrame {
 	private void setConfigurationFile(File cf) {
 		configurationFile = cf;
 	}
-	
-	public static void addMonomeFrame(int index, MonomeFrame frame) {
-		monomeFrames.add(null);
-		monomeFrames.add(index, frame);
-		getDesktopPane().add(frame);
-	}
-		
-	public static MonomeFrame getMonomeFrame(int index) {
-		try {
-			return monomeFrames.get(index);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
-	}
-	
-	public static void removeMonomeFrame(int index) {
-		MonomeFrame frame = monomeFrames.get(index);
-		monomeFrames.remove(index);
-		frame.dispose();
-	}
-	
-	public static void addMonomeDisplayFrame(int index, MonomeDisplayFrame frame) {
-		monomeDisplayFrames.add(null);
-		monomeDisplayFrames.add(index, frame);
-		getDesktopPane().add(frame);
-	}
-	
-	public static MonomeDisplayFrame getMonomeDisplayFrame(int index) {
-		try {
-			return monomeDisplayFrames.get(index);
-		} catch (IndexOutOfBoundsException e) {
-			return null;
-		}
-	}
-	
-	public static void removeMonomeDisplayFrame(int index) {
-		MonomeDisplayFrame frame = monomeDisplayFrames.get(index);
-		monomeDisplayFrames.remove(index);
-		frame.dispose();
-	}
-
 
 	public void setNewMonomeItem(JMenuItem newMonomeItem) {
 		this.newMonomeItem = newMonomeItem;

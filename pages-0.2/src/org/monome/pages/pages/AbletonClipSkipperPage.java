@@ -17,7 +17,9 @@ import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
 import org.monome.pages.configuration.ADCOptions;
+import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.gui.Main;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -78,8 +80,8 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	public AbletonClipSkipperPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		this.monome.configuration.initAbleton();
-		this.abletonState = this.monome.configuration.abletonState;
+		ConfigurationFactory.getConfiguration().initAbleton();
+		this.abletonState = ConfigurationFactory.getConfiguration().abletonState;
 	}
 
 	/* (non-Javadoc)
@@ -89,7 +91,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 		if (e.getActionCommand().equals("Add MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-					this.monome,
+					Main.getDesktopPane(),
 					"Choose a MIDI Output to add",
 					"Add MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
@@ -109,7 +111,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	}
 	
 	public void refreshAbleton() {
-		this.monome.configuration.getAbletonControl().refreshAbleton();
+		ConfigurationFactory.getConfiguration().getAbletonControl().refreshAbleton();
 	}
 
 	/* (non-Javadoc)
@@ -132,7 +134,6 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	public void setName(String name) {
 		this.pageName = name;
 		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
-		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -188,7 +189,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	}
 		
 	public void trackJump(int track, float amount) {
-		this.monome.configuration.getAbletonControl().trackJump(track, amount);
+		ConfigurationFactory.getConfiguration().getAbletonControl().trackJump(track, amount);
 	}
 
 	/* (non-Javadoc)

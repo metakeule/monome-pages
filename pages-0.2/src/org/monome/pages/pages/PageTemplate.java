@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 
 import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.gui.Main;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -79,7 +80,7 @@ public class PageTemplate implements Page, ActionListener {
 		if (e.getActionCommand().equals("Add MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-					this.monome,
+					Main.getDesktopPane(),
 					"Choose a MIDI Output to add",
 					"Add MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
@@ -115,7 +116,6 @@ public class PageTemplate implements Page, ActionListener {
 	public void setName(String name) {
 		this.pageName = name;
 		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
-		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)

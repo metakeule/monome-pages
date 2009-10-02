@@ -1,5 +1,6 @@
 package org.monome.pages.configuration;
 
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -31,14 +32,24 @@ public class MonomeConfigurationFactory {
 		}
 		
 		MonomeFrame monomeFrame = new MonomeFrame(index);
+		Main.getDesktopPane().add(monomeFrame);
+		try {
+			monomeFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
 		
 		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
-		Main.addMonomeFrame(index, monomeFrame);
 		monomeConfigurations.put(i, monomeConfiguration);
+		monomeConfiguration.setFrameTitle();
+		monomeFrame.setTitle(prefix);
 		return true;
 	}
 	
 	public static int getNumMonomeConfigurations() {
+		if (monomeConfigurations == null) {
+			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
+		}
 		return monomeConfigurations.size();
 	}
 

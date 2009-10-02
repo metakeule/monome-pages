@@ -16,6 +16,7 @@ import javax.swing.JTextField;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.gui.Main;
 import org.monome.pages.machinedrum.MachineDrum;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -162,7 +163,6 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	public void setName(String name) {
 		this.pageName = name;
 		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
-		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -488,7 +488,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		if (e.getActionCommand().equals("Set MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-					this.monome,
+					Main.getDesktopPane(),
 					"Choose a MIDI Output to add",
 					"Set MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
@@ -518,7 +518,6 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 		this.getUpdatePrefsButton().removeActionListener(this);
 		this.panel.removeAll();
 		this.panel = null;			
-		this.monome.redrawPanel();
 	}
 
 	/* (non-Javadoc)

@@ -15,6 +15,7 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 import javax.sound.midi.MidiDevice.Info;
+import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -182,6 +183,10 @@ public class Configuration implements Receiver {
 		try {
 			if (this.monomeSerialOSCPortIn == null) {
 				this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
+				if (this.monomeSerialOSCPortIn == null) {
+					JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + this.monomeSerialOSCInPortNumber + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
 				discoverOSCListener = new DiscoverOSCListener();
 				this.monomeSerialOSCPortIn.addListener("/sys/devices", discoverOSCListener);
 				this.monomeSerialOSCPortIn.addListener("/sys/prefix", discoverOSCListener);

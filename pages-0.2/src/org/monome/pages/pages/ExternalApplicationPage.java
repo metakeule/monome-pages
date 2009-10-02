@@ -196,8 +196,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void initOSC() {
 		this.stopOSC();
-		this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, String.valueOf(this.outPort));
-		this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(String.valueOf(this.inPort));
+		this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
+		this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
 		this.oscIn.addListener(this.prefix + "/led", this);
 		this.oscIn.addListener(this.prefix + "/led_col", this);
 		this.oscIn.addListener(this.prefix + "/led_row", this);
@@ -213,7 +213,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		this.updatePrefsButton.removeActionListener(this);
 		this.panel.removeAll();
 		this.panel = null;			
-		this.monome.redrawPanel();
 		this.initOSC();
 	}
 
@@ -233,7 +232,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	public void setName(String name) {
 		this.pageName = name;
 		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);		
-		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)

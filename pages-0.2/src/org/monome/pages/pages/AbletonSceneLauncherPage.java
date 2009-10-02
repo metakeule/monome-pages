@@ -16,6 +16,7 @@ import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
 import org.monome.pages.configuration.ADCOptions;
+import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -86,8 +87,8 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	public AbletonSceneLauncherPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		this.monome.configuration.initAbleton();
-		this.abletonState = this.monome.configuration.abletonState;
+		ConfigurationFactory.getConfiguration().initAbleton();
+		this.abletonState = ConfigurationFactory.getConfiguration().abletonState;
 	}
 
 	/* (non-Javadoc)
@@ -137,7 +138,6 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	public void setName(String name) {
 		this.pageName = name;
 		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
-		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -318,7 +318,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	}
 
 	private void launchScene(int scene_num) {
-		this.monome.configuration.getAbletonControl().launchScene(scene_num);
+		ConfigurationFactory.getConfiguration().getAbletonControl().launchScene(scene_num);
 	}
 
 	/**
@@ -328,7 +328,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @param clip The clip number to play (0 = first clip)
 	 */
 	public void playClip(int track, int clip) {
-		this.monome.configuration.getAbletonControl().playClip(track, clip);
+		ConfigurationFactory.getConfiguration().getAbletonControl().playClip(track, clip);
 	}
 
 	/**
@@ -337,39 +337,39 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @param track The track number to arm (0 = first track)
 	 */
 	public void armTrack(int track) {
-		this.monome.configuration.getAbletonControl().armTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().armTrack(track);
 	}
 
 	/**
 	 * Sends "/live/redo" to LiveOSC. 
 	 */
 	public void abletonRedo() {
-		this.monome.configuration.getAbletonControl().redo();
+		ConfigurationFactory.getConfiguration().getAbletonControl().redo();
 	}
 	
 	public void abletonOverdub(int overdub) {
-		this.monome.configuration.getAbletonControl().setOverdub(overdub);
+		ConfigurationFactory.getConfiguration().getAbletonControl().setOverdub(overdub);
 	}
 	
 	/**
 	 * Sends "/live/undo" to LiveOSC. 
 	 */
 	public void abletonUndo() {
-		this.monome.configuration.getAbletonControl().undo();
+		ConfigurationFactory.getConfiguration().getAbletonControl().undo();
 	}
 	
 	/**
 	 * Sends "/live/tempo tempo-1" to LiveOSC. 
 	 */
 	public void tempoDown() {
-		this.monome.configuration.getAbletonControl().tempoDown(this.abletonState.getTempo());
+		ConfigurationFactory.getConfiguration().getAbletonControl().tempoDown(this.abletonState.getTempo());
 	}
 	
 	/**
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
 	public void tempoUp() {
-		this.monome.configuration.getAbletonControl().tempoUp(this.abletonState.getTempo());
+		ConfigurationFactory.getConfiguration().getAbletonControl().tempoUp(this.abletonState.getTempo());
 	}
 	
 	/**
@@ -378,7 +378,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @param track The track number to disarm (0 = first track)
 	 */
 	public void disarmTrack(int track) {
-		this.monome.configuration.getAbletonControl().disarmTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().disarmTrack(track);
 	}
 
 	/**
@@ -387,7 +387,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void stopTrack(int track) {
-		this.monome.configuration.getAbletonControl().stopTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().stopTrack(track);
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void viewTrack(int track) {
-		this.monome.configuration.getAbletonControl().viewTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().viewTrack(track);
 	}
 	
 	/**
@@ -405,15 +405,15 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void muteTrack(int track) {
-		this.monome.configuration.getAbletonControl().muteTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().muteTrack(track);
 	}
 	
 	public void soloTrack(int track) {
-		this.monome.configuration.getAbletonControl().soloTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().soloTrack(track);
 	}
 	
 	public void unsoloTrack(int track) {
-		this.monome.configuration.getAbletonControl().unsoloTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().unsoloTrack(track);
 	}
 	
 	/**
@@ -422,11 +422,11 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void unmuteTrack(int track) {
-		this.monome.configuration.getAbletonControl().unmuteTrack(track);
+		ConfigurationFactory.getConfiguration().getAbletonControl().unmuteTrack(track);
 	}
 	
 	public void refreshAbleton() {
-		this.monome.configuration.getAbletonControl().refreshAbleton();
+		ConfigurationFactory.getConfiguration().getAbletonControl().refreshAbleton();
 	}
 	
 	

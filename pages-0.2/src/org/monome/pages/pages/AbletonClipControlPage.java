@@ -18,8 +18,10 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.monome.pages.configuration.ADCOptions;
+import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.gui.Main;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -146,7 +148,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	public AbletonClipControlPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		this.monome.configuration.initAbleton();
+		ConfigurationFactory.getConfiguration().initAbleton();
 	}
 
 
@@ -159,7 +161,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		if (e.getActionCommand().equals("Add MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-					this.monome,
+					Main.getDesktopPane(),
 					"Choose a MIDI Output to add",
 					"Add MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
@@ -196,7 +198,6 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	public void setName(String name) {
 		this.pageName = name;
 		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
-		this.monome.setJMenuBar(this.monome.createMenuBar());
 	}
 
 	/* (non-Javadoc)
@@ -293,7 +294,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		args[1] = new Integer(clip);
 		OSCMessage msg = new OSCMessage("/live/play/clipslot", args);
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -311,11 +312,11 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// send the message 5 times because Ableton doesn't always respond to
 		// this for some reason
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -327,7 +328,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	public void abletonRedo() {
 		OSCMessage msg = new OSCMessage("/live/redo");
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -339,7 +340,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 	public void abletonUndo() {
 		OSCMessage msg = new OSCMessage("/live/undo");
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -357,15 +358,15 @@ public class AbletonClipControlPage implements ActionListener, Page {
 
 		OSCMessage msg = new OSCMessage("/live/tempo", args);
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -382,15 +383,15 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		args[0] = new Float(this.tempo + 2.0);
 		OSCMessage msg = new OSCMessage("/live/tempo", args);
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -408,11 +409,11 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// send the message 5 times because Ableton doesn't always respond to
 		// this for some reason
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -428,7 +429,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		args[0] = new Integer(track);
 		OSCMessage msg = new OSCMessage("/live/stop/track", args);
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -444,7 +445,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		args[0] = new Integer(track);
 		OSCMessage msg = new OSCMessage("/live/track/view", args);
 		try {
-			this.monome.configuration.getAbletonOSCPortOut().send(msg);
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

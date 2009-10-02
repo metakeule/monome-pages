@@ -1,16 +1,17 @@
 package org.monome.pages.gui;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
+import org.monome.pages.configuration.PagesRepository;
 
-import java.awt.Rectangle;
+import java.beans.PropertyVetoException;
 
 public class MonomeFrame extends JInternalFrame {
 
@@ -41,6 +42,7 @@ public class MonomeFrame extends JInternalFrame {
 		this.setSize(300, 200);
 		this.setJMenuBar(getMonomeMenuBar());
 		this.setContentPane(getJContentPane());
+		this.setResizable(true);
 		this.setVisible(true);
 	}
 
@@ -96,7 +98,26 @@ public class MonomeFrame extends JInternalFrame {
 			newPageItem.setText("New Page...");
 			newPageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					String[] options = PagesRepository.getPageNames();
+					
+					for (int i=0; i<options.length; i++) {
+						options[i] = options[i].substring(23);					
+					}
+
+					String name = (String)JOptionPane.showInputDialog(
+							Main.getDesktopPane(),
+							"Select a new page type",
+							"New Page",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							options,
+							"");
+					if (name == null) {
+						return;
+					}
+					name = "org.monome.pages.pages." + name;
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+					monomeConfig.addPage(name);				
 				}
 			});
 		}
@@ -136,10 +157,21 @@ public class MonomeFrame extends JInternalFrame {
 	}
 	
 	private void showMonomeDisplay() {
-		if (monomeDisplayFrame == null) {
+		if (monomeDisplayFrame == null || monomeDisplayFrame.isClosed()) {
 			MonomeConfiguration monomeConfiguration = MonomeConfigurationFactory.getMonomeConfiguration(index);
 			monomeDisplayFrame = new MonomeDisplayFrame(monomeConfiguration.sizeX, monomeConfiguration.sizeY);
-			Main.addMonomeDisplayFrame(index, monomeDisplayFrame);
+			Main.getDesktopPane().add(monomeDisplayFrame);
+			try {
+				monomeDisplayFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				monomeDisplayFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
