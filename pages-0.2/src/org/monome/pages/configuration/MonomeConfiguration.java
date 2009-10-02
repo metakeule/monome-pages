@@ -29,6 +29,7 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
+import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.pages.AbletonClipControlPage;
 import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.AbletonClipSkipperPage;
@@ -58,11 +59,26 @@ public class MonomeConfiguration {
 	 * The monome's height (ie. 8 or 16) 
 	 */
 	public int sizeY;
+	
+	/**
+	 * The monome's serial number (ie. m40h0146)
+	 */
+	public String serial;
+	
+	/**
+	 * The monome's index in MonomeSerial
+	 */
+	public int index;
 
 	/**
 	 * The main Configuration object 
 	 */
 	public Configuration configuration;
+	
+	/**
+	 * The monome GUI window
+	 */
+	public MonomeFrame monomeFrame;
 
 	/**
 	 * ledState[x][y] - The LED state cache for the monome
@@ -247,6 +263,9 @@ public class MonomeConfiguration {
 	 * @param value The type of event (1 = press, 0 = release)
 	 */
 	public void handlePress(int x, int y, int value) {
+		
+		monomeFrame.getJMonomeDisplay().led(x, y, value);
+		
 		// if we have no pages then dont handle any button presses
 		if (this.pages.size() == 0) {
 			return;
@@ -747,6 +766,23 @@ public class MonomeConfiguration {
 	public void deletePageX(int index) {
 		this.configPageDel = true;
 		deletePage(index);
+	}
+	
+	/**
+	 * Sets the title bar of this MonomeConfiguration's MonomeFrame
+	 */
+	public void setFrameTitle() {
+		String title = "";
+		if (prefix != null) {
+			title += prefix;
+		}
+		if (serial != null) {
+			title += " | " + serial;
+		}
+		if (sizeX != 0 && sizeY != 0) {
+			title += " | " + sizeX + "x" + sizeY;
+		}
+		monomeFrame.setTitle(title);
 	}
 
 }

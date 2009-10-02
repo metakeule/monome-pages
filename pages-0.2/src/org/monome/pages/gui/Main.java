@@ -98,7 +98,7 @@ public class Main extends JFrame {
 	        Toolkit.getDefaultToolkit().getScreenSize();
 
 	    //this.setSize(screenSize);
-	    this.setSize(400, 600);
+	    this.setSize(600, 400);
 		this.setContentPane(getDesktopPane());
 		this.setJMenuBar(getMainMenuBar());
 		this.setTitle("Pages");
@@ -111,7 +111,7 @@ public class Main extends JFrame {
 	 * 
 	 * @return javax.swing.JPanel
 	 */
-	private static JDesktopPane getDesktopPane() {
+	public static JDesktopPane getDesktopPane() {
 		if (jDesktopPane == null) {
 			jDesktopPane = new JDesktopPane();
 			jDesktopPane.setOpaque(true);
@@ -383,7 +383,7 @@ public class Main extends JFrame {
 	}
 	
 	private void showMonomeSerialSetup() {
-		if (monomeSerialSetupFrame != null) {
+		if (monomeSerialSetupFrame != null && monomeSerialSetupFrame.isShowing()) {
 			try {
 				monomeSerialSetupFrame.setSelected(true);
 			} catch (PropertyVetoException e) {
@@ -394,6 +394,7 @@ public class Main extends JFrame {
 		
 		monomeSerialSetupFrame = new MonomeSerialSetupFrame();
 		monomeSerialSetupFrame.setVisible(true);
+		monomeSerialSetupFrame.setNewMonomeItem(this.newMonomeItem);
 		jDesktopPane.add(monomeSerialSetupFrame);
 		try {
 			monomeSerialSetupFrame.setSelected(true);
@@ -456,14 +457,27 @@ public class Main extends JFrame {
 	}
 	
 	public static void addMonomeFrame(int index, MonomeFrame frame) {
+		monomeFrames.add(null);
 		monomeFrames.add(index, frame);
 		getDesktopPane().add(frame);
+	}
+	
+	public static MonomeFrame getMonomeFrame(int index) {
+		try {
+			return monomeFrames.get(index);
+		} catch (IndexOutOfBoundsException e) {
+			return null;
+		}
 	}
 	
 	public static void removeMonomeFrame(int index) {
 		MonomeFrame frame = monomeFrames.get(index);
 		monomeFrames.remove(index);
 		frame.dispose();
+	}
+
+	public void setNewMonomeItem(JMenuItem newMonomeItem) {
+		this.newMonomeItem = newMonomeItem;
 	}
 	
 }

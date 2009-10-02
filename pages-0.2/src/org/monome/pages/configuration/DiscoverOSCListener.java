@@ -10,29 +10,60 @@ public class DiscoverOSCListener implements OSCListener {
 	
 	private boolean discoverMode = false;
 	
+	private int msgs = 0;
+		
 	public void setDiscoverMode(boolean newMode) {
 		discoverMode = newMode;
 	}
 
 	public void acceptMessage(Date time, OSCMessage message) {
-		System.out.print(message.getAddress());
 		Object[] args = message.getArguments();
-		for (int i = 0; i < args.length; i++) {
-			System.out.print(" " + args[i].toString());
-		}
-		System.out.println("");
-		
+
 		if (discoverMode) {
-			int index = ((Integer) args[0]).intValue();
+			msgs++;
+			if (msgs < 100) {
+				return;
+			}
+			
+			int index;
+			try {
+				index = ((Integer) args[0]).intValue();
+			} catch (NullPointerException e) {
+				return;
+			} catch (IndexOutOfBoundsException e) {
+				return;
+			}
+			System.out.println("index is " + index);
+			
+			if (index >= 50) {
+				return;
+			}
+			
 			Configuration config = ConfigurationFactory.getConfiguration();
 			if (message.getAddress().contains("/sys/prefix")) {
-				String prefix = (String) args[1];
-				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-				config.addMonomeConfiguration(index, prefix, 0, 0, true, false, midiPageChangeRules);
+				String prefix;
+				try {
+					prefix = (String) args[1];
+				} catch (IndexOutOfBoundsException e) {
+					return;
+				}
+				MonomeConfiguration monomeConfig = config.getMonomeConfiguration(index);
+				if (monomeConfig == null) {
+					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+					config.addMonomeConfiguration(index, prefix, 0, 0, true, false, midiPageChangeRules);
+				} else {
+					monomeConfig.prefix = prefix;
+					monomeConfig.setFrameTitle();
+				}
 			}
 			
 			if (message.getAddress().contains("/sys/type")) {
-				String type = (String) args[1];
+				String type;
+				try {
+					type = (String) args[1];
+				} catch (IndexOutOfBoundsException e) {
+					return;
+				}
 				int sizeX = 0;
 				int sizeY = 0;
 				if (type.contains("40h") || type.contains("64")) {
@@ -46,8 +77,25 @@ public class DiscoverOSCListener implements OSCListener {
 					sizeY = 16;
 				}
 				MonomeConfiguration monomeConfig = config.getMonomeConfiguration(index);
-				monomeConfig.sizeX = sizeX;
-				monomeConfig.sizeY = sizeY;
+				if (monomeConfig != null) {
+					monomeConfig.sizeX = sizeX;
+					monomeConfig.sizeY = sizeY;
+					monomeConfig.setFrameTitle();
+				}
+			}
+			
+			if (message.getAddress().contains("/sys/serial")) {
+				String serial;
+				try {
+					serial = (String) args[1];
+				} catch (IndexOutOfBoundsException e) {
+					return;
+				}
+				MonomeConfiguration monomeConfig = config.getMonomeConfiguration(index);
+				if (monomeConfig != null) {
+					monomeConfig.serial = serial;
+					monomeConfig.setFrameTitle();				
+				}
 			}
 		}
 	}
