@@ -9,9 +9,6 @@ import javax.swing.JComponent;
 
 public class JMonomeDisplay extends JComponent {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private int sizeX;
@@ -22,12 +19,16 @@ public class JMonomeDisplay extends JComponent {
 	public JMonomeDisplay(int sizeX, int sizeY) {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
-		setPreferredSize(new Dimension(14*sizeX, 14*sizeY));
-		this.updateUI();
+		setPreferredSize(new Dimension((sizeX * 14) + 4, (sizeY * 14) + 4));
 	}
 	
 	public void paintComponent(Graphics g) {
 		paintMonome(g);
+	}
+	
+	public Dimension getSize() {
+		Dimension dim = new Dimension((sizeX * 15), (sizeY * 15));
+		return dim;
 	}
 	
 	public void paint(Graphics g, Component c) {
@@ -42,20 +43,29 @@ public class JMonomeDisplay extends JComponent {
     }
 	
 	public void paintMonome(Graphics g) {
+		Dimension pSize = this.getParent().getSize();
+		double side = Math.min(pSize.getWidth(), pSize.getHeight());
+		int xSize = (int) side / sizeX;
+		int ySize = (int) side / sizeY;
+		
+		int rectDistance = 2 + (xSize / 10);
+		int fillDistance = 3 + (xSize / 10);
+		int circleDistance = 4 + (xSize / 10);
+		
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
 				if (ledState[x][y] == 0) {
 					g.setColor(Color.GRAY);
-					g.drawRect((x * 14) + 2, (y * 14) + 2, 10, 10);
+					g.drawRect((x * xSize) + rectDistance, (y * ySize) + rectDistance, xSize - rectDistance, ySize - rectDistance);
 				} else if (ledState[x][y] == 1) {
 					g.setColor(Color.GRAY);
-					g.drawRect((x * 14) + 2, (y * 14) + 2, 10, 10);
+					g.drawRect((x * xSize) + rectDistance, (y * ySize) + rectDistance, xSize - rectDistance, ySize - rectDistance);
 					g.setColor(Color.ORANGE);
-					g.fillRect((x * 14) + 3, (y * 14) + 3, 8, 8);
+					g.fillRect((x * xSize) + fillDistance, (y * ySize) + fillDistance, xSize - fillDistance, ySize - fillDistance);
 				}
 				if (pressState[x][y] == 1) {
 					g.setColor(Color.BLACK);
-					g.drawOval((x * 14) + 4, (y * 14) + 4, 6, 6); 
+					g.drawOval((x * xSize) + circleDistance, (y * ySize) + circleDistance, xSize - circleDistance, ySize - circleDistance); 
 				}
 			}
 		}

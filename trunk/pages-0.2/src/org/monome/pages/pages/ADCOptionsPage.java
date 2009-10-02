@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 
 import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.gui.Main;
 import org.w3c.dom.Element;
 
 
@@ -92,7 +93,7 @@ public class ADCOptionsPage implements Page, ActionListener {
 		if (e.getActionCommand().equals("Set MIDI Output")) {
 			String[] midiOutOptions = this.monome.getMidiOutOptions();
 			String deviceName = (String)JOptionPane.showInputDialog(
-					this.monome,
+					Main.getDesktopPane(),
 					"Choose a MIDI Output to use",
 					"Set MIDI Output",
 					JOptionPane.PLAIN_MESSAGE,
@@ -307,7 +308,6 @@ public class ADCOptionsPage implements Page, ActionListener {
 		this.midiOutButton.removeActionListener(this);
 		this.panel.removeAll();
 		this.panel = null;			
-		this.monome.redrawPanel();
 		if (this.page instanceof ExternalApplicationPage) {			
 			this.page.addMidiOutDevice(deviceName);
 		}

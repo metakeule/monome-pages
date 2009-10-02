@@ -15,6 +15,7 @@ import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
+import java.awt.Dimension;
 
 public class NewMonomeConfigurationFrame extends JInternalFrame {
 
@@ -43,7 +44,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(200, 160);
+		this.setSize(196, 130);
 		this.setContentPane(getJContentPane());
 		this.setTitle("New Monome Configuration");
 	}
@@ -56,13 +57,13 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			Prefix = new JLabel();
-			Prefix.setBounds(new Rectangle(15, 75, 76, 16));
+			Prefix.setBounds(new Rectangle(15, 50, 76, 16));
 			Prefix.setText("Prefix");
 			sizeYLabel = new JLabel();
-			sizeYLabel.setBounds(new Rectangle(15, 45, 76, 16));
+			sizeYLabel.setBounds(new Rectangle(15, 30, 76, 16));
 			sizeYLabel.setText("Size Y (Height)");
 			sizeXLabel = new JLabel();
-			sizeXLabel.setBounds(new Rectangle(15, 15, 76, 16));
+			sizeXLabel.setBounds(new Rectangle(15, 10, 76, 16));
 			sizeXLabel.setText("Size X (Width)");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
@@ -86,7 +87,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JTextField getSizeY() {
 		if (sizeY == null) {
 			sizeY = new JTextField();
-			sizeY.setBounds(new Rectangle(105, 45, 76, 16));
+			sizeY.setBounds(new Rectangle(100, 30, 26, 16));
 			sizeY.setText("8");
 		}
 		return sizeY;
@@ -100,7 +101,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JTextField getSizeX() {
 		if (sizeX == null) {
 			sizeX = new JTextField();
-			sizeX.setBounds(new Rectangle(105, 15, 76, 16));
+			sizeX.setBounds(new Rectangle(100, 10, 26, 16));
 			sizeX.setText("8");
 		}
 		return sizeX;
@@ -114,7 +115,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JTextField getPrefix() {
 		if (prefix == null) {
 			prefix = new JTextField();
-			prefix.setBounds(new Rectangle(105, 75, 76, 16));
+			prefix.setBounds(new Rectangle(100, 50, 71, 16));
 			prefix.setText("/40h");
 		}
 		return prefix;
@@ -128,7 +129,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JButton getSaveButton() {
 		if (saveButton == null) {
 			saveButton = new JButton();
-			saveButton.setBounds(new Rectangle(15, 105, 76, 16));
+			saveButton.setBounds(new Rectangle(15, 75, 76, 21));
 			saveButton.setText("Save");
 			saveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -159,7 +160,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
-			cancelButton.setBounds(new Rectangle(105, 105, 76, 16));
+			cancelButton.setBounds(new Rectangle(100, 75, 76, 21));
 			cancelButton.setText("Cancel");
 			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -174,4 +175,4 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 		this.dispose();
 	}
 	
-}
+}  //  @jve:decl-index=0:visual-constraint="10,10"

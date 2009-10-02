@@ -247,7 +247,6 @@ public class PageChangeConfigurationPage implements Page, ActionListener {
 				lastMIDIChannel = channel;
 				int note = msg.getData1();
 				lastMIDINote = note;
-				this.monome.redrawPanel();
 			}
 		}
 
