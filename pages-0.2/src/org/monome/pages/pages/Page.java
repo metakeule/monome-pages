@@ -68,15 +68,6 @@ public interface Page {
 	 * Sets the name of the page.
 	 */
 	public void setName(String name);
-
-	/**
-	 * Returns the page's GUI panel.
-	 * 
-	 * @return The GUI panel for the page
-	 */
-	public JPanel getPanel();
-	
-	public void clearPanel();
 	
 	public void setIndex(int index);
 
@@ -99,13 +90,6 @@ public interface Page {
 	 * @return XML representation of the page's current configuration.
 	 */
 	public String toXml();
-
-	/**
-	 * Called whenever a GUI action is received on a page's GUI (ie. a button is pressed).
-	 * 
-	 * @param e The action event
-	 */
-	public void actionPerformed(ActionEvent e);
 
 	/**
 	 * Adds or selects a MIDI output device for the page.

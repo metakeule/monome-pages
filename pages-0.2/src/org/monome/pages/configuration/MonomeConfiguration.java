@@ -204,7 +204,8 @@ public class MonomeConfiguration {
 		}
 		
 		if (this.curPage > -1) {
-			pages.get(this.curPage).clearPanel();
+			// TODO: clearPanel()
+			//pages.get(this.curPage).clearPanel();
 		}		
 	}
 

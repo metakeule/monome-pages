@@ -207,10 +207,13 @@ public class Configuration implements Receiver {
 		
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			for (int i = 0; i < 500; i++) {
+			for (int i = 0; i < 5; i++) {
 				this.monomeSerialOSCPortOut.send(msg);
+				Thread.sleep(10);
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -302,10 +305,13 @@ public class Configuration implements Receiver {
 		System.out.println("Requesting device list (/sys/report)");
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			for (int i = 0; i < 500; i++) {
+			for (int i = 0; i < 5; i++) {
 				this.monomeSerialOSCPortOut.send(msg);
+				Thread.sleep(100);
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
