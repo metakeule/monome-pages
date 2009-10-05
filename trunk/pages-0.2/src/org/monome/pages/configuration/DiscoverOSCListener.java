@@ -9,8 +9,6 @@ import com.illposed.osc.OSCMessage;
 public class DiscoverOSCListener implements OSCListener {
 	
 	private boolean discoverMode = false;
-	
-	private int msgs = 0;
 		
 	public void setDiscoverMode(boolean newMode) {
 		discoverMode = newMode;
@@ -28,7 +26,6 @@ public class DiscoverOSCListener implements OSCListener {
 			} catch (IndexOutOfBoundsException e) {
 				return;
 			}
-			System.out.println("index is " + index);
 			
 			if (index >= 50) {
 				return;
@@ -43,7 +40,11 @@ public class DiscoverOSCListener implements OSCListener {
 					return;
 				}
 				
-				if (prefix == null) {
+				if (prefix == null || prefix.compareTo("") == 0) {
+					return;
+				}
+				
+				if (MonomeConfigurationFactory.prefixExists(prefix)) {
 					return;
 				}
 				

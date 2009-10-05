@@ -32,7 +32,7 @@ import com.illposed.osc.OSCMessage;
  * @author Tom Dinchak
  *
  */
-public class AbletonClipLauncherPage implements ActionListener, Page {
+public class AbletonClipLauncherPage implements Page {
 
 	/**
 	 * Reference to the MonomeConfiguration this page belongs to.
@@ -43,17 +43,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * This page's index (page number).
 	 */
 	private int index;
-
-	/**
-	 * This page's GUI / control panel.
-	 */
-	private JPanel panel;
-		
-	/**
-	 * flashState[track_number][clip_number} - Whether to flash on or off on the next tick
-	 */
-	private boolean[][] flashState = new boolean[200][250];
-	
+			
 	/**
 	 * The amount to offset the monome display of the clips
 	 */
@@ -63,12 +53,6 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * The amount to offset the monome display of the tracks
 	 */
 	private int trackOffset;
-
-	private JCheckBox disableMuteCB = new JCheckBox();
-	private JCheckBox disableSoloCB = new JCheckBox();
-	private JCheckBox disableArmCB = new JCheckBox();
-	private JCheckBox disableStopCB = new JCheckBox();
-	private JButton refreshButton = new JButton();
 	
 	private AbletonState abletonState;
 	private int tickNum;
@@ -82,8 +66,6 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 * The name of the page 
 	 */
 	private String pageName = "Ableton Clip Launcher";
-	private JLabel pageNameLBL;
-	
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -97,32 +79,6 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	}
 
 	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		int numEnabledRows = 0;
-		if (this.disableMuteCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		if (this.disableSoloCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		if (this.disableArmCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		if (this.disableStopCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		this.numEnabledRows = numEnabledRows;
-		
-		if (e.getActionCommand().equals("Refresh from Ableton")) {
-			this.refreshAbleton();
-		}
-		
-		return;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
 	 */
 	public void addMidiOutDevice(String deviceName) {
@@ -132,8 +88,7 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */
-	public String getName() 
-	{		
+	public String getName() {		
 		return pageName;
 	}
 	/* (non-Javadoc)
@@ -141,49 +96,8 @@ public class AbletonClipLauncherPage implements ActionListener, Page {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);		
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#getPanel()
-	 */
-	public JPanel getPanel() {
-		// if the panel was already created return it
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		// create the panel
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-
-		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Launcher");
-		panel.add(pageNameLBL);
-		
-		disableMuteCB.setText("Disable Mute");
-		disableMuteCB.addActionListener(this);
-		panel.add(disableMuteCB);
-		
-		disableSoloCB.setText("Disable Solo");
-		disableSoloCB.addActionListener(this);
-		panel.add(disableSoloCB);
-		
-		disableArmCB.setText("Disable Arm");
-		disableArmCB.addActionListener(this);
-		panel.add(disableArmCB);
-		
-		disableStopCB.setText("Disable Stop");
-		disableStopCB.addActionListener(this);
-		panel.add(disableStopCB);
-
-		refreshButton.setText("Refresh from Ableton");
-		refreshButton.addActionListener(this);
-		panel.add(refreshButton);
-
-		this.panel = panel;
-		return panel;
-	}
-
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handlePress(int, int, int)
 	 */

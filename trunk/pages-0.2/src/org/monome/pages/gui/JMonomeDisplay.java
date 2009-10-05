@@ -51,6 +51,7 @@ public class JMonomeDisplay extends JComponent {
 		int rectDistance = 2 + (xSize / 10);
 		int fillDistance = 3 + (xSize / 10);
 		int circleDistance = 4 + (xSize / 10);
+		int circleSize = xSize - (xSize / 10) - 6;
 		
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
@@ -65,7 +66,7 @@ public class JMonomeDisplay extends JComponent {
 				}
 				if (pressState[x][y] == 1) {
 					g.setColor(Color.BLACK);
-					g.drawOval((x * xSize) + circleDistance, (y * ySize) + circleDistance, xSize - circleDistance, ySize - circleDistance); 
+					g.drawOval((x * xSize) + circleDistance, (y * ySize) + circleDistance, circleSize, circleSize); 
 				}
 			}
 		}
@@ -73,5 +74,6 @@ public class JMonomeDisplay extends JComponent {
 	
 	public void setLedState(int[][] ledState) {
 		this.ledState = ledState;
+		repaint();
 	}
 }

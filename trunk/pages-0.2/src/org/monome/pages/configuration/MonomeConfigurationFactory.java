@@ -3,6 +3,7 @@ package org.monome.pages.configuration;
 import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.monome.pages.gui.Main;
 import org.monome.pages.gui.MonomeFrame;
@@ -51,6 +52,22 @@ public class MonomeConfigurationFactory {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
 		return monomeConfigurations.size();
+	}
+
+	public static boolean prefixExists(String prefix) {
+		if (monomeConfigurations == null) {
+			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
+		}
+		Iterator<Integer> it = monomeConfigurations.keySet().iterator();
+		while (it.hasNext()) {
+			Integer key = it.next();
+			MonomeConfiguration monomeConfig = monomeConfigurations.get(key);
+			if (monomeConfig.prefix.compareTo(prefix) == 0) {
+				return true;
+			}
+		}
+		System.out.println("Prefix not found '" + prefix + "'");
+		return false;
 	}
 
 }
