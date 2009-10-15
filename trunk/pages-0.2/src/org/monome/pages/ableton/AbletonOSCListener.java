@@ -125,7 +125,7 @@ public class AbletonOSCListener implements OSCListener {
         }
         
         if (msg.getAddress().contains("/live/reset")) {
-        	this.configuration.getAbletonControl().resetAbleton();
+        	this.configuration.getAbletonControl().refreshAbleton();
         }
         
 	}

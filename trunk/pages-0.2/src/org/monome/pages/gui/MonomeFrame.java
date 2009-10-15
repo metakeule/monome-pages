@@ -25,6 +25,7 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenu configurationMenu = null;
 	private JMenuItem monomeDisplayItem = null;
 	private MonomeDisplayFrame monomeDisplayFrame = null;
+	private JPanel currentPanel = null;
 	private int index = 0;
 	/**
 	 * This is the xxx default constructor
@@ -183,12 +184,17 @@ public class MonomeFrame extends JInternalFrame {
 	}
 
 	public void redrawPagePanel(Page page) {
+		if (currentPanel != null) {
+			getJContentPane().remove(currentPanel);
+		}
 		JPanel gui = page.getPanel();
+		currentPanel = gui;
 		getJContentPane().add(gui);
 		Dimension guiSize = gui.getSize();
 		guiSize.height += 50;
 		guiSize.width += 10;
 		this.setSize(guiSize);
+		getJContentPane().validate();
 	}
 
 }

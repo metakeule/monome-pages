@@ -18,6 +18,7 @@ import org.monome.pages.ableton.AbletonTrack;
 import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.pages.gui.AbletonSceneLauncherGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,7 +33,7 @@ import com.illposed.osc.OSCMessage;
  * @author Tom Dinchak
  *
  */
-public class AbletonSceneLauncherPage implements ActionListener, Page {
+public class AbletonSceneLauncherPage implements Page {
 
 	/**
 	 * Reference to the MonomeConfiguration this page belongs to.
@@ -45,11 +46,6 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	private int index;
 
 	/**
-	 * This page's GUI / control panel.
-	 */
-	private JPanel panel;
-		
-	/**
 	 * The amount to offset the monome display of the clips
 	 */
 	private int clipOffset = 0;
@@ -59,26 +55,21 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 */
 	private int trackOffset;
 	
-	private JCheckBox disableMuteCB = new JCheckBox();
-	private JCheckBox disableSoloCB = new JCheckBox();
-	private JCheckBox disableArmCB = new JCheckBox();
-	private JCheckBox disableStopCB = new JCheckBox();
-	private JButton refreshButton = new JButton();
-
 	/**
 	 * The number of control rows (track arm, track stop) that are enabled currently
 	 */
-	private int numEnabledRows = 4;
+	public int numEnabledRows = 4;
 	
 	private AbletonState abletonState;
 	
 	private int tickNum = 0;
+	
+	private AbletonSceneLauncherGUI gui;
 
 	/**
 	 * The name of the page 
 	 */
 	private String pageName = "Ableton Scene Launcher";
-	private JLabel pageNameLBL;
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -89,33 +80,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		this.index = index;
 		ConfigurationFactory.getConfiguration().initAbleton();
 		this.abletonState = ConfigurationFactory.getConfiguration().abletonState;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		int numEnabledRows = 0;
-		if (this.disableMuteCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		if (this.disableSoloCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		if (this.disableArmCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-		if (this.disableStopCB.isSelected() == false) {
-			numEnabledRows++;
-		}
-
-		this.numEnabledRows = numEnabledRows;
-		
-		if (e.getActionCommand().equals("Refresh from Ableton")) {
-			this.refreshAbleton();
-		}
-		
-		return;
+		gui = new AbletonSceneLauncherGUI(this);
 	}
 
 	/* (non-Javadoc)
@@ -137,47 +102,13 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
 	public JPanel getPanel() {
-		// if the panel was already created return it
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		// create the panel
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-
-		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": Ableton Scene Launcher");
-		panel.add(pageNameLBL);
-		
-		disableMuteCB.setText("Disable Mute");
-		disableMuteCB.addActionListener(this);
-		panel.add(disableMuteCB);
-		
-		disableSoloCB.setText("Disable Solo");
-		disableSoloCB.addActionListener(this);
-		panel.add(disableSoloCB);
-		
-		disableArmCB.setText("Disable Arm");
-		disableArmCB.addActionListener(this);
-		panel.add(disableArmCB);
-		
-		disableStopCB.setText("Disable Stop");
-		disableStopCB.addActionListener(this);
-		panel.add(disableStopCB);
-
-		refreshButton.setText("Refresh from Ableton");
-		refreshButton.addActionListener(this);
-		panel.add(refreshButton);
-
-		this.panel = panel;
-		return panel;
+		return gui;
 	}
 
 	/* (non-Javadoc)
@@ -246,7 +177,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 					}
 				}
 				// if this is the bottom row then arm/disarm track number x
-				else if (y == this.monome.sizeY - 1 && this.disableArmCB.isSelected() == false) {
+				else if (y == this.monome.sizeY - 1 && this.gui.getDisableArmCB().isSelected() == false) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					AbletonTrack track = this.abletonState.getTrack(track_num, false);
 					if (track != null) {
@@ -258,8 +189,8 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 					}
 				}
 				// if this is the 2nd from the bottom row then solo/unsolo
-				else if ((y == this.monome.sizeY - 2 && this.disableSoloCB.isSelected() == false && this.disableArmCB.isSelected() == false) ||
-						  y == this.monome.sizeY - 1 && this.disableSoloCB.isSelected() == false && this.disableArmCB.isSelected() == true) {
+				else if ((y == this.monome.sizeY - 2 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false) ||
+						  y == this.monome.sizeY - 1 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					AbletonTrack track = this.abletonState.getTrack(track_num, false);
 					if (track != null) {
@@ -272,10 +203,10 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 					}
 				}
 				// if this is the 3nd from the bottom row then mute or unmute the track
-				else if ((y == this.monome.sizeY - 3 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == false) ||
-						 (y == this.monome.sizeY - 2 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == true) ||
-						 (y == this.monome.sizeY - 2 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == false) ||
-                         (y == this.monome.sizeY - 1 && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == true)) {
+				else if ((y == this.monome.sizeY - 3 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == false) ||
+						 (y == this.monome.sizeY - 2 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == true) ||
+						 (y == this.monome.sizeY - 2 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == false) ||
+                         (y == this.monome.sizeY - 1 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == true)) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					AbletonTrack track = this.abletonState.getTrack(track_num, false);
 					if (track != null) {
@@ -290,17 +221,17 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 				
 				// if this is the 4th from the bottom row then mute or unmute the track
 				else if (
-						 (y == this.monome.sizeY - 4 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == false) ||
+						 (y == this.monome.sizeY - 4 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == false) ||
 						 
-						 (y == this.monome.sizeY - 3 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == false) ||
-						 (y == this.monome.sizeY - 3 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == false) ||
-						 (y == this.monome.sizeY - 3 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == true) ||
+						 (y == this.monome.sizeY - 3 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == true && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == false) ||
+						 (y == this.monome.sizeY - 3 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == false) ||
+						 (y == this.monome.sizeY - 3 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == true) ||
 						 
-						 (y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == false) ||
-						 (y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == false && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == true) ||
-						 (y == this.monome.sizeY - 2 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == false && this.disableSoloCB.isSelected() == true) ||
+						 (y == this.monome.sizeY - 2 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == true && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == false) ||
+						 (y == this.monome.sizeY - 2 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == true) ||
+						 (y == this.monome.sizeY - 2 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == true && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == true) ||
 						 
-                         (y == this.monome.sizeY - 1 && this.disableStopCB.isSelected() == false && this.disableMuteCB.isSelected() == true && this.disableArmCB.isSelected() == true && this.disableSoloCB.isSelected() == true)) {
+                         (y == this.monome.sizeY - 1 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == true && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == true)) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 					this.stopTrack(track_num);
 					this.viewTrack(track_num);
@@ -362,14 +293,14 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * Sends "/live/tempo tempo-1" to LiveOSC. 
 	 */
 	public void tempoDown() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().tempoDown(this.abletonState.getTempo());
+		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(this.abletonState.getTempo() - 1.0f);
 	}
 	
 	/**
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
 	public void tempoUp() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(this.abletonState.getTempo());
+		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(this.abletonState.getTempo() + 1.0f);
 	}
 	
 	/**
@@ -533,7 +464,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		}
 		
 		// redraw the track armed/disarmed state
-		if (this.disableArmCB.isSelected() == false) {
+		if (this.gui.getDisableArmCB().isSelected() == false) {
 			for (int i = 1; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 				int yRow = this.monome.sizeY - 1;
@@ -551,11 +482,11 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		}
 		
 		// redraw the track solo/unsolo state
-		if (this.disableSoloCB.isSelected() == false) {
+		if (this.gui.getDisableSoloCB().isSelected() == false) {
 			for (int i = 1; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 				int yRow;
-				if (disableArmCB.isSelected() == false) {
+				if (gui.getDisableArmCB().isSelected() == false) {
 					yRow = this.monome.sizeY - 2;
 				} else {
 					yRow = this.monome.sizeY - 1;
@@ -574,13 +505,13 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		}
 
 		// redraw the track mute/unmute state
-		if (this.disableMuteCB.isSelected() == false) {
+		if (this.gui.getDisableMuteCB().isSelected() == false) {
 			for (int i = 1; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
 				int yRow;
-				if (disableArmCB.isSelected() == true && disableSoloCB.isSelected() == true) {
+				if (gui.getDisableArmCB().isSelected() == true && gui.getDisableSoloCB().isSelected() == true) {
 					yRow = this.monome.sizeY - 1;
-				} else if (disableArmCB.isSelected() == true || disableSoloCB.isSelected() == true){
+				} else if (gui.getDisableArmCB().isSelected() == true || gui.getDisableSoloCB().isSelected() == true){
 					yRow = this.monome.sizeY - 2;
 				} else {
 					yRow = this.monome.sizeY - 3;
@@ -599,7 +530,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		}
 		
 		// clear out stop buttons
-		if (this.disableStopCB.isSelected() == false) {
+		if (this.gui.getDisableStopCB().isSelected() == false) {
 			for (int i = 0; i < this.monome.sizeX - 1; i++) {
 				int yRow;
 				yRow = this.monome.sizeY - this.numEnabledRows;
@@ -631,19 +562,19 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 		String disableSolo = "false";
 		String disableMute = "false";
 		String disableStop = "false";
-		if (disableArmCB.isSelected() == true) {
+		if (gui.getDisableArmCB().isSelected() == true) {
 			disableArm = "true";
 		}
 		
-		if (disableSoloCB.isSelected() == true) {
+		if (gui.getDisableSoloCB().isSelected() == true) {
 			disableSolo = "true";
 		}
 		
-		if (disableMuteCB.isSelected() == true) {
+		if (gui.getDisableMuteCB().isSelected() == true) {
 			disableMute = "true";
 		}
 		
-		if (disableStopCB.isSelected() == true) {
+		if (gui.getDisableStopCB().isSelected() == true) {
 			disableStop = "true";
 		}
 		
@@ -662,25 +593,25 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	
 	public void setDisableArm(String disableArm) {
 		if (disableArm.equals("true")) {
-			this.disableArmCB.doClick();
+			this.gui.getDisableArmCB().doClick();
 		}
 	}
 	
 	public void setDisableSolo(String disableSolo) {
 		if (disableSolo.equals("true")) {
-			this.disableSoloCB.doClick();
+			this.gui.getDisableSoloCB().doClick();
 		}
 	}
 	
 	public void setDisableMute(String disableMute) {
 		if (disableMute.equals("true")) {
-			this.disableMuteCB.doClick();
+			this.gui.getDisableMuteCB().doClick();
 		}
 	}
 	
 	public void setDisableStop(String disableStop) {
 		if (disableStop.equals("true")) {
-			this.disableStopCB.doClick();
+			this.gui.getDisableStopCB().doClick();
 		}
 	}
 
@@ -697,11 +628,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	public void destroyPage() {
 		return;
 	}
-	
-	public void clearPanel() {
-		this.panel = null;
-	}
-	
+		
 	public void setIndex(int index) {
 		this.index = index;
 	}
@@ -764,5 +691,10 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 			String disableStop = ((Node) nl.item(0)).getNodeValue();
 			this.setDisableStop(disableStop);
 		}
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
 	}
 }

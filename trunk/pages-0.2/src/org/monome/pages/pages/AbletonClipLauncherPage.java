@@ -62,7 +62,7 @@ public class AbletonClipLauncherPage implements Page {
 	/**
 	 * The number of control rows (track arm, track stop) that are enabled currently
 	 */
-	private int numEnabledRows = 4;
+	public int numEnabledRows = 4;
 	
 	/**
 	 * The name of the page 
@@ -78,7 +78,7 @@ public class AbletonClipLauncherPage implements Page {
 		this.index = index;
 		ConfigurationFactory.getConfiguration().initAbleton();
 		abletonState = ConfigurationFactory.getConfiguration().abletonState;
-		gui = new AbletonClipLauncherGUI();
+		gui = new AbletonClipLauncherGUI(this);
 	}
 
 	/* (non-Javadoc)
@@ -642,5 +642,10 @@ public class AbletonClipLauncherPage implements Page {
 	@Override
 	public JPanel getPanel() {
 		return gui;
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
 	}
 }

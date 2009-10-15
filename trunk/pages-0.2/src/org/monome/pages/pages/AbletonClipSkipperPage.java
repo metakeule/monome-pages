@@ -20,6 +20,7 @@ import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
+import org.monome.pages.pages.gui.AbletonClipSkipperGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -33,7 +34,7 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak
  *
  */
-public class AbletonClipSkipperPage implements Page, ActionListener {
+public class AbletonClipSkipperPage implements Page {
 
 	/**
 	 * The MonomeConfiguration this page belongs to
@@ -51,7 +52,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	/**
 	 * This page's GUI / configuration panel 
 	 */
-	private JPanel panel;
+	private AbletonClipSkipperGUI gui;
 
 	/**
 	 * The name of the selected MIDI output device 
@@ -82,36 +83,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 		this.index = index;
 		ConfigurationFactory.getConfiguration().initAbleton();
 		this.abletonState = ConfigurationFactory.getConfiguration().abletonState;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Add MIDI Output")) {
-			String[] midiOutOptions = this.monome.getMidiOutOptions();
-			String deviceName = (String)JOptionPane.showInputDialog(
-					Main.getDesktopPane(),
-					"Choose a MIDI Output to add",
-					"Add MIDI Output",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					midiOutOptions,
-					"");
-
-			if (deviceName == null) {
-				return;
-			}
-			this.addMidiOutDevice(deviceName);	
-		}
-		
-		if (e.getActionCommand().equals("Refresh from Ableton")) {
-			this.refreshAbleton();
-		}
-	}
-	
-	public void refreshAbleton() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().refreshAbleton();
+		this.gui = new AbletonClipSkipperGUI(this);
 	}
 
 	/* (non-Javadoc)
@@ -140,23 +112,7 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#getPanel()
 	 */
 	public JPanel getPanel() {
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
-		panel.setPreferredSize(new java.awt.Dimension(464, 156));
-
-		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": Ableton Clip Skipper");
-		panel.add(pageNameLBL);
-		
-		refreshButton.setText("Refresh from Ableton");
-		refreshButton.addActionListener(this);
-		panel.add(refreshButton);
-
-		this.panel = panel;
-		return panel;
+		return gui;
 	}
 	
 	public void updateClipState(int track, int clip, int state, float length) {
@@ -321,10 +277,6 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 		return;
 	}
 	
-	public void clearPanel() {
-		this.panel = null;
-	}
-	
 	public void setIndex(int index) {
 		this.index = index;
 	}
@@ -360,5 +312,10 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 			String	name = ((Node) nl.item(0)).getNodeValue();
 			this.setName(name);			
 		}
-	}	
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
+	}
 }
