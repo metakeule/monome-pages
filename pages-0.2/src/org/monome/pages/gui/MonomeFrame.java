@@ -10,7 +10,9 @@ import javax.swing.JMenuItem;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
+import org.monome.pages.pages.Page;
 
+import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 
 public class MonomeFrame extends JInternalFrame {
@@ -160,6 +162,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (monomeDisplayFrame == null || monomeDisplayFrame.isClosed()) {
 			MonomeConfiguration monomeConfiguration = MonomeConfigurationFactory.getMonomeConfiguration(index);
 			monomeDisplayFrame = new MonomeDisplayFrame(monomeConfiguration.sizeX, monomeConfiguration.sizeY);
+			System.out.println("creating monomeDisplayFrame");
 			Main.getDesktopPane().add(monomeDisplayFrame);
 			try {
 				monomeDisplayFrame.setSelected(true);
@@ -177,6 +180,15 @@ public class MonomeFrame extends JInternalFrame {
 	
 	public MonomeDisplayFrame getMonomeDisplayFrame() {
 		return monomeDisplayFrame;
+	}
+
+	public void redrawPagePanel(Page page) {
+		JPanel gui = page.getPanel();
+		getJContentPane().add(gui);
+		Dimension guiSize = gui.getSize();
+		guiSize.height += 50;
+		guiSize.width += 10;
+		this.setSize(guiSize);
 	}
 
 }

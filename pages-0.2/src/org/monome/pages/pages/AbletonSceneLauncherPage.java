@@ -369,7 +369,7 @@ public class AbletonSceneLauncherPage implements ActionListener, Page {
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
 	public void tempoUp() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().tempoUp(this.abletonState.getTempo());
+		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(this.abletonState.getTempo());
 	}
 	
 	/**

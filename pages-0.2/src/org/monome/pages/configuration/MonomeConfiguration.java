@@ -174,6 +174,7 @@ public class MonomeConfiguration {
 	public Page addPage(String className) {
 		Page page;		
 
+		System.out.println("className is " + className);
 		page = PagesRepository.getPageInstance(className, this, this.numPages);
 		this.pages.add(this.numPages, page);
 		this.switchPage(page, this.numPages, true);
@@ -219,6 +220,7 @@ public class MonomeConfiguration {
 	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
 		page.redrawMonome();
+		monomeFrame.redrawPagePanel(page);
 	}
 		
 	public void redrawAbletonPages() {

@@ -115,4 +115,6 @@ public interface Page {
 	 * Should handle any cleanup needed when the page is destroyed (close open OSC ports, etc.)
 	 */
 	public void destroyPage();
+	
+	public JPanel getPanel();
 }

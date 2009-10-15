@@ -668,7 +668,7 @@ public class Configuration implements Receiver {
 		this.abletonOSCListener = new AbletonOSCListener(this);
 		this.initAbletonOSCOut();
 		this.initAbletonOSCIn();
-		this.abletonControl = new AbletonOSCControl(this);
+		this.abletonControl = new AbletonOSCControl();
 	}
 	
 	/**
