@@ -219,6 +219,7 @@ public class MonomeConfiguration {
 	 */
 	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
+		System.out.println("switch page to " + pageIndex);
 		page.redrawMonome();
 		monomeFrame.redrawPagePanel(page);
 	}

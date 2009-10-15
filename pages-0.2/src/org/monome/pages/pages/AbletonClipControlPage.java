@@ -736,4 +736,10 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	@Override
+	public int getIndex() {
+		return index;
+	}
 }

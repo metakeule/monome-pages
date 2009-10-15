@@ -117,4 +117,6 @@ public interface Page {
 	public void destroyPage();
 	
 	public JPanel getPanel();
+	
+	public int getIndex();
 }

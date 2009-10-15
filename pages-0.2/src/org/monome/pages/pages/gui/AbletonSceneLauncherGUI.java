@@ -5,16 +5,18 @@ import javax.swing.JPanel;
 
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.pages.AbletonClipLauncherPage;
+import org.monome.pages.pages.AbletonSceneLauncherPage;
+
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 
-public class AbletonClipLauncherGUI extends JPanel {
+public class AbletonSceneLauncherGUI extends JPanel {
 
 	private static final long serialVersionUID = 1L;
-	private AbletonClipLauncherPage page = null;
+	private AbletonSceneLauncherPage page = null;
 	private JLabel pageLabel = null;
 	private JCheckBox disableMuteCB = null;
 	private JLabel disableMuteLabel = null;
@@ -28,7 +30,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 	/**
 	 * This is the default constructor
 	 */
-	public AbletonClipLauncherGUI(AbletonClipLauncherPage page) {
+	public AbletonSceneLauncherGUI(AbletonSceneLauncherPage page) {
 		super();
 		this.page = page;
 		initialize();
@@ -53,7 +55,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 		disableMuteLabel.setBounds(new Rectangle(40, 30, 81, 21));
 		disableMuteLabel.setText("Disable Mute");
 		pageLabel = new JLabel();
-		pageLabel.setText((page.getIndex() + 1) + ": Ableton Clip Launcher");
+		pageLabel.setText((page.getIndex() + 1) + ": Ableton Scene Launcher");
 		pageLabel.setBounds(new Rectangle(5, 5, 166, 16));
 		this.setLayout(null);
 		this.add(pageLabel, null);
@@ -87,6 +89,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 					}
 				}
 			});
+
 		}
 		return disableMuteCB;
 	}
@@ -174,5 +177,6 @@ public class AbletonClipLauncherGUI extends JPanel {
 			});
 		}
 		return disableStopCB;
-	}	
+	}
+	
 }
