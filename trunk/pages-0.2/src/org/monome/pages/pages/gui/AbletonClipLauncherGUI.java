@@ -53,7 +53,6 @@ public class AbletonClipLauncherGUI extends JPanel {
 		pageLabel = new JLabel();
 		pageLabel.setText("Ableton Clip Launcher Page");
 		pageLabel.setBounds(new Rectangle(5, 5, 166, 16));
-		this.setSize(300, 200);
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(getDisableMuteCB(), null);
@@ -65,6 +64,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 		this.add(getRefreshButton(), null);
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
+		this.setSize(155, 160);
 	}
 	
 	public void setPage(AbletonClipLauncherPage page) {
@@ -76,7 +76,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 	 * 	
 	 * @return javax.swing.JCheckBox	
 	 */
-	private JCheckBox getDisableMuteCB() {
+	public JCheckBox getDisableMuteCB() {
 		if (disableMuteCB == null) {
 			disableMuteCB = new JCheckBox();
 			disableMuteCB.setBounds(new Rectangle(15, 30, 21, 21));
@@ -94,7 +94,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 	 * 	
 	 * @return javax.swing.JCheckBox	
 	 */
-	private JCheckBox getDisableSoloCB() {
+	public JCheckBox getDisableSoloCB() {
 		if (disableSoloCB == null) {
 			disableSoloCB = new JCheckBox();
 			disableSoloCB.setBounds(new Rectangle(15, 55, 21, 21));
@@ -112,7 +112,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 	 * 	
 	 * @return javax.swing.JCheckBox	
 	 */
-	private JCheckBox getDisableArmCB() {
+	public JCheckBox getDisableArmCB() {
 		if (disableArmCB == null) {
 			disableArmCB = new JCheckBox();
 			disableArmCB.setBounds(new Rectangle(15, 80, 21, 21));
@@ -149,7 +149,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 	 * 	
 	 * @return javax.swing.JCheckBox	
 	 */
-	private JCheckBox getDisableStopCB() {
+	public JCheckBox getDisableStopCB() {
 		if (disableStopCB == null) {
 			disableStopCB = new JCheckBox();
 			disableStopCB.setBounds(new Rectangle(15, 105, 21, 21));

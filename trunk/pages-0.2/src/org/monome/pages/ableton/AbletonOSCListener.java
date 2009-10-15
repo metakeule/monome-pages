@@ -1,3 +1,5 @@
+
+
 package org.monome.pages.ableton;
 
 import java.util.Date;
@@ -8,9 +10,7 @@ import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 
 /**
- * The AbletonOSCListener object listens for OSC messages from Ableton
- * calls the Configuration object when messages are received to update
- * any Ableton Clip Launcher pages.
+ * The AbletonOSCListener object listens for OSC messages from Ableton and updates the AbletonState object.
  * 
  * @author Tom Dinchak
  *

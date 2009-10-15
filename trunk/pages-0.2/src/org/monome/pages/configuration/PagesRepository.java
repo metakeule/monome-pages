@@ -18,9 +18,9 @@ public class PagesRepository {
 	static Collection<Class<? extends Page>> pageTypes;
 	
 	static{
-		try{ 
+		try { 
 			pageTypes = loadPages();
-		}catch(Exception e){
+		} catch(Exception e) {
 			System.out.println("couldn't load page implementations!!! " + e);
 		}
 		
@@ -39,12 +39,13 @@ public class PagesRepository {
 	static Page getPageInstance(String name, MonomeConfiguration conf, int index){
 		Page page;
 		for (Class clz : pageTypes){
-			if (clz.getName().equals(name)){
-				try{
+			System.out.println("compare '" + clz.getName() + "' to '" + name + "'");
+			if (clz.getName().equals(name)) {
+				try {
 					Constructor<? extends Page> ctor = clz.getConstructor(MonomeConfiguration.class, int.class);
 					page = ctor.newInstance(conf, index);
 					return page;
-				}catch(Exception e){
+				} catch(Exception e) {
 					System.out.println("Page couldn't be created!!! " + e);
 				}
 			}
@@ -52,7 +53,7 @@ public class PagesRepository {
 		return null;
 	}
 	
-	public static Collection<Class<? extends Page>> loadPages() throws IOException{
+	public static Collection<Class<? extends Page>> loadPages() throws IOException {
 		  ClassLoader ldr = Thread.currentThread().getContextClassLoader();
 		  Collection<Class<? extends Page>> pages = new ArrayList<Class<? extends Page>>();
 		  
