@@ -1,37 +1,31 @@
 package org.monome.pages.ableton;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AbletonTrack {
 	
-	private ArrayList<AbletonClip> clips;
+	private HashMap<Integer, AbletonClip> clips;
 	private int arm;
 	private int solo;
 	private int mute;
 	
 	public AbletonTrack() {
-		clips = new ArrayList<AbletonClip>();
+		clips = new HashMap<Integer, AbletonClip>();
 		arm = 0;
 		solo = 0;
 		mute = 0;
 	}
 	
-	public ArrayList<AbletonClip> getClips() {
+	public synchronized HashMap<Integer, AbletonClip> getClips() {
 		return clips;
 	}
 	
-	public AbletonClip getClip(int i, boolean create) {
-		if (clips.size() <= i) {
-			if (create) {
-				for (int x = clips.size(); x < i; x++) {
-					clips.add(x, new AbletonClip());
-				}
-				clips.add(i, new AbletonClip());
-			} else {
-				return null;
-			}
+	public synchronized AbletonClip getClip(int i) {
+		Integer key = new Integer(i);
+		if (clips.containsKey(key)) {
+			return clips.get(key);
 		}
-		return clips.get(i);
+		return null;
 	}
 
 	public void setArm(int arm) {
@@ -56,6 +50,13 @@ public class AbletonTrack {
 
 	public int getMute() {
 		return mute;
+	}
+
+	public synchronized AbletonClip createClip(int clipId) {
+		AbletonClip clip = new AbletonClip();
+		Integer key = new Integer(clipId);
+		clips.put(key, clip);
+		return clip;
 	}
 
 }

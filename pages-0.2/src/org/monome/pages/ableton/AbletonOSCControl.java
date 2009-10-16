@@ -59,8 +59,10 @@ public class AbletonOSCControl implements AbletonControl {
 			}
 			// update ableton state
 			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
-			AbletonTrack abletonTrack = abletonState.getTrack(track, false);
-			abletonTrack.setArm(1);
+			AbletonTrack abletonTrack = abletonState.getTrack(track);
+			if (abletonTrack != null) {
+				abletonTrack.setArm(1);
+			}
 			// redraw all ableton pages
 			ConfigurationFactory.getConfiguration().redrawAbletonPages();
 		} catch (IOException e) {
@@ -84,8 +86,10 @@ public class AbletonOSCControl implements AbletonControl {
 			}
 			// update ableton state
 			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
-			AbletonTrack abletonTrack = abletonState.getTrack(track, false);
-			abletonTrack.setArm(0);
+			AbletonTrack abletonTrack = abletonState.getTrack(track);
+			if (abletonTrack != null) {
+				abletonTrack.setArm(0);
+			}
 			// redraw all ableton pages
 			ConfigurationFactory.getConfiguration().redrawAbletonPages();
 		} catch (IOException e) {
@@ -218,8 +222,10 @@ public class AbletonOSCControl implements AbletonControl {
 			}
 			// update ableton state
 			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
-			AbletonTrack abletonTrack = abletonState.getTrack(track, false);
-			abletonTrack.setMute(1);
+			AbletonTrack abletonTrack = abletonState.getTrack(track);
+			if (abletonTrack != null) {
+				abletonTrack.setMute(1);
+			}
 			// redraw all ableton pages
 			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
 		} catch (IOException e) {
@@ -242,8 +248,10 @@ public class AbletonOSCControl implements AbletonControl {
 			}
 			// update ableton state
 			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
-			AbletonTrack abletonTrack = abletonState.getTrack(track, false);
-			abletonTrack.setMute(0);
+			AbletonTrack abletonTrack = abletonState.getTrack(track);
+			if (abletonTrack != null) {
+				abletonTrack.setMute(0);
+			}
 			// redraw all ableton pages
 			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
 		} catch (IOException e) {
@@ -265,8 +273,10 @@ public class AbletonOSCControl implements AbletonControl {
 			}
 			// update ableton state
 			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
-			AbletonTrack abletonTrack = abletonState.getTrack(track, false);
-			abletonTrack.setSolo(1);
+			AbletonTrack abletonTrack = abletonState.getTrack(track);
+			if (abletonTrack != null) {
+				abletonTrack.setSolo(1);
+			}
 			// redraw all ableton pages
 			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
 		} catch (IOException e) {
@@ -285,8 +295,10 @@ public class AbletonOSCControl implements AbletonControl {
 			}
 			// update ableton state
 			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
-			AbletonTrack abletonTrack = abletonState.getTrack(track, false);
-			abletonTrack.setSolo(0);
+			AbletonTrack abletonTrack = abletonState.getTrack(track);
+			if (abletonTrack != null) {
+				abletonTrack.setSolo(0);
+			}
 			// redraw all ableton pages
 			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
 		} catch (IOException e) {
