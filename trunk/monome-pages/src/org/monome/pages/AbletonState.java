@@ -1,36 +1,31 @@
 package org.monome.pages;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AbletonState {
 	
-	private ArrayList<AbletonTrack> tracks;
+	private HashMap<Integer, AbletonTrack> tracks;
 	private float tempo;
 	private int overdub;
 	private int selectedScene;
 	
 	public AbletonState() {
-		tracks = new ArrayList<AbletonTrack>();
+		tracks = new HashMap<Integer, AbletonTrack>();
 		tempo = 120.0f;
 		overdub = 1;
 		setSelectedScene(1);
 	}
 	
-	public AbletonTrack getTrack(int i, boolean create) {
-		if (tracks.size() <= i) {
-			if (create) {
-				for (int x = tracks.size(); x < i; x++) {
-					tracks.add(x, new AbletonTrack());
-				}
-				tracks.add(i, new AbletonTrack());
-			} else {
-				return null;
-			}
+	public synchronized AbletonTrack getTrack(int i) {
+		Integer key = new Integer(i);
+		if (tracks.containsKey(key)) {
+			return tracks.get(key);
 		}
-		return tracks.get(i);
+		return null;
 	}
 	
-	public ArrayList<AbletonTrack> getTracks() {
+	public synchronized HashMap<Integer, AbletonTrack> getTracks() {
 		return tracks;
 	}
 	
@@ -62,7 +57,14 @@ public class AbletonState {
 	}
 
 	public void reset() {
-		this.tracks = new ArrayList<AbletonTrack>();
+		this.tracks = new HashMap<Integer, AbletonTrack>();
+	}
+
+	public synchronized AbletonTrack createTrack(int trackId) {
+		AbletonTrack track = new AbletonTrack();
+		Integer key = new Integer(trackId);
+		tracks.put(key, track);
+		return track;
 	}
 	
 	

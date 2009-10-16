@@ -182,10 +182,10 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#handlePress(int, int, int)
 	 */
 	public void handlePress(int x, int y, int value) {
-		AbletonTrack track = this.abletonState.getTrack(y, false);
+		AbletonTrack track = this.abletonState.getTrack(y);
 		if (track != null) {
 			for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
-				AbletonClip clip = track.getClip(clipNum, false);
+				AbletonClip clip = track.getClip(clipNum);
 				if (clip.getState() == AbletonClip.STATE_PLAYING) {
 					int xPos = (int) ((float) (clip.getPosition() / clip.getLength()) * (float) this.monome.sizeX);
 					int xDiff = x - xPos;
@@ -218,10 +218,10 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 			rowArgs.add(0);
 			rowArgs.add(0);
 			this.monome.led_row(rowArgs, this.index);
-			AbletonTrack track = this.abletonState.getTrack(y, false);
+			AbletonTrack track = this.abletonState.getTrack(y);
 			if (track != null) {
 				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
-					AbletonClip clip = track.getClip(clipNum, false);
+					AbletonClip clip = track.getClip(clipNum);
 					if (clip != null) {
 						clip.setPosition(0.0f);
 					}
@@ -235,10 +235,10 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 */
 	public void handleTick() {
 		for (int y = 0; y < this.monome.sizeY; y++) {
-			AbletonTrack track = this.abletonState.getTrack(y, false);
+			AbletonTrack track = this.abletonState.getTrack(y);
 			if (track != null) {
 				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
-					AbletonClip clip = track.getClip(clipNum, false);
+					AbletonClip clip = track.getClip(clipNum);
 					if (clip != null) {
 						if (clip.getState() == AbletonClip.STATE_PLAYING) {
 							clip.setPosition(clip.getPosition() + (4.0f / 96.0f));
@@ -265,11 +265,11 @@ public class AbletonClipSkipperPage implements Page, ActionListener {
 	 */
 	public void redrawMonome() {
 		for (int y = 0; y < this.monome.sizeY; y++) {
-			AbletonTrack track = this.abletonState.getTrack(y, false);
+			AbletonTrack track = this.abletonState.getTrack(y);
 			if (track != null) {
 				int foundPlayingClip = 0;
 				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
-					AbletonClip clip = track.getClip(clipNum, false);
+					AbletonClip clip = track.getClip(clipNum);
 					if (clip != null) {
 						if (clip.getState() == AbletonClip.STATE_PLAYING) {
 							foundPlayingClip = 1;

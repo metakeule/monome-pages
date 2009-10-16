@@ -53,24 +53,30 @@ public class AbletonOSCListener implements OSCListener {
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
-	    System.out.print("OSC received: " + msg.getAddress());
-	    Object[] tmpargs = msg.getArguments();
-	    for (int x = 0; x < tmpargs.length; x++) {
-	    	System.out.print(" " + tmpargs[x].toString());
-	    }
-	    System.out.println();
+	    //System.out.print("OSC received: " + msg.getAddress());
+	    //Object[] tmpargs = msg.getArguments();
+	    //for (int x = 0; x < tmpargs.length; x++) {
+	    //	System.out.print(" " + tmpargs[x].toString());
+	    //}
+	    //System.out.println();
 	    
 		if (msg.getAddress().contains("/live/track/info")) {
 			Object[] args = msg.getArguments();
 			int trackId = ((Integer) args[0]).intValue();
 			int armed = ((Integer) args[1]).intValue();
-			AbletonTrack track = this.configuration.abletonState.getTrack(trackId, true);
+			AbletonTrack track = this.configuration.abletonState.getTrack(trackId);
+        	if (track == null) {
+        		track = this.configuration.abletonState.createTrack(trackId);
+        	}
 			track.setArm(armed);
 			for (int i=2; i < args.length; i+=3) {
 				int clipId = ((Integer) args[i]).intValue();
 				int clipState = ((Integer) args[i+1]).intValue();
 				float length = ((Float) args[i+2]).floatValue();
-				AbletonClip clip = track.getClip(clipId, true);
+				AbletonClip clip = track.getClip(clipId);
+				if (clip == null) {
+					clip = track.createClip(clipId);
+				}
 				clip.setState(clipState);
 				clip.setLength(length);
 			}
@@ -82,8 +88,15 @@ public class AbletonOSCListener implements OSCListener {
 			int trackId = ((Integer) args[0]).intValue();
 			int clipId = ((Integer) args[1]).intValue();
 			int clipState = ((Integer) args[2]).intValue();
-			AbletonTrack track = this.configuration.abletonState.getTrack(trackId, true);
-			AbletonClip clip = track.getClip(clipId, true);
+			AbletonTrack track = this.configuration.abletonState.getTrack(trackId);
+        	if (track == null) {
+        		track = this.configuration.abletonState.createTrack(trackId);
+        	}
+			AbletonClip clip = track.getClip(clipId);
+        	if (clip == null) {
+        		clip = track.createClip(clipId);
+        	}
+
 			clip.setState(clipState);
 			this.configuration.redrawAbletonPages();
 		}
@@ -108,7 +121,10 @@ public class AbletonOSCListener implements OSCListener {
         	Object[] args = msg.getArguments();
         	int trackId = ((Integer) args[0]).intValue();
         	int armState = ((Integer) args[1]).intValue();
-        	AbletonTrack track = this.configuration.abletonState.getTrack(trackId, true);
+        	AbletonTrack track = this.configuration.abletonState.getTrack(trackId);
+        	if (track == null) {
+        		track = this.configuration.abletonState.createTrack(trackId);
+        	}
         	track.setArm(armState);
         }
 
@@ -116,7 +132,10 @@ public class AbletonOSCListener implements OSCListener {
         	Object[] args = msg.getArguments();
         	int trackId = ((Integer) args[0]).intValue();
         	int soloState = ((Integer) args[1]).intValue();
-        	AbletonTrack track = this.configuration.abletonState.getTrack(trackId, true);
+        	AbletonTrack track = this.configuration.abletonState.getTrack(trackId);
+        	if (track == null) {
+        		track = this.configuration.abletonState.createTrack(trackId);
+        	}
         	track.setSolo(soloState);
         }
 		
@@ -124,7 +143,10 @@ public class AbletonOSCListener implements OSCListener {
         	Object[] args = msg.getArguments();
         	int trackId = ((Integer) args[0]).intValue();
         	int muteState = ((Integer) args[1]).intValue();
-        	AbletonTrack track = this.configuration.abletonState.getTrack(trackId, true);
+        	AbletonTrack track = this.configuration.abletonState.getTrack(trackId);
+        	if (track == null) {
+        		track = this.configuration.abletonState.createTrack(trackId);
+        	}
         	track.setMute(muteState);
         }
         
