@@ -66,7 +66,11 @@ public class AbletonSysexReceiver implements Receiver {
 				if (data[i] == 126) {
 					tracknum = data[i+1];
 					track_armed = data[i+2];
-					this.configuration.abletonState.getTrack(tracknum, true).setArm(track_armed);
+					AbletonTrack track = this.configuration.abletonState.getTrack(tracknum);
+					if (track == null) {
+						track = this.configuration.abletonState.createTrack(tracknum);
+					}
+					track.setArm(track_armed);
 					get_clip_num = true;
 					i+=2;
 					continue;
@@ -89,7 +93,15 @@ public class AbletonSysexReceiver implements Receiver {
 					} else {
 						get_clip_state = false;
 						get_clip_num = true;
-						this.configuration.abletonState.getTrack(tracknum, true).getClip(clipnum, true).setState(clip_state);
+						AbletonTrack track = this.configuration.abletonState.getTrack(tracknum);
+						if (track == null) {
+							track = this.configuration.abletonState.createTrack(tracknum);
+						}
+						AbletonClip clip = track.getClip(clipnum);
+						if (clip == null) {
+							clip = track.createClip(clipnum);
+						}
+						clip.setState(clip_state);
 					}
 					continue;
 				}
@@ -99,7 +111,15 @@ public class AbletonSysexReceiver implements Receiver {
 					byte[] bytes = {data[i], data[i+1]};
 					float length = (float) ((double) this.midiToInt(bytes) / 100.0);
 					i++;
-					this.configuration.abletonState.getTrack(tracknum, true).getClip(clipnum, true).setLength(length);
+					AbletonTrack track = this.configuration.abletonState.getTrack(tracknum);
+					if (track == null) {
+						track = this.configuration.abletonState.createTrack(tracknum);
+					}
+					AbletonClip clip = track.getClip(clipnum);
+					if (clip == null) {
+						clip = track.createClip(clipnum);
+					}
+					clip.setLength(length);
 					get_clip_num = true;
 				}
 				
