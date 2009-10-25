@@ -70,10 +70,7 @@ public class AbletonClipSkipperPage implements Page {
 	 */
 	private String pageName = "Ableton Clip Skipper";
 	private JLabel pageNameLBL;
-	private JButton refreshButton = new JButton();
-	
-	private AbletonState abletonState;
-		
+			
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index The index of this page (the page number)
@@ -82,7 +79,6 @@ public class AbletonClipSkipperPage implements Page {
 		this.monome = monome;
 		this.index = index;
 		ConfigurationFactory.getConfiguration().initAbleton();
-		this.abletonState = ConfigurationFactory.getConfiguration().abletonState;
 		this.gui = new AbletonClipSkipperGUI(this);
 	}
 
@@ -122,7 +118,7 @@ public class AbletonClipSkipperPage implements Page {
 	 * @see org.monome.pages.Page#handlePress(int, int, int)
 	 */
 	public void handlePress(int x, int y, int value) {
-		AbletonTrack track = this.abletonState.getTrack(y);
+		AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(y);
 		if (track != null) {
 			for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
 				AbletonClip clip = track.getClip(clipNum);
@@ -158,7 +154,7 @@ public class AbletonClipSkipperPage implements Page {
 			rowArgs.add(0);
 			rowArgs.add(0);
 			this.monome.led_row(rowArgs, this.index);
-			AbletonTrack track = this.abletonState.getTrack(y);
+			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(y);
 			if (track != null) {
 				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
 					AbletonClip clip = track.getClip(clipNum);
@@ -175,7 +171,7 @@ public class AbletonClipSkipperPage implements Page {
 	 */
 	public void handleTick() {
 		for (int y = 0; y < this.monome.sizeY; y++) {
-			AbletonTrack track = this.abletonState.getTrack(y);
+			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(y);
 			if (track != null) {
 				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
 					AbletonClip clip = track.getClip(clipNum);
@@ -205,7 +201,7 @@ public class AbletonClipSkipperPage implements Page {
 	 */
 	public void redrawMonome() {
 		for (int y = 0; y < this.monome.sizeY; y++) {
-			AbletonTrack track = this.abletonState.getTrack(y);
+			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(y);
 			if (track != null) {
 				int foundPlayingClip = 0;
 				for (int clipNum = 0; clipNum < track.getClips().size(); clipNum++) {
@@ -314,7 +310,6 @@ public class AbletonClipSkipperPage implements Page {
 		}
 	}
 
-	@Override
 	public int getIndex() {
 		return index;
 	}

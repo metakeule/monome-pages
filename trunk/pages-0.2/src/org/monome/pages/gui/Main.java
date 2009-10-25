@@ -1,5 +1,9 @@
 package org.monome.pages.gui;
 
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.MidiDevice.Info;
 import javax.swing.SwingUtilities;
 
 import java.awt.Color;
@@ -9,6 +13,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
@@ -51,9 +56,130 @@ public class Main extends JFrame {
 	private JMenuItem monomeSerialSetupItem = null;
 	private JMenuItem newMonomeItem = null;
 	
-	private Configuration configuration = null;  //  @jve:decl-index=0:
 	private File configurationFile = null;
+	private JMenu midiMenu = null;
+	private JMenu midiInMenu = null;
+	private JMenu midiOutMenu = null;
 	
+	/**
+	 * This method initializes midiMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getMidiMenu() {
+		if (midiMenu == null) {
+			midiMenu = new JMenu();
+			midiMenu.setText("MIDI");
+			midiMenu.add(getMidiInMenu());
+			midiMenu.add(getMidiOutMenu());
+			midiMenu.setEnabled(false);
+		}
+		return midiMenu;
+	}
+
+	/**
+	 * This method initializes midiInMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getMidiInMenu() {
+		if (midiInMenu == null) {
+			midiInMenu = new JMenu();
+			midiInMenu.setText("MIDI In");			
+			midiInMenu.setMnemonic(KeyEvent.VK_I);
+			midiInMenu.getAccessibleContext().setAccessibleDescription("MIDI In Menu");
+
+			Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+			for (int i=0; i < midiInfo.length; i++) {
+				try {
+					MidiDevice midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+					if (midiDevice.getMaxTransmitters() != 0) {
+						JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Input: " + midiInfo[i].getName());
+						cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
+							public void actionPerformed(java.awt.event.ActionEvent e) {
+								String[] pieces = e.getActionCommand().split("MIDI Input: ");
+								actionAddMidiInput(pieces[1]);
+							}});
+						midiInMenu.add(cbMenuItem);
+					}
+				} catch (MidiUnavailableException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return midiInMenu;
+	}
+	
+	public void actionAddMidiInput(String sMidiDevice) {
+		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+		MidiDevice midiDevice;
+
+		for (int i=0; i < midiInfo.length; i++) {
+			try {
+				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
+					if (midiDevice.getMaxTransmitters() != 0) {
+						ConfigurationFactory.getConfiguration().toggleMidiInDevice(midiDevice);
+					}
+				}
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	/**
+	 * This method initializes midiOutMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getMidiOutMenu() {
+		if (midiOutMenu == null) {
+			midiOutMenu = new JMenu();
+			midiOutMenu.setText("MIDI Out");
+			midiInMenu.setMnemonic(KeyEvent.VK_I);
+			midiInMenu.getAccessibleContext().setAccessibleDescription("MIDI In Menu");
+			
+			Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+			for (int i=0; i < midiInfo.length; i++) {
+				try {
+					MidiDevice midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+					if (midiDevice.getMaxReceivers() != 0) {
+						JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Output: " + midiInfo[i].getName());
+						cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
+							public void actionPerformed(java.awt.event.ActionEvent e) {
+								String[] pieces = e.getActionCommand().split("MIDI Output: ");
+								actionAddMidiOutput(pieces[1]);
+							}});
+						midiOutMenu.add(cbMenuItem);
+					}
+				} catch (MidiUnavailableException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return midiOutMenu;
+	}
+	
+	public void actionAddMidiOutput(String sMidiDevice) {
+		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+		MidiDevice midiDevice;
+
+		for (int i=0; i < midiInfo.length; i++) {
+			try {
+				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
+					if (midiDevice.getMaxReceivers() != 0) {
+						ConfigurationFactory.getConfiguration().toggleMidiOutDevice(midiDevice);
+					}
+				}
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}		
+	}
+
 	/**
 	 * @param args
 	 */
@@ -137,6 +263,7 @@ public class Main extends JFrame {
 			mainMenuBar = new JMenuBar();
 			mainMenuBar.add(getFileMenu());
 			mainMenuBar.add(getConfigurationMenu());
+			mainMenuBar.add(getMidiMenu());
 		}
 		return mainMenuBar;
 	}
@@ -189,6 +316,7 @@ public class Main extends JFrame {
 					
 					//configuration = new Configuration(name);
 					getConfigurationMenu().setEnabled(true);
+					getMidiMenu().setEnabled(true);
 					getFrame().setTitle("Pages : " + name);
 					ConfigurationFactory.setConfiguration(new Configuration(name));
 				}

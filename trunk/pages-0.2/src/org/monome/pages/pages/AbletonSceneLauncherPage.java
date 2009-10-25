@@ -693,7 +693,6 @@ public class AbletonSceneLauncherPage implements Page {
 		}
 	}
 
-	@Override
 	public int getIndex() {
 		return index;
 	}

@@ -228,10 +228,13 @@ public class MonomeConfiguration {
 		if (this.pages.size() == 0) {
 			return;
 		}
+		
+		System.out.println("redrawAbletonPages()");
 
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
+				System.out.println("page.redrawMonome()");
 				page.redrawMonome();
 			}			
 			if (pages.get(i) instanceof AbletonLiveLooperPage) {
@@ -504,21 +507,8 @@ public class MonomeConfiguration {
 	 * Clear the monome.
 	 */
 	public void clearMonome() {
-		for (int x=0; x < this.sizeX; x++) {
-			for (int y=0; y < this.sizeY; y++) {
-				this.ledState[x][y] = 0;
-				Object args[] = new Object[3];
-				args[0] = new Integer(x);
-				args[1] = new Integer(y);
-				args[2] = new Integer(0);
-				OSCMessage msg = new OSCMessage(this.prefix + "/led", args);
-				try {
-					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		System.out.println("clearMonome()");
+		this.clear(0, 0);
 	}
 
 	/**

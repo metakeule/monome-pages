@@ -9,6 +9,7 @@ import com.illposed.osc.OSCMessage;
 public class DiscoverOSCListener implements OSCListener {
 	
 	private boolean discoverMode = false;
+	private int maxDevices = 10;
 		
 	public void setDiscoverMode(boolean newMode) {
 		discoverMode = newMode;
@@ -16,7 +17,14 @@ public class DiscoverOSCListener implements OSCListener {
 
 	public void acceptMessage(Date time, OSCMessage message) {
 		Object[] args = message.getArguments();
-
+		/*
+		System.out.print(message.getAddress());
+		for (int i = 0; i < args.length; i++) {
+			System.out.print(" " + args[i].toString());
+		}
+		System.out.println();
+		*/
+		
 		if (discoverMode) {
 			int index;
 			try {
@@ -27,38 +35,16 @@ public class DiscoverOSCListener implements OSCListener {
 				return;
 			}
 			
-			if (index >= 50) {
+			if (index >= maxDevices) {
 				return;
 			}
 			
 			Configuration config = ConfigurationFactory.getConfiguration();
-			if (message.getAddress().contains("/sys/prefix")) {
-				String prefix;
-				try {
-					prefix = (String) args[1];
-				} catch (IndexOutOfBoundsException e) {
-					return;
-				}
-				
-				if (prefix == null || prefix.compareTo("") == 0) {
-					return;
-				}
-				
-				if (MonomeConfigurationFactory.prefixExists(prefix)) {
-					return;
-				}
-				
-				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
-				if (monomeConfig == null) {
-					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-					config.addMonomeConfiguration(index, prefix, 0, 0, true, false, midiPageChangeRules);
-				} else {
-					monomeConfig.prefix = prefix;
-					monomeConfig.setFrameTitle();
-				}
-			}
 			
 			if (message.getAddress().contains("/sys/type")) {
+				if (args.length != 2) {
+					return;
+				}
 				String type;
 				try {
 					type = (String) args[1];
@@ -83,19 +69,73 @@ public class DiscoverOSCListener implements OSCListener {
 					monomeConfig.sizeY = sizeY;
 					monomeConfig.setFrameTitle();
 				}
+				return;
 			}
 			
 			if (message.getAddress().contains("/sys/serial")) {
+				if (args.length != 2) {
+					return;
+				}
 				String serial;
 				try {
 					serial = (String) args[1];
 				} catch (IndexOutOfBoundsException e) {
 					return;
 				}
+				
+				if (serial.compareTo("/sys/serial") == 0) {
+					return;
+				}
+				
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
 				if (monomeConfig != null) {
 					monomeConfig.serial = serial;
 					monomeConfig.setFrameTitle();				
+				}
+				return;
+			}
+			
+			if (message.getAddress().contains("/sys/devices")) {
+				if (args.length != 1) {
+					return;
+				}
+				Integer numDevices;
+				try {
+					numDevices = (Integer) args[1];
+				} catch (IndexOutOfBoundsException e) {
+					return;
+				}
+				this.maxDevices = numDevices;
+				return;
+			}
+			
+			if (message.getAddress().contains("/sys/prefix")) {
+				if (args.length != 2) {
+					return;
+				}
+				String prefix;
+				try {
+					prefix = (String) args[1];
+				} catch (IndexOutOfBoundsException e) {
+					return;
+				}
+				
+				if (prefix == null || prefix.compareTo("") == 0) {
+					return;
+				}
+				
+				if (MonomeConfigurationFactory.prefixExists(prefix)) {
+					return;
+				}
+				
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+				if (monomeConfig == null) {
+					System.out.println("**** creating monomeConfig on " + prefix + " index=" + index);
+					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+					config.addMonomeConfiguration(index, prefix, 0, 0, true, false, midiPageChangeRules);
+				} else {
+					monomeConfig.prefix = prefix;
+					monomeConfig.setFrameTitle();
 				}
 			}
 		}

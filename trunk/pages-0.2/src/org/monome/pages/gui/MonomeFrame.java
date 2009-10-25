@@ -1,5 +1,6 @@
 package org.monome.pages.gui;
 
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
@@ -27,6 +28,11 @@ public class MonomeFrame extends JInternalFrame {
 	private MonomeDisplayFrame monomeDisplayFrame = null;
 	private JPanel currentPanel = null;
 	private int index = 0;
+	private JMenu midiMenu = null;
+	private JMenu midiInMenu = null;
+	private JMenu midiOutMenu = null;
+	private JMenuItem noInputDevicesEnabledItem;
+	private JMenuItem noOutputDevicesEnabledItem;
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -72,6 +78,7 @@ public class MonomeFrame extends JInternalFrame {
 			monomeMenuBar = new JMenuBar();
 			monomeMenuBar.add(getPageMenu());
 			monomeMenuBar.add(getConfigurationMenu());
+			monomeMenuBar.add(getMidiMenu());
 		}
 		return monomeMenuBar;
 	}
@@ -195,6 +202,67 @@ public class MonomeFrame extends JInternalFrame {
 		guiSize.width += 10;
 		this.setSize(guiSize);
 		getJContentPane().validate();
+	}
+
+	/**
+	 * This method initializes midiMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getMidiMenu() {
+		if (midiMenu == null) {
+			midiMenu = new JMenu();
+			midiMenu.setText("MIDI");
+			midiMenu.add(getMidiInMenu());
+			midiMenu.add(getMidiOutMenu());
+		}
+		return midiMenu;
+	}
+
+	/**
+	 * This method initializes midiInItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenu getMidiInMenu() {
+		if (midiInMenu == null) {
+			midiInMenu = new JMenu();
+			midiInMenu.setText("MIDI In");
+			midiInMenu.add(getNoInputDevicesEnabledItem());
+		}
+		return midiInMenu;
+	}
+
+	/**
+	 * This method initializes midiOutItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenu getMidiOutMenu() {
+		if (midiOutMenu == null) {
+			midiOutMenu = new JMenu();
+			midiOutMenu.setText("MIDI Out");
+			midiOutMenu.add(getNoOutputDevicesEnabledItem());
+		}
+		return midiOutMenu;
+	}
+	
+	private JMenuItem getNoInputDevicesEnabledItem() {
+		if (noInputDevicesEnabledItem == null) {
+			noInputDevicesEnabledItem = new JMenuItem();
+			noInputDevicesEnabledItem.setText("No MIDI Input Devices Enabled");
+			noInputDevicesEnabledItem.setEnabled(false);
+		}
+		return noInputDevicesEnabledItem;
+	}
+	
+	private JMenuItem getNoOutputDevicesEnabledItem() {
+		if (noOutputDevicesEnabledItem == null) {
+			noOutputDevicesEnabledItem = new JMenuItem();
+			noOutputDevicesEnabledItem.setText("No MIDI Output Devices Enabled");
+			noOutputDevicesEnabledItem.setEnabled(false);
+		}
+		return noOutputDevicesEnabledItem;
 	}
 
 }
