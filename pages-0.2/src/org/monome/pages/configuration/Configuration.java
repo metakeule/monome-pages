@@ -54,16 +54,6 @@ public class Configuration implements Receiver {
 	private String name;
 
 	/**
-	 * The number of monomes currently configured.
-	 */
-	private int numMonomeConfigurations = 0;
-
-	/**
-	 * An array containing the MonomeConfiguration objects.
-	 */
-	private ArrayList<MonomeConfiguration> monomeConfigurations = new ArrayList<MonomeConfiguration>();
-
-	/**
 	 * The selected MIDI input device to receive MIDI messages from.
 	 */
 	private ArrayList<MidiDevice> midiInDevices = new ArrayList<MidiDevice>();
@@ -239,8 +229,8 @@ public class Configuration implements Receiver {
 	 * Calls each page's destroyPage() function.
 	 */
 	public void destroyAllPages() {
-		for (int i = 0; i < this.numMonomeConfigurations; i++) {
-			this.monomeConfigurations.get(i).destroyPage();
+		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+			MonomeConfigurationFactory.getMonomeConfiguration(i).destroyPage();
 		}
 	}
 	
@@ -546,8 +536,8 @@ public class Configuration implements Receiver {
 	public void send(MidiMessage message, long lTimeStamp) {
 		ShortMessage shortMessage;
 		// pass all messages along to all monomes (who pass to all pages)
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			this.monomeConfigurations.get(i).send(message, lTimeStamp);
+		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+			MonomeConfigurationFactory.getMonomeConfiguration(i).send(message, lTimeStamp);
 		}
 		
 		// filter for midi clock ticks or midi reset messages
@@ -556,13 +546,13 @@ public class Configuration implements Receiver {
 			switch (shortMessage.getCommand()) {
 			case 0xF0:
 				if (shortMessage.getChannel() == 8) {
-					for (int i=0; i < this.numMonomeConfigurations; i++) {
-						this.monomeConfigurations.get(i).tick();
+					for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+						MonomeConfigurationFactory.getMonomeConfiguration(i).tick();
 					}
 				}
 				if (shortMessage.getChannel() == 0x0C) {
-					for (int i=0; i < this.numMonomeConfigurations; i++) {
-						this.monomeConfigurations.get(i).reset();
+					for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+						MonomeConfigurationFactory.getMonomeConfiguration(i).reset();
 					}
 				}
 				break;
@@ -665,7 +655,7 @@ public class Configuration implements Receiver {
 	 * Initializes Ableton connection using OSC
 	 */
 	public void initAbletonOSCMode() {
-		this.abletonOSCListener = new AbletonOSCListener(this);
+		this.abletonOSCListener = new AbletonOSCListener();
 		this.initAbletonOSCOut();
 		this.initAbletonOSCIn();
 		this.abletonControl = new AbletonOSCControl();
@@ -715,8 +705,9 @@ public class Configuration implements Receiver {
 	 * Redraws all Ableton pages
 	 */
 	public void redrawAbletonPages() {
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			monomeConfigurations.get(i).redrawAbletonPages();
+		
+		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+			MonomeConfigurationFactory.getMonomeConfiguration(i).redrawAbletonPages();
 		}		
 	}
 	
@@ -1032,8 +1023,8 @@ public class Configuration implements Receiver {
 		}
 
 		// monome and page configuration
-		for (int i=0; i < this.numMonomeConfigurations; i++) {
-			xml += this.monomeConfigurations.get(i).toXml();
+		for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+			xml += MonomeConfigurationFactory.getMonomeConfiguration(i).toXml();
 		}
 		xml += "</configuration>\n";
 		return xml;

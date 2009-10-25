@@ -56,11 +56,11 @@ public class AbletonState {
 		return selectedScene;
 	}
 
-	public void reset() {
+	public synchronized void  reset() {
 		this.tracks = new HashMap<Integer, AbletonTrack>();
 	}
 
-	public synchronized AbletonTrack createTrack(int trackId) {
+	public AbletonTrack createTrack(int trackId) {
 		AbletonTrack track = new AbletonTrack();
 		Integer key = new Integer(trackId);
 		tracks.put(key, track);

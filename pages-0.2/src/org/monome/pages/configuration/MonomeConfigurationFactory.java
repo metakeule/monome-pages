@@ -12,7 +12,7 @@ public class MonomeConfigurationFactory {
 	
 	private static HashMap<Integer, MonomeConfiguration> monomeConfigurations = null;
 		
-	public static MonomeConfiguration getMonomeConfiguration(int index) {
+	public static synchronized MonomeConfiguration getMonomeConfiguration(int index) {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
@@ -23,7 +23,7 @@ public class MonomeConfigurationFactory {
 		return null;
 	}
 	
-	public static boolean addMonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+	public static synchronized boolean addMonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}

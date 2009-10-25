@@ -628,7 +628,6 @@ public class AbletonLiveLooperPage implements Page {
 		}
 	}
 
-	@Override
 	public int getIndex() {
 		return index;
 	}
