@@ -37,8 +37,9 @@ public class Main extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private static JDesktopPane jDesktopPane = null;
-	private NewMonomeConfigurationFrame showNewMonomeFrame = null;
 	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
+	private AbletonSetupFrame abletonSetupFrame = null;
+	private NewMonomeConfigurationFrame showNewMonomeFrame = null;
 	private static ArrayList<MonomeFrame> monomeFrames = null;
 	private static ArrayList<MonomeDisplayFrame> monomeDisplayFrames = null;
 	
@@ -60,6 +61,7 @@ public class Main extends JFrame {
 	private JMenu midiMenu = null;
 	private JMenu midiInMenu = null;
 	private JMenu midiOutMenu = null;
+	private JMenuItem abletonSetupItem = null;
 	
 	/**
 	 * This method initializes midiMenu	
@@ -178,6 +180,46 @@ public class Main extends JFrame {
 				e.printStackTrace();
 			}
 		}		
+	}
+
+	/**
+	 * This method initializes abletonConfigurationItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getAbletonSetupItem() {
+		if (abletonSetupItem == null) {
+			abletonSetupItem = new JMenuItem();
+			abletonSetupItem.setText("Ableton Setup...");
+			abletonSetupItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showAbletonConfiguration();
+				}
+			});
+		}
+		return abletonSetupItem;
+	}
+	
+	private void showAbletonConfiguration() {
+		if (abletonSetupFrame != null && abletonSetupFrame.isShowing()) {
+			try {
+				abletonSetupFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		abletonSetupFrame = new AbletonSetupFrame();
+		abletonSetupFrame.setVisible(true);
+		jDesktopPane.add(abletonSetupFrame);
+		try {
+			abletonSetupFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		
+		jDesktopPane.validate();
 	}
 
 	/**
@@ -488,6 +530,8 @@ public class Main extends JFrame {
 			configurationMenu.getAccessibleContext().setAccessibleDescription("Configuration Menu");
 			configurationMenu.setText("Configuration");
 			configurationMenu.add(getMonomeSerialSetupItem());
+			configurationMenu.add(getAbletonSetupItem());
+			configurationMenu.addSeparator();
 			configurationMenu.add(getNewMonomeItem());
 			configurationMenu.setEnabled(false);
 		}
@@ -545,7 +589,7 @@ public class Main extends JFrame {
 			newMonomeItem = new JMenuItem();
 			newMonomeItem.setMnemonic(KeyEvent.VK_N);
 			newMonomeItem.getAccessibleContext().setAccessibleDescription("New Monome Configuration");
-			newMonomeItem.setText("New Monome Configuration");
+			newMonomeItem.setText("New Monome Configuration...");
 			newMonomeItem.setEnabled(false);
 			newMonomeItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

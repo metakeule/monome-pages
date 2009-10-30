@@ -120,7 +120,7 @@ public class DiscoverOSCListener implements OSCListener {
 					return;
 				}
 				
-				if (prefix == null || prefix.compareTo("") == 0) {
+				if (prefix == null || prefix.compareTo("") == 0 || prefix.compareTo("/sys/prefix") == 0) {
 					return;
 				}
 				
