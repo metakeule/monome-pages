@@ -39,9 +39,7 @@ public class Main extends JFrame {
 	private static JDesktopPane jDesktopPane = null;
 	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
 	private AbletonSetupFrame abletonSetupFrame = null;
-	private NewMonomeConfigurationFrame showNewMonomeFrame = null;
-	private static ArrayList<MonomeFrame> monomeFrames = null;
-	private static ArrayList<MonomeDisplayFrame> monomeDisplayFrames = null;
+	private static NewMonomeConfigurationFrame showNewMonomeFrame = null;
 	
 	private JMenuBar mainMenuBar = null;
 	
@@ -55,9 +53,9 @@ public class Main extends JFrame {
 	
 	private JMenu configurationMenu = null;
 	private JMenuItem monomeSerialSetupItem = null;
-	private JMenuItem newMonomeItem = null;
+	private static JMenuItem newMonomeItem = null;
 	
-	private File configurationFile = null;
+	private File configurationFile = null;  //  @jve:decl-index=0:
 	private JMenu midiMenu = null;
 	private JMenu midiInMenu = null;
 	private JMenu midiOutMenu = null;
@@ -252,9 +250,6 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		super();
-		monomeFrames = new ArrayList<MonomeFrame>();
-		monomeDisplayFrames = new ArrayList<MonomeDisplayFrame>();
-		initialize();
 	}
 	
 	/**
@@ -568,7 +563,7 @@ public class Main extends JFrame {
 		
 		monomeSerialSetupFrame = new MonomeSerialSetupFrame();
 		monomeSerialSetupFrame.setVisible(true);
-		monomeSerialSetupFrame.setNewMonomeItem(this.newMonomeItem);
+		//monomeSerialSetupFrame.setNewMonomeItem(this.newMonomeItem);
 		jDesktopPane.add(monomeSerialSetupFrame);
 		try {
 			monomeSerialSetupFrame.setSelected(true);
@@ -584,7 +579,7 @@ public class Main extends JFrame {
 	 * 	
 	 * @return javax.swing.JMenuItem	
 	 */
-	private JMenuItem getNewMonomeItem() {
+	public static JMenuItem getNewMonomeItem() {
 		if (newMonomeItem == null) {
 			newMonomeItem = new JMenuItem();
 			newMonomeItem.setMnemonic(KeyEvent.VK_N);
@@ -600,7 +595,7 @@ public class Main extends JFrame {
 		return newMonomeItem;
 	}
 	
-	private void showNewMonomeConfiguration() {
+	private static void showNewMonomeConfiguration() {
 		if (showNewMonomeFrame != null && showNewMonomeFrame.isShowing()) {
 			try {
 				showNewMonomeFrame.setSelected(true);
