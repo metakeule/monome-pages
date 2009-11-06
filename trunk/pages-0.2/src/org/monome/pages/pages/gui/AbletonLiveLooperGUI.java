@@ -12,6 +12,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class AbletonLiveLooperGUI extends JPanel {
 
@@ -43,20 +44,20 @@ public class AbletonLiveLooperGUI extends JPanel {
 	 */
 	private void initialize() {
 		disableStopLabel = new JLabel();
-		disableStopLabel.setBounds(new Rectangle(40, 105, 81, 21));
+		disableStopLabel.setBounds(new Rectangle(40, 105, 111, 21));
 		disableStopLabel.setText("Disable Stop");
 		disableArmLabel = new JLabel();
-		disableArmLabel.setBounds(new Rectangle(40, 80, 81, 21));
+		disableArmLabel.setBounds(new Rectangle(40, 80, 111, 21));
 		disableArmLabel.setText("Disable Arm");
 		disableSoloLabel = new JLabel();
-		disableSoloLabel.setBounds(new Rectangle(40, 55, 81, 21));
+		disableSoloLabel.setBounds(new Rectangle(40, 55, 111, 21));
 		disableSoloLabel.setText("Disable Solo");
 		disableMuteLabel = new JLabel();
-		disableMuteLabel.setBounds(new Rectangle(40, 30, 81, 21));
+		disableMuteLabel.setBounds(new Rectangle(40, 30, 111, 21));
 		disableMuteLabel.setText("Disable Mute");
 		pageLabel = new JLabel();
 		pageLabel.setText((page.getIndex() + 1) + ": Ableton Live Looper");
-		pageLabel.setBounds(new Rectangle(5, 5, 166, 16));
+		pageLabel.setBounds(new Rectangle(5, 5, 186, 21));
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(getDisableMuteCB(), null);
@@ -68,7 +69,7 @@ public class AbletonLiveLooperGUI extends JPanel {
 		this.add(getRefreshButton(), null);
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
-		this.setSize(155, 160);
+		this.setSize(192, 181);
 	}
 	
 	/**
@@ -145,7 +146,7 @@ public class AbletonLiveLooperGUI extends JPanel {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(5, 135, 146, 21));
+			refreshButton.setBounds(new Rectangle(15, 135, 146, 21));
 			refreshButton.setText("Refresh From Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -178,4 +179,4 @@ public class AbletonLiveLooperGUI extends JPanel {
 		return disableStopCB;
 	}
 	
-}
+}  //  @jve:decl-index=0:visual-constraint="10,10"

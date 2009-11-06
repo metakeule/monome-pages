@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 
@@ -42,9 +43,11 @@ public class AbletonSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(202, 155);
+		this.setSize(234, 189);
 		this.setTitle("Ableton");
 		this.setContentPane(getJContentPane());
+		this.setResizable(true);
+		this.pack();
 	}
 
 	/**
@@ -55,13 +58,13 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			outPortLabel = new JLabel();
-			outPortLabel.setBounds(new Rectangle(15, 45, 76, 16));
+			outPortLabel.setBounds(new Rectangle(25, 70, 96, 21));
 			outPortLabel.setText("Listen Port");
 			inPortLabel = new JLabel();
-			inPortLabel.setBounds(new Rectangle(15, 25, 76, 16));
+			inPortLabel.setBounds(new Rectangle(25, 40, 96, 21));
 			inPortLabel.setText("Host Port");
 			hostLabel = new JLabel();
-			hostLabel.setBounds(new Rectangle(15, 5, 76, 16));
+			hostLabel.setBounds(new Rectangle(25, 10, 96, 21));
 			hostLabel.setText("Host Address");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
@@ -86,7 +89,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JTextField getHost() {
 		if (host == null) {
 			host = new JTextField();
-			host.setBounds(new Rectangle(100, 5, 76, 16));
+			host.setBounds(new Rectangle(120, 10, 76, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			host.setText(config.getAbletonHostname());
 		}
@@ -101,7 +104,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JTextField getInPort() {
 		if (inPort == null) {
 			inPort = new JTextField();
-			inPort.setBounds(new Rectangle(100, 25, 46, 16));
+			inPort.setBounds(new Rectangle(120, 40, 46, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			inPort.setText("" + config.getAbletonOSCInPortNumber());
 		}
@@ -116,7 +119,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JTextField getOutPort() {
 		if (outPort == null) {
 			outPort = new JTextField();
-			outPort.setBounds(new Rectangle(100, 45, 46, 16));
+			outPort.setBounds(new Rectangle(120, 70, 46, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			outPort.setText("" + config.getAbletonOSCOutPortNumber());
 		}
@@ -131,7 +134,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JButton getSaveButton() {
 		if (saveButton == null) {
 			saveButton = new JButton();
-			saveButton.setBounds(new Rectangle(15, 70, 76, 21));
+			saveButton.setBounds(new Rectangle(30, 100, 76, 21));
 			saveButton.setText("Save");
 			saveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -163,7 +166,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
-			cancelButton.setBounds(new Rectangle(100, 70, 76, 21));
+			cancelButton.setBounds(new Rectangle(120, 100, 76, 21));
 			cancelButton.setText("Cancel");
 			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -186,7 +189,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(15, 100, 166, 21));
+			refreshButton.setBounds(new Rectangle(30, 130, 166, 21));
 			refreshButton.setText("Refresh Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -198,7 +201,11 @@ public class AbletonSetupFrame extends JInternalFrame {
 	}
 	
 	private void refresh() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().refreshAbleton();
+		AbletonControl control =
+			ConfigurationFactory.getConfiguration().getAbletonControl();
+		if (control != null) {
+			control.refreshAbleton();
+		}
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
