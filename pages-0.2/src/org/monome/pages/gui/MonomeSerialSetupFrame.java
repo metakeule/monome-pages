@@ -27,7 +27,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JButton autoConfigButton = null;
 
 	/**
-	 * This is the xxx default constructor
+	 * This is the MonomeSerialSetupFrame default constructor
 	 */
 	public MonomeSerialSetupFrame() {
 		super();
@@ -153,6 +153,8 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		config.setMonomeHostname(hostname);
 		config.startMonomeSerialOSC();
 		
+		Main.getNewMonomeItem().setEnabled(true);
+		
 		this.dispose();
 	}
 
@@ -208,8 +210,9 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		config.setMonomeSerialOSCOutPortNumber(outport);
 		config.setMonomeHostname(hostname);
 		config.discoverMonomes();
+		Main.getNewMonomeItem().setEnabled(true);
 		this.dispose();
 	}
 
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+}
 

@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
+import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -39,7 +40,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak, Stephen McLeod
  *
  */
-public class ExternalApplicationPage implements Page, ActionListener, OSCListener {
+public class ExternalApplicationPage implements Page, OSCListener {
 
 	/**
 	 * The MonomeConfiguration this page belongs to
@@ -157,21 +158,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		this.index = index;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		// update the external application OSC configuration
-		if (e.getActionCommand().equals("Update Preferences")) {			
-			this.prefix = this.prefixTF.getText();
-			this.hostname = this.hostnameTF.getText();
-			this.inPort = Integer.parseInt(this.oscInTF.getText());
-			this.outPort = Integer.parseInt(this.oscOutTF.getText());
-			this.initOSC();
-		}
-		return;
-	}
-
 	/**
 	 * Stops OSC communication with the external application
 	 */
@@ -205,19 +191,15 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void addMidiOutDevice(String deviceName) {
 		this.recv = this.monome.getMidiReceiver(deviceName);	
-		this.updatePrefsButton.removeActionListener(this);
 		this.panel.removeAll();
 		this.panel = null;			
 		this.initOSC();
 	}
-
 	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */
-	
-	public String getName() 
-	{		
+	public String getName() {		
 		return pageName;
 	}
 
@@ -226,68 +208,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);		
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#getPanel()
-	 */
-	public JPanel getPanel() {
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		// builds the page GUI
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.setPreferredSize(new java.awt.Dimension(220, 180));
-
-		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": " + this.getName());
-		prefixLabel = new JLabel();
-		prefixLabel.setText("OSC Prefix");
-		hostnameLabel = new JLabel();
-		hostnameLabel.setText("OSC Hostname");
-		oscInLabel = new JLabel();
-		oscInLabel.setText("OSC In Port");
-		oscOutLabel = new JLabel();
-		oscOutLabel.setText("OSC Out Port");
-		oscInTF = new JTextField();
-		oscInTF.setText(String.valueOf(this.inPort));
-		oscOutTF = new JTextField();
-		panel.add(oscOutTF);
-		panel.add(oscOutLabel);
-		panel.add(oscInTF);
-		panel.add(oscInLabel);
-		oscInLabel.setBounds(12, 65, 85, 14);
-		oscInTF.setBounds(97, 62, 100, 21);
-		oscOutLabel.setBounds(12, 86, 85, 14);
-		oscOutTF.setText(String.valueOf(this.outPort));
-		oscOutTF.setBounds(97, 83, 100, 21);
-		updatePrefsButton = new JButton();
-		updatePrefsButton.setText("Update Preferences");
-		updatePrefsButton.addActionListener(this);
-		prefixTF = new JTextField();
-		prefixTF.setText(this.prefix);
-		hostnameTF = new JTextField();
-		panel.add(hostnameTF);
-		panel.add(hostnameLabel);
-		panel.add(prefixTF);
-		panel.add(prefixLabel);
-		panel.add(pageNameLBL);
-		panel.add(updatePrefsButton);
-		panel.add(getDisableCache());
-		updatePrefsButton.setBounds(12, 140, 169, 21);		
-		pageNameLBL.setBounds(0, 0, 250, 14);
-		prefixLabel.setBounds(12, 23, 85, 14);
-		prefixTF.setBounds(97, 20, 100, 21);
-		hostnameLabel.setBounds(12, 44, 85, 14);
-		hostnameTF.setText(this.hostname);
-		hostnameTF.setBounds(97, 41, 100, 21);
-		
-		
-		
-		this.panel = panel;
-		return panel;
 	}
 
 	/* (non-Javadoc)
@@ -313,6 +233,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	public boolean isTiltPage() {
 		return true;
 	}
+
 	public ADCOptions getAdcOptions() {
 		return this.pageADCOptions;
 	}
@@ -424,7 +345,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 
 		String disableCache = "false";
 
-		if (this.getDisableCache().isSelected()) {
+		if (gui.getDisableLedCacheCB().isSelected()) {
 			disableCache = "true";
 		}
 
@@ -525,7 +446,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void setPrefix(String extPrefix) {
 		this.prefix = extPrefix;
-		this.prefixTF.setText(extPrefix);
 	}
 
 	/**
@@ -533,7 +453,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void setInPort(String extInPort) {
 		this.inPort = Integer.parseInt(extInPort);
-		this.oscInTF.setText(extInPort);
 	}
 
 	/**
@@ -541,7 +460,6 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void setOutPort(String extOutPort) {
 		this.outPort = Integer.parseInt(extOutPort);
-		this.oscOutTF.setText(extOutPort);
 	}
 
 	/**
@@ -549,44 +467,8 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	 */
 	public void setHostname(String extHostname) {
 		this.hostname = extHostname;
-		this.hostnameTF.setText(extHostname);
 	}
 	
-	
-	/**
-	 * @return The Disable LED Cache checkbox
-	 */
-	public JCheckBox getDisableCache() {
-		if(disableCache == null) {
-			disableCache = new JCheckBox();
-			disableCache.setText("Disable LED Cache");
-			disableCache.setBounds(12, 110, 200, 20);
-		}
-		return disableCache;
-	}
-
-	/**
-	 * @param cacheDisabled "true" if the cache should be disabled
-	 */
-	public void setCacheDisabled(String cacheDisabled) {
-		if (cacheDisabled.equals("true")) {
-			this.getDisableCache().setSelected(true);
-		} else {
-			this.getDisableCache().setSelected(false);
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#getCacheDisabled()
-	 */
-	public boolean getCacheDisabled() {
-		if (this.getDisableCache().isSelected()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#destroyPage()
 	 */
@@ -649,7 +531,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		if (el != null){
 			nl = el.getChildNodes();
 			String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
-			this.setCacheDisabled(cacheDisabled);
+			gui.setCacheDisabled(cacheDisabled);
 		}
 		
 		nl = pageElement.getElementsByTagName("swapADC");
@@ -702,5 +584,20 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 		}
 		
 		this.initOSC();		
-	}	
+	}
+
+	@Override
+	public boolean getCacheDisabled() {
+		return gui.getDisableLedCacheCB().isSelected();
+	}
+
+	@Override
+	public int getIndex() {
+		return index;
+	}
+
+	@Override
+	public JPanel getPanel() {
+		return gui;
+	}
 }
