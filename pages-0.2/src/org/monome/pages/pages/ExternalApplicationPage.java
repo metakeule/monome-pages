@@ -138,20 +138,16 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	
 	private Receiver recv;
 	
-	
-	
-
 	// tilt stuff 
 	private ADCOptions pageADCOptions = new ADCOptions();
-		
 
 	/**
 	 * The name of the page 
 	 */
 	private String pageName = "External Application";
-	private JLabel pageNameLBL;
 	
-	//private Receiver recv;
+	private ExternalApplicationGUI gui;
+		
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
 	 * @param index The index of this page (page number)
@@ -179,8 +175,7 @@ public class ExternalApplicationPage implements Page, ActionListener, OSCListene
 	/**
 	 * Stops OSC communication with the external application
 	 */
-	public void stopOSC() {
-		
+	public void stopOSC() {		
 		if (this.oscIn != null) {
 			this.oscIn.removeListener(this.prefix + "/led");
 			this.oscIn.removeListener(this.prefix + "/led_col");

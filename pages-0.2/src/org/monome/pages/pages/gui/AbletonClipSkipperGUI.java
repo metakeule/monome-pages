@@ -37,11 +37,11 @@ public class AbletonClipSkipperGUI extends JPanel {
 	private void initialize() {
 		pageLabel = new JLabel();
 		pageLabel.setText((page.getIndex() + 1) + ": Ableton Clip Skipper");
-		pageLabel.setBounds(new Rectangle(5, 5, 166, 16));
+		pageLabel.setBounds(new Rectangle(5, 5, 181, 16));
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(getRefreshButton(), null);
-		this.setSize(155, 50);
+		this.setSize(185, 75);
 	}
 	
 	/**
@@ -52,7 +52,7 @@ public class AbletonClipSkipperGUI extends JPanel {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(5, 25, 146, 21));
+			refreshButton.setBounds(new Rectangle(15, 30, 146, 21));
 			refreshButton.setText("Refresh From Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

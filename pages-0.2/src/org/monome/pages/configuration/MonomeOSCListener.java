@@ -31,26 +31,29 @@ public class MonomeOSCListener implements OSCListener {
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
 	public void acceptMessage(Date time, OSCMessage message) {
+		Object[] args = message.getArguments();
+		System.out.print(message.getAddress());
+		for (int i = 0; i < args.length; i++) {
+			System.out.print(" " + args[i].toString());
+		}
+		System.out.println();
 
 		// only act if the message has our monome prefix
 		if (!message.getAddress().contains(monome.prefix)) {
 			return;
 		}
 		if (message.getAddress().contains("press")) {
-			Object[] args = message.getArguments();
 			int x = ((Integer) args[0]).intValue();
 			int y = ((Integer) args[1]).intValue();
 			int value = ((Integer) args[2]).intValue();
 			monome.handlePress(x, y, value);
 		}
 		if (message.getAddress().contains("adc")) { 
-			Object[] args = message.getArguments();
 			int adcNum = ((Integer) args[0]).intValue();
 			float value = ((Float) args[1]).floatValue();
 			monome.handleADC(adcNum, value);
 		}
 		if (message.getAddress().contains("tilt") && !(message.getAddress().contains("mode"))) {
-			Object[] args = message.getArguments();
 			float x = 0.0f;
 			if (args[0] instanceof Integer) {
 				x = (float) ((Integer) args[0]).intValue();

@@ -1,15 +1,14 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.pages.AbletonClipLauncherPage;
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class AbletonClipLauncherGUI extends JPanel {
 
@@ -41,20 +40,20 @@ public class AbletonClipLauncherGUI extends JPanel {
 	 */
 	private void initialize() {
 		disableStopLabel = new JLabel();
-		disableStopLabel.setBounds(new Rectangle(40, 105, 81, 21));
+		disableStopLabel.setBounds(new Rectangle(40, 105, 126, 21));
 		disableStopLabel.setText("Disable Stop");
 		disableArmLabel = new JLabel();
-		disableArmLabel.setBounds(new Rectangle(40, 80, 81, 21));
+		disableArmLabel.setBounds(new Rectangle(40, 80, 126, 21));
 		disableArmLabel.setText("Disable Arm");
 		disableSoloLabel = new JLabel();
-		disableSoloLabel.setBounds(new Rectangle(40, 55, 81, 21));
+		disableSoloLabel.setBounds(new Rectangle(40, 55, 126, 21));
 		disableSoloLabel.setText("Disable Solo");
 		disableMuteLabel = new JLabel();
-		disableMuteLabel.setBounds(new Rectangle(40, 30, 81, 21));
+		disableMuteLabel.setBounds(new Rectangle(40, 30, 126, 21));
 		disableMuteLabel.setText("Disable Mute");
 		pageLabel = new JLabel();
 		pageLabel.setText((page.getIndex() + 1) + ": Ableton Clip Launcher");
-		pageLabel.setBounds(new Rectangle(5, 5, 166, 16));
+		pageLabel.setBounds(new Rectangle(5, 5, 181, 16));
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(getDisableMuteCB(), null);
@@ -66,7 +65,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 		this.add(getRefreshButton(), null);
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
-		this.setSize(155, 160);
+		this.setSize(186, 182);
 	}
 	
 	/**
@@ -143,7 +142,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(5, 135, 146, 21));
+			refreshButton.setBounds(new Rectangle(20, 135, 146, 21));
 			refreshButton.setText("Refresh From Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -175,4 +174,4 @@ public class AbletonClipLauncherGUI extends JPanel {
 		}
 		return disableStopCB;
 	}	
-}
+}  //  @jve:decl-index=0:visual-constraint="10,10"

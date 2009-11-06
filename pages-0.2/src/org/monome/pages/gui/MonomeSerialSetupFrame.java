@@ -1,7 +1,5 @@
 package org.monome.pages.gui;
 
-import java.awt.BorderLayout;
-
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
@@ -12,7 +10,6 @@ import javax.swing.JTextField;
 
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
-
 import java.awt.Dimension;
 
 public class MonomeSerialSetupFrame extends JInternalFrame {
@@ -28,7 +25,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JButton saveButton = null;
 	private JButton cancelButton = null;
 	private JButton autoConfigButton = null;
-	private JMenuItem newMonomeItem = null;
+
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -43,9 +40,11 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(202, 155);
+		this.setSize(234, 189);
 		this.setTitle("Monome Serial Setup");
 		this.setContentPane(getJContentPane());
+		this.setResizable(true);
+		this.pack();
 	}
 
 	/**
@@ -56,13 +55,13 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			outPortLabel = new JLabel();
-			outPortLabel.setBounds(new Rectangle(15, 45, 76, 16));
+			outPortLabel.setBounds(new Rectangle(25, 70, 96, 21));
 			outPortLabel.setText("Listen Port");
 			inPortLabel = new JLabel();
-			inPortLabel.setBounds(new Rectangle(15, 25, 76, 16));
+			inPortLabel.setBounds(new Rectangle(25, 40, 96, 21));
 			inPortLabel.setText("Host Port");
 			hostLabel = new JLabel();
-			hostLabel.setBounds(new Rectangle(15, 5, 76, 16));
+			hostLabel.setBounds(new Rectangle(25, 10, 96, 21));
 			hostLabel.setText("Host Address");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
@@ -87,7 +86,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JTextField getHost() {
 		if (host == null) {
 			host = new JTextField();
-			host.setBounds(new Rectangle(100, 5, 76, 16));
+			host.setBounds(new Rectangle(120, 10, 76, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			host.setText(config.getMonomeHostname());
 		}
@@ -102,7 +101,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JTextField getInPort() {
 		if (inPort == null) {
 			inPort = new JTextField();
-			inPort.setBounds(new Rectangle(100, 25, 46, 16));
+			inPort.setBounds(new Rectangle(120, 40, 46, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			inPort.setText("" + config.getMonomeSerialOSCInPortNumber());
 		}
@@ -117,7 +116,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JTextField getOutPort() {
 		if (outPort == null) {
 			outPort = new JTextField();
-			outPort.setBounds(new Rectangle(100, 45, 46, 16));
+			outPort.setBounds(new Rectangle(120, 70, 46, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			outPort.setText("" + config.getMonomeSerialOSCOutPortNumber());
 		}
@@ -132,7 +131,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JButton getSaveButton() {
 		if (saveButton == null) {
 			saveButton = new JButton();
-			saveButton.setBounds(new Rectangle(15, 70, 76, 21));
+			saveButton.setBounds(new Rectangle(30, 100, 76, 21));
 			saveButton.setText("Save");
 			saveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -153,10 +152,6 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		config.setMonomeSerialOSCOutPortNumber(outport);
 		config.setMonomeHostname(hostname);
 		config.startMonomeSerialOSC();
-
-		if (this.newMonomeItem != null) {
-			this.newMonomeItem.setEnabled(true);
-		}
 		
 		this.dispose();
 	}
@@ -169,7 +164,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
-			cancelButton.setBounds(new Rectangle(100, 70, 76, 21));
+			cancelButton.setBounds(new Rectangle(120, 100, 76, 21));
 			cancelButton.setText("Cancel");
 			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -192,7 +187,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JButton getAutoConfigButton() {
 		if (autoConfigButton == null) {
 			autoConfigButton = new JButton();
-			autoConfigButton.setBounds(new Rectangle(15, 100, 166, 21));
+			autoConfigButton.setBounds(new Rectangle(30, 130, 166, 21));
 			autoConfigButton.setText("Discover Monomes");
 			autoConfigButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -213,14 +208,8 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		config.setMonomeSerialOSCOutPortNumber(outport);
 		config.setMonomeHostname(hostname);
 		config.discoverMonomes();
-		if (this.newMonomeItem != null) {
-			this.newMonomeItem.setEnabled(true);
-		}
 		this.dispose();
 	}
 
-	public void setNewMonomeItem(JMenuItem newMonomeItem) {
-		this.newMonomeItem = newMonomeItem;
-	}
-
 }  //  @jve:decl-index=0:visual-constraint="10,10"
+
