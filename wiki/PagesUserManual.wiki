@@ -1,10 +1,10 @@
 === Pages Quick Start Guide ===
 
-# Introduction
-# Summary of Page Types
-# Setup Virtual MIDI Devices
-# LiveOSC Setup
-# Basic Usage Instructions
+  # Introduction
+  # Summary of Page Types
+  # Setup Virtual MIDI Devices
+  # LiveOSC Setup
+  # Basic Usage Instructions
 
 === Introduction ===
 
@@ -14,11 +14,11 @@ This zip file contains all the files you need to run pages and integrate with Ab
 
 The contents of the zip file are as follows:
 
-* LiveOSC 7.0.13 and earlier - Windows Only - LiveOSC scripts for Windows and Ableton Live version 7.0.13 and earlier
-* LiveOSC 7.0.14 - Windows Only - LiveOSC scripts for Windows and Ableton Live version 7.0.14 and later
-* LiveOSC 8 - Windows+OSX - LiveOSC scripts for Windows and OSX for Ableton Live version 8.0.4 and earlier
-* pages-0.1.XY.jar - The pages executable JAR file
-* README.txt - this file
+  * LiveOSC 7.0.13 and earlier - Windows Only - LiveOSC scripts for Windows and Ableton Live version 7.0.13 and earlier
+  * LiveOSC 7.0.14 - Windows Only - LiveOSC scripts for Windows and Ableton Live version 7.0.14 and later
+  * LiveOSC 8 - Windows+OSX - LiveOSC scripts for Windows and OSX for Ableton Live version 8.0.4 and earlier
+  * pages-0.1.XY.jar - The pages executable JAR file
+  * README.txt - this file
 
 === Summary of Page Types ===
 
