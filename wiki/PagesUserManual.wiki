@@ -1,196 +1,148 @@
-#summary The user manual for the pages application.
+=== Pages Quick Start Guide ===
 
-= Project Summary =
+# Introduction
+# Summary of Page Types
+# Setup Virtual MIDI Devices
+# LiveOSC Setup
+# Basic Usage Instructions
 
-Pages was designed to allow multiple applications to run simultaneously on a single monome device.  One page (or application) is in focus at any given time and will receive input from the monome and output LED changes to the monome.  The focused page can be changed by holding down the page change button (the bottom right button on the monome) and pushing another button on the bottom rows of the monome.
+=== Introduction ===
 
-Pages doesn't make any sound on its own; it is intended to run alongside applications like Ableton Live and Max/MSP.  It is not limited to these two applications and should work with any applications capable of sending/receiving MIDI and/or OSC.  Think of it as a somewhat general purpose MIDI/OSC router for interfacing monome(s) with other audio applications.
+Pages is a monome application that lets you control multiple different applications at the same time.  It does this by introducing a control layer on top of existing applications that allows you to switch between different 'pages', each with its own application running on it.
 
-The application is very configurable and you can customize your own setup by choosing which page types you'd like to use, how many you want to use, and how each should behave.  Configurations are created with a basic GUI interface and can be saved and loaded at a later time.
+This zip file contains all the files you need to run pages and integrate with Ableton Live.  The pages-0.1.XY.jar file is the main executable file, you should be able to double click on it to run it.
 
-There are currently more than 8 page types available, and any number of monomes can be configured with any combination of these pages.  The pages adapt to the size of the monome you are using.  Each page supports 8x8 (40h/64), 16x8 (128), and 16x16 (256) sized monomes and will automatically adapt based on your device size.
+The contents of the zip file are as follows:
 
-= Summary of Available Pages =
+* LiveOSC 7.0.13 and earlier - Windows Only - LiveOSC scripts for Windows and Ableton Live version 7.0.13 and earlier
+* LiveOSC 7.0.14 - Windows Only - LiveOSC scripts for Windows and Ableton Live version 7.0.14 and later
+* LiveOSC 8 - Windows+OSX - LiveOSC scripts for Windows and OSX for Ableton Live version 8.0.4 and earlier
+* pages-0.1.XY.jar - The pages executable JAR file
+* README.txt - this file
 
-  * MIDI Sequencer
+=== Summary of Page Types ===
 
-The MIDI Sequencer page turns a monome into a MIDI clock-driven step sequencer that sends MIDI note on/off messages.  It has approximately 240 banks of 32x15 steps each (that's 32 steps wide, 15 instruments deep).  Basic features such as copy and clear pattern/bank have been implemented, as well as a simple pattern generator and pattern alteration algorithm.
+* Ableton Clip Launcher Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/AbletonClipLauncherPage]
+This page turns the monome into an interface for launching clips and controlling the state of tracks in Ableton Live.  Many controls are available including tempo up/down, overdub, undo, record enabling of tracks, mute/solo, and others.
 
-See: [http://code.google.com/p/monome-pages/wiki/MIDISequencerPage MIDISequencerPage]
+* Ableton Clip Skipper Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/AbletonClipSkipperPage]
+This page is an attempt to have MLR-style control over the clips playing in Ableton.  This page is mostly working but is still a work in progress (it will fall off time eventually).
 
-  * MIDI Keyboard
+* Ableton Live Looper Page
+Wiki page: not available yet
+Same as the Ableton Clip Launcher Page but sends clip trigger events after a certain amount of bars to automatically slice loops after they're recorded.  contains a set of controls in the bottom right that adjust the loop length.
 
-The MIDI Keyboard is a basic keyboard interface that sends a MIDI note on message when a button is pressed and a MIDI note off message when a button is released.  The buttons are automatically mapped to musical keys/scales.  Up to 6 instruments can be controlled from a single instance of the MIDI Keyboard by sending MIDI note messages on different MIDI channels.  The key and scale can be selected on the monome.  Currently 4 scales are implemented with 12 keys, for a total of 48 possible key/scale combinations.
+* Ableton Scene Launcher Page
+Wiki page: not available yet
+Same as the Ableton Clip Launcher Page except that the far left column will flash the selected scene and allow you to trigger entire scenes.  The bottom buttons on the left column are previous/next scene.
 
-See: [http://code.google.com/p/monome-pages/wiki/MIDIKeyboardPage MIDIKeyboardPage]
+* External Application Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/ExternalApplicationPage]
+Allow you to route another application through pages and use it on it's own page, for example, MLR.
 
-  * MIDI Faders
+* Machine Drum Interface Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/MachineDrumInterfacePage]
+Provides controls for manipulating and randomizing drum kits in an Elektron MachineDrum.
 
-The MIDI Faders page turns the monome into a set of virtual faders where each column represents the MIDI CC value of one parameter.  There is a variable delay that controls how fast the faders move from value to value.
+* MIDI Keyboard Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDIKeyboardPage]
+Turns the monome into a virtual MIDI keyboard.
 
-See: [http://code.google.com/p/monome-pages/wiki/MIDIFadersPage MIDIFadersPage]
+* MIDI Faders Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDIFadersPage]
+Turns the monome into a set of virtual faders.
 
-  * MIDI Triggers
+* MIDI Sequencer Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDISequencerPage]
+Turns the monome into a 64-step MIDI sequencer.
 
-The MIDI Triggers page is a simple grid of MIDI trigger buttons.  The buttons send MIDI notes when pressed.  The buttons are organized in either columns or rows, and each column/row sends on it's own MIDI channel.  Each row or column can be configured to act as toggle buttons instead of triggers.  In toggle mode, a row or column's buttons will switch from on to off whenever they are pressed.  In trigger mode, a row or column's buttons will stay lit while the buttons are held down.
+* MIDI Sequencer Page Poly
+Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDISequencerPagePoly]
+An expanded MIDI Sequencer Page with the ability to run multiple patterns at the same time.
 
-See: [http://code.google.com/p/monome-pages/wiki/MIDITriggersPage MIDITriggersPage]
+* MIDI Triggers Page
+Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDITriggersPage]
+Turns the monome into virtual MIDI buttons with toggle mode or trigger mode per row/column.
 
-  * External Application
+=== Setup Virtual MIDI Devices ===
 
-The External Application page is used to route an external application (ie. mlr, bboingg, flin, dj64, etc.) through a page.  This allows you to run multiple applications simultaneously on a single monome device and switch between them.  For example, you could run mlr on page 1, boiingg on page 2, etc.  You could also run quadrants or hub configured with a few applications of their own through a page.
+You will need to install/enable a set of virtual MIDI devices if you wish to route pages MIDI applications to an audio application (ie. Ableton Live). Most users will want to do this.
 
-See: ExternalApplicationPage
+* Windows
 
-  * Ableton Clip Launcher
+MIDI Yoke or Hubi's MIDI Loopback Device should both work fine for Windows users. Follow the instructions on the web sites to install.
+OS X Virtual MIDI Devices Setup
 
-The Ableton Clip Launcher page is an interface to launch clips, stop tracks, or record enable/disable tracks in Ableton Live.  It is currently implemented to use the LiveOSC project to communicate with Ableton Live (so you'll need LiveOSC installed and configured for this to work).  It polls the state of Ableton Live and updates the page according to the state of the clips, so it is always in sync with the state of Ableton Live.
+* OSX
 
-See: AbletonClipLauncherPage
+The IAC driver comes standard with OS X and will work fine for OS X users. A tutorial on enabling this driver can be found here: [http://fox-gieg.com/tutorials/2007/inter-application-midi/]
 
-  * Ableton Clip Control (another version of Ableton Clip Launcher)
+Pre-Snow Leopard OSX users will also need to install the mmj.jar file and associated files found here: [http://www.humatic.de/htools/mmj.htm] Users running Snow Leopard should not need to install this.
 
-The Ableton Clip Control page is an interface to launch clips, follow midi notes played in all tracks, and stop tracks in Ableton Live.  It is currently implemented to use the LiveOSC project to communicate with Ableton Live (so you'll need LiveOSC installed and configured for this to work).  It polls the state of Ableton Live and updates the page according to the state of the clips, so it is always in sync with the state of Ableton Live. It gives a precious feedback about midi notes played for each tracks in order to match what sound is made by what track. It is precious at least for Julien Bayle (!)
+=== LiveOSC Setup ===
 
-See: AbletonClipControlPage
+Identify which version of Ableton Live you have and find the appropriate script folder for your version / OS.  Live 7 on OSX is currently unsupported in the later versions of pages (but it might work, hasn't been tested thoroughly), use an earlier version of pages  if you have this configuration.
 
+Each folder in the zip file contains a LiveOSC sub-folder.  Once you've identified the version you need, copy the LiveOSC folder to your Ableton Live Remote MIDI Scripts folder.  If you're on Windows, this can be found in C:\Program Files\Ableton X.Y.Z\Resources\MIDI Remote Scripts.  For OSX, right click on the Live.app file and choose 'Show Package Contents', then navigate to App-Resources/MIDI Remote Scripts and copy the folder there.
 
-  * Ableton Clip Skipper
+Open Ableton Live and go to preferences.  Select MIDI preferences and click on an empty Control Surface dropdown.  Select LiveOSC in the dropdown.  LiveOSC is now setup and ready to use.
 
-The Ableton Clip Skipper page is kind of like mlr for Ableton Live.  It allows you to skip around in the currently playing audio or MIDI clips of the first 8 or 16 Ableton Live tracks.  The grid adapts to the currently playing clip's loop length automatically so any size clips will work and no configuration of the row/clip is necessary.
+If you are having trouble getting LiveOSC to work with a very recent version of Ableton 8 then you should try downloading the latest LiveOSC package from here:
 
-See: AbletonClipSkipperPage
+[http://monome.q3f.org/changeset/latest/trunk/LiveOSC?old_path=/&filename=LiveOSC&format=zip]
 
-  * Machine Drum Interface
+=== Snow Leopard Troubleshooting ===
 
-The Machine Drum Interface page is a set of controls for controlling an Elektron Machine Drum (any version should work). It has 4 kit save slots, 4 kit load slots, it can initialize a new kit with random machines in each slot, and it sends random parameter changes to machines and global effects. Useful as a live performance tool or in the studio for crafting kits w/ randomness. This can generate some bizarre, other-worldly drum sounds. Other MIDI pages (like the sequencer) can be routed out to the Machine Drum as well (just select the appropriate MIDI output device in the page).
+If you are having trouble using MIDI devices on Snow Leopard (OSX 10.6.2 or higher) then follow the instructions on this page:
 
-See: MachineDrumInterfacePage
+[http://wiki.oneswarm.org/index.php/OS_X_10.6_Snow_Leopard]
 
-= Setup Guide =
+=== Basic Usage Instructions ===
 
-egon77 has put together a wonderful video that guides you through the setup process for Mac/OSX and Ableton/PagesMIDI.  You can view it here:
+There are many ways to use Pages but here's a few common use cases and instructions on how to configure them:
 
-[http://www.vimeo.com/4939759 tutorial video]
+* Setup MIDI clock sync from Ableton Live to Pages
 
-== Downloading Pages ==
+Many page types depend on MIDI clock sync so it's important to have it configured for things to work right.  To do this:
 
-The latest version of pages can be downloaded from the Downloads page of this project:
+# Launch Ableton Live
+# Go to Options -> Preferences -> MIDI / Sync tab.
+# Verify that you can see your virtual MIDI devices, if you don't see them listed then double check your virtual MIDI device settings.
+# Choose one device for MIDI Clock Sync. I generally use the first device (ie. MIDI Yoke 1, IAC Device 1, etc).
+# You will see two entries listed for the device, one labeled "Input:" and one labeled "Output:". Notice that each device has 3 buttons, "Track", "Sync", and "Remote".
+# For the Input: device, make sure all 3 buttons are turned off.
+# For the Output: device, make sure just the Sync button is turned on.
+# On the Audio tab of the preferences pane you will see an "Overall Latency" value. Make note of this value.
+# On the MIDI / Sync tab of the preferences pane click on the small gray arrow to the left of the Output: <virtual device> entry--the one that has Sync enabled. This should expand the entry and give you a few configuration options.
+# Set the MIDI Clock Sync Delay value to be -negative- the "Overall Latency" value from the Audio page, or as close as you can get to it. For example, if your Overall Latency is 10.7ms, you should set the MIDI Clock Sync Delay to -10.5ms.
 
-http://code.google.com/p/monome-pages/downloads/list
+Now launch pages, go to the MIDI menu -> MIDI In -> select the device you configured above.  You should now have MIDI clock sync from Ableton Live to pages.  You can create a MIDI Sequencer page to test it, when you hit play in Ableton you should see a vertical bar move across the monome.
 
-It has been compiled to run with Java version 1.5 or higher, so you may need to upgrade your version of Java to run the application.  You can run "java -version" from a command line to see what version of Java you currently have installed.
+* Use pages to play an instrument in Ableton Live
 
-== Virtual MIDI Devices ==
+Page types like the MIDI Sequencer and MIDI Keyboard were meant to have something on the other side receiving their output.  To set this up:
 
-You will need to install/enable a set of virtual MIDI devices if you wish to route pages MIDI applications to an audio application (ie. Ableton Live).  Most users will want to do this.
+# In the Ableton Live's Preferences / MIDI tab, locate the devices you want Ableton to receive MIDI note and control change messages on.
+# Notice that there are two entries for each device, Input and Output. Make sure that all 3 buttons are disabled on all Output entries for the devices you want to receive MIDI notes and control change messages on.
+# Enable Track and Remote on the Input entries of the devices you wish to use. You can enable both Track and Remote for a device if you want both types of messages to go through it, or just one or the other.
 
-=== Windows Virtual MIDI Devices Setup ===
+In pages go to the MIDI menu -> MIDI Out -> select the device you configured above.  In the MIDI Sequencer/Keyboard page, click the 'Add MIDI Output' button and select the device.  The page should now send MIDI on the selected device.
 
-[http://www.midiox.com/myoke.htm MIDI Yoke] or [http://members.nextra.at/hubwin/midi.html Hubi's MIDI Loopback Device] should both work fine for Windows users.  Follow the instructions on the web sites to install.
+* Route MLR in through an external application page
 
-=== OS X Virtual MIDI Devices Setup ===
+Routing in external applications can be tricky because most applications want to use the 8000/8080 ports to talk directly with Monome Serial.  Pages sits in between Monome Serial and other applications, so we need to configure the external application to talk to pages through an external application page instead of to Monome Serial directly.  An easy way to get one external application page running is as follwos:
 
-The IAC driver comes standard with OS X and will work fine for OS X users.  A tutorial on enabling this driver can be found here: http://fox-gieg.com/tutorials/2007/inter-application-midi/
+# Set Monome Serial to ports 7000 / 7070. This frees up MLR and the external application page to use 8000 / 8080, which are MLR's defaults.
+# Create an external application page. The default settings should work: prefix /mlr, hostname localhost, OSC in port 8080, OSC out port 8000.
 
-OS X users will also need to install the mmj.jar file and associated files found here: http://www.humatic.de/htools/mmj.htm
+If you want to route in other applications you'll need to set the ports appropriately on an External Application Page and the external application itself.
 
-== Monome Serial Setup ==
+* Using the built-in pattern recorders
 
-Monome Serial should be configured so that each monome device has a unique prefix.  The standard OSC ports will work, but using non-standard ports will make the external page configuration easier.  For example, ports 7000 and 7070 can be used to free up 8000 and 8080 for an external application (ie. mlr).
+Each page has 8 or 16 patterns, depending on the size of the monome. Patterns can be accessed by holding down the page change button (the bottom right button). The top row of buttons each represent one pattern. When you hold down the page change button and press a pattern button you will trigger that pattern to play/record. The currently playing pattern is always recording all button presses even after it begins looping, and it will flash when the page change button is held down. Pushing another pattern button will switch the pattern that is running. If you press the currently running pattern button it will clear and disable the pattern, allowing you to record over it again.
 
-== Pages Setup ==
+By default, pattern recording is quantized to 1/16th notes. You can change the quantization setting for each page's patterns in the Page menu. You can also set the length of each page's patterns to a number of bars between 1 and 16. By default, patterns are 4 bars long. The pattern configuration will be saved with your configuration files, but the recorded patterns will not.
 
-Now that Monome Serial is running it's time to run the pages application.  If you haven't already, download a copy of it from the Downloads tab and do any necessary Java setup as described in the sections above.
-
-You should also start up Ableton Live, go to Options -> Preferences -> MIDI, and turn off all Track/Sync/Remote buttons for all IAC devices.
-
-You can launch pages either by double-clicking on the JAR file or running "java -jar pages-0.1.XY.jar" from the command line (where XY is the version number).
-
-You will be greeted by an empty window and a File menu.  The first step is to create a new configuration.  Go to File -> New Configuration and give it a name:
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/1-new_configuration.jpg]
-
-You will see two new menus appear: Configuration and MIDI.  First, go to the Configuration menu and choose OSC Settings.  Enter OSC settings appropriate with your Monome Serial configuration.  The default settings should work if you haven't modified your ports in monomeserial, otherwise make the ports match and click on Save:
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/2-osc_settings.jpg]
-
-Next, go to the Configuration menu again and choose New Monome Configuration.  You will be asked for the size X, size Y, and prefix for the monome.  Enter appropriate values for the monome you are configuring.  A 64 or 40h should be set for size X = 8 and size Y = 8 with the prefix /40h or /64 by default (check Monome Serial to see what your prefix is).  A 128 should be set for size X = 16, size Y = 8, prefix = /128 (by default), and a 256 should be set for size X = 16 and size Y = 16, prefix = /256 (by default).  You can repeat this step to configure multiple monome devices:
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/3-new_monome.jpg]
-
-A sub-window with a Page menu will be created for each monome device you configure in this way:
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/4-page_window.jpg]
-
-Next, go to the MIDI menu.  In the "MIDI In" sub-menu, select the device you will use to send MIDI clock from Ableton to Pages.  In Ableton, turn on Sync from the selected device.  Be sure not to enable the input device in Ableton (marked with red X's).  In this case we're using MIDI Yoke 2:
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/5-midi_in.jpg]
-
-In the MIDI Out sub-menu, select the MIDI devices you will want to send MIDI to.  In this case we're going to select MIDI Yoke 3 and 4, so we enable them on the input device in Ableton and turn them on in Pages.  Be sure not to turn on the output device in Ableton (marked with red X):
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/6-midi_out.jpg]
-
-Go to the monome sub-window and click on the Page menu.  Select the 'New Page' option and select the type of page to create:
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/7-new_page.jpg]
-
-Repeat this process for a few page types; you will see a configuration panel for each page you create in this way:
-
-[http://www.post-digital.net/~phortran/pages/pages-manual/8-midi_sequencer.jpg]
-
-You can switch pages on the page menu or by holding down the bottom-right button on the monome and pushing another button on the bottom row.  The bottom-left button corresponds to page 1, the button to the right of it corresponds to page 2, etc.
-
-To test the MIDI clock sync, create a MIDI sequencer page.  When you press play in Ableton Live, you should see a vertical column move across the monome.  If you are not seeing the vertical column, double check your MIDI settings in Ableton and in Pages, and make sure that if you're on OSX you have installed the mmj.jar library correctly.  You may even try rebooting your computer if you're still having trouble.
-
-MIDI-related pages have an 'Add MIDI Output' button, you should click on this and select a MIDI device for the page to output on or it won't do much.  Make sure that Ableton Live is configured to receive MIDI on the device you select.
-
-You can save and load configurations from the File menu.  Configurations are stored in XML format and can be edited with a text editor.
-
-See the [http://code.google.com/p/monome-pages/wiki wiki] for button layout and documentation for each of the page types.
-
-== Ableton Live Setup ==
-
-This section has more detailed information on setting up Ableton Live and Pages.  The Ableton Live setup described below can be adapted to other audio software if desired.  The same types of setup should be applied in the application you want to use.  Specifically, we want Ableton Live (or the chosen audio application) to:
-
-  # Send out MIDI Clock on exactly one virtual MIDI device
-  # Receive MIDI Track and MIDI Remote messages from as many of the other virtual MIDI devices that we need
-
-  * Setting up MIDI Clock Sync
-
-  # Launch Ableton Live
-  # Go to Options -> Preferences -> MIDI / Sync tab.
-  # Verify that you can see your virtual MIDI devices, if you don't see them listed then double check your virtual MIDI device settings.
-  # Choose one device for MIDI Clock Sync.  I generally use the first device (ie. MIDI Yoke 1, IAC Device 1, etc).
-  # You will see two entries listed for the device, one labeled "Input:" and one labeled "Output:".  Notice that each device has 3 buttons, "Track", "Sync", and "Remote".
-  # For the Input: device, make sure all 3 buttons are turned off.
-  # For the Output: device, make sure just the Sync button is turned on.
-  # On the Audio tab of the preferences pane you will see an "Overall Latency" value.  Make note of this value.
-  # On the MIDI / Sync tab of the preferences pane click on the small gray arrow to the left of the Output: <virtual device> entry--the one that has Sync enabled.  This should expand the entry and give you a few configuration options.
-  # Set the MIDI Clock Sync Delay value to be -negative- the "Overall Latency" value from the Audio page, or as close as you can get to it.  For example, if your Overall Latency is 24.7ms, you should set the MIDI Clock Sync Delay to -25ms.
-
-  * Setting up MIDI Track and Remote
-
-  # In the Preferences / MIDI tab, locate the devices you want Ableton to receive MIDI note and control change messages on.
-  # Notice that there are two entries for each device, Input and Output.  Make sure that all 3 buttons are disabled on all Output entries for the devices you want to receive MIDI notes and control change messages on.
-  # Enable Track and Remote on the Input entries of the devices you wish to use.  You can enable both Track and Remote for a device if you want both types of messages to go through it, or just one or the other.
-
-Here is an example of how the MIDI Sync page should be setup:
-
-[http://www.post-digital.net/~phortran/pages_ableton_midi.jpg]
-
-== LiveOSC Setup ==
-
-=== Windows ===
-See this page: [http://code.google.com/p/monome-pages/wiki/LiveOSCSetup LiveOSC Setup]
-
-=== OSX ===
-See this page: [http://code.google.com/p/monome-pages/wiki/PagesMIDISetup PagesMIDI Setup]
-
-== Patterns ==
-
-Each page has 8 or 16 patterns, depending on the size of the monome.  Patterns can be accessed by holding down the page change button (the bottom right button).  The top row of buttons each represent one pattern.  When you hold down the page change button and press a pattern button you will trigger that pattern to play/record.  The currently playing pattern is always recording all button presses even after it begins looping, and it will flash when the page change button is held down.  Pushing another pattern button will switch the pattern that is running.  If you press the currently running pattern button it will clear and disable the pattern, allowing you to record over it again.
-
-By default, pattern recording is quantized to 1/16th notes.  You can change the quantization setting for each page's patterns in the Page menu.  You can also set the length of each page's patterns to a number of bars between 1 and 16.  By default, patterns are 4 bars long.  The pattern configuration will be saved with your configuration files, but the recorded patterns will not.
-
-Patterns run off of MIDI clock signal so you must have a MIDI input selected and that MIDI input must be receiving MIDI clock from Ableton or another source.
+Patterns run off of MIDI clock signal so you must have a MIDI input selected and that MIDI input must be receiving MIDI clock from Ableton or another source. 
