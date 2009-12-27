@@ -24,46 +24,57 @@ The contents of the zip file are as follows:
 
   * Ableton Clip Launcher Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/AbletonClipLauncherPage]
+
 This page turns the monome into an interface for launching clips and controlling the state of tracks in Ableton Live.  Many controls are available including tempo up/down, overdub, undo, record enabling of tracks, mute/solo, and others.
 
   * Ableton Clip Skipper Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/AbletonClipSkipperPage]
+
 This page is an attempt to have MLR-style control over the clips playing in Ableton.  This page is mostly working but is still a work in progress (it will fall off time eventually).
 
   * Ableton Live Looper Page
 Wiki page: not available yet
+
 Same as the Ableton Clip Launcher Page but sends clip trigger events after a certain amount of bars to automatically slice loops after they're recorded.  contains a set of controls in the bottom right that adjust the loop length.
 
   * Ableton Scene Launcher Page
 Wiki page: not available yet
+
 Same as the Ableton Clip Launcher Page except that the far left column will flash the selected scene and allow you to trigger entire scenes.  The bottom buttons on the left column are previous/next scene.
 
   * External Application Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/ExternalApplicationPage]
+
 Allow you to route another application through pages and use it on it's own page, for example, MLR.
 
   * Machine Drum Interface Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/MachineDrumInterfacePage]
+
 Provides controls for manipulating and randomizing drum kits in an Elektron MachineDrum.
 
   * MIDI Keyboard Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDIKeyboardPage]
+
 Turns the monome into a virtual MIDI keyboard.
 
   * MIDI Faders Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDIFadersPage]
+
 Turns the monome into a set of virtual faders.
 
   * MIDI Sequencer Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDISequencerPage]
+
 Turns the monome into a 64-step MIDI sequencer.
 
   * MIDI Sequencer Page Poly
 Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDISequencerPagePoly]
+
 An expanded MIDI Sequencer Page with the ability to run multiple patterns at the same time.
 
   * MIDI Triggers Page
 Wiki page: [http://code.google.com/p/monome-pages/wiki/MIDITriggersPage]
+
 Turns the monome into virtual MIDI buttons with toggle mode or trigger mode per row/column.
 
 === Setup Virtual MIDI Devices ===
