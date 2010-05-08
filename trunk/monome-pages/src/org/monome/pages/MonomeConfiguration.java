@@ -861,6 +861,10 @@ public class MonomeConfiguration extends JInternalFrame implements ActionListene
 			return;
 		}
 		
+		if (x >= 32 || y >= 32 || index >= 255) {
+			return;
+		}
+		
 		if (index > -1) {
 			this.pageState[index][x][y] = value;
 	
