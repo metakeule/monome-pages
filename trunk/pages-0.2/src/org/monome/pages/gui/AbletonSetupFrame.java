@@ -208,4 +208,4 @@ public class AbletonSetupFrame extends JInternalFrame {
 		}
 	}
 
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+}

@@ -1,5 +1,6 @@
 package org.monome.pages.gui;
 
+import javax.sound.midi.MidiDevice;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;

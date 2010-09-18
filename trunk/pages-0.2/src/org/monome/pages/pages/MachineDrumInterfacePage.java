@@ -18,6 +18,8 @@ import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
 import org.monome.pages.machinedrum.MachineDrum;
+import org.monome.pages.pages.gui.AbletonClipLauncherGUI;
+import org.monome.pages.pages.gui.MachineDrumInterfaceGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -43,53 +45,19 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak
  *
  */
-public class MachineDrumInterfacePage implements Page, ActionListener {
+public class MachineDrumInterfacePage implements Page {
 
 	/**
 	 * The MonomeConfiguration object this page belongs to
 	 */
 	MonomeConfiguration monome;
+	
+	private MachineDrumInterfaceGUI gui;
 
 	/**
 	 * The index of this page (the page number) 
 	 */
 	private int index;
-
-	/**
-	 * The GUI for this page's configuration
-	 */
-	private JPanel panel;
-	private JLabel jLabel1;
-
-	/**
-	 * The Add MIDI Output button
-	 */
-	private JButton addMidiOutButton;
-
-	/**
-	 * The Speed label 
-	 */
-	private JLabel speedLabel;
-
-	/**
-	 * The Update Preferences button
-	 */
-	private JButton updatePrefsButton;
-
-	/**
-	 * The Speed text field
-	 */
-	private JTextField speedTF;
-
-	/**
-	 * The MIDI device to send to the MachineDrum on
-	 */
-	private Receiver recv;
-
-	/**
-	 * The name of the selected MIDI device
-	 */
-	private String midiDeviceName;
 
 	/**
 	 * morph_machines[machine_number] - 1 if machine_number machine should be sent random parameter changes
@@ -119,7 +87,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	/**
 	 * Utility class for sending MIDI messages to the MachineDrum 
 	 */
-	private MachineDrum machine_drum;
+	private MachineDrum machinedrum;
 
 	/**
 	 * A counter for MIDI clock sync ticks 
@@ -131,20 +99,18 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 */
 	private int speed = 100;
 	
-
-
 	/**
 	 * The name of the page 
 	 */
 	private String pageName = "Machine Drum Interface";
-	private JLabel pageNameLBL;
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index The index of this page (the page number)
 	 */
 	public MachineDrumInterfacePage(MonomeConfiguration monome, int index) {
-		this.machine_drum = new MachineDrum();
+		gui = new MachineDrumInterfaceGUI(this);
+		this.machinedrum = new MachineDrum();
 		this.monome = monome;
 		this.index = index;
 		this.generator = new Random();
@@ -153,8 +119,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */	
-	public String getName() 
-	{		
+	public String getName() {		
 		return pageName;
 	}
 	/* (non-Javadoc)
@@ -162,7 +127,6 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
 	}
 
 	/* (non-Javadoc)
@@ -193,14 +157,14 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 				}
 				// 6th row, initialize new kits
 			} else if (y == 5) {
-				machine_drum.initKit(recv, x);
+				machinedrum.initKit(monome, x);
 				// 7th row, kit load and save
 			} else if (y == 6) {
 				System.out.println("kit function");
 				if (x < 4) {
-					machine_drum.sendKitLoad(recv, x);
+					machinedrum.sendKitLoad(monome, x);
 				} else {
-					machine_drum.sendKitSave(recv, x - 4);
+					machinedrum.sendKitSave(monome, x - 4);
 				}
 				// last row, auto morph toggle and fx morph toggles
 			} else if (y == 7) {
@@ -279,22 +243,22 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 
 		// send a param change to the echo effect
 		if (fx_morph[0] == 1 && ticks == 0) {
-			machine_drum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
+			machinedrum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
 		}
 
 		// send a param change to the gate effect
 		if (fx_morph[1] == 1 && ticks == 1) {
-			machine_drum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
+			machinedrum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
 		}
 
 		// send a param change to the eq effect
 		if (fx_morph[2] == 1 && ticks == 2) {
-			machine_drum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
+			machinedrum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
 		}
 
 		// send a param change to the compressor effect
 		if (fx_morph[3] == 1 && ticks == 3) {
-			machine_drum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
+			machinedrum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
 		}
 
 		// send random parameter changes
@@ -315,7 +279,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 				if (morph_machines[x] == 1) {
 					if (morph_params[y] == 1) {
 						if (generator.nextInt(this.speed) == 1) {
-							machine_drum.sendRandomParamChange(recv, x, y);
+							machinedrum.sendRandomParamChange(recv, x, y);
 						}
 					}
 				}
@@ -417,60 +381,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 * @see org.monome.pages.Page#getPanel()
 	 */
 	public JPanel getPanel() {
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		JPanel panel = new JPanel();
-		return panel;
-	}
-
-	/**
-	 * @return The speed label
-	 */
-	private JLabel getSpeedLabel() {
-		if(speedLabel == null) {
-			speedLabel = new JLabel();
-			speedLabel.setText("Speed");
-			speedLabel.setPreferredSize(new java.awt.Dimension(57, 18));
-		}
-		return speedLabel;
-	}
-
-	/**
-	 * @return The speed text field
-	 */
-	private JTextField getSpeedTF() {
-		if(speedTF == null) {
-			speedTF = new JTextField();
-			speedTF.setText("100");
-			speedTF.setPreferredSize(new java.awt.Dimension(33, 26));
-		}
-		return speedTF;
-	}
-
-	/**
-	 * @return The Add MIDI Output button
-	 */
-	private JButton getAddMidiOutButton() {
-		if(addMidiOutButton == null) {
-			addMidiOutButton = new JButton();
-			addMidiOutButton.setText("Set MIDI Output");
-			addMidiOutButton.setPreferredSize(new java.awt.Dimension(141, 18));
-		}
-		return addMidiOutButton;
-	}
-
-	/**
-	 * @return The Update Preferences button
-	 */
-	private JButton getUpdatePrefsButton() {
-		if(updatePrefsButton == null) {
-			updatePrefsButton = new JButton();
-			updatePrefsButton.setText("Update Preferences");
-			updatePrefsButton.setPreferredSize(new java.awt.Dimension(149, 19));
-		}
-		return updatePrefsButton;
+		return gui;
 	}
 
 	/**
@@ -478,34 +389,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 */
 	public void setSpeed(int speed) {
 		this.speed = speed;
-		this.getSpeedTF().setText(String.valueOf(speed));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("Set MIDI Output")) {
-			String[] midiOutOptions = this.monome.getMidiOutOptions();
-			String deviceName = (String)JOptionPane.showInputDialog(
-					Main.getDesktopPane(),
-					"Choose a MIDI Output to add",
-					"Set MIDI Output",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					midiOutOptions,
-					"");
-
-			if (deviceName == null) {
-				return;
-			}
-
-			this.addMidiOutDevice(deviceName);
-		}
-
-		if (e.getActionCommand().equals("Update Preferences")) {
-			this.speed = Integer.parseInt(this.getSpeedTF().getText());
-		}
+		this.gui.getSpeedTF().setText(String.valueOf(speed));
 	}
 
 	/* (non-Javadoc)
@@ -513,11 +397,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	 */
 	public void addMidiOutDevice(String deviceName) {
 		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;
-		this.getAddMidiOutButton().removeActionListener(this);
-		this.getUpdatePrefsButton().removeActionListener(this);
-		this.panel.removeAll();
-		this.panel = null;			
+		this.midiDeviceName = deviceName;		
 	}
 
 	/* (non-Javadoc)
@@ -533,11 +413,7 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 	public void destroyPage() {
 		return;
 	}
-	
-	public void clearPanel() {
-		this.panel = null;
-	}
-	
+
 	public void setIndex(int index) {
 		this.index = index;
 	}
@@ -582,5 +458,9 @@ public class MachineDrumInterfacePage implements Page, ActionListener {
 			String speed = ((Node) nl.item(0)).getNodeValue();
 			this.setSpeed(Integer.parseInt(speed));
 		}		
-	}	
+	}
+
+	public int getIndex() {
+		return index;
+	}
 }

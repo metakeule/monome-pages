@@ -209,6 +209,7 @@ public class Main extends JFrame {
 		}
 		
 		abletonSetupFrame = new AbletonSetupFrame();
+		abletonSetupFrame.setSize(new Dimension(235, 200));
 		abletonSetupFrame.setVisible(true);
 		jDesktopPane.add(abletonSetupFrame);
 		try {
@@ -250,6 +251,7 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		super();
+		initialize();
 	}
 	
 	/**
@@ -405,6 +407,7 @@ public class Main extends JFrame {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					getFrame().setTitle("Pages");
 					getConfigurationMenu().setEnabled(false);
+					getMidiMenu().setEnabled(false);
 					ConfigurationFactory.setConfiguration(null);
 				}
 			});
@@ -562,6 +565,7 @@ public class Main extends JFrame {
 		}
 		
 		monomeSerialSetupFrame = new MonomeSerialSetupFrame();
+		monomeSerialSetupFrame.setSize(new Dimension(235, 200));
 		monomeSerialSetupFrame.setVisible(true);
 		//monomeSerialSetupFrame.setNewMonomeItem(this.newMonomeItem);
 		jDesktopPane.add(monomeSerialSetupFrame);
