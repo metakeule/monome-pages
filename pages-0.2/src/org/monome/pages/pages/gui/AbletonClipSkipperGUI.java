@@ -1,18 +1,13 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 
 import org.monome.pages.configuration.ConfigurationFactory;
-import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.AbletonClipSkipperPage;
 
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
-import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import java.awt.Dimension;
 
 public class AbletonClipSkipperGUI extends JPanel {
 
@@ -36,12 +31,16 @@ public class AbletonClipSkipperGUI extends JPanel {
 	 */
 	private void initialize() {
 		pageLabel = new JLabel();
-		pageLabel.setText((page.getIndex() + 1) + ": Ableton Clip Skipper");
+		setName("Ableton Clip Skipper");
 		pageLabel.setBounds(new Rectangle(5, 5, 181, 16));
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(getRefreshButton(), null);
 		this.setSize(185, 75);
+	}
+	
+	public void setName(String name) {
+		pageLabel.setText((page.getIndex() + 1) + ": " + name);
 	}
 	
 	/**

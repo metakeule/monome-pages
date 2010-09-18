@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;
@@ -81,67 +80,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 * The OSCPortOut object for communication with the external application 
 	 */
 	private OSCPortOut oscOut;
-
-	/**
-	 * The page's GUI
-	 */
-	private JPanel panel;
-
-	/**
-	 * The Disable LED Cache checkbox 
-	 */
-	private JCheckBox disableCache;
-
-	/**
-	 * The OSC Prefix label
-	 */
-	private JLabel prefixLabel;
-
-	/**
-	 * The OSC Prefix text field 
-	 */
-	private JTextField prefixTF;
-
-	/**
-	 * The OSC Output Port label
-	 */
-	private JLabel oscOutLabel;
-
-	/**
-	 * The OSC Output Port text field
-	 */
-	private JTextField oscOutTF;
-
-	/**
-	 * The OSC Input Port text field
-	 */
-	private JLabel oscInLabel;
-
-	/**
-	 * The OSC Input Port text field
-	 */
-	private JTextField oscInTF;
-
-	/**
-	 * The OSC hostname label
-	 */
-	private JLabel hostnameLabel;
-
-	/**
-	 * The OSC hostname text field
-	 */
-	private JTextField hostnameTF;
-
-	/**
-	 * The update preferences button
-	 */
-	private JButton updatePrefsButton;
 	
-	private Receiver recv;
-	
-	// tilt stuff 
-	private ADCOptions pageADCOptions = new ADCOptions();
-
 	/**
 	 * The name of the page 
 	 */
@@ -187,16 +126,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);	
-		this.panel.removeAll();
-		this.panel = null;			
-		this.initOSC();
-	}
-	
-	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */
 	public String getName() {		
@@ -208,6 +137,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
+		this.gui.setName(name);
 	}
 
 	/* (non-Javadoc)
@@ -232,76 +162,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	
 	public boolean isTiltPage() {
 		return true;
-	}
-
-	public ADCOptions getAdcOptions() {
-		return this.pageADCOptions;
-	}
-
-	public void setAdcOptions(ADCOptions options) { 
-		this.pageADCOptions = options;
-	}	
-	
-	public void handleADC(int adcNum, float value) {
-		if (this.oscOut == null) {
-			return;
-		}		
-				
-		switch (adcNum) {
-			case 0: 				
-				if(this.pageADCOptions.isSwapADC())	adcNum = 2;
-				break;
-			case 1:				
-				if(this.pageADCOptions.isSwapADC())	adcNum = 3;
-				break;
-			case 2:
-				if(this.pageADCOptions.isSwapADC()) adcNum = 0;
-				break;
-			case 3:
-				if(this.pageADCOptions.isSwapADC()) adcNum = 1;
-				break;
-			default:
-				break;
-		}
-		
-		Object args[] = new Object[2];	
-		OSCMessage msg;
-		
-		args[0] = new Integer(adcNum);
-		args[1] = new Float(value);
-		msg = new OSCMessage(this.prefix + "/adc", args);
-		
-		try {
-			this.oscOut.send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
-			this.monome.adcObj.sendCC(this.recv, this.pageADCOptions.getMidiChannel(), this.pageADCOptions.getCcADC(), monome, adcNum, value);
-		}
-	}
-	
-	public void handleADC(float x, float y) {		
-		if (this.oscOut == null) {
-			return;
-		}
-		
-		Object args[] = new Object[2];	
-		OSCMessage msg;
-		
-		args[0] = x;
-		args[1] = y;
-		msg = new OSCMessage(this.prefix + "/tilt", args);
-		
-		try {
-			this.oscOut.send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled())
-			this.monome.adcObj.sendCC(this.recv, this.pageADCOptions.getMidiChannel(), this.pageADCOptions.getCcADC(), monome, x, y);
 	}
 
 	/* (non-Javadoc)
@@ -357,13 +217,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		xml += "      <oscoutport>" + this.outPort + "</oscoutport>\n";
 		xml += "      <hostname>" + this.hostname + "</hostname>\n";
 		xml += "      <disablecache>" + disableCache + "</disablecache>\n";
-		
-		xml += "      <swapADC>" + this.pageADCOptions.isSwapADC() + "</swapADC>\n";		
-		xml += "      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n";
-		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
-		xml += "      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n";
-		xml += "      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n";
-		xml += "      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"; 	
+
 		return xml;
 	}
 
@@ -475,11 +329,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	public void destroyPage() {
 		this.stopOSC();
 	}
-	
-	public void clearPanel() {
-		this.panel = null;
-	}
-	
+		
 	public void setIndex(int index) {
 		this.index = index; 
 	}
@@ -533,56 +383,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 			String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
 			gui.setCacheDisabled(cacheDisabled);
 		}
-		
-		nl = pageElement.getElementsByTagName("swapADC");
-		el = (Element) nl.item(0);				
-		if (el != null){			
-			nl = el.getChildNodes();
-			String swapADC = ((Node) nl.item(0)).getNodeValue();
-			this.pageADCOptions.setSwapADC(Boolean.parseBoolean(swapADC));
-		}
-		
-		nl = pageElement.getElementsByTagName("ccoffset");
-		el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	ccOffset = ((Node) nl.item(0)).getNodeValue();
-			this.pageADCOptions.setCcOffset(Integer.parseInt(ccOffset));
-		}	
-		
-		nl = pageElement.getElementsByTagName("sendADC");
-		el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	sendADC = ((Node) nl.item(0)).getNodeValue();
-			this.pageADCOptions.setSendADC(Boolean.parseBoolean(sendADC));
-		}
-		
-		nl = pageElement.getElementsByTagName("adcTranspose");
-		el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	adcTranspose = ((Node) nl.item(0)).getNodeValue();
-			this.pageADCOptions.setAdcTranspose(Integer.parseInt(adcTranspose));
-		}
-		
-		nl = pageElement.getElementsByTagName("midiChannelADC");
-		el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	midiChannelADC = ((Node) nl.item(0)).getNodeValue();
-			this.pageADCOptions.setMidiChannel(Integer.parseInt(midiChannelADC));
-		}
-		
-		nl = pageElement.getElementsByTagName("recv");
-		el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	recv = ((Node) nl.item(0)).getNodeValue();
-			this.pageADCOptions.setRecv(recv);
-			this.addMidiOutDevice(this.pageADCOptions.getRecv());
-		}
-		
 		this.initOSC();		
 	}
 
@@ -599,5 +399,17 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	@Override
 	public JPanel getPanel() {
 		return gui;
+	}
+
+	@Override
+	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleADC(float x, float y) {
+		// TODO Auto-generated method stub
+		
 	}
 }

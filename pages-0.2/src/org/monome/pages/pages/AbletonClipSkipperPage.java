@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
-import org.monome.pages.configuration.ADCOptions;
+//import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
@@ -69,7 +69,6 @@ public class AbletonClipSkipperPage implements Page {
 	 * The name of the page 
 	 */
 	private String pageName = "Ableton Clip Skipper";
-	private JLabel pageNameLBL;
 			
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -80,13 +79,6 @@ public class AbletonClipSkipperPage implements Page {
 		this.index = index;
 		ConfigurationFactory.getConfiguration().initAbleton();
 		this.gui = new AbletonClipSkipperGUI(this);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		return;
 	}
 
 	/* (non-Javadoc)
@@ -101,7 +93,7 @@ public class AbletonClipSkipperPage implements Page {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.gui.setName(name);
 	}
 
 	/* (non-Javadoc)
@@ -290,6 +282,7 @@ public class AbletonClipSkipperPage implements Page {
 		// TODO Auto-generated method stub
 		return false;
 	}	
+/*
 	public ADCOptions getAdcOptions() {
 		// TODO Auto-generated method stub
 		return null;
@@ -299,7 +292,7 @@ public class AbletonClipSkipperPage implements Page {
 		// TODO Auto-generated method stub
 		
 	}
-	
+*/
 	public void configure(Element pageElement) {
 		NodeList nameNL = pageElement.getElementsByTagName("pageName");
 		Element el = (Element) nameNL.item(0);

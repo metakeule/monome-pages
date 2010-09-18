@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import javax.sound.midi.MidiMessage;
 import javax.swing.JPanel;
 
-import org.monome.pages.configuration.ADCOptions;
+//import org.monome.pages.configuration.ADCOptions;
 import org.w3c.dom.Element;
 
 /**
@@ -39,11 +39,11 @@ public interface Page {
 	/**
 	 * Get the ADC/tilt options for this page
 	 */
-	public ADCOptions getAdcOptions();
+	//public ADCOptions getAdcOptions();
 	/**
 	 * Set the ADC/tilt options for this page
 	 */
-	public void setAdcOptions(ADCOptions options);
+	//public void setAdcOptions(ADCOptions options);
 
 	/**
 	 * Called whenever the monome needs to be redrawn from the current page state.  Should
@@ -90,13 +90,6 @@ public interface Page {
 	 * @return XML representation of the page's current configuration.
 	 */
 	public String toXml();
-
-	/**
-	 * Adds or selects a MIDI output device for the page.
-	 * 
-	 * @param deviceName The name of the device to use
-	 */
-	public void addMidiOutDevice(String deviceName);
 
 	/**
 	 * Controls whether or not the LED state cache should be used for this page.

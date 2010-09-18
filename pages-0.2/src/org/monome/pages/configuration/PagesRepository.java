@@ -38,7 +38,7 @@ public class PagesRepository {
 	
 	static Page getPageInstance(String name, MonomeConfiguration conf, int index){
 		Page page;
-		for (Class clz : pageTypes){
+		for (Class<? extends Page> clz : pageTypes){
 			System.out.println("compare '" + clz.getName() + "' to '" + name + "'");
 			if (clz.getName().equals(name)) {
 				try {

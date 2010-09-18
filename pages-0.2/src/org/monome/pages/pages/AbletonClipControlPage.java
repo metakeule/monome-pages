@@ -17,7 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.monome.pages.configuration.ADCOptions;
+//import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
@@ -36,7 +36,7 @@ import com.illposed.osc.OSCMessage;
  * @author Julien Bayle
  *
  */
-public class AbletonClipControlPage implements ActionListener, Page {
+public class AbletonClipControlPage implements Page {
 
 	/**
 	 * Reference to the MonomeConfiguration this page belongs to.
@@ -149,40 +149,6 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		this.monome = monome;
 		this.index = index;
 		ConfigurationFactory.getConfiguration().initAbleton();
-	}
-
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		int numEnabledRows = 0;
-		this.numEnabledRows = numEnabledRows;
-		if (e.getActionCommand().equals("Add MIDI Output")) {
-			String[] midiOutOptions = this.monome.getMidiOutOptions();
-			String deviceName = (String)JOptionPane.showInputDialog(
-					Main.getDesktopPane(),
-					"Choose a MIDI Output to add",
-					"Add MIDI Output",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					midiOutOptions,
-					"");
-
-			if (deviceName == null) {
-				return;
-			}
-			this.addMidiOutDevice(deviceName);	
-		}
-		
-		return;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		return;
 	}
 
 	/* (non-Javadoc)
@@ -698,6 +664,8 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	/*
 	public ADCOptions getAdcOptions() {
 		// TODO Auto-generated method stub
 		return null;
@@ -707,6 +675,7 @@ public class AbletonClipControlPage implements ActionListener, Page {
 		// TODO Auto-generated method stub
 		
 	}
+	*/
 
 
 	public void configure(Element pageElement) {

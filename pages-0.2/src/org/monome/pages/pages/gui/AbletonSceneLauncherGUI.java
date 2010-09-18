@@ -56,7 +56,7 @@ public class AbletonSceneLauncherGUI extends JPanel {
 		disableMuteLabel.setBounds(new Rectangle(40, 30, 121, 21));
 		disableMuteLabel.setText("Disable Mute");
 		pageLabel = new JLabel();
-		pageLabel.setText((page.getIndex() + 1) + ": Ableton Scene Launcher");
+		setName("Ableton Scene Launcher");
 		pageLabel.setBounds(new Rectangle(5, 5, 196, 21));
 		this.setLayout(null);
 		this.add(pageLabel, null);
@@ -70,6 +70,10 @@ public class AbletonSceneLauncherGUI extends JPanel {
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
 		this.setSize(203, 199);
+	}
+	
+	public void setName(String name) {
+		pageLabel.setText((page.getIndex() + 1) + ": " + name);
 	}
 	
 	/**

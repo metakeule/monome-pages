@@ -1,29 +1,19 @@
 package org.monome.pages.pages;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Random;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.monome.pages.configuration.ADCOptions;
+//import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
-import org.monome.pages.gui.Main;
 import org.monome.pages.machinedrum.MachineDrum;
-import org.monome.pages.pages.gui.AbletonClipLauncherGUI;
 import org.monome.pages.pages.gui.MachineDrumInterfaceGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -127,6 +117,7 @@ public class MachineDrumInterfacePage implements Page {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
+		this.gui.setName(name);
 	}
 
 	/* (non-Javadoc)
@@ -157,14 +148,35 @@ public class MachineDrumInterfacePage implements Page {
 				}
 				// 6th row, initialize new kits
 			} else if (y == 5) {
-				machinedrum.initKit(monome, x);
+				String[] midiOutOptions = monome.getMidiOutOptions();
+				for (int i = 0; i < midiOutOptions.length; i++) {
+					if (midiOutOptions[i] == null) {
+						continue;
+					}
+					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+					machinedrum.initKit(recv, x);
+				}
 				// 7th row, kit load and save
 			} else if (y == 6) {
 				System.out.println("kit function");
 				if (x < 4) {
-					machinedrum.sendKitLoad(monome, x);
+					String[] midiOutOptions = monome.getMidiOutOptions();
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						machinedrum.sendKitLoad(recv, x);						
+					}
 				} else {
-					machinedrum.sendKitSave(monome, x - 4);
+					String[] midiOutOptions = monome.getMidiOutOptions();
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						machinedrum.sendKitSave(recv, x - 4);
+					}
 				}
 				// last row, auto morph toggle and fx morph toggles
 			} else if (y == 7) {
@@ -243,22 +255,50 @@ public class MachineDrumInterfacePage implements Page {
 
 		// send a param change to the echo effect
 		if (fx_morph[0] == 1 && ticks == 0) {
-			machinedrum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
+			String[] midiOutOptions = monome.getMidiOutOptions();
+			for (int i = 0; i < midiOutOptions.length; i++) {
+				if (midiOutOptions[i] == null) {
+					continue;
+				}
+				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+				machinedrum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
+			}
 		}
 
 		// send a param change to the gate effect
 		if (fx_morph[1] == 1 && ticks == 1) {
-			machinedrum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
+			String[] midiOutOptions = monome.getMidiOutOptions();
+			for (int i = 0; i < midiOutOptions.length; i++) {
+				if (midiOutOptions[i] == null) {
+					continue;
+				}
+				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+				machinedrum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
+			}
 		}
 
 		// send a param change to the eq effect
 		if (fx_morph[2] == 1 && ticks == 2) {
-			machinedrum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
+			String[] midiOutOptions = monome.getMidiOutOptions();
+			for (int i = 0; i < midiOutOptions.length; i++) {
+				if (midiOutOptions[i] == null) {
+					continue;
+				}
+				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+				machinedrum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
+			}
 		}
 
 		// send a param change to the compressor effect
 		if (fx_morph[3] == 1 && ticks == 3) {
-			machinedrum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
+			String[] midiOutOptions = monome.getMidiOutOptions();
+			for (int i = 0; i < midiOutOptions.length; i++) {
+				if (midiOutOptions[i] == null) {
+					continue;
+				}
+				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+				machinedrum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
+			}
 		}
 
 		// send random parameter changes
@@ -279,7 +319,14 @@ public class MachineDrumInterfacePage implements Page {
 				if (morph_machines[x] == 1) {
 					if (morph_params[y] == 1) {
 						if (generator.nextInt(this.speed) == 1) {
-							machinedrum.sendRandomParamChange(recv, x, y);
+							String[] midiOutOptions = monome.getMidiOutOptions();
+							for (int i = 0; i < midiOutOptions.length; i++) {
+								if (midiOutOptions[i] == null) {
+									continue;
+								}
+								Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+								machinedrum.sendRandomParamChange(recv, x, y);
+							}
 						}
 					}
 				}
@@ -335,32 +382,36 @@ public class MachineDrumInterfacePage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
-		if (this.recv == null) {
-			return;
-		}
-
-		// pass midi clock messages on to the machinedrum for tempo sync
-		ShortMessage shortMessage;
-		if (message instanceof ShortMessage) {
-			shortMessage = (ShortMessage) message;
-			switch (shortMessage.getCommand()) {
-			case 0xF0:
-				// midi clock message
-				if (shortMessage.getChannel() == 0x08) {
-					this.recv.send(message, timeStamp);
+		System.out.println("midi message received");
+		String[] midiOutOptions = monome.getMidiOutOptions();
+		for (int i = 0; i < midiOutOptions.length; i++) {
+			if (midiOutOptions[i] == null) {
+				continue;
+			}
+			Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+			// pass midi clock messages on to the machinedrum for tempo sync
+			ShortMessage shortMessage;
+			if (message instanceof ShortMessage) {
+				shortMessage = (ShortMessage) message;
+				switch (shortMessage.getCommand()) {
+				case 0xF0:
+					// midi clock message
+					if (shortMessage.getChannel() == 0x08) {
+						recv.send(message, timeStamp);
+					}
+					// midi start message
+					if (shortMessage.getChannel() == 0x0A) {
+						recv.send(message, timeStamp);
+					}
+					// midi stop message
+					if (shortMessage.getChannel() == 0x0C) {
+						recv.send(message, timeStamp);
+					}
+					break;
+				default:
+					recv.send(message, timeStamp);
+					break;
 				}
-				// midi start message
-				if (shortMessage.getChannel() == 0x0A) {
-					this.recv.send(message, timeStamp);
-				}
-				// midi stop message
-				if (shortMessage.getChannel() == 0x0C) {
-					this.recv.send(message, timeStamp);
-				}
-				break;
-			default:
-				this.recv.send(message, timeStamp);
-				break;
 			}
 		}
 	}
@@ -372,7 +423,6 @@ public class MachineDrumInterfacePage implements Page {
 		String xml = "";
 		xml += "      <name>Machine Drum Interface</name>\n";
 		xml += "      <pageName>" + this.pageName + "</pageName>\n";
-		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <speed>" + this.speed + "</speed>\n";
 		return xml;
 	}
@@ -390,14 +440,6 @@ public class MachineDrumInterfacePage implements Page {
 	public void setSpeed(int speed) {
 		this.speed = speed;
 		this.gui.getSpeedTF().setText(String.valueOf(speed));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;		
 	}
 
 	/* (non-Javadoc)
@@ -432,6 +474,7 @@ public class MachineDrumInterfacePage implements Page {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	/*
 	public ADCOptions getAdcOptions() {
 		// TODO Auto-generated method stub
 		return null;
@@ -441,6 +484,7 @@ public class MachineDrumInterfacePage implements Page {
 		// TODO Auto-generated method stub
 		
 	}
+	*/
 
 	public void configure(Element pageElement) {
 		NodeList nameNL = pageElement.getElementsByTagName("pageName");

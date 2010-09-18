@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
-import org.monome.pages.configuration.ADCOptions;
+//import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.AbletonSceneLauncherGUI;
@@ -84,13 +84,6 @@ public class AbletonSceneLauncherPage implements Page {
 	}
 
 	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		return;
-	}
-
-	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */	
 	public String getName() 
@@ -102,6 +95,7 @@ public class AbletonSceneLauncherPage implements Page {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
+		this.gui.setName(name);
 	}
 
 	/* (non-Javadoc)
@@ -645,6 +639,7 @@ public class AbletonSceneLauncherPage implements Page {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	/*
 	public ADCOptions getAdcOptions() {
 		// TODO Auto-generated method stub
 		return null;
@@ -653,6 +648,7 @@ public class AbletonSceneLauncherPage implements Page {
 	public void setAdcOptions(ADCOptions options)  {
 		// TODO Auto-generated method stub
 	}
+	*/
 	
 	public void configure(Element pageElement) {
 		NodeList nameNL = pageElement.getElementsByTagName("pageName");

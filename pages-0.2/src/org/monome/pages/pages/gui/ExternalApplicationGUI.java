@@ -1,17 +1,13 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 
-import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.ExternalApplicationPage;
 
-import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
-import java.awt.Dimension;
 import javax.swing.JButton;
 
 public class ExternalApplicationGUI extends JPanel {
@@ -62,7 +58,7 @@ public class ExternalApplicationGUI extends JPanel {
 		oscInLabel.setBounds(new Rectangle(15, 95, 111, 21));
 		oscInLabel.setText("OSC In Port");
 		pageLabel = new JLabel();
-		pageLabel.setText((page.getIndex() + 1) + ": External Application");
+		setName("External Application");
 		pageLabel.setBounds(new Rectangle(5, 5, 291, 21));
 		this.setSize(273, 225);
 		this.setLayout(null);

@@ -8,7 +8,6 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import java.awt.Dimension;
 
 public class AbletonClipLauncherGUI extends JPanel {
 
@@ -52,7 +51,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 		disableMuteLabel.setBounds(new Rectangle(40, 30, 126, 21));
 		disableMuteLabel.setText("Disable Mute");
 		pageLabel = new JLabel();
-		pageLabel.setText((page.getIndex() + 1) + ": Ableton Clip Launcher");
+		setName("Ableton Clip Launcher");
 		pageLabel.setBounds(new Rectangle(5, 5, 181, 16));
 		this.setLayout(null);
 		this.add(pageLabel, null);
@@ -66,6 +65,10 @@ public class AbletonClipLauncherGUI extends JPanel {
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
 		this.setSize(186, 182);
+	}
+	
+	public void setName(String name) {
+		pageLabel.setText((page.getIndex() + 1) + ": " + name);
 	}
 	
 	/**
