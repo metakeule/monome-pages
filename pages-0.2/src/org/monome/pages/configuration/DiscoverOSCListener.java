@@ -17,13 +17,15 @@ public class DiscoverOSCListener implements OSCListener {
 
 	public void acceptMessage(Date time, OSCMessage message) {
 		Object[] args = message.getArguments();
-		/*
+		
 		System.out.print(message.getAddress());
 		for (int i = 0; i < args.length; i++) {
-			System.out.print(" " + args[i].toString());
+			if (args[i] != null) {
+				System.out.print(" " + args[i].toString());
+			}
 		}
 		System.out.println();
-		*/
+		
 		
 		if (discoverMode) {
 			int index;

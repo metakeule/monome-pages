@@ -108,10 +108,6 @@ public class MonomeConfiguration {
 	private int prevPage = 0; 
 
 	/**
-	 * Configuration page was deleted, switch to the previous page instead of last
-	 */
-	private boolean configPageDel = false;
-	/**
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
 	private String options[];
@@ -127,11 +123,7 @@ public class MonomeConfiguration {
 	private boolean pageChanged = false;
 	
 	private int tickNum = 0;
-		
-	public ADC adcObj = new ADC();
-	public boolean calibrationMode = false;
-	public boolean pageChangeConfigMode = false;
-	
+			
 	public ArrayList<MIDIPageChangeRule> midiPageChangeRules;
 	
 	public boolean usePageChangeButton = true;
@@ -191,22 +183,10 @@ public class MonomeConfiguration {
 		this.pages.get(i).destroyPage();
 		this.pages.remove(i);
 		this.numPages--;
-		if (this.configPageDel) {
-			this.configPageDel = false;
-			this.curPage = this.prevPage;
-			if(this.pages.size() == 0)
-				this.curPage = -1;
-		} else if (this.curPage >= i) {
-			this.curPage--;
-		}
+		this.curPage--;
 		
 		for (int x=0; x < this.pages.size(); x++) {
 			this.pages.get(x).setIndex(x);
-		}
-		
-		if (this.curPage > -1) {
-			// TODO: clearPanel()
-			//pages.get(this.curPage).clearPanel();
 		}		
 	}
 
@@ -219,7 +199,6 @@ public class MonomeConfiguration {
 	 */
 	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
-		System.out.println("switch page to " + pageIndex);
 		page.redrawMonome();
 		monomeFrame.redrawPagePanel(page);
 	}
@@ -229,8 +208,6 @@ public class MonomeConfiguration {
 			return;
 		}
 		
-		System.out.println("redrawAbletonPages()");
-
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
@@ -294,7 +271,7 @@ public class MonomeConfiguration {
 		}
 		
 		// if page change mode is on and this is a button on the bottom row then change page and return
-		if (this.pageChangeMode == 1 && value == 1 && !calibrationMode) {
+		if (this.pageChangeMode == 1 && value == 1) {
 			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
 			int patternNum = x;
 			int numPages = this.pages.size();
@@ -316,7 +293,7 @@ public class MonomeConfiguration {
 		}
 
 		// if this is the bottom right button and we pressed the button (value == 1), turn page change mode on
-		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1 && !calibrationMode) {
+		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
 			this.pageChangeMode = 1;
 			this.pageChanged = false;
 			this.drawPatternState();
@@ -325,7 +302,7 @@ public class MonomeConfiguration {
 
 		// if this is the bottom right button and we let go turn it off
 		// and send the value == 1 press along to the page
-		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0 && !calibrationMode) {
+		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0) {
 			this.pageChangeMode = 0;
 			if (this.pageChanged == false) {
 				if (this.pages.get(curPage) != null) {
@@ -343,31 +320,6 @@ public class MonomeConfiguration {
 		if (this.pages.get(curPage) != null) {
 			this.patternBanks.get(curPage).recordPress(x, y, value);
 			this.pages.get(curPage).handlePress(x, y, value);
-		}
-	}
-	
-	public void handleADC(int adcNum, float value) {
-		// if we have no pages then dont handle any adc events
-		if (this.pages.size() == 0) {
-			return;
-		}
-		
-		if (this.curPage > -1) {
-			if (this.pages.get(curPage) != null) {			
-				this.pages.get(curPage).handleADC(adcNum, value);
-			}
-		}
-	}
-	public void handleADC(float x, float y) {
-		// if we have no pages then dont handle any adc events
-		if (this.pages.size() == 0) {
-			return;
-		}
-		
-		if (this.curPage > -1) {
-			if (this.pages.get(curPage) != null) {			
-				this.pages.get(curPage).handleADC(x, y);
-			}
 		}
 	}
 
@@ -429,7 +381,7 @@ public class MonomeConfiguration {
 	 * @param timeStamp The timestamp of the MIDI message
 	 */
 	public void send(MidiMessage message, long timeStamp) {
-		if (this.useMIDIPageChanging && this.pageChangeConfigMode == false) {
+		if (this.useMIDIPageChanging) {
 			if (message instanceof ShortMessage) {
 				ShortMessage msg = (ShortMessage) message;
 				int velocity = msg.getData1();
@@ -507,7 +459,6 @@ public class MonomeConfiguration {
 	 * Clear the monome.
 	 */
 	public void clearMonome() {
-		System.out.println("clearMonome()");
 		this.clear(0, 0);
 	}
 
@@ -696,22 +647,6 @@ public class MonomeConfiguration {
 			}
 		}
 		
-		//xml += "    <adcVersion>" + this.adcObj.getMonomeVersion() + "</adcVersion>\n";
-		
-		float [] min = this.adcObj.getMin();
-		xml += "    <min>" + min[0] + "</min>\n"; 
-		xml += "    <min>" + min[1] + "</min>\n";
-		xml += "    <min>" + min[2] + "</min>\n";
-		xml += "    <min>" + min[3] + "</min>\n";
-		
-		float [] max = this.adcObj.getMax();
-		xml += "    <max>" + max[0] + "</max>\n"; 
-		xml += "    <max>" + max[1] + "</max>\n";
-		xml += "    <max>" + max[2] + "</max>\n";
-		xml += "    <max>" + max[3] + "</max>\n";
-		
-		xml += "    <adcEnabled>" + this.adcObj.isEnabled() + "</adcEnabled>\n";
-		
 		for (int i=0; i < this.numPages; i++) {
 			if (this.pages.get(i).toXml() != null) {
 				xml += "    <page class=\"" + this.pages.get(i).getClass().getName() + "\">\n";
@@ -772,15 +707,7 @@ public class MonomeConfiguration {
 			this.pages.get(i).destroyPage();
 		}
 	}
-	
-	/**
-	 * Used so the ConfigADCPage can delete its self on exit
-	 */
-	public void deletePageX(int index) {
-		this.configPageDel = true;
-		deletePage(index);
-	}
-	
+		
 	/**
 	 * Sets the title bar of this MonomeConfiguration's MonomeFrame
 	 */

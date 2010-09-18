@@ -910,7 +910,7 @@ public class Configuration implements Receiver {
 							nl = el.getChildNodes();
 							s = ((Node) nl.item(0)).getNodeValue();
 							min[j] = Float.parseFloat(s.trim());
-							monomeConfig.adcObj.setMin(min);
+							//monomeConfig.adcObj.setMin(min);
 						}
 					}
 					
@@ -922,7 +922,7 @@ public class Configuration implements Receiver {
 							nl = el.getChildNodes();
 							s = ((Node) nl.item(0)).getNodeValue();
 							max[j] = Float.parseFloat(s.trim());
-							monomeConfig.adcObj.setMax(max);
+							//monomeConfig.adcObj.setMax(max);
 						}
 					}
 					
@@ -932,7 +932,7 @@ public class Configuration implements Receiver {
 					if (el != null) {
 						nl = el.getChildNodes();
 						String enabled = ((Node) nl.item(0)).getNodeValue();
-						monomeConfig.adcObj.setEnabled(Boolean.parseBoolean(enabled));
+						//monomeConfig.adcObj.setEnabled(Boolean.parseBoolean(enabled));
 					}
 					
 					
