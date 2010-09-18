@@ -1,21 +1,19 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JLabel;
 
-import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.MachineDrumInterfacePage;
+import java.awt.Dimension;
 
 public class MachineDrumInterfaceGUI extends JPanel {
-
 	private static final long serialVersionUID = 1L;
 	private MachineDrumInterfacePage page = null;
 	private JTextField speedTF = null;
 	private JLabel speedLBL = null;
+	private JLabel pageLabel = null;
 
 	/**
 	 * This is the default constructor
@@ -32,13 +30,29 @@ public class MachineDrumInterfaceGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
-		speedLBL = new JLabel();
-		speedLBL.setBounds(new Rectangle(15, 30, 55, 16));
-		speedLBL.setText("Speed");
-		this.setSize(186, 182);
 		this.setLayout(null);
+		this.add(getPageLabel(), null);
+		setName("MachineDrum Interface Page");
+		this.setSize(174, 180);
 		this.add(getSpeedTF(), null);
-		this.add(speedLBL, null);
+		this.add(getSpeedLBL(), null);
+	}
+	
+	public void setName(String name) {
+		pageLabel.setText((page.getIndex() + 1) + ": " + name);
+	}
+
+	/**
+	 * This method initializes pageLabel	
+	 * 	
+	 * @return javax.swing.JLabel	
+	 */
+	private JLabel getPageLabel() {
+		if (pageLabel == null) {
+			pageLabel = new JLabel();			
+			pageLabel.setBounds(new Rectangle(5, 5, 171, 16));
+		}
+		return pageLabel;
 	}
 
 	/**
@@ -49,7 +63,7 @@ public class MachineDrumInterfaceGUI extends JPanel {
 	public JTextField getSpeedTF() {
 		if (speedTF == null) {
 			speedTF = new JTextField();
-			speedTF.setBounds(new Rectangle(75, 30, 50, 16));
+			speedTF.setBounds(new Rectangle(65, 25, 51, 21));
 			speedTF.addKeyListener(new java.awt.event.KeyAdapter() {
 				public void keyTyped(java.awt.event.KeyEvent e) {
 					String text = speedTF.getText();
@@ -61,11 +75,22 @@ public class MachineDrumInterfaceGUI extends JPanel {
 					} catch (NumberFormatException ex) {
 						return;
 					}
-					
 				}
 			});
 		}
 		return speedTF;
 	}
 
-}
+	/**
+	 * This method initializes speedLBL1	
+	 * 	
+	 * @return javax.swing.JLabel	
+	 */
+	private JLabel getSpeedLBL() {
+		if (speedLBL == null) {
+			speedLBL = new JLabel();
+			speedLBL.setText("Speed");
+			speedLBL.setBounds(new Rectangle(15, 25, 46, 21));
+		}
+		return speedLBL;
+	}} //  @jve:decl-index=0:visual-constraint="10,10"

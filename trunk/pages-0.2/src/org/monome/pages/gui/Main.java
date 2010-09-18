@@ -36,6 +36,7 @@ import java.awt.Rectangle;
 public class Main extends JFrame {
 
 	private static final long serialVersionUID = 1L;
+	private static Main thisObj = null;
 	private static JDesktopPane jDesktopPane = null;
 	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
 	private AbletonSetupFrame abletonSetupFrame = null;
@@ -61,6 +62,10 @@ public class Main extends JFrame {
 	private JMenu midiOutMenu = null;
 	private JMenuItem abletonSetupItem = null;
 	
+	public static Main getGUI() {
+		return thisObj;
+	}
+		
 	/**
 	 * This method initializes midiMenu	
 	 * 	
@@ -126,7 +131,26 @@ public class Main extends JFrame {
 				e.printStackTrace();
 			}
 		}
-
+	}
+	
+	public void enableMidiInOption(String deviceName, boolean enabled) {
+		for (int i=0; i < midiInMenu.getItemCount(); i++) {
+			String name = midiInMenu.getItem(i).getText();
+			String[] pieces = name.split("MIDI Input: ");
+			if (pieces[1].compareTo(deviceName) == 0) {
+				midiInMenu.getItem(i).setSelected(enabled);
+			}
+		}
+	}
+	
+	public void enableMidiOutOption(String deviceName, boolean enabled) {
+		for (int i=0; i < midiOutMenu.getItemCount(); i++) {
+			String name = midiOutMenu.getItem(i).getText();
+			String[] pieces = name.split("MIDI Output: ");
+			if (pieces[1].compareTo(deviceName) == 0) {
+				midiOutMenu.getItem(i).setSelected(enabled);
+			}
+		}
 	}
 
 	/**
@@ -251,6 +275,7 @@ public class Main extends JFrame {
 	 */
 	public Main() {
 		super();
+		thisObj = this;
 		initialize();
 	}
 	
@@ -353,7 +378,9 @@ public class Main extends JFrame {
 							null,
 							"");
 					
-					//configuration = new Configuration(name);
+					if (name == null || name.compareTo("") == 0) {
+						return;
+					}
 					getConfigurationMenu().setEnabled(true);
 					getMidiMenu().setEnabled(true);
 					getFrame().setTitle("Pages : " + name);

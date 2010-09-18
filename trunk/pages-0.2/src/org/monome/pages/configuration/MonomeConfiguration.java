@@ -24,11 +24,14 @@ package org.monome.pages.configuration;
 
 import java.util.ArrayList;
 
+import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.monome.pages.gui.MonomeDisplayFrame;
 import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.pages.AbletonClipControlPage;
@@ -79,18 +82,28 @@ public class MonomeConfiguration {
 	/**
 	 * ledState[x][y] - The LED state cache for the monome
 	 */
-	public int[][] ledState;
+	public int[][] ledState = new int[32][32];;
 
 	/**
 	 * pageState[page_num][x][y] - The LED state cache for each page
 	 */
 	public int[][][] pageState = new int[255][32][32];
+	
+	/**
+	 * Enabled MIDI In devices by page 
+	 */
+	String[][] midiInDevices = new String[255][32];
+
+	/**
+	 * Enabled MIDI In devices by page 
+	 */
+	String[][] midiOutDevices = new String[255][32];
 
 	/**
 	 * The pages that belong to this monome
 	 */
 	public ArrayList<Page> pages = new ArrayList<Page>();
-	private ArrayList<PatternBank> patternBanks = new ArrayList<PatternBank>();
+	public ArrayList<PatternBank> patternBanks = new ArrayList<PatternBank>();
 
 	/**
 	 * The number of pages this monome has 
@@ -148,7 +161,6 @@ public class MonomeConfiguration {
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 
-		this.ledState = new int[32][32];
 		this.midiPageChangeRules = midiPageChangeRules;
 		this.usePageChangeButton = usePageChangeButton;
 		this.useMIDIPageChanging = useMIDIPageChanging;
@@ -175,11 +187,12 @@ public class MonomeConfiguration {
 		this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
 		
 		this.numPages++;
+		this.monomeFrame.enableMidiMenu(true);
 		// recreate the menu bar to include this page in the show page list
 		return page;
 	}
 	
-	private void deletePage(int i) {
+	public void deletePage(int i) {
 		this.pages.get(i).destroyPage();
 		this.pages.remove(i);
 		this.numPages--;
@@ -187,7 +200,11 @@ public class MonomeConfiguration {
 		
 		for (int x=0; x < this.pages.size(); x++) {
 			this.pages.get(x).setIndex(x);
-		}		
+		}
+		
+		if (this.numPages == 0) {
+			this.monomeFrame.enableMidiMenu(false);
+		}
 	}
 
 	/**
@@ -201,6 +218,8 @@ public class MonomeConfiguration {
 		this.curPage = pageIndex;
 		page.redrawMonome();
 		monomeFrame.redrawPagePanel(page);
+		monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
+		monomeFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
 	}
 		
 	public void redrawAbletonPages() {
@@ -342,7 +361,7 @@ public class MonomeConfiguration {
 	/**
 	 * Called every time a MIDI clock sync 'tick' is received, this triggers each page's handleTick() method
 	 */
-	public void tick() {
+	public void tick(MidiDevice device) {
 		for (int i=0; i < this.numPages; i++) {
 			ArrayList<Press> presses = patternBanks.get(i).getRecordedPresses();
 			if (presses != null) {
@@ -366,7 +385,7 @@ public class MonomeConfiguration {
 	/**
 	 * Called every time a MIDI clock sync 'reset' is received, this triggers each page's handleReset() method.
 	 */
-	public void reset() {
+	public void reset(MidiDevice device) {
 		for (int i=0; i < this.numPages; i++) {
 			this.pages.get(i).handleReset();
 			this.patternBanks.get(i).handleReset();
@@ -380,7 +399,7 @@ public class MonomeConfiguration {
 	 * @param message The MIDI message received
 	 * @param timeStamp The timestamp of the MIDI message
 	 */
-	public void send(MidiMessage message, long timeStamp) {
+	public void send(MidiDevice device, MidiMessage message, long timeStamp) {
 		if (this.useMIDIPageChanging) {
 			if (message instanceof ShortMessage) {
 				ShortMessage msg = (ShortMessage) message;
@@ -400,8 +419,67 @@ public class MonomeConfiguration {
 				}
 			}
 		}
-		for (int i=0; i < this.numPages; i++) {
-			this.pages.get(i).send(message, timeStamp);
+		for (int i = 0; i < this.numPages; i++) {
+			for (int j = 0; j < this.midiInDevices[i].length; j++) {
+				if (this.midiInDevices[i][j] == null) {
+					continue;
+				}
+				if (this.midiInDevices[i][j].compareTo(device.getDeviceInfo().getName()) == 0) {
+					this.pages.get(i).send(message, timeStamp);
+				}
+			}
+		}
+	}
+	
+	public void toggleMidiInDevice(String deviceName) {
+		if (curPage < 0 || curPage > 254) {
+			return;
+		}
+		for (int i = 0; i < this.midiInDevices[this.curPage].length; i++) {
+			// if this device was enabled, disable it
+			if (this.midiInDevices[this.curPage][i] == null) {
+				continue;
+			}
+			if (this.midiInDevices[this.curPage][i].compareTo(deviceName) == 0) {
+				midiInDevices[this.curPage][i] = new String();
+				this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				return;
+			}
+		}
+
+		// if we didn't disable it, enable it
+		for (int i = 0; i < this.midiInDevices[this.curPage].length; i++) {
+			if (this.midiInDevices[this.curPage][i] == null) {
+				this.midiInDevices[this.curPage][i] = deviceName;
+				this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				return;
+			}
+		}
+	}
+	
+	public void toggleMidiOutDevice(String deviceName) {
+		if (curPage < 0 || curPage > 254) {
+			return;
+		}
+		for (int i = 0; i < this.midiOutDevices[this.curPage].length; i++) {
+			// if this device was enabled, disable it
+			if (this.midiOutDevices[this.curPage][i] == null) {
+				continue;
+			}
+			if (this.midiOutDevices[this.curPage][i].compareTo(deviceName) == 0) {
+				midiOutDevices[this.curPage][i] = new String();
+				this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				return;
+			}
+		}
+
+		// if we didn't disable it, enable it
+		for (int i = 0; i < this.midiOutDevices[this.curPage].length; i++) {
+			if (this.midiOutDevices[this.curPage][i] == null) {
+				this.midiOutDevices[this.curPage][i] = deviceName;
+				this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				return;
+			}
 		}
 	}
 
@@ -651,6 +729,18 @@ public class MonomeConfiguration {
 			if (this.pages.get(i).toXml() != null) {
 				xml += "    <page class=\"" + this.pages.get(i).getClass().getName() + "\">\n";
 				xml += this.pages.get(i).toXml();
+				for (int j=0; j < midiInDevices[i].length; j++) {
+					if (midiInDevices[i][j] == null || midiInDevices[i][j].compareTo("") == 0) {
+						continue;
+					}
+					xml += "      <selectedmidiinport>" + StringEscapeUtils.escapeXml(midiInDevices[i][j]) + "</selectedmidiinport>\n"; 
+				}
+				for (int j=0; j < midiOutDevices[i].length; j++) {
+					if (midiOutDevices[i][j] == null || midiOutDevices[i][j].compareTo("") == 0) {
+						continue;
+					}
+					xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(midiOutDevices[i][j]) + "</selectedmidioutport>\n"; 
+				}
 				xml += "    </page>\n";
 			}
 		}

@@ -27,6 +27,7 @@ import org.monome.pages.ableton.AbletonOSCListener;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.gui.Main;
 import org.monome.pages.gui.MonomeFrame;
+import org.monome.pages.midi.MIDIInReceiver;
 import org.monome.pages.pages.Page;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -46,7 +47,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak
  *
  */
-public class Configuration implements Receiver {
+public class Configuration {
 
 	/**
 	 * The name of the configuration.
@@ -62,6 +63,11 @@ public class Configuration implements Receiver {
 	 * midiInDevice's associated Transmitter object. 
 	 */
 	private ArrayList<Transmitter> midiInTransmitters = new ArrayList<Transmitter>();
+	
+	/**
+	 * midiInDevice's associated MIDIINReceiver object.
+	 */
+	private ArrayList<MIDIInReceiver> midiInReceivers = new ArrayList<MIDIInReceiver>();
 
 	/**
 	 * The selected MIDI output devices.
@@ -98,6 +104,9 @@ public class Configuration implements Receiver {
 	 */
 	private String monomeHostname = "localhost";
 
+	/**
+	 * The OSC listener that checks for discovery events (/sys/report responses)
+	 */
 	private DiscoverOSCListener discoverOSCListener = null;
 	
 	/**
@@ -169,6 +178,9 @@ public class Configuration implements Receiver {
 		}
 	}
 	
+	/**
+	 * Binds to MonomeSerial input/output ports
+	 */
 	public void startMonomeSerialOSC() {
 		try {
 			if (this.monomeSerialOSCPortIn == null) {
@@ -276,6 +288,9 @@ public class Configuration implements Receiver {
 		return this.monomeHostname;
 	}
 
+	/**
+	 * Runs /sys/report and sets up a monome for each returned device
+	 */
 	public void discoverMonomes() {
 		this.stopMonomeSerialOSC();
 		try {
@@ -483,6 +498,10 @@ public class Configuration implements Receiver {
 				this.midiOutDevices.remove(i);
 				outDevice.close();
 				outDevice.close();
+				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
+					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+				}
+				Main.getGUI().enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), false);
 				return;
 			}
 		}
@@ -493,6 +512,10 @@ public class Configuration implements Receiver {
 			Receiver recv = midiOutDevice.getReceiver();
 			this.midiOutDevices.add(midiOutDevice);
 			this.midiOutReceivers.add(recv);
+			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
+				MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+			}
+			Main.getGUI().enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), true);
 		} catch (MidiUnavailableException e) {
 			e.printStackTrace();
 		}
@@ -512,8 +535,13 @@ public class Configuration implements Receiver {
 				Transmitter transmitter = this.midiInTransmitters.get(i);
 				this.midiInTransmitters.remove(i);
 				this.midiInDevices.remove(i);
+				this.midiInReceivers.remove(i);
 				transmitter.close();
 				inDevice.close();
+				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
+					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+				}
+				Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), false);
 				return;
 			}
 		}
@@ -522,22 +550,32 @@ public class Configuration implements Receiver {
 		try {
 			midiInDevice.open();
 			Transmitter transmitter = midiInDevice.getTransmitter();
-			transmitter.setReceiver(this);
+			MIDIInReceiver receiver = new MIDIInReceiver(midiInDevice);
+			transmitter.setReceiver(receiver);
 			this.midiInDevices.add(midiInDevice);
 			this.midiInTransmitters.add(transmitter);
+			this.midiInReceivers.add(receiver);
+			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
+				MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+			}
+			Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), true);
 		} catch (MidiUnavailableException e) {
 			e.printStackTrace();
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see javax.sound.midi.Receiver#send(javax.sound.midi.MidiMessage, long)
+	/**
+	 * Called by MIDIInReceiver objects when a MIDI message is received.
+	 * 
+	 * @param device The MidiDevice the message was received from
+	 * @param message The MidiMessage
+	 * @param lTimeStamp The time when the message was received
 	 */
-	public void send(MidiMessage message, long lTimeStamp) {
+	public void send(MidiDevice device, MidiMessage message, long lTimeStamp) {
 		ShortMessage shortMessage;
 		// pass all messages along to all monomes (who pass to all pages)
 		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-			MonomeConfigurationFactory.getMonomeConfiguration(i).send(message, lTimeStamp);
+			MonomeConfigurationFactory.getMonomeConfiguration(i).send(device, message, lTimeStamp);
 		}
 		
 		// filter for midi clock ticks or midi reset messages
@@ -547,12 +585,12 @@ public class Configuration implements Receiver {
 			case 0xF0:
 				if (shortMessage.getChannel() == 8) {
 					for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-						MonomeConfigurationFactory.getMonomeConfiguration(i).tick();
+						MonomeConfigurationFactory.getMonomeConfiguration(i).tick(device);
 					}
 				}
 				if (shortMessage.getChannel() == 0x0C) {
 					for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-						MonomeConfigurationFactory.getMonomeConfiguration(i).reset();
+						MonomeConfigurationFactory.getMonomeConfiguration(i).reset(device);
 					}
 				}
 				break;
@@ -560,13 +598,6 @@ public class Configuration implements Receiver {
 				break;
 			}
 		}		
-	}
-
-	/* (non-Javadoc)
-	 * @see javax.sound.midi.Receiver#close()
-	 */
-	public void close() {
-		return;
 	}
 	
 	/**
@@ -900,6 +931,8 @@ public class Configuration implements Receiver {
 					addMonomeConfiguration(i, prefix, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+					monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
 										
 					String s;
 					float [] min = {0,0,0,0};
@@ -961,10 +994,22 @@ public class Configuration implements Receiver {
 									nl = el.getChildNodes();
 									String midioutport = ((Node) nl.item(0)).getNodeValue();
 									System.out.println("selectedmidioutport is " + midioutport);
-									page.addMidiOutDevice(midioutport);
+									monomeConfig.toggleMidiOutDevice(midioutport);
 								}
 							}
 							
+							// most pages have midi inputs
+							midiNL = pageElement.getElementsByTagName("selectedmidiinport");
+							for (int k=0; k < midiNL.getLength(); k++) {
+								el = (Element) midiNL.item(k);
+								if(el != null) {
+									nl = el.getChildNodes();
+									String midintport = ((Node) nl.item(0)).getNodeValue();
+									System.out.println("selectedmidiinport is " + midintport);
+									monomeConfig.toggleMidiInDevice(midintport);
+								}
+							}
+
 							// page-specific configuration
 							page.configure(pageElement);							
 

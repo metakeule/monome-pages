@@ -1,18 +1,14 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 
 import org.monome.pages.configuration.ConfigurationFactory;
-import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.AbletonLiveLooperPage;
 
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import java.awt.Dimension;
 
 public class AbletonLiveLooperGUI extends JPanel {
 
@@ -56,7 +52,7 @@ public class AbletonLiveLooperGUI extends JPanel {
 		disableMuteLabel.setBounds(new Rectangle(40, 30, 111, 21));
 		disableMuteLabel.setText("Disable Mute");
 		pageLabel = new JLabel();
-		pageLabel.setText((page.getIndex() + 1) + ": Ableton Live Looper");
+		setName("Ableton Live Looper");
 		pageLabel.setBounds(new Rectangle(5, 5, 186, 21));
 		this.setLayout(null);
 		this.add(pageLabel, null);
@@ -70,6 +66,10 @@ public class AbletonLiveLooperGUI extends JPanel {
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
 		this.setSize(192, 181);
+	}
+	
+	public void setName(String name) {
+		pageLabel.setText((page.getIndex() + 1) + ": " + name);
 	}
 	
 	/**
