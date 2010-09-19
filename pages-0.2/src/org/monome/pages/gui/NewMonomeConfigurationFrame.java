@@ -149,7 +149,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 		ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 				
 		Configuration config = ConfigurationFactory.getConfiguration();
-		config.addMonomeConfiguration(MonomeConfigurationFactory.getNumMonomeConfigurations(), prefix, sizeX, sizeY, true, false, midiPageChangeRules);
+		config.addMonomeConfiguration(MonomeConfigurationFactory.getNumMonomeConfigurations(), prefix, "no serial", sizeX, sizeY, true, false, midiPageChangeRules);
 		
 		this.dispose();
 	}
