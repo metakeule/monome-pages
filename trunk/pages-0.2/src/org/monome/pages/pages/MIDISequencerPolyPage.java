@@ -18,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
 import org.w3c.dom.Element;
@@ -46,7 +45,7 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak
  *
  */
-public class MIDISequencerPagePoly implements Page, ActionListener {
+public class MIDISequencerPolyPage implements Page, ActionListener {
 
 	/**
 	 * The MonomeConfiguration that this page belongs to
@@ -226,7 +225,7 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	/**
 	 * noteNumbers[row] - midi note numbers that are sent for each row 
 	 */
-	private int[] noteNumbers = new int[16];
+	public int[] noteNumbers = new int[16];
 
 	/**
 	 * 64/40h/128 only, 1 = edit the 2nd page of sequence lanes 
@@ -251,7 +250,7 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	/**
 	 * The size of each bank in steps
 	 */
-	private int bankSize = 32;
+	public int bankSize = 32;
 
 	/**
 	 * 1 = pattern copy mode enabled
@@ -270,14 +269,14 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 
 	private int noteDelay = 0;
 
-	private String midiChannel = "1";
+	public String midiChannel = "1";
 
 	private Receiver recv;
 
 	private String midiDeviceName;
 
 	// tilt stuff 
-	private ADCOptions pageADCOptions = new ADCOptions();
+	//private ADCOptions pageADCOptions = new ADCOptions();
 
 	/**
 	 * The name of the page 
@@ -290,7 +289,7 @@ public class MIDISequencerPagePoly implements Page, ActionListener {
 	 * @param monome The MonomeConfiguration that this page belongs to
 	 * @param index The index of this page (the page number)
 	 */
-	public MIDISequencerPagePoly(MonomeConfiguration monome, int index) {
+	public MIDISequencerPolyPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		// setup default notes
@@ -1649,54 +1648,8 @@ globalRandomVelocityValue=0;*/
 	 * @param value The MIDI note value to set the row to
 	 */
 	public void setNoteValue(int num, int value) {
-		switch (num) {
-		case 0:
-			this.getRow1tf().setText(this.numberToMidiNote(value));
-			break;
-		case 1:
-			this.getRow2tf().setText(this.numberToMidiNote(value));
-			break;
-		case 2:
-			this.getRow3tf().setText(this.numberToMidiNote(value));
-			break;
-		case 3:
-			this.getRow4tf().setText(this.numberToMidiNote(value));
-			break;
-		case 4:
-			this.getRow5tf().setText(this.numberToMidiNote(value));
-			break;
-		case 5:
-			this.getRow6tf().setText(this.numberToMidiNote(value));
-			break;
-		case 6:
-			this.getRow7tf().setText(this.numberToMidiNote(value));
-			break;
-		case 7:
-			this.getRow8tf().setText(this.numberToMidiNote(value));
-			break;
-		case 8:
-			this.getRow9tf().setText(this.numberToMidiNote(value));
-			break;
-		case 9:
-			this.getRow10tf().setText(this.numberToMidiNote(value));
-			break;
-		case 10:
-			this.getRow11tf().setText(this.numberToMidiNote(value));
-			break;
-		case 11:
-			this.getRow12tf().setText(this.numberToMidiNote(value));
-			break;
-		case 12:
-			this.getRow13tf().setText(this.numberToMidiNote(value));
-			break;
-		case 13:
-			this.getRow14tf().setText(this.numberToMidiNote(value));
-			break;
-		case 14:
-			this.getRow15tf().setText(this.numberToMidiNote(value));
-			break;
-		}
 		this.noteNumbers[num] = value;
+		
 	}
 
 	/* (non-Javadoc)
@@ -2058,47 +2011,33 @@ globalRandomVelocityValue=0;*/
 		// pattern template to use
 		int[][] p1 = {
 				{2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0, 
-
-					2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0}, // 1
-					{0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,1,0, 
-
-						0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,1,0}, // 2
-						{0,0,2,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
-
-							0,0,2,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 3
-							{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
-
-								0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 4
-								{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 
-
-									0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0}, // 5
-									{0,0,0,0,0,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 
-
-										0,0,0,0,0,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}, // 6
-										{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 
-
-											0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1}, // 7
-											{0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
-
-												0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 8
-												{2,1,0,0,2,0,2,0, 2,0,2,0,2,1,0,0, 1,2,0,0,0,1,2,1, 2,0,1,0,0,2,0,1, 
-
-													2,1,0,0,2,0,2,0, 2,0,2,0,2,1,0,0, 1,2,0,0,0,1,2,1, 2,0,1,0,0,2,0,1}, // 9
-													{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,1, 
-
-														0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,1}, // 10
-														{0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0, 
-
-															0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0}, // 11
-															{2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
-
-																2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 12
-																{0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
-
-																	0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 13
-																	{0,0,2,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 
-
-																		0,0,2,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}  // 14
+				 2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,2,0,0,0,0,0}, // 1
+				{0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,1,0, 
+				 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,2,0,1,0}, // 2
+				{0,0,2,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
+				 0,0,2,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 3
+			    {0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
+				 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 4
+				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 
+				 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,1,0}, // 5
+				{0,0,0,0,0,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 
+				 0,0,0,0,0,0,0,0, 0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}, // 6
+			    {0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1, 
+				 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,1}, // 7
+			    {0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
+				 0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 8
+				{2,1,0,0,2,0,2,0, 2,0,2,0,2,1,0,0, 1,2,0,0,0,1,2,1, 2,0,1,0,0,2,0,1, 
+				 2,1,0,0,2,0,2,0, 2,0,2,0,2,1,0,0, 1,2,0,0,0,1,2,1, 2,0,1,0,0,2,0,1}, // 9
+				{0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,1, 
+				 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,2,1}, // 10
+				{0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0, 
+				 0,0,0,0,2,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 0,0,0,0,0,0,0,0}, // 11
+				{2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
+				 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 12
+				{0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0, 
+				 0,0,1,0,0,0,0,0, 0,0,0,0,0,0,0,0, 2,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0}, // 13
+				{0,0,2,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0, 
+				 0,0,2,0,0,0,0,0, 0,0,1,0,0,0,0,0, 1,0,0,0,0,0,0,0, 0,0,0,0,1,0,0,0}  // 14
 		};
 		// randomly turn things on and off
 		for (int x = 0; x < this.bankSize; x++) {
@@ -2154,13 +2093,14 @@ globalRandomVelocityValue=0;*/
 		xml.append("      <holdmode>" + holdmode + "</holdmode>\n");
 		xml.append("      <banksize>" + this.bankSize + "</banksize>\n");
 		xml.append("      <midichannel>" + this.midiChannel + "</midichannel>\n");
-		xml.append("      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n");
 		
+		/*
 		xml.append("      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n");
 		xml.append("      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n");
 		xml.append("      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n");
 		xml.append("      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n");
 		xml.append("      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"); 	
+		*/
 		
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");
@@ -2175,58 +2115,6 @@ globalRandomVelocityValue=0;*/
 			xml.append("</sequence>\n");
 		}
 		return xml.toString();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		//System.out.println(e.getActionCommand());
-		if (e.getActionCommand().equals("Set MIDI Output")) {
-			String[] midiOutOptions = this.monome.getMidiOutOptions();
-			String deviceName = (String)JOptionPane.showInputDialog(
-					Main.getDesktopPane(),
-					"Choose a MIDI Output to use",
-					"Set MIDI Output",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					midiOutOptions,
-			"");
-
-			if (deviceName == null) {
-				return;
-			}
-
-			this.addMidiOutDevice(deviceName);
-		}
-		if (e.getActionCommand().equals("Update Preferences")) {
-			this.noteNumbers[0] = this.noteToMidiNumber(this.row1tf.getText());
-			this.noteNumbers[1] = this.noteToMidiNumber(this.row2tf.getText());
-			this.noteNumbers[2] = this.noteToMidiNumber(this.row3tf.getText());
-			this.noteNumbers[3] = this.noteToMidiNumber(this.row4tf.getText());
-			this.noteNumbers[4] = this.noteToMidiNumber(this.row5tf.getText());
-			this.noteNumbers[5] = this.noteToMidiNumber(this.row6tf.getText());
-			this.noteNumbers[6] = this.noteToMidiNumber(this.row7tf.getText());
-			this.noteNumbers[7] = this.noteToMidiNumber(this.row8tf.getText());
-			this.noteNumbers[8] = this.noteToMidiNumber(this.row9tf.getText());
-			this.noteNumbers[9] = this.noteToMidiNumber(this.row10tf.getText());
-			this.noteNumbers[10] = this.noteToMidiNumber(this.row11tf.getText());
-			this.noteNumbers[11] = this.noteToMidiNumber(this.row12tf.getText());
-			this.noteNumbers[12] = this.noteToMidiNumber(this.row13tf.getText());
-			this.noteNumbers[13] = this.noteToMidiNumber(this.row14tf.getText());
-			this.noteNumbers[14] = this.noteToMidiNumber(this.row15tf.getText());
-			this.midiChannel  = this.channelTF.getText();
-			if (Integer.parseInt(this.midiChannel) < 1) {
-				this.midiChannel = "1";
-				this.channelTF.setText("1");
-			}
-			
-			try {
-				this.setBankSize(Integer.parseInt(this.bankSizeTF.getText()));
-			} catch (NumberFormatException nfe) {
-				nfe.printStackTrace();
-			}
-		}
 	}
 
 	public void setBankSize(int banksize) {
@@ -2260,308 +2148,6 @@ globalRandomVelocityValue=0;*/
 		this.sequencePosition1 = 0;
 		this.bankSize1 = banksize;
 	}
-
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;
-		this.getAddMidiOutButton().removeActionListener(this);
-		this.getUpdatePrefsButton().removeActionListener(this);
-		this.panel.removeAll();
-		this.panel = null;			
-	}
-
-	private JLabel getRow1l() {
-		if(row1l == null) {
-			row1l = new JLabel();
-			row1l.setText("Row 1");
-			row1l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row1l;
-	}
-
-	private JTextField getRow1tf() {
-		if(row1tf == null) {
-			row1tf = new JTextField();
-			row1tf.setText("C-1");
-			row1tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row1tf;
-	}
-
-	private JButton getUpdatePrefsButton() {
-		if(updatePrefsButton == null) {
-			updatePrefsButton = new JButton();
-			updatePrefsButton.setText("Update Preferences");
-			updatePrefsButton.setPreferredSize(new java.awt.Dimension(169, 21));
-		}
-		return updatePrefsButton;
-	}
-
-	private JLabel getRow2l() {
-		if(row2l == null) {
-			row2l = new JLabel();
-			row2l.setText("Row 2");
-			row2l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row2l;
-	}
-
-	private JTextField getRow2tf() {
-		if(row2tf == null) {
-			row2tf = new JTextField();
-			row2tf.setText("D-1");
-			row2tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row2tf;
-	}
-
-	private JLabel getRow3l() {
-		if(row3l == null) {
-			row3l = new JLabel();
-			row3l.setText("Row 3");
-			row3l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row3l;
-	}
-
-	private JTextField getRow3tf() {
-		if(row3tf == null) {
-			row3tf = new JTextField();
-			row3tf.setText("E-1");
-			row3tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row3tf;
-	}
-
-	private JLabel getRow4l() {
-		if(row4l == null) {
-			row4l = new JLabel();
-			row4l.setText("Row 4");
-			row4l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row4l;
-	}
-
-	private JTextField getRow4tf() {
-		if(row4tf == null) {
-			row4tf = new JTextField();
-			row4tf.setText("F-1");
-			row4tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row4tf;
-	}
-
-	private JButton getAddMidiOutButton() {
-		if(addMidiOutButton == null) {
-			addMidiOutButton = new JButton();
-			addMidiOutButton.setText("Set MIDI Output");
-			addMidiOutButton.setPreferredSize(new java.awt.Dimension(169, 21));
-		}
-		return addMidiOutButton;
-	}
-
-	private JLabel getRow5l() {
-		if(row5l == null) {
-			row5l = new JLabel();
-			row5l.setText("Row 5");
-			row5l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row5l;
-	}
-
-	private JTextField getRow5tf() {
-		if(row5tf == null) {
-			row5tf = new JTextField();
-			row5tf.setText("G-1");
-			row5tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row5tf;
-	}
-
-	private JLabel getRow6l() {
-		if(row6l == null) {
-			row6l = new JLabel();
-			row6l.setText("Row 6");
-			row6l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row6l;
-	}
-
-	private JTextField getRow6tf() {
-		if(row6tf == null) {
-			row6tf = new JTextField();
-			row6tf.setText("A-1");
-			row6tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row6tf;
-	}
-
-	private JLabel getRow7l() {
-		if(row7l == null) {
-			row7l = new JLabel();
-			row7l.setText("Row 7");
-			row7l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row7l;
-	}
-
-	private JTextField getRow7tf() {
-		if(row7tf == null) {
-			row7tf = new JTextField();
-			row7tf.setText("B-1");
-			row7tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row7tf;
-	}
-
-	private JLabel getRow8l() {
-		if(row8l == null) {
-			row8l = new JLabel();
-			row8l.setText("Row 8");
-			row8l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row8l;
-	}
-
-	private JTextField getRow8tf() {
-		if(row8tf == null) {
-			row8tf = new JTextField();
-			row8tf.setText("C-2");
-			row8tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row8tf;
-	}
-
-	private JLabel getRow9l() {
-		if(row9l == null) {
-			row9l = new JLabel();
-			row9l.setText("Row 9");
-			row9l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row9l;
-	}
-
-	private JTextField getRow9tf() {
-		if(row9tf == null) {
-			row9tf = new JTextField();
-			row9tf.setText("D-2");
-			row9tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row9tf;
-	}
-
-	private JLabel getRow10l() {
-		if(row10l == null) {
-			row10l = new JLabel();
-			row10l.setText("Row 10");
-			row10l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row10l;
-	}
-
-	private JTextField getRow10tf() {
-		if(row10tf == null) {
-			row10tf = new JTextField();
-			row10tf.setText("E-2");
-			row10tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row10tf;
-	}
-
-	private JLabel getRow11l() {
-		if(row11l == null) {
-			row11l = new JLabel();
-			row11l.setText("Row 11");
-			row11l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row11l;
-	}
-
-	private JTextField getRow11tf() {
-		if(row11tf == null) {
-			row11tf = new JTextField();
-			row11tf.setText("F-2");
-			row11tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row11tf;
-	}
-
-	private JLabel getRow12l() {
-		if(row12l == null) {
-			row12l = new JLabel();
-			row12l.setText("Row 12");
-			row12l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row12l;
-	}
-
-	private JTextField getRow12tf() {
-		if(row12tf == null) {
-			row12tf = new JTextField();
-			row12tf.setText("G-2");
-			row12tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row12tf;
-	}
-
-	private JLabel getRow13l() {
-		if(row13l == null) {
-			row13l = new JLabel();
-			row13l.setText("Row 13");
-			row13l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row13l;
-	}
-
-	private JTextField getRow13tf() {
-		if(row13tf == null) {
-			row13tf = new JTextField();
-			row13tf.setText("A-2");
-			row13tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row13tf;
-	}
-
-	private JLabel getRow14l() {
-		if(row14l == null) {
-			row14l = new JLabel();
-			row14l.setText("Row 14");
-			row14l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row14l;
-	}
-
-	private JTextField getRow14tf() {
-		if(row14tf == null) {
-			row14tf = new JTextField();
-			row14tf.setText("B-2");
-			row14tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row14tf;
-	}
-
-	private JLabel getRow15l() {
-		if(row15l == null) {
-			row15l = new JLabel();
-			row15l.setText("Row 15");
-			row15l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row15l;
-	}
-
-	private JTextField getRow15tf() {
-		if(row15tf == null) {
-			row15tf = new JTextField();
-			row15tf.setText("C-3");
-			row15tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row15tf;
-	}
-
 
 	/**
 	 * Loads a sequence from a configuration file.  Called from GUI on open configuration action.
@@ -2604,72 +2190,11 @@ globalRandomVelocityValue=0;*/
 		return;
 	}
 
-	private JCheckBox getHoldModeCB() {
-		if(holdModeCB == null) {
-			holdModeCB = new JCheckBox();
-			holdModeCB.setText("Hold Mode");
-			holdModeCB.setPreferredSize(new java.awt.Dimension(151, 18));
-		}
-		return holdModeCB;
-	}
-
 	public void setHoldMode(String holdmode) {
 		if (holdmode.equals("1")) {
 			this.getHoldModeCB().doClick();
 		}
 	}
-
-	private JLabel getBankSizeLabel() {
-		if(bankSizeLabel == null) {
-			bankSizeLabel = new JLabel();
-			bankSizeLabel.setText("Bank Size");
-			bankSizeLabel.setPreferredSize(new java.awt.Dimension(68, 14));
-		}
-		return bankSizeLabel;
-	}
-
-	private JTextField getBankSizeTF() {
-		if(bankSizeTF == null) {
-			bankSizeTF = new JTextField();
-			bankSizeTF.setText("32");
-			bankSizeTF.setPreferredSize(new java.awt.Dimension(29, 21));
-		}
-		return bankSizeTF;
-	}
-
-	private JLabel getChannelL() {
-		if(channelL == null) {
-			channelL = new JLabel();
-			channelL.setText("Channel");
-			channelL.setPreferredSize(new java.awt.Dimension(68, 14));
-		}
-		return channelL;
-	}
-
-	private JTextField getChannelTF() {
-		if(channelTF == null) {
-			channelTF = new JTextField();
-			channelTF.setPreferredSize(new java.awt.Dimension(29,21));
-			channelTF.setText("1");
-		}
-		return channelTF;
-	}
-
-	public void setMidiChannel(String midiChannel2) {
-		this.midiChannel = midiChannel2;
-		this.channelTF.setText(midiChannel2);
-	}
-
-	private JLabel getJLabel1() {
-		if(jLabel1 == null) {
-			jLabel1 = new JLabel();
-			jLabel1.setText("Page " + (this.index + 1) + ": MIDI Sequencer");
-			jLabel1.setPreferredSize(new java.awt.Dimension(180,14));
-		}
-		return jLabel1;
-	}
-	
-	
 
 	public void setIndex(int index) {
 		this.index = index;
@@ -2680,6 +2205,7 @@ globalRandomVelocityValue=0;*/
 	}
 
 
+	/*
 	public void handleADC(int adcNum, float value) {
 		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
 			int midi = this.pageADCOptions.getMidiChannel();
@@ -2705,16 +2231,20 @@ globalRandomVelocityValue=0;*/
 			}			
 		}
 	}
+	*/
+	
 	public boolean isTiltPage() {
 		return true;
 	}
+	/*
 	public ADCOptions getAdcOptions() {
 		return this.pageADCOptions;
 	}
 
 	public void setAdcOptions(ADCOptions options) { 
 		this.pageADCOptions = options;
-	}	
+	}
+	*/	
 	
 	public void configure(Element pageElement) {
 		NodeList nameNL = pageElement.getElementsByTagName("pageName");
@@ -2768,6 +2298,7 @@ globalRandomVelocityValue=0;*/
 			}
 		}		
 		
+		/*
 		NodeList nl = pageElement.getElementsByTagName("ccoffset");
 		el = (Element) nl.item(0);
 		if (el != null) {
@@ -2807,8 +2338,15 @@ globalRandomVelocityValue=0;*/
 			String	recv = ((Node) nl.item(0)).getNodeValue();
 			this.pageADCOptions.setRecv(recv);
 		}
-		
+		*/
 		
 		this.redrawMonome();
+	}
+
+
+	@Override
+	public int getIndex() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
