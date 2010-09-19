@@ -18,9 +18,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
+import org.monome.pages.pages.gui.MIDISequencerGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -46,7 +46,7 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak
  *
  */
-public class MIDISequencerPage implements Page, ActionListener {
+public class MIDISequencerPage implements Page {
 	/**
 	 * The MonomeConfiguration that this page belongs to
 	 */
@@ -57,53 +57,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 */
 	int index;
 
-	/**
-	 * The GUI for this page
-	 */
-	JPanel panel;
-
-	/**
-	 * The Update Preferences button
-	 */
-	private JButton updatePrefsButton;
-
-	/**
-	 * The Add MIDI Output button
-	 */
-	private JButton addMidiOutButton;
-
-	// row labels and text fields
-	private JLabel row1l;
-	private JTextField row1tf;
-	private JLabel row2l;
-	private JTextField row2tf;
-	private JLabel row3l;
-	private JTextField row3tf;
-	private JLabel row4l;
-	private JTextField row4tf;
-	private JLabel row5l;
-	private JTextField row5tf;
-	private JLabel row6l;
-	private JTextField row6tf;
-	private JLabel row7l;
-	private JTextField row7tf;
-	private JLabel row8l;
-	private JTextField row8tf;
-	private JLabel row9l;
-	private JTextField row9tf;
-	private JLabel row10l;
-	private JTextField row10tf;
-	private JLabel row11l;
-	private JTextField row11tf;
-	private JLabel row12l;
-	private JTextField row12tf;
-	private JLabel row13l;
-	private JTextField row13tf;
-	private JLabel row14l;
-	private JTextField row14tf;
-	private JLabel row15l;
-	private JTextField row15tf;
-	private JPanel jPanel1;
+	MIDISequencerGUI gui;
 
 	/**
 	 * The current MIDI clock tick number (from 0 to 6)
@@ -124,12 +78,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 * 1 = bank mode on 
 	 */
 	private int bankMode = 0;
-	private JLabel jLabel1;
-	private JTextField channelTF;
-	private JLabel channelL;
-	private JTextField bankSizeTF;
-	private JLabel bankSizeLabel;
-	private JCheckBox holdModeCB;
 
 	/**
 	 * sequence[bank_number][width][height] - the currently programmed sequences 
@@ -149,7 +97,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	/**
 	 * noteNumbers[row] - midi note numbers that are sent for each row 
 	 */
-	private int[] noteNumbers = new int[16];
+	public int[] noteNumbers = new int[16];
 
 	/**
 	 * 64/40h/128 only, 1 = edit the 2nd page of sequence lanes 
@@ -174,7 +122,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	/**
 	 * The size of each bank in steps
 	 */
-	private int bankSize = 32;
+	public int bankSize = 32;
 
 	/**
 	 * 1 = pattern copy mode enabled
@@ -193,17 +141,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 	
 	private int noteDelay = 0;
 
-	private String midiChannel = "1";
-
-	private Receiver recv;
-
-	private String midiDeviceName;
+	public String midiChannel = "1";
 
 	/**
 	 * The name of the page 
 	 */
 	private String pageName = "MIDI Sequencer";
-	private JLabel pageNameLBL;
 
 	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
@@ -212,7 +155,10 @@ public class MIDISequencerPage implements Page, ActionListener {
 	public MIDISequencerPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
+		this.gui = new MIDISequencerGUI(this);
 		// setup default notes
+		gui.channelTF.setText(midiChannel);
+		gui.bankSizeTF.setText(""+bankSize);
 		this.noteNumbers[0] = this.noteToMidiNumber("C-1");
 		this.noteNumbers[1] = this.noteToMidiNumber("D-1");
 		this.noteNumbers[2] = this.noteToMidiNumber("E-1");
@@ -551,7 +497,14 @@ public class MIDISequencerPage implements Page, ActionListener {
 				int note_num = this.getNoteNumber(i);
 				try {
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
-					this.recv.send(note_out, -1);
+					String[] midiOutOptions = monome.getMidiOutOptions();
+					for (int j = 0; j < midiOutOptions.length; j++) {
+						if (midiOutOptions[j] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+						recv.send(note_out, -1);
+					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}				
@@ -572,7 +525,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		int midiChannel = Integer.parseInt(this.midiChannel) - 1;
 		for (int y = 0; y < 16; y++) {
 			// hold mode
-			if (this.getHoldModeCB().isSelected()) {
+			if (this.gui.getHoldModeCB().isSelected()) {
 				if (on == 0) {
 					return;
 				}
@@ -586,11 +539,25 @@ public class MIDISequencerPage implements Page, ActionListener {
 					if (velocity == 0 && this.heldNotes[y] == 1) {
 						this.heldNotes[y] = 0;
 						note_out.setMessage(ShortMessage.NOTE_OFF, midiChannel, note_num, velocity);
-						this.recv.send(note_out, -1);
+						String[] midiOutOptions = monome.getMidiOutOptions();
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							recv.send(note_out, -1);
+						}
 					} else if (velocity > 0 && this.heldNotes[y] == 0) {
 						this.heldNotes[y] = 1;
 						note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
-						this.recv.send(note_out, -1);
+						String[] midiOutOptions = monome.getMidiOutOptions();
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							recv.send(note_out, -1);
+						}
 					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
@@ -612,7 +579,14 @@ public class MIDISequencerPage implements Page, ActionListener {
 							note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
 							this.heldNotes[y] = 1;
 						}
-						this.recv.send(note_out, -1);
+						String[] midiOutOptions = monome.getMidiOutOptions();
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							recv.send(note_out, -1);
+						}
 					} catch (InvalidMidiDataException e) {
 						e.printStackTrace();
 					}
@@ -727,55 +701,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 * @param num The row number to set (0 = Row 1)
 	 * @param value The MIDI note value to set the row to
 	 */
+	
 	public void setNoteValue(int num, int value) {
-		switch (num) {
-		case 0:
-			this.getRow1tf().setText(this.numberToMidiNote(value));
-			break;
-		case 1:
-			this.getRow2tf().setText(this.numberToMidiNote(value));
-			break;
-		case 2:
-			this.getRow3tf().setText(this.numberToMidiNote(value));
-			break;
-		case 3:
-			this.getRow4tf().setText(this.numberToMidiNote(value));
-			break;
-		case 4:
-			this.getRow5tf().setText(this.numberToMidiNote(value));
-			break;
-		case 5:
-			this.getRow6tf().setText(this.numberToMidiNote(value));
-			break;
-		case 6:
-			this.getRow7tf().setText(this.numberToMidiNote(value));
-			break;
-		case 7:
-			this.getRow8tf().setText(this.numberToMidiNote(value));
-			break;
-		case 8:
-			this.getRow9tf().setText(this.numberToMidiNote(value));
-			break;
-		case 9:
-			this.getRow10tf().setText(this.numberToMidiNote(value));
-			break;
-		case 10:
-			this.getRow11tf().setText(this.numberToMidiNote(value));
-			break;
-		case 11:
-			this.getRow12tf().setText(this.numberToMidiNote(value));
-			break;
-		case 12:
-			this.getRow13tf().setText(this.numberToMidiNote(value));
-			break;
-		case 13:
-			this.getRow14tf().setText(this.numberToMidiNote(value));
-			break;
-		case 14:
-			this.getRow15tf().setText(this.numberToMidiNote(value));
-			break;
-		}
 		this.noteNumbers[num] = value;
+		if (num == gui.rowCB.getSelectedIndex()) {
+			gui.noteTF.setText(this.numberToMidiNote(value));
+		}
 	}
 
 	/* (non-Javadoc)
@@ -887,20 +818,14 @@ public class MIDISequencerPage implements Page, ActionListener {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.gui.setName(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
 	public JPanel getPanel() {
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		JPanel panel = new JPanel();
-		this.panel = panel;
-		return panel;
+		return gui;
 	}
 
 	/* (non-Javadoc)
@@ -979,13 +904,12 @@ public class MIDISequencerPage implements Page, ActionListener {
 		int holdmode = 0;
 		xml.append("      <name>MIDI Sequencer</name>\n");
 		xml.append("      <pageName>" + this.pageName + "</pageName>\n");
-		if (this.getHoldModeCB().isSelected() == true) {
+		if (this.gui.getHoldModeCB().isSelected() == true) {
 			holdmode = 1;
 		}
 		xml.append("      <holdmode>" + holdmode + "</holdmode>\n");
 		xml.append("      <banksize>" + this.bankSize + "</banksize>\n");
 		xml.append("      <midichannel>" + this.midiChannel + "</midichannel>\n");
-		xml.append("      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n");
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");
 		}
@@ -1004,6 +928,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
 	 */
+	/*
 	public void actionPerformed(ActionEvent e) {
 		System.out.println(e.getActionCommand());
 		if (e.getActionCommand().equals("Set MIDI Output")) {
@@ -1047,6 +972,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 			}
 		}
 	}
+	*/
 	
 	public void setBankSize(int banksize) {
 		if (banksize > 64) {
@@ -1056,314 +982,7 @@ public class MIDISequencerPage implements Page, ActionListener {
 		}
 		this.sequencePosition = 0;
 		this.bankSize = banksize;
-		this.bankSizeTF.setText(String.valueOf(banksize));
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;
-		this.getAddMidiOutButton().removeActionListener(this);
-		this.getUpdatePrefsButton().removeActionListener(this);
-		this.panel.removeAll();
-		this.panel = null;			
-	}
-
-	private JLabel getRow1l() {
-		if(row1l == null) {
-			row1l = new JLabel();
-			row1l.setText("Row 1");
-			row1l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row1l;
-	}
-
-	private JTextField getRow1tf() {
-		if(row1tf == null) {
-			row1tf = new JTextField();
-			row1tf.setText("C-1");
-			row1tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row1tf;
-	}
-
-	private JButton getUpdatePrefsButton() {
-		if(updatePrefsButton == null) {
-			updatePrefsButton = new JButton();
-			updatePrefsButton.setText("Update Preferences");
-			updatePrefsButton.setPreferredSize(new java.awt.Dimension(169, 21));
-		}
-		return updatePrefsButton;
-	}
-
-	private JLabel getRow2l() {
-		if(row2l == null) {
-			row2l = new JLabel();
-			row2l.setText("Row 2");
-			row2l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row2l;
-	}
-
-	private JTextField getRow2tf() {
-		if(row2tf == null) {
-			row2tf = new JTextField();
-			row2tf.setText("D-1");
-			row2tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row2tf;
-	}
-
-	private JLabel getRow3l() {
-		if(row3l == null) {
-			row3l = new JLabel();
-			row3l.setText("Row 3");
-			row3l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row3l;
-	}
-
-	private JTextField getRow3tf() {
-		if(row3tf == null) {
-			row3tf = new JTextField();
-			row3tf.setText("E-1");
-			row3tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row3tf;
-	}
-
-	private JLabel getRow4l() {
-		if(row4l == null) {
-			row4l = new JLabel();
-			row4l.setText("Row 4");
-			row4l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row4l;
-	}
-
-	private JTextField getRow4tf() {
-		if(row4tf == null) {
-			row4tf = new JTextField();
-			row4tf.setText("F-1");
-			row4tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row4tf;
-	}
-
-	private JButton getAddMidiOutButton() {
-		if(addMidiOutButton == null) {
-			addMidiOutButton = new JButton();
-			addMidiOutButton.setText("Set MIDI Output");
-			addMidiOutButton.setPreferredSize(new java.awt.Dimension(169, 21));
-		}
-		return addMidiOutButton;
-	}
-
-	private JLabel getRow5l() {
-		if(row5l == null) {
-			row5l = new JLabel();
-			row5l.setText("Row 5");
-			row5l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row5l;
-	}
-
-	private JTextField getRow5tf() {
-		if(row5tf == null) {
-			row5tf = new JTextField();
-			row5tf.setText("G-1");
-			row5tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row5tf;
-	}
-
-	private JLabel getRow6l() {
-		if(row6l == null) {
-			row6l = new JLabel();
-			row6l.setText("Row 6");
-			row6l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row6l;
-	}
-
-	private JTextField getRow6tf() {
-		if(row6tf == null) {
-			row6tf = new JTextField();
-			row6tf.setText("A-1");
-			row6tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row6tf;
-	}
-
-	private JLabel getRow7l() {
-		if(row7l == null) {
-			row7l = new JLabel();
-			row7l.setText("Row 7");
-			row7l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row7l;
-	}
-
-	private JTextField getRow7tf() {
-		if(row7tf == null) {
-			row7tf = new JTextField();
-			row7tf.setText("B-1");
-			row7tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row7tf;
-	}
-
-	private JLabel getRow8l() {
-		if(row8l == null) {
-			row8l = new JLabel();
-			row8l.setText("Row 8");
-			row8l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row8l;
-	}
-
-	private JTextField getRow8tf() {
-		if(row8tf == null) {
-			row8tf = new JTextField();
-			row8tf.setText("C-2");
-			row8tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row8tf;
-	}
-
-	private JLabel getRow9l() {
-		if(row9l == null) {
-			row9l = new JLabel();
-			row9l.setText("Row 9");
-			row9l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row9l;
-	}
-
-	private JTextField getRow9tf() {
-		if(row9tf == null) {
-			row9tf = new JTextField();
-			row9tf.setText("D-2");
-			row9tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row9tf;
-	}
-
-	private JLabel getRow10l() {
-		if(row10l == null) {
-			row10l = new JLabel();
-			row10l.setText("Row 10");
-			row10l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row10l;
-	}
-
-	private JTextField getRow10tf() {
-		if(row10tf == null) {
-			row10tf = new JTextField();
-			row10tf.setText("E-2");
-			row10tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row10tf;
-	}
-
-	private JLabel getRow11l() {
-		if(row11l == null) {
-			row11l = new JLabel();
-			row11l.setText("Row 11");
-			row11l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row11l;
-	}
-
-	private JTextField getRow11tf() {
-		if(row11tf == null) {
-			row11tf = new JTextField();
-			row11tf.setText("F-2");
-			row11tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row11tf;
-	}
-
-	private JLabel getRow12l() {
-		if(row12l == null) {
-			row12l = new JLabel();
-			row12l.setText("Row 12");
-			row12l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row12l;
-	}
-
-	private JTextField getRow12tf() {
-		if(row12tf == null) {
-			row12tf = new JTextField();
-			row12tf.setText("G-2");
-			row12tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row12tf;
-	}
-
-	private JLabel getRow13l() {
-		if(row13l == null) {
-			row13l = new JLabel();
-			row13l.setText("Row 13");
-			row13l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row13l;
-	}
-
-	private JTextField getRow13tf() {
-		if(row13tf == null) {
-			row13tf = new JTextField();
-			row13tf.setText("A-2");
-			row13tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row13tf;
-	}
-
-	private JLabel getRow14l() {
-		if(row14l == null) {
-			row14l = new JLabel();
-			row14l.setText("Row 14");
-			row14l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row14l;
-	}
-
-	private JTextField getRow14tf() {
-		if(row14tf == null) {
-			row14tf = new JTextField();
-			row14tf.setText("B-2");
-			row14tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row14tf;
-	}
-
-	private JLabel getRow15l() {
-		if(row15l == null) {
-			row15l = new JLabel();
-			row15l.setText("Row 15");
-			row15l.setPreferredSize(new java.awt.Dimension(46, 14));
-		}
-		return row15l;
-	}
-
-	private JTextField getRow15tf() {
-		if(row15tf == null) {
-			row15tf = new JTextField();
-			row15tf.setText("C-3");
-			row15tf.setPreferredSize(new java.awt.Dimension(38, 21));
-		}
-		return row15tf;
-	}
-
-	private JPanel getJPanel1() {
-		if(jPanel1 == null) {
-			jPanel1 = new JPanel();
-		}
-		return jPanel1;
+		this.gui.bankSizeTF.setText(String.valueOf(banksize));
 	}
 
 	/**
@@ -1407,75 +1026,18 @@ public class MIDISequencerPage implements Page, ActionListener {
 		return;
 	}
 	
-	private JCheckBox getHoldModeCB() {
-		if(holdModeCB == null) {
-			holdModeCB = new JCheckBox();
-			holdModeCB.setText("Hold Mode");
-			holdModeCB.setPreferredSize(new java.awt.Dimension(151, 18));
-		}
-		return holdModeCB;
-	}
-
 	public void setHoldMode(String holdmode) {
 		if (holdmode.equals("1")) {
-			this.getHoldModeCB().doClick();
+			this.gui.getHoldModeCB().doClick();
 		}
 	}
 	
-	private JLabel getBankSizeLabel() {
-		if(bankSizeLabel == null) {
-			bankSizeLabel = new JLabel();
-			bankSizeLabel.setText("Bank Size");
-			bankSizeLabel.setPreferredSize(new java.awt.Dimension(68, 14));
-		}
-		return bankSizeLabel;
-	}
-	
-	private JTextField getBankSizeTF() {
-		if(bankSizeTF == null) {
-			bankSizeTF = new JTextField();
-			bankSizeTF.setText("32");
-			bankSizeTF.setPreferredSize(new java.awt.Dimension(29, 21));
-		}
-		return bankSizeTF;
-	}
-	
-	private JLabel getChannelL() {
-		if(channelL == null) {
-			channelL = new JLabel();
-			channelL.setText("Channel");
-			channelL.setPreferredSize(new java.awt.Dimension(68, 14));
-		}
-		return channelL;
-	}
-	
-	private JTextField getChannelTF() {
-		if(channelTF == null) {
-			channelTF = new JTextField();
-			channelTF.setPreferredSize(new java.awt.Dimension(29,21));
-			channelTF.setText("1");
-		}
-		return channelTF;
-	}
-
 	public void setMidiChannel(String midiChannel2) {
 		this.midiChannel = midiChannel2;
-		this.channelTF.setText(midiChannel2);
+		this.gui.channelTF.setText(midiChannel2);
 	}
 	
-	private JLabel getJLabel1() {
-		if(jLabel1 == null) {
-			jLabel1 = new JLabel();
-			jLabel1.setText("Page " + (this.index + 1) + ": MIDI Sequencer");
-			jLabel1.setPreferredSize(new java.awt.Dimension(180,14));
-		}
-		return jLabel1;
-	}
-	
-	public void clearPanel() {
-		this.panel = null;
-	}
-	
+		
 	public void setIndex(int index) {
 		this.index = index;
 	}
@@ -1484,7 +1046,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 		// TODO Auto-generated method stub
 		
 	}
-
 	public void handleADC(float x, float y) {
 		// TODO Auto-generated method stub
 		
@@ -1492,15 +1053,6 @@ public class MIDISequencerPage implements Page, ActionListener {
 	public boolean isTiltPage() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-	public ADCOptions getAdcOptions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setAdcOptions(ADCOptions options)  {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public void configure(Element pageElement) {
@@ -1552,5 +1104,11 @@ public class MIDISequencerPage implements Page, ActionListener {
 			this.setSequence(l, sequence);
 		}
 		this.redrawMonome();		
+	}
+
+	@Override
+	public int getIndex() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
