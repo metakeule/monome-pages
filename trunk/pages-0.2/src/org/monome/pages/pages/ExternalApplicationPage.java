@@ -331,7 +331,8 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	}
 		
 	public void setIndex(int index) {
-		this.index = index; 
+		this.index = index;
+		setName(this.pageName);
 	}
 
 	public void configure(Element pageElement) {

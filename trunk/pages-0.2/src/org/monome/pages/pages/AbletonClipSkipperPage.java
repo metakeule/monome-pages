@@ -77,7 +77,6 @@ public class AbletonClipSkipperPage implements Page {
 	public AbletonClipSkipperPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		ConfigurationFactory.getConfiguration().initAbleton();
 		this.gui = new AbletonClipSkipperGUI(this);
 	}
 
@@ -267,6 +266,7 @@ public class AbletonClipSkipperPage implements Page {
 	
 	public void setIndex(int index) {
 		this.index = index;
+		setName(this.pageName);
 	}
 
 	public void handleADC(int adcNum, float value) {

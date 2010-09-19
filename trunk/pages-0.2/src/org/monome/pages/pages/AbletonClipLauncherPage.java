@@ -65,7 +65,6 @@ public class AbletonClipLauncherPage implements Page {
 	public AbletonClipLauncherPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		ConfigurationFactory.getConfiguration().initAbleton();
 		gui = new AbletonClipLauncherGUI(this);
 	}
 
@@ -558,6 +557,7 @@ public class AbletonClipLauncherPage implements Page {
 		
 	public void setIndex(int index) {
 		this.index = index;
+		setName(this.pageName);
 	}
 
 	public void handleADC(int adcNum, float value) {

@@ -52,7 +52,7 @@ public class Configuration {
 	/**
 	 * The name of the configuration.
 	 */
-	private String name;
+	public String name;
 
 	/**
 	 * The selected MIDI input device to receive MIDI messages from.
@@ -172,8 +172,8 @@ public class Configuration {
 	 * @param sizeY The height of the monome (ie. 8 or 16)
 	 * @return The new monome's index
 	 */
-	public void addMonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		if (MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules)) {
+	public void addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+		if (MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules)) {
 			this.initMonome(index);
 		}
 	}
@@ -865,6 +865,12 @@ public class Configuration {
 					Element el = (Element) nl.item(0);
 					nl = el.getChildNodes();
 					String prefix = ((Node) nl.item(0)).getNodeValue();
+					
+					// set the monome prefix
+					nl = monomeElement.getElementsByTagName("serial");
+					el = (Element) nl.item(0);
+					nl = el.getChildNodes();
+					String serial = ((Node) nl.item(0)).getNodeValue();
 
 					// set the width of the monome
 					nl = monomeElement.getElementsByTagName("sizeX");
@@ -928,7 +934,7 @@ public class Configuration {
 
 					
 					// create the new monome configuration and display it's window
-					addMonomeConfiguration(i, prefix, Integer.valueOf(sizeX).intValue(), 
+					addMonomeConfiguration(i, prefix, serial, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
 					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());

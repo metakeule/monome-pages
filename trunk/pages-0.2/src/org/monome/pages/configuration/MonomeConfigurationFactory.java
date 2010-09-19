@@ -23,7 +23,7 @@ public class MonomeConfigurationFactory {
 		return null;
 	}
 	
-	public static synchronized boolean addMonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+	public static synchronized boolean addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
@@ -40,10 +40,10 @@ public class MonomeConfigurationFactory {
 			e.printStackTrace();
 		}
 		
-		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(index, prefix, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
+		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
 		monomeConfigurations.put(i, monomeConfiguration);
 		monomeConfiguration.setFrameTitle();
-		monomeFrame.setTitle(prefix);
+		monomeFrame.setTitle(prefix + " | " + serial + " | " + sizeX + "x" + sizeY);
 		return true;
 	}
 	

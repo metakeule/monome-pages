@@ -150,7 +150,7 @@ public class MonomeConfiguration {
 	 * @param sizeX The width of this monome
 	 * @param sizeY The height of this monome
 	 */
-	public MonomeConfiguration(int index, String prefix, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
+	public MonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
 		
 		this.options = PagesRepository.getPageNames();		
 		for (int i=0; i<options.length; i++) {
@@ -158,6 +158,7 @@ public class MonomeConfiguration {
 		}
 				
 		this.prefix = prefix;
+		this.serial = serial;
 		this.sizeX = sizeX;
 		this.sizeY = sizeY;
 
@@ -181,7 +182,6 @@ public class MonomeConfiguration {
 		System.out.println("className is " + className);
 		page = PagesRepository.getPageInstance(className, this, this.numPages);
 		this.pages.add(this.numPages, page);
-		this.switchPage(page, this.numPages, true);
 
 		int numPatterns = this.sizeX;
 		this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
@@ -193,17 +193,27 @@ public class MonomeConfiguration {
 	}
 	
 	public void deletePage(int i) {
+		if (this.numPages == 0) {
+			return;
+		}
 		this.pages.get(i).destroyPage();
-		this.pages.remove(i);
-		this.numPages--;
-		this.curPage--;
-		
+		this.pages.remove(i);		
 		for (int x=0; x < this.pages.size(); x++) {
 			this.pages.get(x).setIndex(x);
 		}
 		
+		this.numPages--;
+		this.curPage--;
+		if (curPage <= 0) {
+			curPage = 0;
+		}		
 		if (this.numPages == 0) {
 			this.monomeFrame.enableMidiMenu(false);
+			monomeFrame.getJContentPane().removeAll();
+			monomeFrame.getJContentPane().validate();
+			monomeFrame.pack();
+		} else {
+			switchPage(pages.get(curPage), curPage, true);
 		}
 	}
 
@@ -216,6 +226,7 @@ public class MonomeConfiguration {
 	 */
 	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
+		System.out.println(page);
 		page.redrawMonome();
 		monomeFrame.redrawPagePanel(page);
 		monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
@@ -363,15 +374,22 @@ public class MonomeConfiguration {
 	 */
 	public void tick(MidiDevice device) {
 		for (int i=0; i < this.numPages; i++) {
-			ArrayList<Press> presses = patternBanks.get(i).getRecordedPresses();
-			if (presses != null) {
-				for (int j=0; j < presses.size(); j++) {
-					int[] press = presses.get(j).getPress();
-					this.pages.get(i).handlePress(press[0], press[1], press[2]);
+			for (int j = 0; j < this.midiInDevices[i].length; j++) {
+				if (this.midiInDevices[i][j] == null) {
+					continue;
+				}
+				if (this.midiInDevices[i][j].compareTo(device.getDeviceInfo().getName()) == 0) {
+					ArrayList<Press> presses = patternBanks.get(i).getRecordedPresses();
+					if (presses != null) {
+						for (int k=0; k < presses.size(); k++) {
+							int[] press = presses.get(k).getPress();
+							this.pages.get(i).handlePress(press[0], press[1], press[2]);
+						}
+					}
+					this.pages.get(i).handleTick();
+					this.patternBanks.get(i).handleTick();
 				}
 			}
-			this.pages.get(i).handleTick();
-			this.patternBanks.get(i).handleTick();
 		}
 		if (this.pageChangeMode == 1 && this.tickNum % 12 == 0) {			
 			this.drawPatternState();
@@ -387,8 +405,15 @@ public class MonomeConfiguration {
 	 */
 	public void reset(MidiDevice device) {
 		for (int i=0; i < this.numPages; i++) {
-			this.pages.get(i).handleReset();
-			this.patternBanks.get(i).handleReset();
+			for (int j = 0; j < this.midiInDevices[i].length; j++) {
+				if (this.midiInDevices[i][j] == null) {
+					continue;
+				}
+				if (this.midiInDevices[i][j].compareTo(device.getDeviceInfo().getName()) == 0) {
+					this.pages.get(i).handleReset();
+					this.patternBanks.get(i).handleReset();
+				}
+			}
 		}
 		this.tickNum = 0;
 	}
@@ -694,7 +719,10 @@ public class MonomeConfiguration {
 			OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
 
 			try {
-				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				Configuration configuration = ConfigurationFactory.getConfiguration();
+				if (configuration != null) {
+					configuration.monomeSerialOSCPortOut.send(msg);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -710,6 +738,7 @@ public class MonomeConfiguration {
 		String xml = "";
 		xml += "  <monome>\n";
 		xml += "    <prefix>" + this.prefix + "</prefix>\n";
+		xml += "    <serial>" + this.serial + "</serial>\n";
 		xml += "    <sizeX>" + this.sizeX + "</sizeX>\n";
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
 		xml += "    <usePageChangeButton>" + (this.usePageChangeButton ? "true" : "false") + "</usePageChangeButton>\n";
