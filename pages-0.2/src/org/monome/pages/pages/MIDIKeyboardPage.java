@@ -13,9 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
+import org.monome.pages.pages.gui.MIDIKeyboardGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
  *
  */
 
-public class MIDIKeyboardPage implements Page, ActionListener {
+public class MIDIKeyboardPage implements Page {
 
 	/**
 	 * The MonomeConfiguration that this page belongs to
@@ -44,7 +44,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	/**
 	 * The GUI for this page
 	 */
-	JPanel panel;
+	MIDIKeyboardGUI gui;
 
 	/**
 	 * The selected MIDI channel (8x8 only)
@@ -55,17 +55,6 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 * The octave offset for each row (128 and 256 only) 
 	 */
 	private int[] octave = new int[16];
-
-	
-
-	private JTextField scaleTF1;
-	private JTextField scaleTF2;
-	private JTextField scaleTF3;	
-	private JTextField scaleTF4;
-	private JTextField scaleTF5;
-	private JTextField scaleTF6;
-	
-	private JButton resetScales;
 	
 	/**
 	 * The selected key 
@@ -79,7 +68,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	/**
 	 * The semitones between each note in the selected scale 
 	 */
-	private int[][] scales = { 
+	public int[][] scales = { 
 			{2,2,1,2,2,2,1}, //Major scale
 			{2,1,2,2,1,2,2}, //Natural minor scale			
 			{3,2,1,1,3,2,0}, //Blues scale
@@ -87,7 +76,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			{2,1,3,1,1,3,1}, //Hungarian minor scale
 			{2,1,2,2,1,3,1}, //Harmonic minor scale		
 	};
-	private int[][] scalesDefault = { 
+	public int[][] scalesDefault = { 
 			{2,2,1,2,2,2,1}, //Major scale
 			{2,1,2,2,1,2,2}, //Natural minor scale			
 			{3,2,1,1,3,2,0}, //Blues scale
@@ -153,36 +142,18 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	private int[][] notesOn = new int[16][128];
 	
 	private int[][] buttonPress = new int[7][6];
-
-	private Receiver recv;
-
-	private String midiDeviceName;
-
-	private JButton midiOutButton;
-	
-	/**
-	 * The Update Preferences button 
-	 */
-	private JButton updatePrefsButton;
-	
-	
-	
+		
 	private Thread thread;
 	private boolean blinkNow = true;
 	
 	private int pressCount = 0;
 	
-	
 	private boolean functionLock = false;
-	
-	// tilt stuff 
-	private ADCOptions pageADCOptions = new ADCOptions();
-		
+			
 	/**
 	 * The name of the page 
 	 */
 	private String pageName = "MIDI Keyboard";
-	private JLabel pageNameLBL;
 	
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
@@ -190,6 +161,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public MIDIKeyboardPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
+		this.gui = new MIDIKeyboardGUI(this);
 		this.index = index;	 
 		this.thread = new Thread( new Flasher() );
 		this.thread.setDaemon(true);
@@ -197,6 +169,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		
 		if (this.monome.sizeX == 8)
 			this.flashOn[4][0] = true;
+		this.gui.resetScales();
 	}
 	
 	private final class Flasher implements Runnable {
@@ -389,6 +362,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 					if (!(y == 6 && x == 7) && !(y == 7 && x < 2) && !this.functionLock) this.stopNotes();
 				} else if (x == 7 && y == 4) {					
 					//set the offset for the adc sends
+					/*
 					if (this.pageADCOptions.getAdcTranspose() == 1) {
 						this.monome.led(7, 4, 0, this.index);
 						this.monome.led(7, 5, 0, this.index);
@@ -405,6 +379,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 					this.monome.led(7, 4, 1, this.index);
 					this.monome.led(7, 5, 1, this.index);
 					this.pageADCOptions.setAdcTranspose(2);
+					*/
 				}
 			}
 		} else {
@@ -599,7 +574,14 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 				if (this.notesOn[chan][i] == 1) {
 					try {
 						note_out.setMessage(ShortMessage.NOTE_OFF, chan, i, 0);
-						recv.send(note_out, -1);
+						String[] midiOutOptions = monome.getMidiOutOptions();
+						for (int j = 0; j < midiOutOptions.length; j++) {
+							if (midiOutOptions[j] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+							recv.send(note_out, -1);
+						}
 					} catch (InvalidMidiDataException e) {
 						e.printStackTrace();
 					}				
@@ -617,16 +599,20 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public void playNote(int note_num, int velocity, int channel) {
 		ShortMessage note_out = new ShortMessage();
-		if (this.recv == null) {
-			return;
-		}
 		try {
 			if (velocity == 0) {
 				note_out.setMessage(ShortMessage.NOTE_OFF, channel, note_num, velocity);				
 			} else {
 				note_out.setMessage(ShortMessage.NOTE_ON, channel, note_num, velocity);				
 			}
-			recv.send(note_out, -1);		
+			String[] midiOutOptions = monome.getMidiOutOptions();
+			for (int i = 0; i < midiOutOptions.length; i++) {
+				if (midiOutOptions[i] == null) {
+					continue;
+				}
+				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+				recv.send(note_out, -1);
+			}
 			
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
@@ -639,17 +625,20 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public void doSustain() {		
 		ShortMessage sustain_out = new ShortMessage();
-		if (this.recv == null) {
-			return;
-		}
 		try {			
 			if (this.sustain == 1) {
 				sustain_out.setMessage(ShortMessage.CONTROL_CHANGE, this.midiChannel, 64, 127);
 			} else {
 				sustain_out.setMessage(ShortMessage.CONTROL_CHANGE, this.midiChannel, 64, 0);
-			}			
-			recv.send(sustain_out, -1);
-			
+			}
+			String[] midiOutOptions = monome.getMidiOutOptions();
+			for (int i = 0; i < midiOutOptions.length; i++) {
+				if (midiOutOptions[i] == null) {
+					continue;
+				}
+				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+				recv.send(sustain_out, -1);
+			}
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
@@ -712,6 +701,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 						this.monome.led(x, y, 0, this.index);
 					}
 				} else if (x == 7 && y == 4) {
+					/*
 					if (this.pageADCOptions.getAdcTranspose() == 1) {
 						this.monome.led(x, y, 1, this.index);
 					} else {
@@ -725,6 +715,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 					} else {
 						this.monome.led(x, y, 0, this.index);
 					}
+					*/
 				} else if (y >= 6) {
 					if (y == 6 && this.myKey < 8 && this.myKey == x) {
 						 this.monome.led(x, y, 1, this.index);
@@ -837,76 +828,14 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);	
+		this.gui.setName(name);	
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
 	public JPanel getPanel() {
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		JPanel panel = new JPanel();
-		panel.setLayout(null);
-		panel.setPreferredSize(new java.awt.Dimension(220, 240));
-		
-		pageNameLBL = new JLabel("Page " + (this.index + 1) + ": " + pageName);
-		panel.add(pageNameLBL);
-		pageNameLBL.setBounds(0, 0, 245, 14);
-		
-		JLabel midiout = new JLabel("<html>MIDI Out: " + this.midiDeviceName + "</html>");
-		panel.add(midiout);
-		midiout.setBounds(20, 25, 200, 35);
-				
-		JLabel scalelbl = new JLabel("Scales:");
-		panel.add(scalelbl);
-		scalelbl.setBounds(20, 75, 100, 14);
-		
-		resetScales = new JButton("Reset Scales");
-		resetScales.addActionListener(this);
-		panel.add(resetScales);
-		resetScales.setBounds(80, 75, 120, 20);
-		
-		
-		scaleTF1 = new JTextField();		
-		scaleTF2 = new JTextField();		
-		scaleTF3 = new JTextField();			
-		scaleTF4 = new JTextField();		
-		scaleTF5 = new JTextField();		
-		scaleTF6 = new JTextField();
-		
-		
-		panel.add(scaleTF1);
-		scaleTF1.setBounds(20, 100, 80, 20);
-		panel.add(scaleTF2);
-		scaleTF2.setBounds(120, 100, 80, 20);
-		panel.add(scaleTF3);
-		scaleTF3.setBounds(20, 125, 80, 20);
-		panel.add(scaleTF4);
-		scaleTF4.setBounds(120, 125, 80, 20);
-		panel.add(scaleTF5);
-		scaleTF5.setBounds(20, 150, 80, 20);
-		panel.add(scaleTF6);
-		scaleTF6.setBounds(120, 150, 80, 20);
-		
-		//populate the text fields with the selected scales
-		getScales();
-		
-		
-		midiOutButton = new JButton("Set MIDI Output");
-		midiOutButton.addActionListener(this);
-		panel.add(midiOutButton);
-		midiOutButton.setBounds(20, 175, 180, 20);
-		
-		updatePrefsButton = new JButton("Update Preferences");
-		updatePrefsButton.addActionListener(this);
-		panel.add(this.updatePrefsButton);
-		updatePrefsButton.setBounds(20, 200, 180, 20);
-		
-		this.panel = panel;
-		return panel;
+		return this.gui;
 	}
 
 	/* (non-Javadoc)
@@ -922,7 +851,6 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	public String toXml() {
 		String xml = "";
 		xml += "      <name>MIDI Keyboard</name>\n";
-		xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(this.midiDeviceName) + "</selectedmidioutport>\n";
 		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <scaleStr1>" + this.scaleStr[0].toString() + "</scaleStr1>\n";
 		xml += "      <scaleStr2>" + this.scaleStr[1].toString() + "</scaleStr2>\n";
@@ -930,56 +858,17 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		xml += "      <scaleStr4>" + this.scaleStr[3].toString() + "</scaleStr4>\n";
 		xml += "      <scaleStr5>" + this.scaleStr[4].toString() + "</scaleStr5>\n";
 		xml += "      <scaleStr6>" + this.scaleStr[5].toString() + "</scaleStr6>\n";
-		
+	
+		/*
 		xml += "      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n";
 		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
 		xml += "      <midiChannelADC>" + this.pageADCOptions.getMidiChannel() + "</midiChannelADC>\n";
 		xml += "      <adcTranspose>" + this.pageADCOptions.getAdcTranspose() + "</adcTranspose>\n";
 		xml += "      <recv>" + this.pageADCOptions.getRecv() + "</recv>\n"; 	
+		*/
 		
 		return xml;
 	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
-		if (e.getActionCommand().equals("Set MIDI Output")) {
-			String[] midiOutOptions = this.monome.getMidiOutOptions();
-			String deviceName = (String)JOptionPane.showInputDialog(
-					Main.getDesktopPane(),
-					"Choose a MIDI Output to use",
-					"Set MIDI Output",
-					JOptionPane.PLAIN_MESSAGE,
-					null,
-					midiOutOptions,
-					"");
-
-			if (deviceName == null) {
-				return;
-			}
-
-			this.addMidiOutDevice(deviceName);
-
-		}
-		if (e.getActionCommand().equals("Update Preferences")) {			
-			String s[] = new String[6];			
-			s[0] = this.scaleTF1.getText();
-			s[1] = this.scaleTF2.getText();
-			s[2] = this.scaleTF3.getText();
-			s[3] = this.scaleTF4.getText();
-			s[4] = this.scaleTF5.getText();
-			s[5] = this.scaleTF6.getText();					
-			setScales(s);
-		}
-		
-		if (e.getActionCommand().equals("Reset Scales")) {
-			this.scales = this.scalesDefault;
-			this.getScales();
-		}
-	}
-
 	
 	/**
 	 * gets the available scales and displays them on the gui 
@@ -987,17 +876,18 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	public void getScales() {		
 		for(int i=0; i<6; i++) {
 			this.scaleStr[i] = new StringBuffer();
-			for (int j=0; j<6; j++) {			
+			for (int j=0; j<6; j++) {		
+				System.out.println(Integer.toString(scales[i][j]));
 				this.scaleStr[i].append(Integer.toString(scales[i][j]) + ",");			
 			}
 			this.scaleStr[i].append(Integer.toString(scales[i][6]));			
 		}
-		this.scaleTF1.setText(scaleStr[0].toString());
-		this.scaleTF2.setText(scaleStr[1].toString());  
-		this.scaleTF3.setText(scaleStr[2].toString());
-		this.scaleTF4.setText(scaleStr[3].toString());
-		this.scaleTF5.setText(scaleStr[4].toString());
-		this.scaleTF6.setText(scaleStr[5].toString());
+		this.gui.scaleTF1.setText(scaleStr[0].toString());
+		this.gui.scaleTF2.setText(scaleStr[1].toString());  
+		this.gui.scaleTF3.setText(scaleStr[2].toString());
+		this.gui.scaleTF4.setText(scaleStr[3].toString());
+		this.gui.scaleTF5.setText(scaleStr[4].toString());
+		this.gui.scaleTF6.setText(scaleStr[5].toString());
 	}
 	/**
 	 * sets the scales to those entered in the gui
@@ -1028,18 +918,6 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 	}
 
 	/* (non-Javadoc)
- 	 * @see org.monome.pages.Page#addMidiOutDevice(java.lang.String)
-	 */
-	public void addMidiOutDevice(String deviceName) {
-		this.recv = this.monome.getMidiReceiver(deviceName);
-		this.midiDeviceName = deviceName;
-		this.midiOutButton.removeActionListener(this);
-		this.panel.removeAll();
-		this.panel = null;			
-	}
-		
-
-	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getCacheDisabled()
 	 */
 	public boolean getCacheDisabled() {
@@ -1054,16 +932,12 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 		return;
 	}
 	
-	public void clearPanel() {
-		this.panel = null;
-	}
-	
 	public void setIndex(int index) {
 		this.index = index;
 	}
 
 	
-	
+	/*
 	public void handleADC(int adcNum, float value) {
 		if (this.pageADCOptions.isSendADC() && this.monome.adcObj.isEnabled()) {
 			int midi = this.pageADCOptions.getMidiChannel();
@@ -1085,16 +959,19 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			}			
 		}
 	}
+	*/
 	public boolean isTiltPage() {
 		return true;
 	}
+	/*
 	public ADCOptions getAdcOptions() {
 		return this.pageADCOptions;
 	}
 
 	public void setAdcOptions(ADCOptions options) { 
 		this.pageADCOptions = options;
-	}	
+	}
+	*/
 		
 
 	public void configure(Element pageElement) {		
@@ -1120,6 +997,7 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			this.getScales();
 		}	
 		
+		/*
 		nl = pageElement.getElementsByTagName("ccoffset");
 		el = (Element) nl.item(0);
 		if (el != null) {
@@ -1158,6 +1036,25 @@ public class MIDIKeyboardPage implements Page, ActionListener {
 			nl = el.getChildNodes();
 			String	recv = ((Node) nl.item(0)).getNodeValue();
 			this.pageADCOptions.setRecv(recv);
-		}			
+		}
+		*/			
+	}
+
+	@Override
+	public int getIndex() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void handleADC(float x, float y) {
+		// TODO Auto-generated method stub
+		
 	}	
 }
