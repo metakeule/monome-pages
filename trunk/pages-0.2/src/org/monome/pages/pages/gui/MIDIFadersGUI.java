@@ -42,6 +42,7 @@ public class MIDIFadersGUI extends JPanel {
 		this.setSize(169, 142);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
+		setName("MIDI Faders Page");
 		this.add(getDelayTF(), null);
 		this.add(getDelayLBL(), null);
 		this.add(getCcOffsetLBL(), null);
@@ -49,6 +50,10 @@ public class MIDIFadersGUI extends JPanel {
 		this.add(getChannelLBL(), null);
 		this.add(getChannelTF(), null);
 		this.add(getUpdatePrefsBtn(), null);
+	}
+	
+	public void setName(String name) {
+		pageLabel.setText((page.getIndex() + 1) + ": " + name);
 	}
 
 	/**
@@ -59,7 +64,6 @@ public class MIDIFadersGUI extends JPanel {
 	private JLabel getPageLabel() {
 		if (pageLabel == null) {
 			pageLabel = new JLabel();
-			pageLabel.setText("MIDI Faders Page");
 			pageLabel.setBounds(new Rectangle(5, 5, 166, 21));
 		}
 		return pageLabel;
