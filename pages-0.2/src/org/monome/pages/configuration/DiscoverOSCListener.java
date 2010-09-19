@@ -134,7 +134,7 @@ public class DiscoverOSCListener implements OSCListener {
 				if (monomeConfig == null) {
 					System.out.println("**** creating monomeConfig on " + prefix + " index=" + index);
 					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-					config.addMonomeConfiguration(index, prefix, 0, 0, true, false, midiPageChangeRules);
+					config.addMonomeConfiguration(index, "", prefix, 0, 0, true, false, midiPageChangeRules);
 				} else {
 					monomeConfig.prefix = prefix;
 					monomeConfig.setFrameTitle();

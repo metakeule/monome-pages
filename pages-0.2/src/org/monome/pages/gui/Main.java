@@ -26,6 +26,8 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.configuration.MonomeConfigurationFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -385,6 +387,7 @@ public class Main extends JFrame {
 					getMidiMenu().setEnabled(true);
 					getFrame().setTitle("Pages : " + name);
 					ConfigurationFactory.setConfiguration(new Configuration(name));
+					ConfigurationFactory.getConfiguration().initAbleton();
 				}
 					
 			});
@@ -409,9 +412,20 @@ public class Main extends JFrame {
 					int returnVal = fc.showOpenDialog(getFrame());
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
+						setConfigurationFile(file);
 						Configuration configuration = new Configuration("Loading");
 						configuration.readConfigurationFile(file);
+						getConfigurationMenu().setEnabled(true);
+						getMidiMenu().setEnabled(true);
+						getFrame().setTitle("Pages : " + configuration.name);
 						ConfigurationFactory.setConfiguration(configuration);
+						configuration.initAbleton();
+						for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+							MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+							if (monomeConfig.pages.size() > 0) {
+								monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
+							}
+						}
 					}
 				}
 			});
@@ -432,10 +446,24 @@ public class Main extends JFrame {
 			closeItem.getAccessibleContext().setAccessibleDescription("Close the current configuration");
 			closeItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					getFrame().setTitle("Pages");
-					getConfigurationMenu().setEnabled(false);
-					getMidiMenu().setEnabled(false);
-					ConfigurationFactory.setConfiguration(null);
+					int confirm = JOptionPane.showConfirmDialog(
+							Main.getDesktopPane(),
+							"Are you sure you want to close this configuration?",
+							"Close Configuration",
+							JOptionPane.OK_CANCEL_OPTION,
+							JOptionPane.INFORMATION_MESSAGE
+							);
+					if (confirm == 0) {
+						Configuration configuration = ConfigurationFactory.getConfiguration();
+						configuration.closeMidiDevices();
+						configuration.stopMonomeSerialOSC();
+						configuration.stopAbleton();
+						configuration.destroyAllPages();
+						getFrame().setTitle("Pages");
+						getConfigurationMenu().setEnabled(false);
+						getMidiMenu().setEnabled(false);
+						ConfigurationFactory.setConfiguration(null);
+					}
 				}
 			});
 		}
@@ -535,8 +563,23 @@ public class Main extends JFrame {
 			exitItem.getAccessibleContext().setAccessibleDescription("Exits the program");
 			exitItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					
-					System.exit(1);
+					int confirm = JOptionPane.showConfirmDialog(
+							Main.getDesktopPane(),
+							"Are you sure you want to exit?",
+							"Exit",
+							JOptionPane.OK_CANCEL_OPTION,
+							JOptionPane.INFORMATION_MESSAGE
+							);
+					if (confirm == 0) {
+						Configuration configuration = ConfigurationFactory.getConfiguration();
+						if (configuration != null) {
+							configuration.closeMidiDevices();
+							configuration.stopMonomeSerialOSC();
+							configuration.stopAbleton();
+							configuration.destroyAllPages();
+						}
+						System.exit(1);
+					}
 				}
 			});
 		}

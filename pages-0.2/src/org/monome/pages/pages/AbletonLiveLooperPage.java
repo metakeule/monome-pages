@@ -88,8 +88,6 @@ public class AbletonLiveLooperPage implements Page {
 	public AbletonLiveLooperPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		ConfigurationFactory.getConfiguration().initAbleton();
-		this.abletonState = ConfigurationFactory.getConfiguration().abletonState;
 		gui = new AbletonLiveLooperGUI(this);
 	}
 
@@ -558,6 +556,7 @@ public class AbletonLiveLooperPage implements Page {
 	
 	public void setIndex(int index) {
 		this.index = index;
+		setName(this.pageName);
 	}
 
 	public void handleADC(int adcNum, float value) {

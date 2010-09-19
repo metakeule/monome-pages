@@ -72,7 +72,7 @@ public class MonomeFrame extends JInternalFrame {
 	 * 
 	 * @return javax.swing.JPanel
 	 */
-	private JPanel getJContentPane() {
+	public JPanel getJContentPane() {
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
@@ -124,7 +124,11 @@ public class MonomeFrame extends JInternalFrame {
 			prevPageItem.setText("Previous Page");
 			prevPageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+					int prevIndex = monomeConfig.curPage - 1;
+					if (prevIndex >= 0) {
+						monomeConfig.switchPage(monomeConfig.pages.get(prevIndex), prevIndex, true);
+					}
 				}
 			});
 		}
@@ -142,7 +146,11 @@ public class MonomeFrame extends JInternalFrame {
 			nextPageItem.setText("Next Page");
 			nextPageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+					int nextIndex = monomeConfig.curPage + 1;
+					if (nextIndex < monomeConfig.pages.size()) {
+						monomeConfig.switchPage(monomeConfig.pages.get(nextIndex), nextIndex, true);
+					}
 				}
 			});
 		}
@@ -157,10 +165,20 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenuItem getDeletePageItem() {
 		if (deletePageItem == null) {
 			deletePageItem = new JMenuItem();
-			deletePageItem.setText("Delete Page");
+			deletePageItem.setText("Delete Page...");
 			deletePageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					int confirm = JOptionPane.showConfirmDialog(
+							Main.getDesktopPane(),
+							"Are you sure you want to delete this page?",
+							"Delete Page",
+							JOptionPane.OK_CANCEL_OPTION,
+							JOptionPane.INFORMATION_MESSAGE
+							);
+					if (confirm == 0) {
+						MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+						monomeConfig.deletePage(monomeConfig.curPage);
+					}
 				}
 			});
 		}
@@ -197,7 +215,9 @@ public class MonomeFrame extends JInternalFrame {
 					}
 					name = "org.monome.pages.pages." + name;
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
-					monomeConfig.addPage(name);				
+					monomeConfig.addPage(name);
+					monomeConfig.curPage = monomeConfig.pages.size() - 1;
+					monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
 				}
 			});
 		}
@@ -390,7 +410,29 @@ public class MonomeFrame extends JInternalFrame {
 			patternLengthItem.setText("Set Pattern Length...");
 			patternLengthItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("actionPerformed()"); // TODO Auto-generated Event stub actionPerformed()
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+					if (monomeConfig.pages.size() > 0) {
+						int curLength = monomeConfig.patternBanks.get(monomeConfig.curPage).getPatternLength();
+						String length = (String)JOptionPane.showInputDialog(
+								(JMenuItem) e.getSource(),
+								"Enter new pattern length (1-16 measures)",
+								"Set Pattern Length",
+								JOptionPane.PLAIN_MESSAGE,
+								null,
+								null,
+								curLength);
+						if (length == null || length.compareTo("") == 0) {
+							return;
+						}
+						try {
+							int iLength = Integer.parseInt(length);
+							if (iLength > 0 && iLength < 16) {
+								monomeConfig.patternBanks.get(monomeConfig.curPage).setPatternLength(iLength);
+							}
+						} catch (NumberFormatException ex) {
+							return;
+						}
+					}				
 				}
 			});
 		}

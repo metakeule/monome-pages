@@ -458,6 +458,7 @@ public class MachineDrumInterfacePage implements Page {
 
 	public void setIndex(int index) {
 		this.index = index;
+		setName(this.pageName);
 	}
 
 	public void handleADC(int adcNum, float value) {
