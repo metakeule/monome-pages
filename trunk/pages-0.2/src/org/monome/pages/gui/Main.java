@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -279,6 +280,11 @@ public class Main extends JFrame {
 		super();
 		thisObj = this;
 		initialize();
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+		    public void windowClosing(WindowEvent winEvt) {
+		    	actionExit();
+		    }
+		});
 	}
 	
 	/**
@@ -383,6 +389,7 @@ public class Main extends JFrame {
 					if (name == null || name.compareTo("") == 0) {
 						return;
 					}
+					actionClose();
 					getConfigurationMenu().setEnabled(true);
 					getMidiMenu().setEnabled(true);
 					getFrame().setTitle("Pages : " + name);
@@ -411,6 +418,7 @@ public class Main extends JFrame {
 					JFileChooser fc = new JFileChooser();
 					int returnVal = fc.showOpenDialog(getFrame());
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						actionClose();
 						File file = fc.getSelectedFile();
 						setConfigurationFile(file);
 						Configuration configuration = new Configuration("Loading");
@@ -454,20 +462,31 @@ public class Main extends JFrame {
 							JOptionPane.INFORMATION_MESSAGE
 							);
 					if (confirm == 0) {
-						Configuration configuration = ConfigurationFactory.getConfiguration();
-						configuration.closeMidiDevices();
-						configuration.stopMonomeSerialOSC();
-						configuration.stopAbleton();
-						configuration.destroyAllPages();
-						getFrame().setTitle("Pages");
-						getConfigurationMenu().setEnabled(false);
-						getMidiMenu().setEnabled(false);
-						ConfigurationFactory.setConfiguration(null);
+						actionClose();
 					}
 				}
 			});
 		}
 		return closeItem;
+	}
+	
+	public void actionClose() {
+		Configuration configuration = ConfigurationFactory.getConfiguration();
+		if (configuration != null) {
+			configuration.stopMonomeSerialOSC();
+			configuration.stopAbleton();
+			configuration.destroyAllPages();
+			configuration.closeMidiDevices();
+			getFrame().setTitle("Pages");
+			getConfigurationMenu().setEnabled(false);
+			getMidiMenu().setEnabled(false);
+			ConfigurationFactory.setConfiguration(null);
+			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+				monomeConfig.monomeFrame.dispose();
+			}
+			MonomeConfigurationFactory.removeMonomeConfigurations();
+		}
 	}
 
 	/**
@@ -483,37 +502,41 @@ public class Main extends JFrame {
 			saveItem.getAccessibleContext().setAccessibleDescription("Save current configuration to the open configuration file");
 			saveItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (getConfigurationFile() == null) {
-						JFileChooser fc = new JFileChooser();
-						int returnVal = fc.showSaveDialog((JMenuItem) e.getSource());
-						if (returnVal == JFileChooser.APPROVE_OPTION) {
-							File file = fc.getSelectedFile();
-							setConfigurationFile(file);
-							try {
-								if (ConfigurationFactory.getConfiguration() != null) {
-									FileWriter fw = new FileWriter(file);
-									fw.write(ConfigurationFactory.getConfiguration().toXml());
-									fw.close();
-								}
-							} catch (IOException ex) {
-								ex.printStackTrace();
-							}
-						}
-					} else {
-						FileWriter fw;
-						try {
-							fw = new FileWriter(getConfigurationFile());
-							fw.write(ConfigurationFactory.getConfiguration().toXml());
-							fw.close();
-						} catch (IOException ex) {
-							ex.printStackTrace();
-						}
-
-					}
+					actionSave(e);
 				}
 			});
 		}
 		return saveItem;
+	}
+	
+	public void actionSave(java.awt.event.ActionEvent e) {
+		if (getConfigurationFile() == null) {
+			JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showSaveDialog((JMenuItem) e.getSource());
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File file = fc.getSelectedFile();
+				setConfigurationFile(file);
+				try {
+					if (ConfigurationFactory.getConfiguration() != null) {
+						FileWriter fw = new FileWriter(file);
+						fw.write(ConfigurationFactory.getConfiguration().toXml());
+						fw.close();
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+		} else {
+			FileWriter fw;
+			try {
+				fw = new FileWriter(getConfigurationFile());
+				fw.write(ConfigurationFactory.getConfiguration().toXml());
+				fw.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+
+		}
 	}
 
 	/**
@@ -563,27 +586,33 @@ public class Main extends JFrame {
 			exitItem.getAccessibleContext().setAccessibleDescription("Exits the program");
 			exitItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					int confirm = JOptionPane.showConfirmDialog(
-							Main.getDesktopPane(),
-							"Are you sure you want to exit?",
-							"Exit",
-							JOptionPane.OK_CANCEL_OPTION,
-							JOptionPane.INFORMATION_MESSAGE
-							);
-					if (confirm == 0) {
-						Configuration configuration = ConfigurationFactory.getConfiguration();
-						if (configuration != null) {
-							configuration.closeMidiDevices();
-							configuration.stopMonomeSerialOSC();
-							configuration.stopAbleton();
-							configuration.destroyAllPages();
-						}
-						System.exit(1);
-					}
+					actionExit();
 				}
 			});
 		}
 		return exitItem;
+	}
+	
+	public void actionExit() {
+		Configuration configuration = ConfigurationFactory.getConfiguration();
+		int confirm = 1;
+		if (configuration != null) {
+			confirm = JOptionPane.showConfirmDialog(
+					Main.getDesktopPane(),
+					"Do you want to save before closing?",
+					"Exit",
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.INFORMATION_MESSAGE
+					);
+		}
+		System.out.println("confirm is " + confirm);
+		if (confirm == 0) {
+			this.getSaveItem().doClick();
+		}
+		if (confirm == 0 || confirm == 1) {
+			actionClose();
+			System.exit(1);
+		}
 	}
 
 	/**
@@ -680,6 +709,7 @@ public class Main extends JFrame {
 		}
 		
 		showNewMonomeFrame = new NewMonomeConfigurationFrame();
+		showNewMonomeFrame.setSize(new Dimension(235, 200));
 		showNewMonomeFrame.setVisible(true);
 		jDesktopPane.add(showNewMonomeFrame);
 		try {
