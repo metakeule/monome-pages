@@ -53,6 +53,10 @@ public class MonomeConfigurationFactory {
 		}
 		return monomeConfigurations.size();
 	}
+	
+	public static void removeMonomeConfigurations() {
+		monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
+	}
 
 	public static boolean prefixExists(String prefix) {
 		if (monomeConfigurations == null) {
