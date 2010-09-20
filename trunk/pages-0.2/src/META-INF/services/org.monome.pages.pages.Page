@@ -7,5 +7,5 @@ org.monome.pages.pages.MachineDrumInterfacePage
 org.monome.pages.pages.MIDIKeyboardPage
 org.monome.pages.pages.MIDIFadersPage
 org.monome.pages.pages.MIDISequencerPage
-org.monome.pages.pages.MIDISequencerPagePoly
+org.monome.pages.pages.MIDISequencerPolyPage
 org.monome.pages.pages.MIDITriggersPage

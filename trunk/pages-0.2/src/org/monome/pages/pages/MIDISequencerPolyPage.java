@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
+import org.monome.pages.pages.gui.MIDISequencerPolyGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -45,7 +46,7 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak
  *
  */
-public class MIDISequencerPolyPage implements Page, ActionListener {
+public class MIDISequencerPolyPage implements Page {
 
 	/**
 	 * The MonomeConfiguration that this page belongs to
@@ -60,50 +61,7 @@ public class MIDISequencerPolyPage implements Page, ActionListener {
 	/**
 	 * The GUI for this page
 	 */
-	JPanel panel;
-
-	/**
-	 * The Update Preferences button
-	 */
-	private JButton updatePrefsButton;
-
-	/**
-	 * The Add MIDI Output button
-	 */
-	private JButton addMidiOutButton;
-
-	// row labels and text fields
-	private JLabel row1l;
-	private JTextField row1tf;
-	private JLabel row2l;
-	private JTextField row2tf;
-	private JLabel row3l;
-	private JTextField row3tf;
-	private JLabel row4l;
-	private JTextField row4tf;
-	private JLabel row5l;
-	private JTextField row5tf;
-	private JLabel row6l;
-	private JTextField row6tf;
-	private JLabel row7l;
-	private JTextField row7tf;
-	private JLabel row8l;
-	private JTextField row8tf;
-	private JLabel row9l;
-	private JTextField row9tf;
-	private JLabel row10l;
-	private JTextField row10tf;
-	private JLabel row11l;
-	private JTextField row11tf;
-	private JLabel row12l;
-	private JTextField row12tf;
-	private JLabel row13l;
-	private JTextField row13tf;
-	private JLabel row14l;
-	private JTextField row14tf;
-	private JLabel row15l;
-	private JTextField row15tf;
-	private JPanel jPanel1;
+	MIDISequencerPolyGUI gui;
 
 	/**
 	 * The current MIDI clock tick number (from 0 to 6)
@@ -130,12 +88,6 @@ public class MIDISequencerPolyPage implements Page, ActionListener {
 	 * 1 = bank mode on 
 	 */
 	private int bankMode = 0;
-	private JLabel jLabel1;
-	private JTextField channelTF;
-	private JLabel channelL;
-	private JTextField bankSizeTF;
-	private JLabel bankSizeLabel;
-	private JCheckBox holdModeCB;
 
 	/**
 	 * sequence[bank_number][width][height] - the currently programmed sequences 
@@ -199,18 +151,6 @@ public class MIDISequencerPolyPage implements Page, ActionListener {
 	private int globalPitchOctValue=12;
 	private boolean globalHold0=false;
 	private boolean globalHold1=false;
-	private int globalRandomGateValue0=0;
-	private int globalRandomNoteValue0=0;
-	private int globalRandomVelocityValue0=0;
-	private int globalRandomGateValue1=0;
-	private int globalRandomNoteValue1=0;
-	private int globalRandomVelocityValue1=0;
-	private boolean globalRandomGate0=false;
-	private boolean globalRandomNote0=false;
-	private boolean globalRandomVelocity0=false;
-	private boolean globalRandomGate1=false;
-	private boolean globalRandomNote1=false;
-	private boolean globalRandomVelocity1=false;
 	private int[] globalMLRSize0 =new int[3];
 	private int[] globalMLRSize1 =new int[3];
 	private int globalMLRSizeValue0=4;
@@ -271,10 +211,6 @@ public class MIDISequencerPolyPage implements Page, ActionListener {
 
 	public String midiChannel = "1";
 
-	private Receiver recv;
-
-	private String midiDeviceName;
-
 	// tilt stuff 
 	//private ADCOptions pageADCOptions = new ADCOptions();
 
@@ -282,8 +218,6 @@ public class MIDISequencerPolyPage implements Page, ActionListener {
 	 * The name of the page 
 	 */
 	private String pageName = "MIDI Sequencer Poly";
-	private JLabel pageNameLBL;
-	
 
 	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
@@ -292,6 +226,7 @@ public class MIDISequencerPolyPage implements Page, ActionListener {
 	public MIDISequencerPolyPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
+		this.gui = new MIDISequencerPolyGUI(this);
 		// setup default notes
 		this.noteNumbers[0] = this.noteToMidiNumber("C-1");
 		this.noteNumbers[1] = this.noteToMidiNumber("D-1");
@@ -312,7 +247,7 @@ public class MIDISequencerPolyPage implements Page, ActionListener {
 
 		//init pattern config
 		int globalHold=0;
-		if (this.getHoldModeCB().isSelected())  globalHold=1; else globalHold=0;
+		if (this.gui.getHoldModeCB().isSelected())  globalHold=1; else globalHold=0;
 		for (int  i=0;i<256;i++){
 			this.patlength[i]=4*this.monome.sizeX;
 			this.patHold[i]=globalHold;
@@ -938,8 +873,14 @@ this.patSpeed[iSeq]=0;
 					[this.bank]==x_seq)){
 				try {
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
-					if (this.recv != null) 
-						this.recv.send(note_out, -1);
+					String[] midiOutOptions = monome.getMidiOutOptions();
+					for (int j = 0; j < midiOutOptions.length; j++) {
+						if (midiOutOptions[j] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+						recv.send(note_out, -1);
+					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}
@@ -1373,7 +1314,14 @@ this.patSpeed[iSeq]=0;
 					//note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, heldNotesNum[iSeq][i], 0);
 					heldNotes[iSeq][i]=false;
-					this.recv.send(note_out, -1);
+					String[] midiOutOptions = monome.getMidiOutOptions();
+					for (int j = 0; j < midiOutOptions.length; j++) {
+						if (midiOutOptions[j] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+						recv.send(note_out, -1);
+					}
 				}
 			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();
@@ -1464,7 +1412,14 @@ globalRandomVelocityValue=0;*/
 									if (this.bankMode == 1) this.monome.led(y%
 
 											(this.monome.sizeX-1), this.monome.sizeY-3+(y/(this.monome.sizeX-1)), 0, this.index);
-									this.recv.send(note_out, -1);
+									String[] midiOutOptions = monome.getMidiOutOptions();
+									for (int j = 0; j < midiOutOptions.length; j++) {
+										if (midiOutOptions[j] == null) {
+											continue;
+										}
+										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+										recv.send(note_out, -1);
+									}
 								}
 							} catch (InvalidMidiDataException e) {
 								e.printStackTrace();
@@ -1482,7 +1437,14 @@ globalRandomVelocityValue=0;*/
 								if (this.bankMode == 1) this.monome.led(y%
 
 										(this.monome.sizeX-1), this.monome.sizeY-3+(y/(this.monome.sizeX-1)), 1, this.index);
-								this.recv.send(note_out, -1);
+								String[] midiOutOptions = monome.getMidiOutOptions();
+								for (int j = 0; j < midiOutOptions.length; j++) {
+									if (midiOutOptions[j] == null) {
+										continue;
+									}
+									Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+									recv.send(note_out, -1);
+								}
 							} catch (InvalidMidiDataException e) {
 								e.printStackTrace();
 							}							
@@ -1509,8 +1471,15 @@ globalRandomVelocityValue=0;*/
 									//note_out.setMessage(ShortMessage.NOTE_OFF, midiChannel, note_num, 0);	
 									note_out.setMessage(ShortMessage.NOTE_OFF, 
 
-											midiChannel, heldNotesNum[iSeq][y], 0);	
-									this.recv.send(note_out, -1);
+											midiChannel, heldNotesNum[iSeq][y], 0);
+									String[] midiOutOptions = monome.getMidiOutOptions();
+									for (int j = 0; j < midiOutOptions.length; j++) {
+										if (midiOutOptions[j] == null) {
+											continue;
+										}
+										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+										recv.send(note_out, -1);
+									}
 								}
 								if (this.bankMode == 1) this.monome.led(y%
 
@@ -1527,7 +1496,14 @@ globalRandomVelocityValue=0;*/
 
 										midiChannel, note_num, velocity);	
 								heldNotesNum[iSeq][y]=note_num;
-								this.recv.send(note_out, -1);
+								String[] midiOutOptions = monome.getMidiOutOptions();
+								for (int j = 0; j < midiOutOptions.length; j++) {
+									if (midiOutOptions[j] == null) {
+										continue;
+									}
+									Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+									recv.send(note_out, -1);
+								}
 								if (this.bankMode == 1) this.monome.led(y%
 
 										(this.monome.sizeX-1), this.monome.sizeY-3+(y/(this.monome.sizeX-1)), 1, this.index);
@@ -1981,20 +1957,14 @@ globalRandomVelocityValue=0;*/
 	 */
 	public void setName(String name) {
 		this.pageName = name;
-		this.pageNameLBL.setText("Page " + (this.index + 1) + ": " + pageName);
+		this.gui.setName(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getPanel()
 	 */
 	public JPanel getPanel() {
-		if (this.panel != null) {
-			return this.panel;
-		}
-
-		JPanel panel = new JPanel();
-		this.panel = panel;
-		return panel;
+		return gui;
 	}
 
 	/* (non-Javadoc)
@@ -2087,7 +2057,7 @@ globalRandomVelocityValue=0;*/
 		int holdmode = 0;
 		xml.append("      <name>MIDI Sequencer Poly</name>\n");
 		xml.append("      <pageName>" + this.pageName + "</pageName>\n");
-		if (this.getHoldModeCB().isSelected() == true) {
+		if (this.gui.getHoldModeCB().isSelected() == true) {
 			holdmode = 1;
 		}
 		xml.append("      <holdmode>" + holdmode + "</holdmode>\n");
@@ -2126,7 +2096,7 @@ globalRandomVelocityValue=0;*/
 		this.sequencePosition0 = 0;
 		this.sequencePosition1 = 0;
 		this.bankSize = banksize;
-		this.bankSizeTF.setText(String.valueOf(banksize));
+		this.gui.bankSizeTF.setText(String.valueOf(banksize));
 	}
 
 	public void setBankSize0(int banksize) {
@@ -2138,7 +2108,7 @@ globalRandomVelocityValue=0;*/
 		this.sequencePosition0 = 0;
 		this.bankSize0 = banksize;
 	}
-
+	
 	public void setBankSize1(int banksize) {
 		if (banksize > 64) {
 			banksize = 64;
@@ -2147,6 +2117,11 @@ globalRandomVelocityValue=0;*/
 		}
 		this.sequencePosition1 = 0;
 		this.bankSize1 = banksize;
+	}
+	
+	public void setMidiChannel(String midiChannel2) {
+		this.midiChannel = midiChannel2;
+		this.gui.channelTF.setText(midiChannel2);
 	}
 
 	/**
@@ -2192,7 +2167,7 @@ globalRandomVelocityValue=0;*/
 
 	public void setHoldMode(String holdmode) {
 		if (holdmode.equals("1")) {
-			this.getHoldModeCB().doClick();
+			this.gui.getHoldModeCB().doClick();
 		}
 	}
 
@@ -2201,7 +2176,6 @@ globalRandomVelocityValue=0;*/
 	}
 
 	public void clearPanel() {
-		this.panel = null;
 	}
 
 
@@ -2348,5 +2322,19 @@ globalRandomVelocityValue=0;*/
 	public int getIndex() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+
+	@Override
+	public void handleADC(int adcNum, float value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void handleADC(float x, float y) {
+		// TODO Auto-generated method stub
+		
 	}
 }
