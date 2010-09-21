@@ -22,7 +22,9 @@ public class MIDIInReceiver implements Receiver {
 
 	@Override
 	public void send(MidiMessage arg0, long arg1) {
-		ConfigurationFactory.getConfiguration().send(this.device, arg0, arg1);
+		if (ConfigurationFactory.getConfiguration() != null && this.device != null) {
+			ConfigurationFactory.getConfiguration().send(this.device, arg0, arg1);
+		}
 	}
 
 }
