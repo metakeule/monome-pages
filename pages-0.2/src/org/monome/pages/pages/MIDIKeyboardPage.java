@@ -1,18 +1,11 @@
 package org.monome.pages.pages;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
 import org.monome.pages.pages.gui.MIDIKeyboardGUI;

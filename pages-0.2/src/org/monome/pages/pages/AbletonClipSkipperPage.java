@@ -1,25 +1,16 @@
 package org.monome.pages.pages;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.ableton.AbletonClip;
-import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
 //import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
-import org.monome.pages.gui.Main;
 import org.monome.pages.pages.gui.AbletonClipSkipperGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
