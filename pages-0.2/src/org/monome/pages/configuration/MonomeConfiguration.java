@@ -142,6 +142,8 @@ public class MonomeConfiguration {
 	public boolean usePageChangeButton = true;
 
 	public boolean useMIDIPageChanging = false;
+
+	String[] pageChangeMidiInDevices = new String[32];
 	
 	/**
 	 * @param configuration The main Configuration object
@@ -433,12 +435,19 @@ public class MonomeConfiguration {
 					int channel = msg.getChannel();
 					int note = msg.getData1();
 					
-					for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
-						MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
-						if (mpcr.checkRule(note, channel) == true) {
-							int switchToPageIndex = mpcr.getPageIndex();
-							Page page = this.pages.get(switchToPageIndex);
-							this.switchPage(page, switchToPageIndex, true);
+					for (int j = 0; j < this.pageChangeMidiInDevices.length; j++) {
+						if (this.pageChangeMidiInDevices[j] == null) {
+							continue;
+						}
+						if (this.pageChangeMidiInDevices[j].compareTo(device.getDeviceInfo().getName()) == 0) {
+							for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
+								MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
+								if (mpcr.checkRule(note, channel) == true) {
+									int switchToPageIndex = mpcr.getPageIndex();
+									Page page = this.pages.get(switchToPageIndex);
+									this.switchPage(page, switchToPageIndex, true);
+								}
+							}
 						}
 					}
 				}
@@ -477,6 +486,29 @@ public class MonomeConfiguration {
 			if (this.midiInDevices[this.curPage][i] == null) {
 				this.midiInDevices[this.curPage][i] = deviceName;
 				this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				return;
+			}
+		}
+	}
+	
+	public void togglePageChangeMidiInDevice(String deviceName) {
+		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++) {
+			// if this device was enabled, disable it
+			if (this.pageChangeMidiInDevices[i] == null) {
+				continue;
+			}
+			if (this.pageChangeMidiInDevices[i].compareTo(deviceName) == 0) {
+				pageChangeMidiInDevices[i] = new String();
+				this.monomeFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
+				return;
+			}
+		}
+
+		// if we didn't disable it, enable it
+		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++) {
+			if (this.pageChangeMidiInDevices[i] == null) {
+				this.pageChangeMidiInDevices[i] = deviceName;
+				this.monomeFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
 				return;
 			}
 		}
@@ -743,6 +775,12 @@ public class MonomeConfiguration {
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
 		xml += "    <usePageChangeButton>" + (this.usePageChangeButton ? "true" : "false") + "</usePageChangeButton>\n";
 		xml += "    <useMIDIPageChanging>" + (this.useMIDIPageChanging ? "true" : "false") + "</useMIDIPageChanging>\n";
+		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++ ) {
+			if (pageChangeMidiInDevices[i] == null || pageChangeMidiInDevices[i].compareTo("") == 0) {
+				continue;
+			}
+			xml += "      <selectedpagechangemidiinport>" + StringEscapeUtils.escapeXml(pageChangeMidiInDevices[i]) + "</selectedpagechangemidiinport>\n";
+		}
 		for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
 			MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
 			if (mpcr != null) {

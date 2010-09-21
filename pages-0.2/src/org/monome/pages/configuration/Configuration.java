@@ -906,7 +906,7 @@ public class Configuration {
 						}
 					}
 					
-					NodeList rootNL3 = doc.getElementsByTagName("MIDIPageChangeRule");
+					NodeList rootNL3 = monomeElement.getElementsByTagName("MIDIPageChangeRule");
 					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 					for (int i2=0; i2 < rootNL3.getLength(); i2++) {
 						Node node2 = rootNL3.item(i2);					
@@ -974,8 +974,19 @@ public class Configuration {
 						//monomeConfig.adcObj.setEnabled(Boolean.parseBoolean(enabled));
 					}
 					
+					NodeList pcmidiNL = monomeElement.getElementsByTagName("selectedpagechangemidiinport");
+					for (int k=0; k < pcmidiNL.getLength(); k++) {
+						el = (Element) pcmidiNL.item(k);
+						if(el != null) {
+							nl = el.getChildNodes();
+							String midintport = ((Node) nl.item(0)).getNodeValue();
+							System.out.println("pagechangeselectedmidiinport is " + midintport);
+							monomeConfig.togglePageChangeMidiInDevice(midintport);
+						}
+					}
 					
 					// read in each page of the monome
+					monomeConfig.curPage = -1;
 					NodeList pageNL = monomeElement.getElementsByTagName("page");
 					for (int j=0; j < pageNL.getLength(); j++) {
 						Node pageNode = pageNL.item(j);
@@ -991,6 +1002,8 @@ public class Configuration {
 							System.out.println("Page name is " + pageName);		
 							Page page;
 							page = monomeConfig.addPage(pageClazz);
+							monomeConfig.curPage++;
+							System.out.println("configuring page " + monomeConfig.curPage);
 
 							// most pages have midi outputs
 							NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
@@ -1015,10 +1028,8 @@ public class Configuration {
 									monomeConfig.toggleMidiInDevice(midintport);
 								}
 							}
-
 							// page-specific configuration
-							page.configure(pageElement);							
-
+							page.configure(pageElement);
 						}
 					}
 					

@@ -1,5 +1,7 @@
 package org.monome.pages.pages;
 
+import java.util.ArrayList;
+
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.swing.JPanel;
@@ -197,6 +199,61 @@ public class MIDIFadersPage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
+		byte[] msg = message.getMessage();
+		for (int i = 0; i < msg.length; i++) {
+			System.out.print(msg[i] + " | ");
+		}
+		System.out.println();
+		int cc = 0;
+		int val = 0;
+		if (msg.length != 3) {
+			return;
+		}
+		if (msg.length == 3) {
+			cc = msg[1];
+			val = msg[2];
+		}
+		boolean foundFader = false;
+		int x = 0;
+		for (x = 0; x < monome.sizeX; x++) {
+			if (x + ccOffset == cc) {
+				foundFader = true;
+				break;
+			}
+		}
+		if (!foundFader) {
+			return;
+		}
+		int endY = 0;
+		for (int y = 0; y < this.monome.sizeY; y++) {
+			if (this.monome.sizeY == 8) {
+				if (val <= this.buttonValuesSmall[y]) {
+					endY = y;
+				}
+			} else {
+				if (val <= this.buttonValuesLarge[y]) {
+					endY = y;
+				}
+			}
+		}
+		endY--;
+		if (endY > monome.sizeY) {
+			endY = monome.sizeY;
+		}
+
+		ArrayList<Integer> intArgs = new ArrayList<Integer>();
+		intArgs.add(new Integer(x));
+		intArgs.add(new Integer(0));
+		intArgs.add(new Integer(0));
+		for (int y = this.monome.sizeY - 1; y > -1; y--) {
+			if (y > endY) {
+				this.monome.led(x, y, 1, this.index);
+			} else {
+				this.monome.led(x, y, 0, this.index);
+			}
+		}
+		
+		this.buttonFaders[x] = endY;
 		return;
 	}
 
@@ -395,7 +452,7 @@ public class MIDIFadersPage implements Page {
 	@Override
 	public int getIndex() {
 		// TODO Auto-generated method stub
-		return 0;
+		return index;
 	}
 
 	@Override

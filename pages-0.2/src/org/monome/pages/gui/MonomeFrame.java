@@ -31,7 +31,9 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenu midiMenu = null;
 	private JMenu midiInMenu = null;
 	private JMenu midiOutMenu = null;
+	private JMenu pageChangeMidiInMenu = null;
 	private JMenuItem noInputDevicesEnabledItem;
+	private JMenuItem noInputDevicesEnabledItem2;
 	private JMenuItem noOutputDevicesEnabledItem;
 	private JMenuItem prevPageItem = null;
 	private JMenuItem nextPageItem = null;
@@ -231,9 +233,12 @@ public class MonomeFrame extends JInternalFrame {
 			configurationMenu = new JMenu();
 			configurationMenu.setText("Configuration");
 			configurationMenu.add(getRenamePageItem());
+			configurationMenu.addSeparator();
 			configurationMenu.add(getSetPatternQuantizationItem());
 			configurationMenu.add(getPatternLengthItem());
+			configurationMenu.addSeparator();
 			configurationMenu.add(getPageChangeConfigurationItem());
+			configurationMenu.add(getPageChangeMidiInMenu());
 			configurationMenu.addSeparator();
 			configurationMenu.add(getMonomeDisplayItem());
 		}
@@ -509,21 +514,46 @@ public class MonomeFrame extends JInternalFrame {
 		return midiInMenu;
 	}
 	
+	/**
+	 * This method initializes midiInItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenu getPageChangeMidiInMenu() {
+		if (pageChangeMidiInMenu == null) {
+			pageChangeMidiInMenu = new JMenu();
+			pageChangeMidiInMenu.setText("Page Change MIDI In");
+			pageChangeMidiInMenu.add(getNoInputDevicesEnabledItem2());
+		}
+		return pageChangeMidiInMenu;
+	}
+	
+	
 	public void updateMidiInMenuOptions(String[] midiInOptions) {
 		midiInMenu.removeAll();
+		pageChangeMidiInMenu.removeAll();
 		for (int i=0; i < midiInOptions.length; i++) {
 			System.out.println("adding " + midiInOptions[i]);
 			midiInMenu.remove(getNoInputDevicesEnabledItem());
+			pageChangeMidiInMenu.remove(getNoInputDevicesEnabledItem2());
 			JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Input: " + midiInOptions[i]);
+			JCheckBoxMenuItem cbMenuItem2 = new JCheckBoxMenuItem("MIDI Input: " + midiInOptions[i]);
 			cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					String[] pieces = e.getActionCommand().split("MIDI Input: ");
 					actionToggleMidiInput(pieces[1]);
 				}});
+			cbMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String[] pieces = e.getActionCommand().split("MIDI Input: ");
+					actionTogglePageChangeMidiInput(pieces[1]);
+				}});
 			midiInMenu.add(cbMenuItem);
+			pageChangeMidiInMenu.add(cbMenuItem2);
 		}
 		if (midiInMenu.getItemCount() == 0) {
 			midiInMenu.add(getNoInputDevicesEnabledItem());
+			pageChangeMidiInMenu.add(getNoInputDevicesEnabledItem2());
 		}
 	}
 	
@@ -533,10 +563,8 @@ public class MonomeFrame extends JInternalFrame {
 	}
 	
 	public void updateMidiInSelectedItems(String[] midiInDevices) {
-		System.out.println("update midi in selected items!");
 		for (int i = 0; i < midiInMenu.getItemCount(); i++) {
 			String name = midiInMenu.getItem(i).getText();
-			System.out.println("checking " + name);
 			if (name == null) {
 				continue;
 			}
@@ -546,7 +574,6 @@ public class MonomeFrame extends JInternalFrame {
 				if (midiInDevices[j] == null) {
 					continue;
 				}
-				System.out.println("comparing '" + pieces[1] + "' to '" + midiInDevices[j] + "'");
 				if (pieces[1].compareTo(midiInDevices[j]) == 0) {
 					midiInMenu.getItem(i).setSelected(true);
 					found = true;
@@ -555,6 +582,35 @@ public class MonomeFrame extends JInternalFrame {
 			if (!found) {
 				System.out.println(name + " not found, disabling");
 				midiInMenu.getItem(i).setSelected(false);
+			}
+		}
+	}
+	
+	public void actionTogglePageChangeMidiInput(String deviceName) {
+		MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+		monomeConfig.togglePageChangeMidiInDevice(deviceName);
+	}
+	
+	public void updatePageChangeMidiInSelectedItems(String[] midiInDevices) {
+		for (int i = 0; i < pageChangeMidiInMenu.getItemCount(); i++) {
+			String name = pageChangeMidiInMenu.getItem(i).getText();
+			if (name == null) {
+				continue;
+			}
+			String[] pieces = name.split("MIDI Input: ");
+			boolean found = false;
+			for (int j = 0; j < midiInDevices.length; j++) {
+				if (midiInDevices[j] == null) {
+					continue;
+				}
+				if (pieces[1].compareTo(midiInDevices[j]) == 0) {
+					pageChangeMidiInMenu.getItem(i).setSelected(true);
+					found = true;
+				}
+			}
+			if (!found) {
+				System.out.println(name + " not found, disabling");
+				pageChangeMidiInMenu.getItem(i).setSelected(false);
 			}
 		}
 	}
@@ -631,6 +687,15 @@ public class MonomeFrame extends JInternalFrame {
 			noInputDevicesEnabledItem.setEnabled(false);
 		}
 		return noInputDevicesEnabledItem;
+	}
+	
+	private JMenuItem getNoInputDevicesEnabledItem2() {
+		if (noInputDevicesEnabledItem2 == null) {
+			noInputDevicesEnabledItem2 = new JMenuItem();
+			noInputDevicesEnabledItem2.setText("No MIDI Input Devices Enabled");
+			noInputDevicesEnabledItem2.setEnabled(false);
+		}
+		return noInputDevicesEnabledItem2;
 	}
 	
 	private JMenuItem getNoOutputDevicesEnabledItem() {

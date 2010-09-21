@@ -33,8 +33,6 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private MonomeConfiguration monome;
 	private int[] midiChannels = new int[255];
 	private int[] midiNotes = new int[255];
-	private boolean usePageChangeButton;
-	private boolean useMidiPageChanging;
 	private int pageIndex = 0;
 
 	/**
@@ -116,6 +114,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			pageCB.setBounds(new Rectangle(5, 30, 176, 21));
 			pageCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					storeValues();
 					populateTextFields();
 				}
 			});
@@ -124,6 +123,16 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			}
 		}
 		return pageCB;
+	}
+	
+	private void storeValues() {
+		try {
+			int value = Integer.parseInt(getChannelTF().getText());
+			midiChannels[pageIndex] = value - 1;
+			value = Integer.parseInt(getNoteTF().getText());
+			midiNotes[pageIndex] = value;
+		} catch (NumberFormatException ex) {
+		}
 	}
 	
 	private void populateTextFields() {
@@ -157,17 +166,6 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (channelTF == null) {
 			channelTF = new JTextField();
 			channelTF.setBounds(new Rectangle(105, 55, 41, 21));
-			channelTF.addKeyListener(new java.awt.event.KeyAdapter() {
-				public void keyTyped(java.awt.event.KeyEvent e) {
-					try {
-						System.out.println("text is " + getChannelTF().getText() + e.getKeyChar());
-						int value = Integer.parseInt(getChannelTF().getText() + e.getKeyChar());
-						midiChannels[pageIndex] = value;
-					} catch (NumberFormatException ex) {
-						return;
-					}	
-				}
-			});
 		}
 		return channelTF;
 	}
@@ -195,16 +193,6 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (noteTF == null) {
 			noteTF = new JTextField();
 			noteTF.setBounds(new Rectangle(105, 80, 41, 21));
-			noteTF.addKeyListener(new java.awt.event.KeyAdapter() {
-				public void keyTyped(java.awt.event.KeyEvent e) {
-					try {
-						int value = Integer.parseInt(getChannelTF().getText());
-						System.out.println("value is " + value);
-						midiNotes[pageIndex] = value;
-					} catch (NumberFormatException ex) {
-						return;
-					}					}
-			});
 		}
 		return noteTF;
 	}
@@ -275,11 +263,12 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			saveBtn.setText("Save");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					storeValues();
 					monome.useMIDIPageChanging = getMidiChangeCB().isSelected();
 					monome.usePageChangeButton = getMonomeChangeCB().isSelected();
 					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 					for (int i = 0; i < monome.pages.size(); i++) {
-						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i] - 1, i);
+						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
 						midiPageChangeRules.add(mpcr);
 					}
 					monome.midiPageChangeRules = midiPageChangeRules;
