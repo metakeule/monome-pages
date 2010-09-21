@@ -1,24 +1,12 @@
 package org.monome.pages.pages;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;

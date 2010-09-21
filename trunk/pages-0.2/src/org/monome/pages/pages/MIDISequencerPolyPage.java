@@ -1,7 +1,5 @@
 package org.monome.pages.pages;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -10,16 +8,9 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.configuration.MonomeConfiguration;
-import org.monome.pages.gui.Main;
 import org.monome.pages.pages.gui.MIDISequencerPolyGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

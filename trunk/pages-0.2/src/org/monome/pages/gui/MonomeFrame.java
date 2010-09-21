@@ -1,8 +1,6 @@
 package org.monome.pages.gui;
 
-import javax.sound.midi.MidiDevice;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
@@ -10,8 +8,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
@@ -44,6 +40,7 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenuItem setPatternQuantizationItem = null;
 	private JMenuItem patternLengthItem = null;
 	private JMenuItem pageChangeConfigurationItem = null;
+	private PageChangeConfigurationFrame pccFrame = null;
 	private String[] quantizationOptions = {"1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/48", "1/96"};
 	/**
 	 * This is the xxx default constructor
@@ -448,8 +445,34 @@ public class MonomeFrame extends JInternalFrame {
 		if (pageChangeConfigurationItem == null) {
 			pageChangeConfigurationItem = new JMenuItem();
 			pageChangeConfigurationItem.setText("Page Change Configuration...");
+			pageChangeConfigurationItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showPageChangeConfiguration();
+				}
+			});
 		}
 		return pageChangeConfigurationItem;
+	}
+	
+	private void showPageChangeConfiguration() {
+		if (pccFrame != null && pccFrame.isShowing()) {
+			try {
+				pccFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		pccFrame = new PageChangeConfigurationFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
+		pccFrame.setSize(new Dimension(200, 225));
+		pccFrame.setVisible(true);
+		Main.getGUI().add(pccFrame);
+		try {
+			pccFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

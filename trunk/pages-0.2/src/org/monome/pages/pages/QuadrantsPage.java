@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.configuration.QuadrantConfiguration;
@@ -149,11 +148,6 @@ public class QuadrantsPage implements Page, ActionListener {
 
 	}
 
-	public ADCOptions getAdcOptions() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public boolean getCacheDisabled() {
 		// TODO Auto-generated method stub
 		return false;
@@ -259,11 +253,6 @@ public class QuadrantsPage implements Page, ActionListener {
 
 	}
 
-	public void setAdcOptions(ADCOptions options) {
-		// TODO Auto-generated method stub
-
-	}
-
 	public void setIndex(int index) {
 		// TODO Auto-generated method stub
 
@@ -278,6 +267,11 @@ public class QuadrantsPage implements Page, ActionListener {
 		String xml = "";
 		xml += "      <name>Quadrants Page</name>\n";
 		return xml;
+	}
+
+	public int getIndex() {
+		// TODO Auto-generated method stub
+		return index;
 	}
 
 }

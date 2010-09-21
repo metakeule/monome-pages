@@ -1,19 +1,11 @@
 package org.monome.pages.pages;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.monome.pages.ableton.AbletonClip;
-import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
 //import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
@@ -22,8 +14,6 @@ import org.monome.pages.pages.gui.AbletonSceneLauncherGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import com.illposed.osc.OSCMessage;
 
 /**
  * The Ableton Clip Launcher page.  Usage information is available at:
@@ -59,8 +49,6 @@ public class AbletonSceneLauncherPage implements Page {
 	 * The number of control rows (track arm, track stop) that are enabled currently
 	 */
 	public int numEnabledRows = 4;
-	
-	private AbletonState abletonState;
 	
 	private int tickNum = 0;
 	
@@ -136,7 +124,7 @@ public class AbletonSceneLauncherPage implements Page {
 				} else if (y == 5) {
 					this.tempoUp();
 				} else if (y == 6) {
-					if (this.abletonState.getOverdub() == 1) {
+					if (ConfigurationFactory.getConfiguration().abletonState.getOverdub() == 1) {
 						this.abletonOverdub(0);
 					} else {
 						this.abletonOverdub(1);
@@ -153,25 +141,25 @@ public class AbletonSceneLauncherPage implements Page {
 						this.launchScene(scene_num);
 					} else {
 						// prev scene
-						if (y == this.monome.sizeY - 2 && this.abletonState.getSelectedScene() >= 0) {
+						if (y == this.monome.sizeY - 2 && ConfigurationFactory.getConfiguration().abletonState.getSelectedScene() >= 0) {
 							// this is wacky because the script starts counting scenes at 1, while
 							// pages starts at 0.  i couldn't get liveosc to send me a packet with
 							// an argument equal to (int) 0 (wtf?) so i had to start at 1.
-							this.launchScene(this.abletonState.getSelectedScene() - 2);
+							this.launchScene(ConfigurationFactory.getConfiguration().abletonState.getSelectedScene() - 2);
 						} 
 						// next scene	
 						else if (y == this.monome.sizeY - 1) {
 							// this is wacky because the script starts counting scenes at 1, while
 							// pages starts at 0.  i couldn't get liveosc to send me a packet with
 							// an argument equal to (int) 0 (wtf?) so i had to start at 1.
-							this.launchScene(this.abletonState.getSelectedScene());
+							this.launchScene(ConfigurationFactory.getConfiguration().abletonState.getSelectedScene());
 						}
 					}
 				}
 				// if this is the bottom row then arm/disarm track number x
 				else if (y == this.monome.sizeY - 1 && this.gui.getDisableArmCB().isSelected() == false) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2));
-					AbletonTrack track = this.abletonState.getTrack(track_num);
+					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getArm() == 0) {
 							this.armTrack(track_num);
@@ -184,7 +172,7 @@ public class AbletonSceneLauncherPage implements Page {
 				else if ((y == this.monome.sizeY - 2 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false) ||
 						  y == this.monome.sizeY - 1 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2));
-					AbletonTrack track = this.abletonState.getTrack(track_num);
+					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getSolo() == 0) {
 							this.soloTrack(track_num);
@@ -200,7 +188,7 @@ public class AbletonSceneLauncherPage implements Page {
 						 (y == this.monome.sizeY - 2 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == false) ||
                          (y == this.monome.sizeY - 1 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == true)) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2));
-					AbletonTrack track = this.abletonState.getTrack(track_num);
+					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getMute() == 0) {
 							this.muteTrack(track_num);
@@ -285,14 +273,14 @@ public class AbletonSceneLauncherPage implements Page {
 	 * Sends "/live/tempo tempo-1" to LiveOSC. 
 	 */
 	public void tempoDown() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(this.abletonState.getTempo() - 1.0f);
+		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(ConfigurationFactory.getConfiguration().abletonState.getTempo() - 1.0f);
 	}
 	
 	/**
 	 * Sends "/live/tempo tempo+1" to LiveOSC. 
 	 */
 	public void tempoUp() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(this.abletonState.getTempo() + 1.0f);
+		ConfigurationFactory.getConfiguration().getAbletonControl().setTempo(ConfigurationFactory.getConfiguration().abletonState.getTempo() + 1.0f);
 	}
 	
 	/**
@@ -370,7 +358,7 @@ public class AbletonSceneLauncherPage implements Page {
 		}
 		
 		for (int y = 0; y < this.monome.sizeY - numEnabledRows; y++) {
-			if (this.abletonState.getSelectedScene() == (1 + y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows)))) {
+			if (ConfigurationFactory.getConfiguration().abletonState.getSelectedScene() == (1 + y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows)))) {
 				if (tickNum % 24 == 0) {
 					this.monome.led(0, y, 1, this.index);
 				}
@@ -386,7 +374,7 @@ public class AbletonSceneLauncherPage implements Page {
 		// track state and flash if appropriate
 		for (int x = 1; x < this.monome.sizeX; x++) {
 			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 2));
-			AbletonTrack track = this.abletonState.getTrack(trackNum);
+			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackNum);
 			if (track != null) {
 				for (int y = 0; y < this.monome.sizeY - numEnabledRows; y++) {
 					int clipNum = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
@@ -421,7 +409,7 @@ public class AbletonSceneLauncherPage implements Page {
 	public void redrawMonome() {
 		for (int scene = 0; scene < this.monome.sizeY; scene++) {
 			int scene_num = scene + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows)) + 1;
-			if (scene_num == this.abletonState.getSelectedScene()) {
+			if (scene_num == ConfigurationFactory.getConfiguration().abletonState.getSelectedScene()) {
 				// let handleTick flash it
 			} else {
 				this.monome.led(0, scene, 0, this.index);
@@ -431,7 +419,7 @@ public class AbletonSceneLauncherPage implements Page {
 		// redraw the upper part of the monome (the clip state)
 		for (int x = 0; x < this.monome.sizeX - 2; x++) {
 			int track_num = x + (this.trackOffset * (this.monome.sizeX - 2));
-			AbletonTrack track = this.abletonState.getTrack(track_num);
+			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 			if (track != null) {
 				for (int y = 0; y < (this.monome.sizeY - this.numEnabledRows); y++) {
 					int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
@@ -460,7 +448,7 @@ public class AbletonSceneLauncherPage implements Page {
 			for (int i = 1; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 2));
 				int yRow = this.monome.sizeY - 1;
-				AbletonTrack track = this.abletonState.getTrack(track_num);
+				AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 				if (track != null) {
 					if (track.getArm() == 1) {
 						this.monome.led(i, yRow, 1, this.index);
@@ -483,7 +471,7 @@ public class AbletonSceneLauncherPage implements Page {
 				} else {
 					yRow = this.monome.sizeY - 1;
 				}
-				AbletonTrack track = this.abletonState.getTrack(track_num);
+				AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 				if (track != null) {
 					if (track.getSolo() == 1) {
 						this.monome.led(i, yRow, 1, this.index);
@@ -508,7 +496,7 @@ public class AbletonSceneLauncherPage implements Page {
 				} else {
 					yRow = this.monome.sizeY - 3;
 				}
-				AbletonTrack track = this.abletonState.getTrack(track_num);
+				AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 				if (track != null) {
 					if (track.getMute() == 1) {
 						this.monome.led(i, yRow, 0, this.index);
@@ -531,7 +519,7 @@ public class AbletonSceneLauncherPage implements Page {
 		}
 		
 		for (int y = 0; y < this.monome.sizeX; y++) {
-			if (y == 6 && this.abletonState.getOverdub() == 1) {
+			if (y == 6 && ConfigurationFactory.getConfiguration().abletonState.getOverdub() == 1) {
 				this.monome.led(this.monome.sizeX - 1, y, 1, this.index);
 			} else {
 				this.monome.led(this.monome.sizeX - 1, y, 0, this.index);
