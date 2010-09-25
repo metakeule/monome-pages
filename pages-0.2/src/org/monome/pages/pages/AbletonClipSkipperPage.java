@@ -32,9 +32,6 @@ public class AbletonClipSkipperPage implements Page {
 	 */
 	private MonomeConfiguration monome;
 	
-	private static final int NUM_CLIPS = 1000;
-	private static final int NUM_TRACKS = 50;
-
 	/**
 	 * This page's index (page number) 
 	 */

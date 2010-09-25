@@ -1,18 +1,14 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 
 import org.monome.pages.configuration.ConfigurationFactory;
-import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.AbletonSceneLauncherPage;
 
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import java.awt.Dimension;
 
 public class AbletonSceneLauncherGUI extends JPanel {
 

@@ -35,7 +35,7 @@ public class OSCSerialPort implements Runnable, SerialPortEventListener {
 	public static final boolean PAD_MESSAGES = true; // pad messages with zero bytes?
 	
 	static CommPortIdentifier portId;
-   static Enumeration	      portList;
+   static Enumeration<?>	      portList;
    InputStream		      inputStream;
    OutputStream		outputStream;
    SerialPort		      serialPort;

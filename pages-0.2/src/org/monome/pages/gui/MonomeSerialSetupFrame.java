@@ -1,6 +1,5 @@
 package org.monome.pages.gui;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -10,7 +9,6 @@ import javax.swing.JTextField;
 
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
-import java.awt.Dimension;
 
 public class MonomeSerialSetupFrame extends JInternalFrame {
 

@@ -31,10 +31,8 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.monome.pages.gui.MonomeDisplayFrame;
 import org.monome.pages.gui.MonomeFrame;
-import org.monome.pages.pages.AbletonClipControlPage;
 import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.AbletonClipSkipperPage;
 import org.monome.pages.pages.AbletonLiveLooperPage;
@@ -114,11 +112,6 @@ public class MonomeConfiguration {
 	 * The currently selected page
 	 */
 	public int curPage = 0;
-	
-	/**
-	 * The previously selected page
-	 */
-	private int prevPage = 0; 
 
 	/**
 	 * The options dropdown when creating a new page (contains a list of all page names)
@@ -181,7 +174,6 @@ public class MonomeConfiguration {
 	public Page addPage(String className) {
 		Page page;		
 
-		System.out.println("className is " + className);
 		page = PagesRepository.getPageInstance(className, this, this.numPages);
 		this.pages.add(this.numPages, page);
 
@@ -228,7 +220,6 @@ public class MonomeConfiguration {
 	 */
 	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
-		System.out.println(page);
 		page.redrawMonome();
 		monomeFrame.redrawPagePanel(page);
 		monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
@@ -243,7 +234,6 @@ public class MonomeConfiguration {
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i) instanceof AbletonClipLauncherPage) {
 				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
-				System.out.println("page.redrawMonome()");
 				page.redrawMonome();
 			}			
 			if (pages.get(i) instanceof AbletonLiveLooperPage) {
@@ -259,10 +249,12 @@ public class MonomeConfiguration {
 				page.redrawMonome();
 			}
 			
+			/*
 			if (pages.get(i) instanceof AbletonClipControlPage) {
 				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
 				page.redrawMonome();
 			}
+			*/
 			
 		}
 	}

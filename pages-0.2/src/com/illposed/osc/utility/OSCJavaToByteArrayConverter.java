@@ -153,7 +153,7 @@ public class OSCJavaToByteArrayConverter {
 	 * Creation date: (2/23/2001 2:43:25 AM)
 	 * @param aClass Class
 	 */
-	public void writeType(Class c) {
+	public void writeType(Class<? extends Object> c) {
 		// A big ol' case statement -- what's polymorphism mean, again?
 		// I really wish I could extend the base classes!
 
@@ -237,11 +237,11 @@ public class OSCJavaToByteArrayConverter {
 	 * compatibility), rather than an array.
 	 * @param vector  the collection I am to write out types for
 	 */
-	public void writeTypes(Vector vector) {
+	public void writeTypes(Vector<?> vector) {
 		// A big ol' case statement in a for loop -- what's polymorphism mean, again?
 		// I really wish I could extend the base classes!
 
-		Enumeration enm = vector.elements(); //bjoern: renamed enum-> enm
+		Enumeration<?> enm = vector.elements(); //bjoern: renamed enum-> enm
 		Object nextObject;
 		while (enm.hasMoreElements()) {
 			nextObject = enm.nextElement();

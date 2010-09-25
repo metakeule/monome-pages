@@ -129,8 +129,6 @@ public class MIDISequencerPage implements Page {
 	 * Random number generator
 	 */
 	private Random generator = new Random();
-	
-	private int noteDelay = 0;
 
 	public String midiChannel = "1";
 

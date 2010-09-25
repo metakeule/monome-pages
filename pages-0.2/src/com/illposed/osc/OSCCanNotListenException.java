@@ -13,6 +13,11 @@ public class OSCCanNotListenException extends Exception {
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 */
 	public OSCCanNotListenException() {
 		super();
 		// TODO Auto-generated constructor stub

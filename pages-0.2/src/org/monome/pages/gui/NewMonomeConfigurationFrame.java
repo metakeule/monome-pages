@@ -2,7 +2,7 @@ package org.monome.pages.gui;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
-import javax.swing.JFrame;
+
 import javax.swing.JLabel;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -13,9 +13,7 @@ import javax.swing.JButton;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
-import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
-import java.awt.Dimension;
 
 public class NewMonomeConfigurationFrame extends JInternalFrame {
 

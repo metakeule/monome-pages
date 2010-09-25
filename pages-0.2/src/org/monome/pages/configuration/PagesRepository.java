@@ -29,7 +29,7 @@ public class PagesRepository {
 	public static String[] getPageNames(){
 		String[] res = new String[pageTypes.size()];
 		int i = 0;
-		for (Class clz : pageTypes){
+		for (Class<? extends Page> clz : pageTypes){
 			res[i++] = clz.getName();
 			System.out.println(clz.getName());
 		}

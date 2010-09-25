@@ -8,8 +8,6 @@ import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
@@ -17,7 +15,6 @@ import java.beans.PropertyVetoException;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
-import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
@@ -33,8 +30,6 @@ import org.monome.pages.configuration.MonomeConfigurationFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.awt.Rectangle;
 
 public class Main extends JFrame {
 
@@ -293,11 +288,6 @@ public class Main extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-	    //get the screen size
-	    Dimension screenSize = 
-	        Toolkit.getDefaultToolkit().getScreenSize();
-
-	    //this.setSize(screenSize);
 	    this.setSize(600, 400);
 		this.setContentPane(getDesktopPane());
 		this.setJMenuBar(getMainMenuBar());
@@ -422,11 +412,11 @@ public class Main extends JFrame {
 						File file = fc.getSelectedFile();
 						setConfigurationFile(file);
 						Configuration configuration = new Configuration("Loading");
+						ConfigurationFactory.setConfiguration(configuration);
 						configuration.readConfigurationFile(file);
 						getConfigurationMenu().setEnabled(true);
 						getMidiMenu().setEnabled(true);
 						getFrame().setTitle("Pages : " + configuration.name);
-						ConfigurationFactory.setConfiguration(configuration);
 						configuration.initAbleton();
 						for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 							MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
@@ -730,7 +720,7 @@ public class Main extends JFrame {
 	}
 
 	public void setNewMonomeItem(JMenuItem newMonomeItem) {
-		this.newMonomeItem = newMonomeItem;
+		Main.newMonomeItem = newMonomeItem;
 	}
 	
 }
