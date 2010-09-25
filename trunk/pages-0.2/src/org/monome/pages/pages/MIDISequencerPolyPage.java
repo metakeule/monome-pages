@@ -59,7 +59,6 @@ public class MIDISequencerPolyPage implements Page {
 	 */
 	private int tickNum0 = 0;
 	private int tickNum1 = 0;
-	private int tickFlash=0;
 	private int tickFlash0=0;
 	private int tickFlash1=0;
 	private int tickFlashRefresh=1;
@@ -100,9 +99,6 @@ public class MIDISequencerPolyPage implements Page {
 	private boolean holdGate=false;
 	private boolean hold0=false;
 	private boolean hold1=false;
-	private boolean hold2=false;
-	private boolean hold3=false;
-	private boolean hold4=false;
 	private boolean hold5=false;
 	private boolean hold6=false;
 	private boolean []gate=new boolean[256];
@@ -116,8 +112,6 @@ public class MIDISequencerPolyPage implements Page {
 	private int[] globalPitchValue =new int[7];
 	private int globalPitch0=0;
 	private int globalPitch1=0;
-	private int globalPitch0prec=0;
-	private int globalPitch1prec=0;
 	private int[] globalLength =new int[4];
 	private int rowGlobalQuant0=0;
 	private int rowGlobalQuant1=1;
@@ -127,7 +121,6 @@ public class MIDISequencerPolyPage implements Page {
 	private int rowGlobalMLR1=3;
 	private int rowGlobalLoop0=6;
 	private int rowGlobalLoop1=7;
-	private int rowGlobalScale=7;
 	private int loopStart0=0;
 	private int loopStartPrec0=0;
 	private int loopStart1=0;
@@ -137,8 +130,6 @@ public class MIDISequencerPolyPage implements Page {
 	private boolean onOff1=true;
 	private int globalPitch0oct=0;
 	private int globalPitch1oct=0;
-	private int globalPitch0octPrec=0;
-	private int globalPitch1octPrec=0;
 	private int globalPitchOctValue=12;
 	private boolean globalHold0=false;
 	private boolean globalHold1=false;
@@ -197,8 +188,6 @@ public class MIDISequencerPolyPage implements Page {
 	 * Random number generator
 	 */
 	private Random generator = new Random();
-
-	private int noteDelay = 0;
 
 	public String midiChannel = "1";
 
@@ -449,7 +438,6 @@ public class MIDISequencerPolyPage implements Page {
 			}			
 
 			else if(y == this.rowGlobalPitch0){
-				this.globalPitch0octPrec=this.globalPitch0oct;
 				if (this.globalPitch0oct==this.globalPitchOctValue) this.globalPitch0oct=0; else 
 
 					this.globalPitch0oct=this.globalPitchOctValue;
@@ -457,7 +445,6 @@ public class MIDISequencerPolyPage implements Page {
 				stopNotesRequest=true;
 			}
 			else if(y == this.rowGlobalPitch1){
-				this.globalPitch1octPrec=this.globalPitch1oct;
 				if (this.globalPitch1oct==this.globalPitchOctValue) this.globalPitch1oct=0; else 
 
 					this.globalPitch1oct=this.globalPitchOctValue;
@@ -600,7 +587,6 @@ this.patSpeed[iSeq]=0;
 					this.tickNum1=0;
 				}	
 				else if (y==rowGlobalPitch0){
-					this.globalPitch0prec=this.globalPitch0;
 					stopNotesRequest=true;
 					/*for (int  i=0;i<256;i++){
 					this.stopNotes(i);
@@ -608,7 +594,6 @@ this.patSpeed[iSeq]=0;
 					if(x<7){this.globalPitch0=this.globalPitchValue[x];}
 				}	
 				else if (y==rowGlobalPitch1){
-					this.globalPitch1prec=this.globalPitch1;
 					stopNotesRequest=true;
 					if(x<7){this.globalPitch1=this.globalPitchValue[x];}
 				}	
@@ -1273,33 +1258,8 @@ this.patSpeed[iSeq]=0;
 
 	public void stopNotes(int iSeq ) {
 		ShortMessage note_out = new ShortMessage();
-		int note_num=0;
-		int velocity=0;
-		int seq_pos_pat=0;
-		int velocityPrec=0;
-		int seqPosition=0;
-
-		int globalPitch=0;
-		int globalPitchOct=0;
-
-
-
-
-
-		if (this.patSpeed[iSeq]==0){
-			globalPitch=this.globalPitch0prec;
-			globalPitchOct=this.globalPitch0octPrec;
-
-		}else {
-			globalPitch=this.globalPitch1prec;
-			globalPitchOct=this.globalPitch1octPrec;
-		}
-
-
 
 		for (int i=0; i < 16; i++) {
-			note_num = this.getNoteNumber(i)+globalPitch+this.patOctgUp[iSeq]*24 + globalPitchOct;
-
 			try {
 				if (heldNotes[iSeq][i]){
 					//note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
@@ -1337,9 +1297,6 @@ this.patSpeed[iSeq]=0;
 		int globalPitch=0;
 		int globalPitchOct=0;
 		boolean onOff=true;
-		int globalRandomGateValue=1;
-		int globalRandomNoteValue=1;
-		int globalRandomVelocityValue=1;
 		boolean globalHold;
 
 		/*if(this.globalRandomGate16) globalRandomGateValue=(int)(Math.random() + 0.5); else 

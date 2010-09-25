@@ -1,6 +1,5 @@
 package org.monome.pages.ableton;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class AbletonState {

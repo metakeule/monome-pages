@@ -26,7 +26,6 @@ import org.monome.pages.ableton.AbletonOSCControl;
 import org.monome.pages.ableton.AbletonOSCListener;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.gui.Main;
-import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.midi.MIDIInReceiver;
 import org.monome.pages.pages.Page;
 import org.w3c.dom.Document;
@@ -307,7 +306,6 @@ public class Configuration {
 			e1.printStackTrace();
 		}
 		this.discoverOSCListener.setDiscoverMode(true);
-		System.out.println("Requesting device list (/sys/report)");
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
 			for (int i = 0; i < 5; i++) {
@@ -492,7 +490,6 @@ public class Configuration {
 		// check if the device is already enabled, if so disable it
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
 			if (this.midiOutDevices.get(i).equals(midiOutDevice)) {
-				System.out.println("closing midi out device " + i + " / " + this.midiOutDevices.get(i).getDeviceInfo());
 				MidiDevice outDevice = this.midiOutDevices.get(i);
 				this.midiOutReceivers.remove(i);
 				this.midiOutDevices.remove(i);
@@ -531,7 +528,6 @@ public class Configuration {
 		for (int i=0; i < this.midiInDevices.size(); i++) {
 			if (this.midiInDevices.get(i).equals(midiInDevice)) {
 				MidiDevice inDevice = this.midiInDevices.get(i);
-				System.out.println("closing midi in device " + i + " / " + this.midiInDevices.get(i).getDeviceInfo());
 				Transmitter transmitter = this.midiInTransmitters.get(i);
 				this.midiInTransmitters.remove(i);
 				this.midiInDevices.remove(i);
@@ -800,7 +796,6 @@ public class Configuration {
 			rootEL = (Element) rootNL.item(0);
 			rootNL2 = rootEL.getChildNodes();
 			String oscoutport = ((Node) rootNL2.item(0)).getNodeValue();
-			System.out.println("oscoutport is " + oscoutport);
 
 			setMonomeSerialOSCOutPortNumber(Integer.valueOf(oscoutport).intValue());
 
@@ -846,7 +841,6 @@ public class Configuration {
 			// read all <midioutport> tags from the configuration file
 			rootNL = doc.getElementsByTagName("midioutport");
 			for (int i=0; i < rootNL.getLength(); i++) {
-				System.out.println("Item " + i);
 				rootEL = (Element) rootNL.item(i);
 				rootNL2 = rootEL.getChildNodes();
 				String midioutport = ((Node) rootNL2.item(0)).getNodeValue();
@@ -966,13 +960,15 @@ public class Configuration {
 					}
 					
 					// enable tilt
+					/*
 					nl = monomeElement.getElementsByTagName("adcEnabled");
 					el = (Element) nl.item(0);
 					if (el != null) {
 						nl = el.getChildNodes();
 						String enabled = ((Node) nl.item(0)).getNodeValue();
-						//monomeConfig.adcObj.setEnabled(Boolean.parseBoolean(enabled));
+						monomeConfig.adcObj.setEnabled(Boolean.parseBoolean(enabled));
 					}
+					*/
 					
 					NodeList pcmidiNL = monomeElement.getElementsByTagName("selectedpagechangemidiinport");
 					for (int k=0; k < pcmidiNL.getLength(); k++) {
@@ -980,7 +976,6 @@ public class Configuration {
 						if(el != null) {
 							nl = el.getChildNodes();
 							String midintport = ((Node) nl.item(0)).getNodeValue();
-							System.out.println("pagechangeselectedmidiinport is " + midintport);
 							monomeConfig.togglePageChangeMidiInDevice(midintport);
 						}
 					}
@@ -999,11 +994,10 @@ public class Configuration {
 							el = (Element) nl.item(0);
 							nl = el.getChildNodes();
 							String pageName = ((Node) nl.item(0)).getNodeValue();
-							System.out.println("Page name is " + pageName);		
 							Page page;
 							page = monomeConfig.addPage(pageClazz);
+							page.setName(pageName);
 							monomeConfig.curPage++;
-							System.out.println("configuring page " + monomeConfig.curPage);
 
 							// most pages have midi outputs
 							NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
@@ -1012,7 +1006,6 @@ public class Configuration {
 								if(el != null) {
 									nl = el.getChildNodes();
 									String midioutport = ((Node) nl.item(0)).getNodeValue();
-									System.out.println("selectedmidioutport is " + midioutport);
 									monomeConfig.toggleMidiOutDevice(midioutport);
 								}
 							}
@@ -1024,16 +1017,13 @@ public class Configuration {
 								if(el != null) {
 									nl = el.getChildNodes();
 									String midintport = ((Node) nl.item(0)).getNodeValue();
-									System.out.println("selectedmidiinport is " + midintport);
 									monomeConfig.toggleMidiInDevice(midintport);
 								}
 							}
-							// page-specific configuration
 							page.configure(pageElement);
 						}
 					}
 					
-					// most pages have midi outputs
 					NodeList lengthNL = monomeElement.getElementsByTagName("patternlength");
 					for (int k=0; k < lengthNL.getLength(); k++) {
 						el = (Element) lengthNL.item(k);

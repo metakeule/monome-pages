@@ -12,7 +12,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-
 /**
 * This code was edited or generated using CloudGarden's Jigloo
 * SWT/Swing GUI Builder, which is free for non-commercial
@@ -61,6 +60,7 @@ public class MIDITriggersPage implements Page {
 	private int[][] toggleValues = new int[16][16];
 	
 	public boolean[] toggles = new boolean[16];
+	public boolean[] onAndOff = new boolean[16];
 
 	/**
 	 * The MonomeConfiguration object this page belongs to
@@ -87,6 +87,13 @@ public class MIDITriggersPage implements Page {
 		this.monome = monome;
 		this.index = index;
 		gui = new MIDITriggersGUI(this);
+		for (int i = 0; i < 16; i++) {
+			onAndOff[i] = true;
+			for (int j = 0; j < 16; j++) {
+				toggleValues[i][j] = 0;
+			}
+		}
+		gui.onAndOffCB.setSelected(true);
 	}
 	
 	/* (non-Javadoc)
@@ -151,14 +158,20 @@ public class MIDITriggersPage implements Page {
 				if (this.toggleValues[a][b] == 1) {
 					this.toggleValues[a][b] = 0;
 					this.monome.led(x, y, 0, this.index);
+					if (onAndOff[b] == true) {
+						this.playNote(a, b, 1);
+					}
+					this.playNote(a, b, 0);					
 					// note on
 				} else {
 					this.toggleValues[a][b] = 1;
 					this.monome.led(x, y, 1, this.index);
+					this.playNote(a, b, 1);
+					if (onAndOff[b] == true) {
+						this.playNote(a, b, 0);
+					}
 					// note off
 				}
-				this.playNote(a, b, 1);
-				this.playNote(a, b, 0);					
 			}
 		} else {
 			this.monome.led(x, y, value, this.index);
@@ -290,6 +303,15 @@ public class MIDITriggersPage implements Page {
 			}
 			xml += "      <toggles>" + state + "</toggles>\n";
 		}
+		for (int i=0; i < 16; i++) {
+			String state;
+			if (this.onAndOff[i]) {
+				state = "on";
+			} else {
+				state = "off";
+			}
+			xml += "      <onandoff>" + state + "</onandoff>\n";
+		}
 		return xml;
 
 	}
@@ -318,6 +340,18 @@ public class MIDITriggersPage implements Page {
 		this.toggles[l] = true;
 		if (l == 0) {
 			gui.togglesCB.setSelected(true);
+		}
+	}
+	
+	/**
+	 * Used when loading configuration to enable checkboxes for rows/columns that should be on and off.
+	 * 
+	 * @param l 
+	 */
+	public void enableOnAndOff(int l) {
+		this.onAndOff[l] = true;
+		if (l == 0) {
+			gui.onAndOffCB.setSelected(true);
 		}
 	}
 
@@ -393,7 +427,19 @@ public class MIDITriggersPage implements Page {
 					this.enableToggle(l);
 				}
 			}
-		}		
+		}
+		
+		seqNL = pageElement.getElementsByTagName("onandoff");
+		for (int l=0; l < seqNL.getLength(); l++) {
+			el = (Element) seqNL.item(l);
+			if (el != null) {
+				nl = el.getChildNodes();
+				String mode = ((Node) nl.item(0)).getNodeValue();
+				if (mode.equals("on")) {
+					this.enableOnAndOff(l);
+				}
+			}
+		}
 
 		/*
 		nl = pageElement.getElementsByTagName("ccoffset");

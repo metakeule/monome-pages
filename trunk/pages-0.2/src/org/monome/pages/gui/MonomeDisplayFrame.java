@@ -1,11 +1,11 @@
 package org.monome.pages.gui;
 
-import java.awt.Dimension;
-
 import javax.swing.JInternalFrame;
 
 public class MonomeDisplayFrame extends JInternalFrame {
 
+	private static final long serialVersionUID = 1L;
+	
 	private JMonomeDisplay monomeDisplay = null;
 	
 	public MonomeDisplayFrame(int sizeX, int sizeY) {

@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.security.auth.login.Configuration;
-
 import org.monome.pages.configuration.ConfigurationFactory;
 import com.illposed.osc.OSCMessage;
 

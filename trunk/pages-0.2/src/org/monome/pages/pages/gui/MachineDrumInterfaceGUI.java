@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import javax.swing.JLabel;
 
 import org.monome.pages.pages.MachineDrumInterfacePage;
-import java.awt.Dimension;
+import javax.swing.JButton;
 
 public class MachineDrumInterfaceGUI extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -14,6 +14,7 @@ public class MachineDrumInterfaceGUI extends JPanel {
 	private JTextField speedTF = null;
 	private JLabel speedLBL = null;
 	private JLabel pageLabel = null;
+	private JButton updatePrefsBtn = null;
 
 	/**
 	 * This is the default constructor
@@ -36,6 +37,7 @@ public class MachineDrumInterfaceGUI extends JPanel {
 		this.setSize(174, 180);
 		this.add(getSpeedTF(), null);
 		this.add(getSpeedLBL(), null);
+		this.add(getUpdatePrefsBtn(), null);
 	}
 	
 	public void setName(String name) {
@@ -64,19 +66,7 @@ public class MachineDrumInterfaceGUI extends JPanel {
 		if (speedTF == null) {
 			speedTF = new JTextField();
 			speedTF.setBounds(new Rectangle(65, 25, 51, 21));
-			speedTF.addKeyListener(new java.awt.event.KeyAdapter() {
-				public void keyTyped(java.awt.event.KeyEvent e) {
-					String text = speedTF.getText();
-					try {
-						int val = Integer.parseInt(text);
-						if (val >= 10 && val <= 500) {
-							page.setSpeed(val);
-						}
-					} catch (NumberFormatException ex) {
-						return;
-					}
-				}
-			});
+			speedTF.setText(""+page.getSpeed());
 		}
 		return speedTF;
 	}
@@ -93,4 +83,32 @@ public class MachineDrumInterfaceGUI extends JPanel {
 			speedLBL.setBounds(new Rectangle(15, 25, 46, 21));
 		}
 		return speedLBL;
+	}
+
+	/**
+	 * This method initializes updatePrefsBtn	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getUpdatePrefsBtn() {
+		if (updatePrefsBtn == null) {
+			updatePrefsBtn = new JButton();
+			updatePrefsBtn.setBounds(new Rectangle(10, 55, 148, 21));
+			updatePrefsBtn.setText("Update Preferences");
+			updatePrefsBtn.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					try {
+						int val = Integer.parseInt(getSpeedTF().getText());
+						if (val >= 10 && val <= 500) {
+							page.setSpeed(val);
+						} else {
+							getSpeedTF().setText("" + page.getSpeed());
+						}
+					} catch (NumberFormatException ex) {
+						getSpeedTF().setText("" + page.getSpeed());
+					}				
+				}
+			});
+		}
+		return updatePrefsBtn;
 	}} //  @jve:decl-index=0:visual-constraint="10,10"

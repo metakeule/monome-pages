@@ -106,7 +106,7 @@ public class OSCBundle extends OSCPacket {
 		stream.write("#bundle");
 		computeTimeTagByteArray(stream);
 		//bjoern: renamed enum->enm for 5.0 compatibility
-		Enumeration enm = packets.elements();
+		Enumeration<OSCPacket> enm = packets.elements();
 		OSCPacket nextElement;
 		byte[] packetBytes;
 		while (enm.hasMoreElements()) {

@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 
 import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonClipDelay;
-import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
 //import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.ConfigurationFactory;
@@ -36,11 +35,6 @@ public class AbletonLiveLooperPage implements Page {
 	 * This page's index (page number).
 	 */
 	private int index;
-
-	/**
-	 * This page's GUI / control panel.
-	 */
-	private JPanel panel;
 	
 	/**
 	 * The amount to offset the monome display of the clips
@@ -540,7 +534,6 @@ public class AbletonLiveLooperPage implements Page {
 	}
 
 	public void clearPanel() {
-		this.panel = null;
 	}
 	
 	public void setIndex(int index) {

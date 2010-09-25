@@ -1,7 +1,5 @@
 package org.monome.pages.pages;
 
-import java.awt.event.ActionEvent;
-
 import javax.sound.midi.MidiMessage;
 import javax.swing.JPanel;
 

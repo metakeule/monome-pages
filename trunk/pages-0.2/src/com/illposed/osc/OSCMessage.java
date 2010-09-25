@@ -87,7 +87,7 @@ public class OSCMessage extends OSCPacket {
 			return;
 		stream.writeTypes(arguments);
 		// bjoern: renamed enum->enm for 5.0 compatibility
-		Enumeration enm = arguments.elements();
+		Enumeration<Object> enm = arguments.elements();
 		while (enm.hasMoreElements()) {
 			stream.write(enm.nextElement());
 		}

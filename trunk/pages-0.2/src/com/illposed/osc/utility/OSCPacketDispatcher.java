@@ -106,7 +106,7 @@ public class OSCPacketDispatcher {
 	
 	private void dispatchMessage(OSCMessage message, Date time) {
 		//System.out.println("OSC dispatch: "+message.getAddress());
-		Enumeration keys = addressToClassTable.keys();
+		Enumeration<String> keys = addressToClassTable.keys();
 		while (keys.hasMoreElements()) {
 			String key = (String) keys.nextElement();
 			// this supports the OSC regexp facility, but it

@@ -1,16 +1,12 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.pages.MIDIKeyboardPage;
-
-import java.awt.Dimension;
 
 public class MIDIKeyboardGUI extends JPanel {
 

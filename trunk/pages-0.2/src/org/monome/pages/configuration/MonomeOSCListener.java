@@ -32,11 +32,13 @@ public class MonomeOSCListener implements OSCListener {
 	 */
 	public void acceptMessage(Date time, OSCMessage message) {
 		Object[] args = message.getArguments();
+		/*
 		System.out.print(message.getAddress());
 		for (int i = 0; i < args.length; i++) {
 			System.out.print(" " + args[i].toString());
 		}
 		System.out.println();
+		*/
 
 		// only act if the message has our monome prefix
 		if (!message.getAddress().contains(monome.prefix)) {
@@ -48,6 +50,7 @@ public class MonomeOSCListener implements OSCListener {
 			int value = ((Integer) args[2]).intValue();
 			monome.handlePress(x, y, value);
 		}
+		/*
 		if (message.getAddress().contains("adc")) { 
 			int adcNum = ((Integer) args[0]).intValue();
 			float value = ((Float) args[1]).floatValue();
@@ -70,5 +73,6 @@ public class MonomeOSCListener implements OSCListener {
 			
 			//monome.handleADC(x, y);
 		}
+		*/
 	}
 }

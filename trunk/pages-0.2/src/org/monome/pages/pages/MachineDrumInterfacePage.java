@@ -382,7 +382,6 @@ public class MachineDrumInterfacePage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
-		System.out.println("midi message received");
 		String[] midiOutOptions = monome.getMidiOutOptions();
 		for (int i = 0; i < midiOutOptions.length; i++) {
 			if (midiOutOptions[i] == null) {
@@ -440,6 +439,13 @@ public class MachineDrumInterfacePage implements Page {
 	public void setSpeed(int speed) {
 		this.speed = speed;
 		this.gui.getSpeedTF().setText(String.valueOf(speed));
+	}
+	
+	/**
+	 * @param speed Sets the speed to send random parameter changes or auto morph, lower is faster
+	 */
+	public int getSpeed() {
+		return this.speed;
 	}
 
 	/* (non-Javadoc)

@@ -4,7 +4,6 @@ package org.monome.pages.ableton;
 
 import java.util.Date;
 
-import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 
 import com.illposed.osc.OSCListener;

@@ -246,7 +246,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		// handle a monome led_row request from the external application
 		if (msg.getAddress().contains("led_row")) {
 			Object[] args = msg.getArguments();
-			int[] int_args = {0, 0, 0};
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {

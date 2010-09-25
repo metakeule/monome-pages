@@ -10,7 +10,6 @@ import javax.swing.JComboBox;
 import org.monome.pages.pages.MIDITriggersPage;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
-import java.awt.Dimension;
 
 public class MIDITriggersGUI extends JPanel {
 
@@ -31,6 +30,8 @@ public class MIDITriggersGUI extends JPanel {
 	private JLabel colLBL = null;
 	public JCheckBox togglesCB = null;
 	private JLabel togglesLBL = null;
+	public JCheckBox onAndOffCB = null;
+	private JLabel onAndOffLBL = null;
 	/**
 	 * This is the default constructor
 	 */
@@ -48,7 +49,7 @@ public class MIDITriggersGUI extends JPanel {
 	private void initialize() {
 		pageLabel = new JLabel();
 		pageLabel.setBounds(new Rectangle(5, 5, 186, 21));
-		this.setSize(185, 141);
+		this.setSize(185, 153);
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		setName("MIDI Triggers Page");
@@ -60,6 +61,8 @@ public class MIDITriggersGUI extends JPanel {
 		this.add(getColLBL(), null);
 		this.add(getTogglesCB(), null);
 		this.add(getTogglesLBL(), null);
+		this.add(getOnAndOffCB(), null);
+		this.add(getOnAndOffLBL(), null);
 		ButtonGroup colRowBG = new ButtonGroup();
 		colRowBG.add(getRowRB());
 		colRowBG.add(getColRB());
@@ -109,6 +112,7 @@ public class MIDITriggersGUI extends JPanel {
 					}
 					int index = Integer.parseInt(pieces[1]) - 1;
 					togglesCB.setSelected(page.toggles[index]);
+					onAndOffCB.setSelected(page.onAndOff[index]);
 				}
 			});
 		}
@@ -234,6 +238,49 @@ public class MIDITriggersGUI extends JPanel {
 			togglesLBL.setBounds(new Rectangle(70, 100, 76, 21));
 		}
 		return togglesLBL;
+	}
+
+	/**
+	 * This method initializes onAndOffCB	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getOnAndOffCB() {
+		if (onAndOffCB == null) {
+			onAndOffCB = new JCheckBox();
+			onAndOffCB.setBounds(new Rectangle(45, 120, 21, 21));
+			onAndOffCB.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String label = (String) rowColCB.getSelectedItem();
+					if (label == null) {
+						return;
+					}
+					String[] pieces;
+					if (rowRB.isSelected()) {
+						pieces = label.split("Row ");
+					} else {
+						pieces = label.split("Col ");
+					}
+					int index = Integer.parseInt(pieces[1]) - 1;
+					page.onAndOff[index] = onAndOffCB.isSelected();
+				}
+			});
+		}
+		return onAndOffCB;
+	}
+
+	/**
+	 * This method initializes onAndOffLBL	
+	 * 	
+	 * @return javax.swing.JLabel	
+	 */
+	private JLabel getOnAndOffLBL() {
+		if (onAndOffLBL == null) {
+			onAndOffLBL = new JLabel();
+			onAndOffLBL.setText("On And Off");
+			onAndOffLBL.setBounds(new Rectangle(70, 120, 76, 21));
+		}
+		return onAndOffLBL;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
