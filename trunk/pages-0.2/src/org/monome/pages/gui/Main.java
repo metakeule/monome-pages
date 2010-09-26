@@ -101,6 +101,7 @@ public class Main extends JFrame {
 						cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
 							public void actionPerformed(java.awt.event.ActionEvent e) {
 								String[] pieces = e.getActionCommand().split("MIDI Input: ");
+								System.out.println("addMidiInput: " + pieces[1]);
 								actionAddMidiInput(pieces[1]);
 							}});
 						midiInMenu.add(cbMenuItem);
@@ -470,9 +471,18 @@ public class Main extends JFrame {
 			getFrame().setTitle("Pages");
 			getConfigurationMenu().setEnabled(false);
 			getMidiMenu().setEnabled(false);
+			for (int i = 0; i < getMidiInMenu().getItemCount(); i++) {
+				getMidiInMenu().getItem(i).setSelected(false);
+			}
+			for (int i = 0; i < getMidiOutMenu().getItemCount(); i++) {
+				getMidiOutMenu().getItem(i).setSelected(false);
+			}
 			ConfigurationFactory.setConfiguration(null);
 			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+				if (monomeConfig.monomeFrame.monomeDisplayFrame != null) {
+					monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
+				}
 				monomeConfig.monomeFrame.dispose();
 			}
 			MonomeConfigurationFactory.removeMonomeConfigurations();

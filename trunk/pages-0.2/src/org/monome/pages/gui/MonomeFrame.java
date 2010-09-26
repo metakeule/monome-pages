@@ -25,9 +25,10 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenuItem newPageItem = null;
 	private JMenu configurationMenu = null;
 	private JMenuItem monomeDisplayItem = null;
-	private MonomeDisplayFrame monomeDisplayFrame = null;
+	MonomeDisplayFrame monomeDisplayFrame = null;
+	MonomeSetupFrame monomeSetupFrame = null;
 	private JPanel currentPanel = null;
-	private int index = 0;
+	public int index = 0;
 	private JMenu midiMenu = null;
 	private JMenu midiInMenu = null;
 	private JMenu midiOutMenu = null;
@@ -44,6 +45,7 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenuItem pageChangeConfigurationItem = null;
 	private PageChangeConfigurationFrame pccFrame = null;
 	private String[] quantizationOptions = {"1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/48", "1/96"};
+	private JMenuItem monomeSetupItem = null;
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -232,6 +234,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (configurationMenu == null) {
 			configurationMenu = new JMenu();
 			configurationMenu.setText("Configuration");
+			configurationMenu.add(getMonomeSetupItem());
 			configurationMenu.add(getRenamePageItem());
 			configurationMenu.addSeparator();
 			configurationMenu.add(getSetPatternQuantizationItem());
@@ -241,6 +244,7 @@ public class MonomeFrame extends JInternalFrame {
 			configurationMenu.add(getPageChangeMidiInMenu());
 			configurationMenu.addSeparator();
 			configurationMenu.add(getMonomeDisplayItem());
+
 		}
 		return configurationMenu;
 	}
@@ -479,6 +483,27 @@ public class MonomeFrame extends JInternalFrame {
 			e.printStackTrace();
 		}
 	}
+	
+	private void showMonomeSetup() {
+		if (monomeSetupFrame != null && monomeSetupFrame.isShowing()) {
+			try {
+				monomeSetupFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		monomeSetupFrame = new MonomeSetupFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
+		monomeSetupFrame.setSize(new Dimension(134, 192));
+		monomeSetupFrame.setVisible(true);
+		Main.getGUI().add(monomeSetupFrame);
+		try {
+			monomeSetupFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * This method initializes midiMenu	
@@ -705,5 +730,23 @@ public class MonomeFrame extends JInternalFrame {
 			noOutputDevicesEnabledItem.setEnabled(false);
 		}
 		return noOutputDevicesEnabledItem;
+	}
+
+	/**
+	 * This method initializes monomeSetupItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getMonomeSetupItem() {
+		if (monomeSetupItem == null) {
+			monomeSetupItem = new JMenuItem();
+			monomeSetupItem.setText("Monome Setup...");
+			monomeSetupItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showMonomeSetup();
+				}
+			});
+		}
+		return monomeSetupItem;
 	}
 }

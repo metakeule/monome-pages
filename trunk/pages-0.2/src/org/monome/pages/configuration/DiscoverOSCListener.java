@@ -15,7 +15,7 @@ public class DiscoverOSCListener implements OSCListener {
 		discoverMode = newMode;
 	}
 
-	public void acceptMessage(Date time, OSCMessage message) {
+	public synchronized void acceptMessage(Date time, OSCMessage message) {
 		Object[] args = message.getArguments();
 		
 		System.out.print(message.getAddress());
@@ -126,17 +126,16 @@ public class DiscoverOSCListener implements OSCListener {
 					return;
 				}
 				
-				if (MonomeConfigurationFactory.prefixExists(prefix)) {
-					return;
-				}
-				
-				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(prefix);
 				if (monomeConfig == null) {
 					System.out.println("**** creating monomeConfig on " + prefix + " index=" + index);
 					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-					config.addMonomeConfiguration(index, "", prefix, 0, 0, true, false, midiPageChangeRules);
+					config.addMonomeConfiguration(index, prefix, "", 0, 0, true, false, midiPageChangeRules);
 				} else {
+					System.out.println("*** re-setting prefix to " + prefix);
 					monomeConfig.prefix = prefix;
+					monomeConfig.index = index;
+					monomeConfig.monomeFrame.index = index;
 					monomeConfig.setFrameTitle();
 				}
 			}

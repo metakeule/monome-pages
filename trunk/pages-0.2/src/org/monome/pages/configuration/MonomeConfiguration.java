@@ -151,7 +151,7 @@ public class MonomeConfiguration {
 		for (int i=0; i<options.length; i++) {
 			options[i] = options[i].substring(17);					
 		}
-				
+		this.index = index;
 		this.prefix = prefix;
 		this.serial = serial;
 		this.sizeX = sizeX;
@@ -266,7 +266,7 @@ public class MonomeConfiguration {
 	 * @param y The y coordinate of the button pressed.
 	 * @param value The type of event (1 = press, 0 = release)
 	 */
-	public void handlePress(int x, int y, int value) {
+	public synchronized void handlePress(int x, int y, int value) {
 		
 		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
 		if (monomeDisplayFrame != null) {
@@ -366,7 +366,7 @@ public class MonomeConfiguration {
 	/**
 	 * Called every time a MIDI clock sync 'tick' is received, this triggers each page's handleTick() method
 	 */
-	public void tick(MidiDevice device) {
+	public synchronized void tick(MidiDevice device) {
 		for (int i=0; i < this.numPages; i++) {
 			for (int j = 0; j < this.midiInDevices[i].length; j++) {
 				if (this.midiInDevices[i][j] == null) {
@@ -418,7 +418,7 @@ public class MonomeConfiguration {
 	 * @param message The MIDI message received
 	 * @param timeStamp The timestamp of the MIDI message
 	 */
-	public void send(MidiDevice device, MidiMessage message, long timeStamp) {
+	public synchronized void send(MidiDevice device, MidiMessage message, long timeStamp) {
 		if (this.useMIDIPageChanging) {
 			if (message instanceof ShortMessage) {
 				ShortMessage msg = (ShortMessage) message;
@@ -540,7 +540,7 @@ public class MonomeConfiguration {
 	 * @param value The value of the led (1 = on, 0 = off)
 	 * @param index The index of the page making the request
 	 */
-	public void led(int x, int y, int value, int index) {
+	public synchronized void led(int x, int y, int value, int index) {
 		if (x < 0 || y < 0 || value < 0) {
 			return;
 		}
@@ -597,7 +597,7 @@ public class MonomeConfiguration {
 	 * @param value2 The second 8 bits of the value
 	 * @param index The index of the page making the call
 	 */
-	public void led_col(ArrayList<Integer> intArgs, int index) {
+	public synchronized void led_col(ArrayList<Integer> intArgs, int index) {
 		int col = intArgs.get(0);
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
@@ -650,7 +650,7 @@ public class MonomeConfiguration {
 	 * @param value2 The second 8 bits of the value
 	 * @param index The index of the page making the call
 	 */
-	public void led_row(ArrayList<Integer> intArgs, int index) {
+	public synchronized void led_row(ArrayList<Integer> intArgs, int index) {
 		int row = intArgs.get(0);
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
@@ -704,7 +704,7 @@ public class MonomeConfiguration {
 	 * @param values
 	 * @param index
 	 */
-	public void frame(int x, int y, int[] values, int index) {
+	public synchronized void frame(int x, int y, int[] values, int index) {
 		for (int i=0; i < values.length; i++) {
 		}
 	}
@@ -715,7 +715,7 @@ public class MonomeConfiguration {
 	 * @param state See monome OSC spec 
 	 * @param index The index of the page making the call
 	 */
-	public void clear(int state, int index) {		
+	public synchronized void clear(int state, int index) {		
 		if (state == 0 || state == 1) {
 			for (int x = 0; x < this.sizeX; x++) {
 				for (int y = 0; y < this.sizeY; y++) {

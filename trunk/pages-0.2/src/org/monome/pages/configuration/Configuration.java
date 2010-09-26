@@ -171,10 +171,10 @@ public class Configuration {
 	 * @param sizeY The height of the monome (ie. 8 or 16)
 	 * @return The new monome's index
 	 */
-	public void addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		if (MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules)) {
-			this.initMonome(index);
-		}
+	public MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+		MonomeConfiguration monome = MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
+		this.initMonome(monome);
+		return monome;
 	}
 	
 	/**
@@ -208,13 +208,8 @@ public class Configuration {
 		
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			for (int i = 0; i < 5; i++) {
-				this.monomeSerialOSCPortOut.send(msg);
-				Thread.sleep(10);
-			}
+			this.monomeSerialOSCPortOut.send(msg);
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
@@ -241,7 +236,10 @@ public class Configuration {
 	 */
 	public void destroyAllPages() {
 		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-			MonomeConfigurationFactory.getMonomeConfiguration(i).destroyPage();
+			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+			if (monomeConfig != null) {
+				monomeConfig.destroyPage();
+			}
 		}
 	}
 	
@@ -325,9 +323,8 @@ public class Configuration {
 	 * @param monome The MonomeConfiguration object to initialize
 	 * @return true of initialization was successful
 	 */
-	private boolean initMonome(int index) {
+	private boolean initMonome(MonomeConfiguration monome) {
 		startMonomeSerialOSC();
-		MonomeConfiguration monome = MonomeConfigurationFactory.getMonomeConfiguration(index);
 		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
 		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
 		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
@@ -927,10 +924,9 @@ public class Configuration {
 					}
 
 					
-					// create the new monome configuration and display it's window
-					addMonomeConfiguration(i, prefix, serial, Integer.valueOf(sizeX).intValue(), 
+					// create the new monome configuration and display its window
+					MonomeConfiguration monomeConfig = addMonomeConfiguration(i, prefix, serial, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
-					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
 					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
 					monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
 										

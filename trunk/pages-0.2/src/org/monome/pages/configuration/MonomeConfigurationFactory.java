@@ -16,21 +16,37 @@ public class MonomeConfigurationFactory {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
-		Integer i = new Integer(index);
-		if (monomeConfigurations.containsKey(i)) {
-			return monomeConfigurations.get(i);
+		Iterator<Integer> it = monomeConfigurations.keySet().iterator();
+		while (it.hasNext()) {
+			Integer key = it.next();
+			MonomeConfiguration monomeConfig = monomeConfigurations.get(key);
+			if (monomeConfig.index == index) {
+				return monomeConfig;
+			}
 		}
 		return null;
 	}
 	
-	public static synchronized boolean addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+	public static synchronized MonomeConfiguration getMonomeConfiguration(String prefix) {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
-		Integer i = new Integer(index);
-		if (monomeConfigurations.containsKey(i)) {
-			return false;
+		Iterator<Integer> it = monomeConfigurations.keySet().iterator();
+		while (it.hasNext()) {
+			Integer key = it.next();
+			MonomeConfiguration monomeConfig = monomeConfigurations.get(key);
+			if (monomeConfig.prefix.compareTo(prefix) == 0) {
+				return monomeConfig;
+			}
 		}
+		return null;
+	}
+	
+	public static synchronized MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+		if (monomeConfigurations == null) {
+			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
+		}
+		Integer i = new Integer(monomeConfigurations.size());
 		
 		MonomeFrame monomeFrame = new MonomeFrame(index);
 		Main.getDesktopPane().add(monomeFrame);
@@ -43,8 +59,7 @@ public class MonomeConfigurationFactory {
 		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
 		monomeConfigurations.put(i, monomeConfiguration);
 		monomeConfiguration.setFrameTitle();
-		monomeFrame.setTitle(prefix + " | " + serial + " | " + sizeX + "x" + sizeY);
-		return true;
+		return monomeConfiguration;
 	}
 	
 	public static int getNumMonomeConfigurations() {
