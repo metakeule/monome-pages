@@ -20,7 +20,7 @@ public class AbletonOSCListener implements OSCListener {
 	/* (non-Javadoc)
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
-	public void acceptMessage(Date arg0, OSCMessage msg) {
+	public synchronized void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();
 		
 		System.out.print(msg.getAddress());

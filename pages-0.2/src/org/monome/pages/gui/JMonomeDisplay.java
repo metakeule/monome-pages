@@ -48,25 +48,27 @@ public class JMonomeDisplay extends JComponent {
 		int xSize = (int) side / sizeX;
 		int ySize = (int) side / sizeY;
 		
-		int rectDistance = 2 + (xSize / 10);
-		int fillDistance = 3 + (xSize / 10);
-		int circleDistance = 4 + (xSize / 10);
-		int circleSize = xSize - (xSize / 10) - 6;
+		int sideSize = Math.max(xSize, ySize);
+		
+		int rectDistance = 2 + (sideSize / 10);
+		int fillDistance = 3 + (sideSize / 10);
+		int circleDistance = 4 + (sideSize / 10);
+		int circleSize = sideSize - (sideSize / 10) - 6;
 		
 		for (int x = 0; x < sizeX; x++) {
 			for (int y = 0; y < sizeY; y++) {
 				if (ledState[x][y] == 0) {
 					g.setColor(Color.GRAY);
-					g.drawRect((x * xSize) + rectDistance, (y * ySize) + rectDistance, xSize - rectDistance, ySize - rectDistance);
+					g.drawRect((x * sideSize) + rectDistance, (y * sideSize) + rectDistance, sideSize - rectDistance, sideSize - rectDistance);
 				} else if (ledState[x][y] == 1) {
 					g.setColor(Color.GRAY);
-					g.drawRect((x * xSize) + rectDistance, (y * ySize) + rectDistance, xSize - rectDistance, ySize - rectDistance);
+					g.drawRect((x * sideSize) + rectDistance, (y * sideSize) + rectDistance, sideSize - rectDistance, sideSize - rectDistance);
 					g.setColor(Color.ORANGE);
-					g.fillRect((x * xSize) + fillDistance, (y * ySize) + fillDistance, xSize - fillDistance, ySize - fillDistance);
+					g.fillRect((x * sideSize) + fillDistance, (y * sideSize) + fillDistance, sideSize - fillDistance, sideSize - fillDistance);
 				}
 				if (pressState[x][y] == 1) {
 					g.setColor(Color.BLACK);
-					g.drawOval((x * xSize) + circleDistance, (y * ySize) + circleDistance, circleSize, circleSize); 
+					g.drawOval((x * sideSize) + circleDistance, (y * sideSize) + circleDistance, circleSize, circleSize); 
 				}
 			}
 		}
