@@ -26,21 +26,20 @@ public class MIDIGeneratorPage implements Page {
 	private boolean running = false;
 	private int tickNum;
 	
-	private int maxRadius;
-	private int numNotes;
-	private int quantization;
-	private int chance;
-	private int patternLength;
-	private String scale;
-	private int startNote;
-	private int maxNote;
+	public String scale;
+	public int patternLength;
+	public int quantization;
+	public int startNote;
+	public int maxNote;
+	public int numNotes;
+	public int chance;
+	public int maxRadius;
+	public int midiChannel;
 	private int[][] noteMap = new int[32][32];
-	private int midiChannel;
 	
 	public MIDIGeneratorPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
-		gui = new MIDIGeneratorGUI(this);
 		
 		maxRadius = 2;
 		numNotes = 10;
@@ -52,6 +51,7 @@ public class MIDIGeneratorPage implements Page {
 		maxNote = 74;
 		midiChannel = 0;
 		generateNoteMap();
+		gui = new MIDIGeneratorGUI(this);
 	}
 	
 	public void generateNoteMap() {
@@ -67,7 +67,7 @@ public class MIDIGeneratorPage implements Page {
 					nextNote = startNote;
 					scaleStep = 0;
 				}
-				if (scaleStep == 7) {
+				if (scaleStep == scaleOffsets.length) {
 					scaleStep = 0;
 				}
 			}
@@ -81,6 +81,87 @@ public class MIDIGeneratorPage implements Page {
 			NodeList nl = el.getChildNodes();
 			String	name = ((Node) nl.item(0)).getNodeValue();
 			this.setName(name);			
+		}
+		
+		nameNL = pageElement.getElementsByTagName("scale");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String scale = ((Node) nl.item(0)).getNodeValue();
+			this.scale = scale;
+			this.gui.getScaleTF().setText(scale);
+		}
+		
+		nameNL = pageElement.getElementsByTagName("patternLength");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String patternLength = ((Node) nl.item(0)).getNodeValue();
+			this.patternLength = Integer.parseInt(patternLength);
+			this.gui.getPatternLengthTF().setText("" + this.patternLength);
+		}
+
+		nameNL = pageElement.getElementsByTagName("quantization");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String quantization = ((Node) nl.item(0)).getNodeValue();
+			this.quantization = Integer.parseInt(quantization);
+			this.gui.getQuantizationTF().setText("" + this.quantization);
+		}
+		
+		nameNL = pageElement.getElementsByTagName("startNote");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String startNote = ((Node) nl.item(0)).getNodeValue();
+			this.startNote = Integer.parseInt(startNote);
+			this.gui.getStartNoteTF().setText("" + this.startNote);
+		}
+		
+		nameNL = pageElement.getElementsByTagName("maxNote");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String maxNote = ((Node) nl.item(0)).getNodeValue();
+			this.maxNote = Integer.parseInt(maxNote);
+			this.gui.getMaxNoteTF().setText("" + this.maxNote);
+		}
+		
+		nameNL = pageElement.getElementsByTagName("numNotes");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String numNotes = ((Node) nl.item(0)).getNodeValue();
+			this.numNotes = Integer.parseInt(numNotes);
+			this.gui.getNumNotesTF().setText(""+this.numNotes);
+		}
+		
+		nameNL = pageElement.getElementsByTagName("chance");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String chance = ((Node) nl.item(0)).getNodeValue();
+			this.chance = Integer.parseInt(chance);
+			this.gui.getChanceTF().setText(""+this.chance);
+		}
+		
+		nameNL = pageElement.getElementsByTagName("maxRadius");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String maxRadius = ((Node) nl.item(0)).getNodeValue();
+			this.maxRadius = Integer.parseInt(maxRadius);
+			this.gui.getMaxRadiusTF().setText("" + this.maxRadius);
+		}
+		
+		nameNL = pageElement.getElementsByTagName("midiChannel");
+		el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String midiChannel = ((Node) nl.item(0)).getNodeValue();
+			this.midiChannel = Integer.parseInt(midiChannel);
+			this.gui.getMidiChannelTF().setText("" + this.midiChannel);
 		}
 	}
 
@@ -205,6 +286,15 @@ public class MIDIGeneratorPage implements Page {
 		String xml = "";
 		xml += "      <name>MIDI Generator</name>\n";
 		xml += "      <pageName>" + this.pageName + "</pageName>\n";
+		xml += "      <scale>" + this.scale + "</scale>\n";
+		xml += "      <patternLength>" + this.patternLength + "</patternLength>\n";
+		xml += "      <quantization>" + this.quantization + "</quantization>\n";
+		xml += "      <startNote>" + this.startNote + "</startNote>\n";
+		xml += "      <maxNote>" + this.maxNote + "</maxNote>\n";
+		xml += "      <numNotes>" + this.numNotes + "</numNotes>\n";
+		xml += "      <chance>" + this.chance + "</chance>\n";
+		xml += "      <maxRadius>" + this.maxRadius + "</maxRadius>\n";
+		xml += "      <midiChannel>" + this.midiChannel + "</midiChannel>\n";
 		return xml;
 	}
 	
