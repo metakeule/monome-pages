@@ -202,7 +202,7 @@ public class MIDITriggersPage implements Page {
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
-		String[] midiOutOptions = monome.getMidiOutOptions();
+		String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 		for (int i = 0; i < midiOutOptions.length; i++) {
 			if (midiOutOptions[i] == null) {
 				continue;

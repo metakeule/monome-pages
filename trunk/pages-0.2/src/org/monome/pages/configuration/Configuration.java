@@ -204,14 +204,7 @@ public class Configuration {
 			e.printStackTrace();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-		}
-		
-		OSCMessage msg = new OSCMessage("/sys/report");
-		try {
-			this.monomeSerialOSCPortOut.send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		}		
 	}
 
 	/**
@@ -306,13 +299,8 @@ public class Configuration {
 		this.discoverOSCListener.setDiscoverMode(true);
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			for (int i = 0; i < 5; i++) {
-				this.monomeSerialOSCPortOut.send(msg);
-				Thread.sleep(100);
-			}
+			this.monomeSerialOSCPortOut.send(msg);
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

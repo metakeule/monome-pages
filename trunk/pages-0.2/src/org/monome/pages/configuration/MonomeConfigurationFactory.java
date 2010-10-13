@@ -43,6 +43,7 @@ public class MonomeConfigurationFactory {
 	}
 	
 	public static synchronized MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+		System.out.println("adding new monome with index " + index);
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
@@ -62,6 +63,11 @@ public class MonomeConfigurationFactory {
 		return monomeConfiguration;
 	}
 	
+	public static synchronized void moveIndex(int oldIndex, int newIndex) {
+		monomeConfigurations.put(new Integer(newIndex), monomeConfigurations.get(oldIndex));
+		monomeConfigurations.remove(new Integer(oldIndex));
+	}
+	
 	public static int getNumMonomeConfigurations() {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
@@ -71,6 +77,14 @@ public class MonomeConfigurationFactory {
 	
 	public static void removeMonomeConfigurations() {
 		monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
+	}
+	
+	public static void removeMonomeConfiguration(int index) {
+		MonomeConfiguration monomeConfig = monomeConfigurations.get(new Integer(index));
+		if (monomeConfig != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
+			monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
+		}
+		monomeConfig.monomeFrame.dispose();
 	}
 
 	public static boolean prefixExists(String prefix) {

@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
 
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.configuration.MonomeConfigurationFactory;
+
 import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
@@ -180,7 +182,12 @@ public class MonomeSetupFrame extends JInternalFrame {
 						int height = Integer.parseInt(getHeightTF().getText());
 						monome.sizeX = width;
 						monome.sizeY = height;
-						monome.prefix = getPrefixTF().getText();
+						String newPrefix = getPrefixTF().getText();
+						MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(newPrefix);
+						if (monomeConfig == null) {
+							monome.prefix = getPrefixTF().getText();
+						}
+						monome.setFrameTitle();
 						cancel();
 					} catch (NumberFormatException ex) {
 						cancel();

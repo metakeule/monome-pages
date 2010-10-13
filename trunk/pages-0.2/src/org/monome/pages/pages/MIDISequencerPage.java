@@ -486,7 +486,7 @@ public class MIDISequencerPage implements Page {
 				int note_num = this.getNoteNumber(i);
 				try {
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
-					String[] midiOutOptions = monome.getMidiOutOptions();
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 					for (int j = 0; j < midiOutOptions.length; j++) {
 						if (midiOutOptions[j] == null) {
 							continue;
@@ -528,7 +528,7 @@ public class MIDISequencerPage implements Page {
 					if (velocity == 0 && this.heldNotes[y] == 1) {
 						this.heldNotes[y] = 0;
 						note_out.setMessage(ShortMessage.NOTE_OFF, midiChannel, note_num, velocity);
-						String[] midiOutOptions = monome.getMidiOutOptions();
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -539,7 +539,7 @@ public class MIDISequencerPage implements Page {
 					} else if (velocity > 0 && this.heldNotes[y] == 0) {
 						this.heldNotes[y] = 1;
 						note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
-						String[] midiOutOptions = monome.getMidiOutOptions();
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -568,7 +568,7 @@ public class MIDISequencerPage implements Page {
 							note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
 							this.heldNotes[y] = 1;
 						}
-						String[] midiOutOptions = monome.getMidiOutOptions();
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;

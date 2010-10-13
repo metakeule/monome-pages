@@ -830,8 +830,8 @@ public class MonomeConfiguration {
 	/**
 	 * @return The MIDI outputs that have been enabled in the main configuration.
 	 */
-	public String[] getMidiOutOptions() {
-		return ConfigurationFactory.getConfiguration().getMidiOutOptions();
+	public String[] getMidiOutOptions(int index) {
+		return this.midiOutDevices[index];
 	}
 
 	/**

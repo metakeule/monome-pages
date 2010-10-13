@@ -148,7 +148,7 @@ public class MachineDrumInterfacePage implements Page {
 				}
 				// 6th row, initialize new kits
 			} else if (y == 5) {
-				String[] midiOutOptions = monome.getMidiOutOptions();
+				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
 						continue;
@@ -160,7 +160,7 @@ public class MachineDrumInterfacePage implements Page {
 			} else if (y == 6) {
 				System.out.println("kit function");
 				if (x < 4) {
-					String[] midiOutOptions = monome.getMidiOutOptions();
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -169,7 +169,7 @@ public class MachineDrumInterfacePage implements Page {
 						machinedrum.sendKitLoad(recv, x);						
 					}
 				} else {
-					String[] midiOutOptions = monome.getMidiOutOptions();
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -255,7 +255,7 @@ public class MachineDrumInterfacePage implements Page {
 
 		// send a param change to the echo effect
 		if (fx_morph[0] == 1 && ticks == 0) {
-			String[] midiOutOptions = monome.getMidiOutOptions();
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;
@@ -267,7 +267,7 @@ public class MachineDrumInterfacePage implements Page {
 
 		// send a param change to the gate effect
 		if (fx_morph[1] == 1 && ticks == 1) {
-			String[] midiOutOptions = monome.getMidiOutOptions();
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;
@@ -279,7 +279,7 @@ public class MachineDrumInterfacePage implements Page {
 
 		// send a param change to the eq effect
 		if (fx_morph[2] == 1 && ticks == 2) {
-			String[] midiOutOptions = monome.getMidiOutOptions();
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;
@@ -291,7 +291,7 @@ public class MachineDrumInterfacePage implements Page {
 
 		// send a param change to the compressor effect
 		if (fx_morph[3] == 1 && ticks == 3) {
-			String[] midiOutOptions = monome.getMidiOutOptions();
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;
@@ -319,7 +319,7 @@ public class MachineDrumInterfacePage implements Page {
 				if (morph_machines[x] == 1) {
 					if (morph_params[y] == 1) {
 						if (generator.nextInt(this.speed) == 1) {
-							String[] midiOutOptions = monome.getMidiOutOptions();
+							String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 							for (int i = 0; i < midiOutOptions.length; i++) {
 								if (midiOutOptions[i] == null) {
 									continue;
@@ -382,7 +382,7 @@ public class MachineDrumInterfacePage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
-		String[] midiOutOptions = monome.getMidiOutOptions();
+		String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 		for (int i = 0; i < midiOutOptions.length; i++) {
 			if (midiOutOptions[i] == null) {
 				continue;
