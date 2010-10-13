@@ -126,18 +126,22 @@ public class DiscoverOSCListener implements OSCListener {
 					return;
 				}
 				
-				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(prefix);
-				if (monomeConfig == null) {
-					System.out.println("**** creating monomeConfig on " + prefix + " index=" + index);
-					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-					config.addMonomeConfiguration(index, prefix, "", 0, 0, true, false, midiPageChangeRules);
-				} else {
-					System.out.println("*** re-setting prefix to " + prefix);
-					monomeConfig.prefix = prefix;
-					monomeConfig.index = index;
-					monomeConfig.monomeFrame.index = index;
-					monomeConfig.setFrameTitle();
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+				if (monomeConfig != null) {
+					System.out.println("monomeConfig is " + monomeConfig + " and prefix is " + monomeConfig.prefix + " == " + prefix);
 				}
+				if (monomeConfig != null && monomeConfig.prefix.equals(prefix)) {
+					System.out.println("index and prefix matches, skipping");
+					return;
+				}
+				if (monomeConfig != null) {
+					int newIndex = MonomeConfigurationFactory.getNumMonomeConfigurations();
+					System.out.println("*** moving index from " + index + " to " + newIndex);
+					MonomeConfigurationFactory.moveIndex(index, newIndex);
+				}
+				System.out.println("**** creating monomeConfig on " + prefix + " index=" + index);
+				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+				config.addMonomeConfiguration(index, prefix, "", 0, 0, true, false, midiPageChangeRules);
 			}
 		}
 	}

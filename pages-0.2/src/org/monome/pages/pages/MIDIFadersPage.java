@@ -140,7 +140,7 @@ public class MIDIFadersPage implements Page {
 			}
 
 			if (this.monome.sizeY == 8) {
-				String[] midiOutOptions = monome.getMidiOutOptions();
+				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
 						continue;
@@ -150,7 +150,7 @@ public class MIDIFadersPage implements Page {
 					new Thread(fader).start();
 				}
 			} else if (this.monome.sizeY == 16) {
-				String[] midiOutOptions = monome.getMidiOutOptions();
+				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
 						continue;

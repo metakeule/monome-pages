@@ -849,7 +849,7 @@ this.patSpeed[iSeq]=0;
 					[this.bank]==x_seq)){
 				try {
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
-					String[] midiOutOptions = monome.getMidiOutOptions();
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 					for (int j = 0; j < midiOutOptions.length; j++) {
 						if (midiOutOptions[j] == null) {
 							continue;
@@ -1265,7 +1265,7 @@ this.patSpeed[iSeq]=0;
 					//note_out.setMessage(ShortMessage.NOTE_OFF, 0, note_num, 0);
 					note_out.setMessage(ShortMessage.NOTE_OFF, 0, heldNotesNum[iSeq][i], 0);
 					heldNotes[iSeq][i]=false;
-					String[] midiOutOptions = monome.getMidiOutOptions();
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 					for (int j = 0; j < midiOutOptions.length; j++) {
 						if (midiOutOptions[j] == null) {
 							continue;
@@ -1360,7 +1360,7 @@ globalRandomVelocityValue=0;*/
 									if (this.bankMode == 1) this.monome.led(y%
 
 											(this.monome.sizeX-1), this.monome.sizeY-3+(y/(this.monome.sizeX-1)), 0, this.index);
-									String[] midiOutOptions = monome.getMidiOutOptions();
+									String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 									for (int j = 0; j < midiOutOptions.length; j++) {
 										if (midiOutOptions[j] == null) {
 											continue;
@@ -1385,7 +1385,7 @@ globalRandomVelocityValue=0;*/
 								if (this.bankMode == 1) this.monome.led(y%
 
 										(this.monome.sizeX-1), this.monome.sizeY-3+(y/(this.monome.sizeX-1)), 1, this.index);
-								String[] midiOutOptions = monome.getMidiOutOptions();
+								String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 								for (int j = 0; j < midiOutOptions.length; j++) {
 									if (midiOutOptions[j] == null) {
 										continue;
@@ -1420,7 +1420,7 @@ globalRandomVelocityValue=0;*/
 									note_out.setMessage(ShortMessage.NOTE_OFF, 
 
 											midiChannel, heldNotesNum[iSeq][y], 0);
-									String[] midiOutOptions = monome.getMidiOutOptions();
+									String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 									for (int j = 0; j < midiOutOptions.length; j++) {
 										if (midiOutOptions[j] == null) {
 											continue;
@@ -1444,7 +1444,7 @@ globalRandomVelocityValue=0;*/
 
 										midiChannel, note_num, velocity);	
 								heldNotesNum[iSeq][y]=note_num;
-								String[] midiOutOptions = monome.getMidiOutOptions();
+								String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 								for (int j = 0; j < midiOutOptions.length; j++) {
 									if (midiOutOptions[j] == null) {
 										continue;

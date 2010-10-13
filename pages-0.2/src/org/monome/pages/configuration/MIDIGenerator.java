@@ -59,7 +59,7 @@ public class MIDIGenerator {
 				y = y % monome.sizeY;
 			}
 			monome.led(x, y, 1, index);
-			String[] midiOutOptions = monome.getMidiOutOptions();
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;
@@ -67,6 +67,7 @@ public class MIDIGenerator {
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 				ShortMessage msg = new ShortMessage();
 				try {
+					System.out.println("played " + this.numberToMidiNote(noteMap[x][y]));
 					msg.setMessage(ShortMessage.NOTE_ON, midiChannel, noteMap[x][y], 127);
 					recv.send(msg, 0);
 				} catch (InvalidMidiDataException e) {
@@ -87,7 +88,7 @@ public class MIDIGenerator {
 	
 	public void noteOff() {
 		this.monome.led(this.lastX, this.lastY, 0, this.index);
-		String[] midiOutOptions = monome.getMidiOutOptions();
+		String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 		for (int i = 0; i < midiOutOptions.length; i++) {
 			if (midiOutOptions[i] == null) {
 				continue;

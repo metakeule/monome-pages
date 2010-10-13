@@ -567,7 +567,7 @@ public class MIDIKeyboardPage implements Page {
 				if (this.notesOn[chan][i] == 1) {
 					try {
 						note_out.setMessage(ShortMessage.NOTE_OFF, chan, i, 0);
-						String[] midiOutOptions = monome.getMidiOutOptions();
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 						for (int j = 0; j < midiOutOptions.length; j++) {
 							if (midiOutOptions[j] == null) {
 								continue;
@@ -598,7 +598,7 @@ public class MIDIKeyboardPage implements Page {
 			} else {
 				note_out.setMessage(ShortMessage.NOTE_ON, channel, note_num, velocity);				
 			}
-			String[] midiOutOptions = monome.getMidiOutOptions();
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;
@@ -624,7 +624,7 @@ public class MIDIKeyboardPage implements Page {
 			} else {
 				sustain_out.setMessage(ShortMessage.CONTROL_CHANGE, this.midiChannel, 64, 0);
 			}
-			String[] midiOutOptions = monome.getMidiOutOptions();
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;

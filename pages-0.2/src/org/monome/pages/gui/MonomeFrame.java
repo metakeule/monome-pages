@@ -25,7 +25,7 @@ public class MonomeFrame extends JInternalFrame {
 	private JMenuItem newPageItem = null;
 	private JMenu configurationMenu = null;
 	private JMenuItem monomeDisplayItem = null;
-	MonomeDisplayFrame monomeDisplayFrame = null;
+	public MonomeDisplayFrame monomeDisplayFrame = null;
 	MonomeSetupFrame monomeSetupFrame = null;
 	private JPanel currentPanel = null;
 	public int index = 0;
@@ -46,6 +46,7 @@ public class MonomeFrame extends JInternalFrame {
 	private PageChangeConfigurationFrame pccFrame = null;
 	private String[] quantizationOptions = {"1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/48", "1/96"};
 	private JMenuItem monomeSetupItem = null;
+	private JMenuItem removeMonomeItem = null;
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -236,6 +237,7 @@ public class MonomeFrame extends JInternalFrame {
 			configurationMenu.setText("Configuration");
 			configurationMenu.add(getMonomeSetupItem());
 			configurationMenu.add(getRenamePageItem());
+			configurationMenu.add(getRemoveMonomeItem());
 			configurationMenu.addSeparator();
 			configurationMenu.add(getSetPatternQuantizationItem());
 			configurationMenu.add(getPatternLengthItem());
@@ -244,7 +246,6 @@ public class MonomeFrame extends JInternalFrame {
 			configurationMenu.add(getPageChangeMidiInMenu());
 			configurationMenu.addSeparator();
 			configurationMenu.add(getMonomeDisplayItem());
-
 		}
 		return configurationMenu;
 	}
@@ -493,7 +494,7 @@ public class MonomeFrame extends JInternalFrame {
 			}
 			return;
 		}
-		
+
 		monomeSetupFrame = new MonomeSetupFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
 		monomeSetupFrame.setSize(new Dimension(134, 192));
 		monomeSetupFrame.setVisible(true);
@@ -748,5 +749,24 @@ public class MonomeFrame extends JInternalFrame {
 			});
 		}
 		return monomeSetupItem;
+	}
+
+	/**
+	 * This method initializes removeMonomeItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getRemoveMonomeItem() {
+		if (removeMonomeItem == null) {
+			removeMonomeItem = new JMenuItem();
+			removeMonomeItem.setText("Remove Monome");
+			removeMonomeItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+					MonomeConfigurationFactory.removeMonomeConfiguration(index);
+				}
+			});
+		}
+		return removeMonomeItem;
 	}
 }
