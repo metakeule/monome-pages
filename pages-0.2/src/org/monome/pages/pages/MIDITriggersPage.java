@@ -208,7 +208,9 @@ public class MIDITriggersPage implements Page {
 				continue;
 			}
 			Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-			recv.send(note_out, -1);
+			if (recv != null) {
+				recv.send(note_out, -1);
+			}
 		}
 	}
 

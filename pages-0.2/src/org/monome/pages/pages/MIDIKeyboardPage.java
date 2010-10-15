@@ -573,7 +573,9 @@ public class MIDIKeyboardPage implements Page {
 								continue;
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-							recv.send(note_out, -1);
+							if (recv != null) {
+								recv.send(note_out, -1);
+							}
 						}
 					} catch (InvalidMidiDataException e) {
 						e.printStackTrace();
@@ -604,7 +606,9 @@ public class MIDIKeyboardPage implements Page {
 					continue;
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				recv.send(note_out, -1);
+				if (recv != null) {
+					recv.send(note_out, -1);
+				}
 			}
 			
 		} catch (InvalidMidiDataException e) {
@@ -630,7 +634,9 @@ public class MIDIKeyboardPage implements Page {
 					continue;
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				recv.send(sustain_out, -1);
+				if (recv != null) {
+					recv.send(sustain_out, -1);
+				}
 			}
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
@@ -1036,7 +1042,7 @@ public class MIDIKeyboardPage implements Page {
 	@Override
 	public int getIndex() {
 		// TODO Auto-generated method stub
-		return 0;
+		return index;
 	}
 
 	@Override

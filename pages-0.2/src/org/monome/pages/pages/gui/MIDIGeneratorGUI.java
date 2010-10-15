@@ -482,7 +482,7 @@ public class MIDIGeneratorGUI extends JPanel {
 					int midiChannel = 0;
 					try {
 						midiChannel = Integer.parseInt(getMidiChannelTF().getText());
-						if (midiChannel < 0 || midiChannel > 15) {
+						if (midiChannel < 1 || midiChannel > 16) {
 							invalid = true;
 						}
 					} catch (NumberFormatException ex) {

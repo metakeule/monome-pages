@@ -154,7 +154,9 @@ public class MachineDrumInterfacePage implements Page {
 						continue;
 					}
 					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-					machinedrum.initKit(recv, x);
+					if (recv != null) {
+						machinedrum.initKit(recv, x);
+					}
 				}
 				// 7th row, kit load and save
 			} else if (y == 6) {
@@ -166,7 +168,9 @@ public class MachineDrumInterfacePage implements Page {
 							continue;
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-						machinedrum.sendKitLoad(recv, x);						
+						if (recv != null) {
+							machinedrum.sendKitLoad(recv, x);
+						}
 					}
 				} else {
 					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
@@ -175,7 +179,9 @@ public class MachineDrumInterfacePage implements Page {
 							continue;
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-						machinedrum.sendKitSave(recv, x - 4);
+						if (recv != null) {
+							machinedrum.sendKitSave(recv, x - 4);
+						}
 					}
 				}
 				// last row, auto morph toggle and fx morph toggles
@@ -261,7 +267,9 @@ public class MachineDrumInterfacePage implements Page {
 					continue;
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				machinedrum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
+				if (recv != null) {
+					machinedrum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
+				}
 			}
 		}
 
@@ -273,7 +281,9 @@ public class MachineDrumInterfacePage implements Page {
 					continue;
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				machinedrum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
+				if (recv != null) {
+					machinedrum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
+				}
 			}
 		}
 
@@ -285,7 +295,9 @@ public class MachineDrumInterfacePage implements Page {
 					continue;
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				machinedrum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
+				if (recv != null) {
+					machinedrum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
+				}
 			}
 		}
 
@@ -297,7 +309,9 @@ public class MachineDrumInterfacePage implements Page {
 					continue;
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				machinedrum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
+				if (recv != null) {
+					machinedrum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
+				}
 			}
 		}
 
@@ -325,7 +339,9 @@ public class MachineDrumInterfacePage implements Page {
 									continue;
 								}
 								Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-								machinedrum.sendRandomParamChange(recv, x, y);
+								if (recv != null) {
+									machinedrum.sendRandomParamChange(recv, x, y);
+								}
 							}
 						}
 					}
@@ -389,27 +405,29 @@ public class MachineDrumInterfacePage implements Page {
 			}
 			Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 			// pass midi clock messages on to the machinedrum for tempo sync
-			ShortMessage shortMessage;
-			if (message instanceof ShortMessage) {
-				shortMessage = (ShortMessage) message;
-				switch (shortMessage.getCommand()) {
-				case 0xF0:
-					// midi clock message
-					if (shortMessage.getChannel() == 0x08) {
+			if (recv != null) {
+				ShortMessage shortMessage;
+				if (message instanceof ShortMessage) {
+					shortMessage = (ShortMessage) message;
+					switch (shortMessage.getCommand()) {
+					case 0xF0:
+						// midi clock message
+						if (shortMessage.getChannel() == 0x08) {
+							recv.send(message, timeStamp);
+						}
+						// midi start message
+						if (shortMessage.getChannel() == 0x0A) {
+							recv.send(message, timeStamp);
+						}
+						// midi stop message
+						if (shortMessage.getChannel() == 0x0C) {
+							recv.send(message, timeStamp);
+						}
+						break;
+					default:
 						recv.send(message, timeStamp);
+						break;
 					}
-					// midi start message
-					if (shortMessage.getChannel() == 0x0A) {
-						recv.send(message, timeStamp);
-					}
-					// midi stop message
-					if (shortMessage.getChannel() == 0x0C) {
-						recv.send(message, timeStamp);
-					}
-					break;
-				default:
-					recv.send(message, timeStamp);
-					break;
 				}
 			}
 		}

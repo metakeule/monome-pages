@@ -480,10 +480,10 @@ public class Main extends JFrame {
 			ConfigurationFactory.setConfiguration(null);
 			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-				if (monomeConfig != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
+				if (monomeConfig != null && monomeConfig.monomeFrame != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
 					monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
+					monomeConfig.monomeFrame.dispose();
 				}
-				monomeConfig.monomeFrame.dispose();
 			}
 			MonomeConfigurationFactory.removeMonomeConfigurations();
 		}

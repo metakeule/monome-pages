@@ -855,7 +855,9 @@ this.patSpeed[iSeq]=0;
 							continue;
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-						recv.send(note_out, -1);
+						if (recv != null) {
+							recv.send(note_out, -1);
+						}
 					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
@@ -1271,7 +1273,9 @@ this.patSpeed[iSeq]=0;
 							continue;
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-						recv.send(note_out, -1);
+						if (recv != null) {
+							recv.send(note_out, -1);
+						}
 					}
 				}
 			} catch (InvalidMidiDataException e) {
@@ -1366,7 +1370,9 @@ globalRandomVelocityValue=0;*/
 											continue;
 										}
 										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-										recv.send(note_out, -1);
+										if (recv != null) {
+											recv.send(note_out, -1);
+										}
 									}
 								}
 							} catch (InvalidMidiDataException e) {
@@ -1391,7 +1397,9 @@ globalRandomVelocityValue=0;*/
 										continue;
 									}
 									Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-									recv.send(note_out, -1);
+									if (recv != null) {
+										recv.send(note_out, -1);
+									}
 								}
 							} catch (InvalidMidiDataException e) {
 								e.printStackTrace();
@@ -1426,7 +1434,9 @@ globalRandomVelocityValue=0;*/
 											continue;
 										}
 										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-										recv.send(note_out, -1);
+										if (recv != null) {
+											recv.send(note_out, -1);
+										}
 									}
 								}
 								if (this.bankMode == 1) this.monome.led(y%
@@ -1450,7 +1460,9 @@ globalRandomVelocityValue=0;*/
 										continue;
 									}
 									Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-									recv.send(note_out, -1);
+									if (recv != null) {
+										recv.send(note_out, -1);
+									}
 								}
 								if (this.bankMode == 1) this.monome.led(y%
 
@@ -2269,7 +2281,7 @@ globalRandomVelocityValue=0;*/
 	@Override
 	public int getIndex() {
 		// TODO Auto-generated method stub
-		return 0;
+		return index;
 	}
 
 

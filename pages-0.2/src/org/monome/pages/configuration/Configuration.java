@@ -299,9 +299,15 @@ public class Configuration {
 		this.discoverOSCListener.setDiscoverMode(true);
 		OSCMessage msg = new OSCMessage("/sys/report");
 		try {
-			this.monomeSerialOSCPortOut.send(msg);
+			for (int i = 0; i < 3; i++) {
+				this.monomeSerialOSCPortOut.send(msg);
+				Thread.sleep(100);
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 	}
 
