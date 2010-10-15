@@ -27,7 +27,11 @@ public class MIDIGenerator {
 		this.maxRadius = maxRadius;
 		this.chance = chance;
 		this.notes = notes;
-		this.radiusIncrement = this.notes / this.maxRadius;
+		if (this.maxRadius != 0) {
+			this.radiusIncrement = this.notes / this.maxRadius;
+		} else {
+			this.radiusIncrement = 0;
+		}
 		this.x = x;
 		this.y = y;
 		this.lastX = -1;
@@ -68,20 +72,22 @@ public class MIDIGenerator {
 				ShortMessage msg = new ShortMessage();
 				try {
 					System.out.println("played " + this.numberToMidiNote(noteMap[x][y]));
-					msg.setMessage(ShortMessage.NOTE_ON, midiChannel, noteMap[x][y], 127);
-					recv.send(msg, 0);
+					msg.setMessage(ShortMessage.NOTE_ON, midiChannel - 1, noteMap[x][y], 127);
+					if (recv != null) {
+						recv.send(msg, 0);
+					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}
 			}
 			lastX = x;
 			lastY = y;
-			if (radius == 0) {
+			if (radius == 0 && radiusIncrement != 0) {
 				radius++;
 			}
 		}
 		notes--;
-		if (this.notes % this.radiusIncrement == 0) {
+		if (this.radiusIncrement != 0 && this.notes % this.radiusIncrement == 0) {
 			this.radius++;
 		}
 	}
@@ -96,8 +102,10 @@ public class MIDIGenerator {
 			Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 			ShortMessage msg = new ShortMessage();
 			try {
-				msg.setMessage(ShortMessage.NOTE_OFF, midiChannel, noteMap[lastX][lastY], 0);
-				recv.send(msg, 0);
+				msg.setMessage(ShortMessage.NOTE_OFF, midiChannel - 1, noteMap[lastX][lastY], 0);
+				if (recv != null) {
+					recv.send(msg, 0);
+				}
 			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();
 			}

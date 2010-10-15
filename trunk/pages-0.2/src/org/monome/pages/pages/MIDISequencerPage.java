@@ -492,7 +492,9 @@ public class MIDISequencerPage implements Page {
 							continue;
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-						recv.send(note_out, -1);
+						if (recv != null) {
+							recv.send(note_out, -1);
+						}
 					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
@@ -534,7 +536,9 @@ public class MIDISequencerPage implements Page {
 								continue;
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-							recv.send(note_out, -1);
+							if (recv != null) {
+								recv.send(note_out, -1);
+							}
 						}
 					} else if (velocity > 0 && this.heldNotes[y] == 0) {
 						this.heldNotes[y] = 1;
@@ -545,7 +549,9 @@ public class MIDISequencerPage implements Page {
 								continue;
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-							recv.send(note_out, -1);
+							if (recv != null) {
+								recv.send(note_out, -1);
+							}
 						}
 					}
 				} catch (InvalidMidiDataException e) {
@@ -574,7 +580,9 @@ public class MIDISequencerPage implements Page {
 								continue;
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-							recv.send(note_out, -1);
+							if (recv != null) {
+								recv.send(note_out, -1);
+							}
 						}
 					} catch (InvalidMidiDataException e) {
 						e.printStackTrace();
@@ -1098,6 +1106,6 @@ public class MIDISequencerPage implements Page {
 	@Override
 	public int getIndex() {
 		// TODO Auto-generated method stub
-		return 0;
+		return index;
 	}
 }

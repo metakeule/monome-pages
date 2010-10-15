@@ -49,7 +49,7 @@ public class MIDIGeneratorPage implements Page {
 		scale = "2,2,1,2,2,2,1";
 		startNote = 31;
 		maxNote = 74;
-		midiChannel = 0;
+		midiChannel = 1;
 		generateNoteMap();
 		gui = new MIDIGeneratorGUI(this);
 	}
@@ -266,7 +266,7 @@ public class MIDIGeneratorPage implements Page {
 	}
 
 	public void redrawMonome() {
-
+		this.monome.clear(0, index);
 	}
 
 	public void send(MidiMessage message, long timeStamp) {

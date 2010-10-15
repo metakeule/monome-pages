@@ -762,7 +762,6 @@ public class MonomeFrame extends JInternalFrame {
 			removeMonomeItem.setText("Remove Monome");
 			removeMonomeItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
 					MonomeConfigurationFactory.removeMonomeConfiguration(index);
 				}
 			});

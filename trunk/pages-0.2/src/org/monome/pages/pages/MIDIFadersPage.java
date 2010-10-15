@@ -146,8 +146,10 @@ public class MIDIFadersPage implements Page {
 						continue;
 					}
 					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-					MIDIFader fader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount);
-					new Thread(fader).start();
+					if (recv != null) {
+						MIDIFader fader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount);
+						new Thread(fader).start();
+					}
 				}
 			} else if (this.monome.sizeY == 16) {
 				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
@@ -156,8 +158,10 @@ public class MIDIFadersPage implements Page {
 						continue;
 					}
 					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-					MIDIFader fader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount);
-					new Thread(fader).start();
+					if (recv != null) {
+						MIDIFader fader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount);
+						new Thread(fader).start();
+					}
 				}
 			}
 			
