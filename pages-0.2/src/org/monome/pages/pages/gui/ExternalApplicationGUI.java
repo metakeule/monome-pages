@@ -16,13 +16,13 @@ public class ExternalApplicationGUI extends JPanel {
 	private JLabel pageLabel = null;
 	private ExternalApplicationPage page = null;
 	private JLabel oscInLabel = null;
-	private JTextField oscInTF = null;
+	public JTextField oscInTF = null;
 	private JLabel oscOutLabel = null;
-	private JTextField oscOutTF = null;
+	public JTextField oscOutTF = null;
 	private JLabel oscHostnameLabel = null;
-	private JTextField oscHostnameTF = null;
+	public JTextField oscHostnameTF = null;
 	private JLabel oscPrefixLabel = null;
-	private JTextField oscPrefixTF = null;
+	public JTextField oscPrefixTF = null;
 	private JCheckBox disableLedCacheCB = null;
 	private JLabel disableLedCacheLabel = null;
 	private JButton updatePreferencesButton = null;
@@ -84,6 +84,7 @@ public class ExternalApplicationGUI extends JPanel {
 	private JTextField getOscInTF() {
 		if (oscInTF == null) {
 			oscInTF = new JTextField();
+			oscInTF.setText("8080");
 			oscInTF.setBounds(new Rectangle(125, 95, 76, 21));
 		}
 		return oscInTF;
@@ -97,6 +98,7 @@ public class ExternalApplicationGUI extends JPanel {
 	private JTextField getOscOutTF() {
 		if (oscOutTF == null) {
 			oscOutTF = new JTextField();
+			oscOutTF.setText("8000");
 			oscOutTF.setBounds(new Rectangle(125, 125, 76, 21));
 		}
 		return oscOutTF;
@@ -110,6 +112,7 @@ public class ExternalApplicationGUI extends JPanel {
 	private JTextField getOscHostnameTF() {
 		if (oscHostnameTF == null) {
 			oscHostnameTF = new JTextField();
+			oscHostnameTF.setText("localhost");
 			oscHostnameTF.setBounds(new Rectangle(125, 65, 76, 21));
 		}
 		return oscHostnameTF;
@@ -123,6 +126,7 @@ public class ExternalApplicationGUI extends JPanel {
 	private JTextField getOscPrefixTF() {
 		if (oscPrefixTF == null) {
 			oscPrefixTF = new JTextField();
+			oscPrefixTF.setText("/mlr");
 			oscPrefixTF.setBounds(new Rectangle(125, 35, 76, 21));
 		}
 		return oscPrefixTF;

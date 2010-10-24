@@ -664,7 +664,7 @@ public class Main extends JFrame {
 		}
 		
 		monomeSerialSetupFrame = new MonomeSerialSetupFrame();
-		monomeSerialSetupFrame.setSize(new Dimension(235, 200));
+		monomeSerialSetupFrame.setSize(new Dimension(235, 188));
 		monomeSerialSetupFrame.setVisible(true);
 		//monomeSerialSetupFrame.setNewMonomeItem(this.newMonomeItem);
 		jDesktopPane.add(monomeSerialSetupFrame);
@@ -709,7 +709,7 @@ public class Main extends JFrame {
 		}
 		
 		showNewMonomeFrame = new NewMonomeConfigurationFrame();
-		showNewMonomeFrame.setSize(new Dimension(235, 200));
+		showNewMonomeFrame.setSize(new Dimension(235, 160));
 		showNewMonomeFrame.setVisible(true);
 		jDesktopPane.add(showNewMonomeFrame);
 		try {
