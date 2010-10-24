@@ -854,8 +854,13 @@ public class Configuration {
 					// set the monome prefix
 					nl = monomeElement.getElementsByTagName("serial");
 					el = (Element) nl.item(0);
-					nl = el.getChildNodes();
-					String serial = ((Node) nl.item(0)).getNodeValue();
+					String serial = "no serial";
+					if (el != null) {
+						nl = el.getChildNodes();
+						if (nl.item(0) != null) {
+							serial = ((Node) nl.item(0)).getNodeValue();
+						}
+					}
 
 					// set the width of the monome
 					nl = monomeElement.getElementsByTagName("sizeX");
