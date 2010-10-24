@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.monome.pages.pages.MIDISequencerPolyPage;
+import java.awt.Dimension;
 
 public class MIDISequencerPolyGUI extends JPanel {
 
@@ -51,7 +52,7 @@ public class MIDISequencerPolyGUI extends JPanel {
 		bankSizeLBL = new JLabel();
 		bankSizeLBL.setBounds(new Rectangle(30, 55, 56, 21));
 		bankSizeLBL.setText("Bank Size");
-		this.setSize(203, 170);
+		this.setSize(219, 169);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		this.add(getRowCB(), null);
@@ -95,7 +96,7 @@ public class MIDISequencerPolyGUI extends JPanel {
 	private JComboBox getRowCB() {
 		if (rowCB == null) {
 			rowCB = new JComboBox();
-			rowCB.setBounds(new Rectangle(85, 30, 61, 21));
+			rowCB.setBounds(new Rectangle(85, 30, 71, 21));
 			rowCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					int index = rowCB.getSelectedIndex();
@@ -129,7 +130,7 @@ public class MIDISequencerPolyGUI extends JPanel {
 	private JTextField getNoteTF() {
 		if (noteTF == null) {
 			noteTF = new JTextField();
-			noteTF.setBounds(new Rectangle(150, 30, 36, 21));
+			noteTF.setBounds(new Rectangle(160, 30, 36, 21));
 		}
 		return noteTF;
 	}

@@ -83,6 +83,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	public ExternalApplicationPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
+		gui = new ExternalApplicationGUI(this);
 	}
 
 	/**
@@ -287,6 +288,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void setPrefix(String extPrefix) {
 		this.prefix = extPrefix;
+		gui.oscPrefixTF.setText(extPrefix);
 	}
 
 	/**
@@ -294,6 +296,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void setInPort(String extInPort) {
 		this.inPort = Integer.parseInt(extInPort);
+		gui.oscInTF.setText(extInPort);
 	}
 
 	/**
@@ -301,6 +304,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void setOutPort(String extOutPort) {
 		this.outPort = Integer.parseInt(extOutPort);
+		gui.oscOutTF.setText(extOutPort);
 	}
 
 	/**
@@ -308,6 +312,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void setHostname(String extHostname) {
 		this.hostname = extHostname;
+		gui.oscHostnameTF.setText(extHostname);
 	}
 	
 	/* (non-Javadoc)
@@ -374,28 +379,23 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.initOSC();		
 	}
 
-	@Override
 	public boolean getCacheDisabled() {
 		return gui.getDisableLedCacheCB().isSelected();
 	}
 
-	@Override
 	public int getIndex() {
 		return index;
 	}
 
-	@Override
 	public JPanel getPanel() {
 		return gui;
 	}
 
-	@Override
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void handleADC(float x, float y) {
 		// TODO Auto-generated method stub
 		

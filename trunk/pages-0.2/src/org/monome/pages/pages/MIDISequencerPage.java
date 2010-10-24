@@ -1103,7 +1103,6 @@ public class MIDISequencerPage implements Page {
 		this.redrawMonome();		
 	}
 
-	@Override
 	public int getIndex() {
 		// TODO Auto-generated method stub
 		return index;

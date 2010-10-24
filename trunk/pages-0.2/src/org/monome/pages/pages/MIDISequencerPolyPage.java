@@ -2278,21 +2278,18 @@ globalRandomVelocityValue=0;*/
 	}
 
 
-	@Override
 	public int getIndex() {
 		// TODO Auto-generated method stub
 		return index;
 	}
 
 
-	@Override
 	public void handleADC(int adcNum, float value) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
-	@Override
 	public void handleADC(float x, float y) {
 		// TODO Auto-generated method stub
 		
