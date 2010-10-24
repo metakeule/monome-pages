@@ -591,7 +591,7 @@ public class MonomeFrame extends JInternalFrame {
 	public void updateMidiInSelectedItems(String[] midiInDevices) {
 		for (int i = 0; i < midiInMenu.getItemCount(); i++) {
 			String name = midiInMenu.getItem(i).getText();
-			if (name == null) {
+			if (name == null || name.equals("No MIDI Input Devices Enabled")) {
 				continue;
 			}
 			String[] pieces = name.split("MIDI Input: ");
@@ -683,7 +683,7 @@ public class MonomeFrame extends JInternalFrame {
 		for (int i = 0; i < midiOutMenu.getItemCount(); i++) {
 			String name = midiOutMenu.getItem(i).getText();
 			System.out.println("checking " + name);
-			if (name == null) {
+			if (name == null || name.equals("No MIDI Output Devices Enabled")) {
 				continue;
 			}
 			String[] pieces = name.split("MIDI Output: ");
