@@ -32,21 +32,21 @@ public class MonomeOSCListener implements OSCListener {
 	 */
 	public synchronized void acceptMessage(Date time, OSCMessage message) {
 		Object[] args = message.getArguments();
-		System.out.print(message.getAddress());
-		for (int i = 0; i < args.length; i++) {
-			System.out.print(" " + args[i].toString());
+		if (args == null) {
+			return;
 		}
-		System.out.println();
 
 		// only act if the message has our monome prefix
 		if (!message.getAddress().contains(monome.prefix)) {
 			return;
 		}
 		if (message.getAddress().contains("press")) {
-			int x = ((Integer) args[0]).intValue();
-			int y = ((Integer) args[1]).intValue();
-			int value = ((Integer) args[2]).intValue();
-			monome.handlePress(x, y, value);
+			if (args.length == 3) {
+				int x = ((Integer) args[0]).intValue();
+				int y = ((Integer) args[1]).intValue();
+				int value = ((Integer) args[2]).intValue();
+				monome.handlePress(x, y, value);
+			}
 		}
 		/*
 		if (message.getAddress().contains("adc")) { 
