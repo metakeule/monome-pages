@@ -1,4 +1,4 @@
-# monomeserial.py for windows
+# monomeserial.py for windows 
 # author: tom dinchak (dinchak@gmail.com)
 # 
 # usage:
