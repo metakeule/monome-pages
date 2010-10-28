@@ -658,7 +658,6 @@ public class MonomeFrame extends JInternalFrame {
 	public void updateMidiOutMenuOptions(String[] midOutOptions) {
 		midiOutMenu.removeAll();
 		for (int i=0; i < midOutOptions.length; i++) {
-			System.out.println("adding " + midOutOptions[i]);
 			midiOutMenu.remove(getNoOutputDevicesEnabledItem());
 			JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Output: " + midOutOptions[i]);
 			cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -679,10 +678,8 @@ public class MonomeFrame extends JInternalFrame {
 	}
 	
 	public void updateMidiOutSelectedItems(String[] midiOutDevices) {
-		System.out.println("update midi out selected items!");
 		for (int i = 0; i < midiOutMenu.getItemCount(); i++) {
 			String name = midiOutMenu.getItem(i).getText();
-			System.out.println("checking " + name);
 			if (name == null || name.equals("No MIDI Output Devices Enabled")) {
 				continue;
 			}
@@ -692,14 +689,12 @@ public class MonomeFrame extends JInternalFrame {
 				if (midiOutDevices[j] == null) {
 					continue;
 				}
-				System.out.println("comparing '" + pieces[1] + "' to '" + midiOutDevices[j] + "'");
 				if (pieces[1].compareTo(midiOutDevices[j]) == 0) {
 					midiOutMenu.getItem(i).setSelected(true);
 					found = true;
 				}
 			}
 			if (!found) {
-				System.out.println(name + " not found, disabling");
 				midiOutMenu.getItem(i).setSelected(false);
 			}
 		}

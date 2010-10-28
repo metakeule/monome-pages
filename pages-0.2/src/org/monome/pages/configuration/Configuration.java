@@ -1,10 +1,35 @@
+/*
+ *  Configuration.java
+ * 
+ *  Copyright (c) 2010, Tom Dinchak
+ * 
+ *  This file is part of Pages.
+ *
+ *  Pages is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Pages is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  You should have received a copy of the GNU General Public License
+ *  along with Pages; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
+
 package org.monome.pages.configuration;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
+
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiDevice;
@@ -15,24 +40,29 @@ import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 import javax.sound.midi.MidiDevice.Info;
+
 import javax.swing.JOptionPane;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.ableton.AbletonOSCControl;
 import org.monome.pages.ableton.AbletonOSCListener;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.gui.Main;
+import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.midi.MIDIInReceiver;
 import org.monome.pages.pages.Page;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import org.apache.commons.lang.StringEscapeUtils;
 
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
@@ -166,13 +196,25 @@ public class Configuration {
 	/**
 	 * Called from GUI to add a new monome configuration.
 	 * 
-	 * @param prefix The prefix of the monome (ie. /40h)
-	 * @param sizeX The width of the monome (ie. 8 or 16)
-	 * @param sizeY The height of the monome (ie. 8 or 16)
-	 * @return The new monome's index
+	 * @param index the index of this monome configuration
+	 * @param prefix the prefix of the monome (ie. /40h)
+	 * @param serial the serial # of the monome
+	 * @param sizeX the width of the monome in buttons (ie 8)
+	 * @param sizeY the height of the monome in buttons (ie 8)
+	 * @param usePageChangeButton true if the page change button is active
+	 * @param useMIDIPageChanging true if midi page change rules should be used
+	 * @param midiPageChangeRules the set of midi page change rules
+	 * @return the MonomeConfiguration object
 	 */
 	public MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
-		MonomeConfiguration monome = MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules);
+		MonomeFrame monomeFrame = new MonomeFrame(index);
+		Main.getDesktopPane().add(monomeFrame);
+		try {
+			monomeFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		MonomeConfiguration monome = MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
 		this.initMonome(monome);
 		return monome;
 	}
@@ -286,18 +328,17 @@ public class Configuration {
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		this.startMonomeSerialOSC();
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		this.discoverOSCListener.setDiscoverMode(true);
 		OSCMessage msg = new OSCMessage("/sys/report");
+		// this stuff is really touchy; malformed packets etc. run /sys/report 3 times to be sure.
 		try {
 			for (int i = 0; i < 3; i++) {
 				this.monomeSerialOSCPortOut.send(msg);
@@ -306,7 +347,6 @@ public class Configuration {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}
@@ -315,9 +355,8 @@ public class Configuration {
 	 * Initializes a new monome configuration.  Starts OSC communication with MonomeSerial if needed.
 	 * 
 	 * @param monome The MonomeConfiguration object to initialize
-	 * @return true of initialization was successful
 	 */
-	private boolean initMonome(MonomeConfiguration monome) {
+	private void initMonome(MonomeConfiguration monome) {
 		startMonomeSerialOSC();
 		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
 		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
@@ -335,7 +374,6 @@ public class Configuration {
 		}
 
 		monome.clearMonome();
-		return true;
 	}
 	
 	/**
@@ -484,7 +522,6 @@ public class Configuration {
 				MidiDevice outDevice = this.midiOutDevices.get(i);
 				this.midiOutReceivers.remove(i);
 				this.midiOutDevices.remove(i);
-				outDevice.close();
 				outDevice.close();
 				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
 					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
@@ -662,7 +699,6 @@ public class Configuration {
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			this.abletonControl.refreshAbleton();
@@ -1075,6 +1111,5 @@ public class Configuration {
 		}
 		xml += "</configuration>\n";
 		return xml;
-	}
-	
+	}	
 }

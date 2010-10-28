@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.monome.pages.pages.MIDISequencerPage;
-import java.awt.Dimension;
 
 public class MIDISequencerGUI extends JPanel {
 

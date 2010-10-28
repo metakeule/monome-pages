@@ -9,7 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.monome.pages.pages.MIDISequencerPolyPage;
-import java.awt.Dimension;
 
 public class MIDISequencerPolyGUI extends JPanel {
 

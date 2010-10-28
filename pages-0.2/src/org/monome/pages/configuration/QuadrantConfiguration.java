@@ -10,18 +10,22 @@ public class QuadrantConfiguration {
 	private ArrayList<Integer> startY;
 	private ArrayList<Integer> endX;
 	private ArrayList<Integer> endY;
+	private ArrayList<FakeMonomeConfiguration> monomeConfigs;
+	private ArrayList<JPanel> quadPanels;
 	
 	private int numQuads = 0;
 
 	private String picture;
 	
 	private JPanel panel;
-	
+		
 	public QuadrantConfiguration() {
 		startX = new ArrayList<Integer>();
 		startY = new ArrayList<Integer>();
 		endX = new ArrayList<Integer>();
 		endY = new ArrayList<Integer>();
+		monomeConfigs = new ArrayList<FakeMonomeConfiguration>();
+		quadPanels = new ArrayList<JPanel>();
 	}
 	
 	public void addQuad(int startX, int endX, int startY, int endY) {
@@ -29,6 +33,9 @@ public class QuadrantConfiguration {
 		this.endX.add(numQuads, endX);
 		this.startY.add(numQuads, startY);
 		this.endY.add(numQuads, endY);
+		int index = MonomeConfigurationFactory.getNumMonomeConfigurations();
+		MonomeConfigurationFactory.addFakeMonomeConfiguration(index, "", "", endX - startX, endY - startY, false, false, null, null);
+		this.monomeConfigs.add(numQuads, (FakeMonomeConfiguration) MonomeConfigurationFactory.getMonomeConfiguration(index));
 		numQuads++;
 	}
 	
@@ -39,6 +46,14 @@ public class QuadrantConfiguration {
 		quadReturn[2] = startY.get(index);
 		quadReturn[3] = endY.get(index);
 		return quadReturn;
+	}
+	
+	public int getWidth(int index) {
+		return startX.get(index) - endX.get(index);
+	}
+	
+	public int getHeight(int index) {
+		return startY.get(index) - endY.get(index);
 	}
 	
 	public void setPicture(String picture) {
@@ -64,7 +79,12 @@ public class QuadrantConfiguration {
 	public void setNumQuads(int numQuads) {
 		this.numQuads = numQuads;
 	}
+	
+	public FakeMonomeConfiguration getMonomeConfiguration(int index) {
+		return monomeConfigs.get(index);
+	}
 
-
-
+	public void setQuadPanel(int i, JPanel quadPanel) {
+		quadPanels.add(i, quadPanel);
+	}
 }

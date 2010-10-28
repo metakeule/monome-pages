@@ -1,21 +1,21 @@
 /*
  *  MonomeConfiguration.java
  * 
- *  copyright (c) 2008, tom dinchak
+ *  Copyright (c) 2010, Tom Dinchak
  * 
- *  This file is part of pages.
+ *  This file is part of Pages.
  *
- *  pages is free software; you can redistribute it and/or modify
+ *  Pages is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
  *
- *  pages is distributed in the hope that it will be useful,
+ *  Pages is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *  You should have received a copy of the GNU General Public License
- *  along with pages; if not, write to the Free Software
+ *  along with Pages; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
@@ -31,8 +31,10 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Transmitter;
 
 import org.apache.commons.lang.StringEscapeUtils;
+
 import org.monome.pages.gui.MonomeDisplayFrame;
 import org.monome.pages.gui.MonomeFrame;
+
 import org.monome.pages.pages.AbletonClipLauncherPage;
 import org.monome.pages.pages.AbletonClipSkipperPage;
 import org.monome.pages.pages.AbletonLiveLooperPage;
@@ -128,25 +130,43 @@ public class MonomeConfiguration {
 	 */
 	private boolean pageChanged = false;
 	
+	/**
+	 * The current MIDI clock tick number (resets every measure, 1/96 resolution)
+	 */
 	private int tickNum = 0;
 			
+	/**
+	 * Rules on which MIDI note numbers should trigger switching to which pages.
+	 */
 	public ArrayList<MIDIPageChangeRule> midiPageChangeRules;
 	
+	/**
+	 * true if the page change button should be active
+	 */
 	public boolean usePageChangeButton = true;
 
+	/**
+	 * true if MIDI page changing should be active
+	 */
 	public boolean useMIDIPageChanging = false;
 
-	String[] pageChangeMidiInDevices = new String[32];
-	
 	/**
-	 * @param configuration The main Configuration object
-	 * @param index The index of this monome
-	 * @param prefix The prefix of this monome
-	 * @param sizeX The width of this monome
-	 * @param sizeY The height of this monome
+	 * The array of devices that MIDI page change messages can come from
 	 */
-	public MonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
-		
+	String[] pageChangeMidiInDevices = new String[32];
+
+	/**
+	 * @param index the index to assign to this MonomeConfiguration
+	 * @param prefix the prefix of the monome (/40h)
+	 * @param serial the serial # of the monome (if auto-discovery was used)
+	 * @param sizeX the width of the monome in buttons (ie. 8)
+	 * @param sizeY the height of the monome in buttons (ie. 8)
+	 * @param usePageChangeButton if true enable the MIDI page change button
+	 * @param useMIDIPageChanging if true use MIDI page changing rules
+	 * @param midiPageChangeRules the set of MIDI page changing rules
+	 * @param monomeFrame the GUI frame for this monome
+	 */
+	public MonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {		
 		this.options = PagesRepository.getPageNames();		
 		for (int i=0; i<options.length; i++) {
 			options[i] = options[i].substring(17);					
@@ -181,11 +201,17 @@ public class MonomeConfiguration {
 		this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
 		
 		this.numPages++;
-		this.monomeFrame.enableMidiMenu(true);
-		// recreate the menu bar to include this page in the show page list
+		if (this.monomeFrame != null) {
+			this.monomeFrame.enableMidiMenu(true);
+		}
 		return page;
 	}
 	
+	/**
+	 * Deletes a page.
+	 * 
+	 * @param i the index of the page to delete
+	 */
 	public void deletePage(int i) {
 		if (this.numPages == 0) {
 			return;
@@ -202,10 +228,12 @@ public class MonomeConfiguration {
 			curPage = 0;
 		}		
 		if (this.numPages == 0) {
-			this.monomeFrame.enableMidiMenu(false);
-			monomeFrame.getJContentPane().removeAll();
-			monomeFrame.getJContentPane().validate();
-			monomeFrame.pack();
+			if (this.monomeFrame != null) {
+				this.monomeFrame.enableMidiMenu(false);
+				monomeFrame.getJContentPane().removeAll();
+				monomeFrame.getJContentPane().validate();
+				monomeFrame.pack();
+			}
 		} else {
 			switchPage(pages.get(curPage), curPage, true);
 		}
@@ -221,11 +249,16 @@ public class MonomeConfiguration {
 	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
 		this.curPage = pageIndex;
 		page.redrawMonome();
-		monomeFrame.redrawPagePanel(page);
-		monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
-		monomeFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
+		if (monomeFrame != null) {
+			monomeFrame.redrawPagePanel(page);
+			monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
+			monomeFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
+		}
 	}
 		
+	/**
+	 * Redraws only the Ableton pages (for when a new event arrives)
+	 */
 	public void redrawAbletonPages() {
 		if (this.pages.size() == 0) {
 			return;
@@ -268,9 +301,11 @@ public class MonomeConfiguration {
 	 */
 	public synchronized void handlePress(int x, int y, int value) {
 		
-		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-		if (monomeDisplayFrame != null) {
-			monomeDisplayFrame.press(x, y, value);
+		if (monomeFrame != null) {
+			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+			if (monomeDisplayFrame != null) {
+				monomeDisplayFrame.press(x, y, value);
+			}
 		}
 		
 		// if we have no pages then dont handle any button presses
@@ -347,6 +382,10 @@ public class MonomeConfiguration {
 		}
 	}
 
+	/**
+	 * Draws the pattern state on the monome when the page change key is held down.
+	 * Blinking = triggered, solid = recorded, dark = empty.
+	 */
 	public void drawPatternState() {
 		for (int x=0; x < this.sizeX; x++) {
 			if (this.patternBanks.get(curPage).getPatternState(x) == PatternBank.PATTERN_STATE_TRIGGERED) {
@@ -457,6 +496,11 @@ public class MonomeConfiguration {
 		}
 	}
 	
+	/**
+	 * Turns a MIDI In device on or off for the current page.
+	 * 
+	 * @param deviceName the MIDI device name
+	 */
 	public void toggleMidiInDevice(String deviceName) {
 		if (curPage < 0 || curPage > 254) {
 			return;
@@ -468,7 +512,9 @@ public class MonomeConfiguration {
 			}
 			if (this.midiInDevices[this.curPage][i].compareTo(deviceName) == 0) {
 				midiInDevices[this.curPage][i] = new String();
-				this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				if (this.monomeFrame != null) {
+					this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				}
 				return;
 			}
 		}
@@ -477,12 +523,19 @@ public class MonomeConfiguration {
 		for (int i = 0; i < this.midiInDevices[this.curPage].length; i++) {
 			if (this.midiInDevices[this.curPage][i] == null) {
 				this.midiInDevices[this.curPage][i] = deviceName;
-				this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				if (this.monomeFrame != null) {
+					this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				}
 				return;
 			}
 		}
 	}
 	
+	/**
+	 * Toggles a MIDI In device as able to receive page change rules.
+	 * 
+	 * @param deviceName the name of the MIDI device
+	 */
 	public void togglePageChangeMidiInDevice(String deviceName) {
 		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++) {
 			// if this device was enabled, disable it
@@ -500,12 +553,19 @@ public class MonomeConfiguration {
 		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++) {
 			if (this.pageChangeMidiInDevices[i] == null) {
 				this.pageChangeMidiInDevices[i] = deviceName;
-				this.monomeFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
+				if (this.monomeFrame != null) {
+					this.monomeFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
+				}
 				return;
 			}
 		}
 	}
 	
+	/**
+	 * Toggles a MIDI Out device on or off for the current page.
+	 * 
+	 * @param deviceName the name of the MIDI device
+	 */
 	public void toggleMidiOutDevice(String deviceName) {
 		if (curPage < 0 || curPage > 254) {
 			return;
@@ -517,7 +577,9 @@ public class MonomeConfiguration {
 			}
 			if (this.midiOutDevices[this.curPage][i].compareTo(deviceName) == 0) {
 				midiOutDevices[this.curPage][i] = new String();
-				this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				if (this.monomeFrame != null) {
+					this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				}
 				return;
 			}
 		}
@@ -526,7 +588,9 @@ public class MonomeConfiguration {
 		for (int i = 0; i < this.midiOutDevices[this.curPage].length; i++) {
 			if (this.midiOutDevices[this.curPage][i] == null) {
 				this.midiOutDevices[this.curPage][i] = deviceName;
-				this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				if (this.monomeFrame != null) {
+					this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				}
 				return;
 			}
 		}
@@ -565,9 +629,11 @@ public class MonomeConfiguration {
 
 		this.ledState[x][y] = value;
 		
-		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-		if (monomeDisplayFrame != null) {
-			monomeDisplayFrame.setLedState(ledState);
+		if (this.monomeFrame != null) {
+			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+			if (monomeDisplayFrame != null) {
+				monomeDisplayFrame.setLedState(ledState);
+			}
 		}
 
 		Object args[] = new Object[3];
@@ -623,9 +689,11 @@ public class MonomeConfiguration {
 			this.ledState[col][y] = bit;
 		}
 		
-		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-		if (monomeDisplayFrame != null) {
-			monomeDisplayFrame.setLedState(ledState);
+		if (this.monomeFrame != null) {
+			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+			if (monomeDisplayFrame != null) {
+				monomeDisplayFrame.setLedState(ledState);
+			}
 		}
 
 		Object args[] = new Object[numValues];
@@ -676,9 +744,11 @@ public class MonomeConfiguration {
 			this.ledState[x][row] = bit;
 		}
 		
-		MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-		if (monomeDisplayFrame != null) {
-			monomeDisplayFrame.setLedState(ledState);
+		if (this.monomeFrame != null) {
+			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+			if (monomeDisplayFrame != null) {
+				monomeDisplayFrame.setLedState(ledState);
+			}
 		}
 
 		Object args[] = new Object[numValues];
@@ -733,9 +803,11 @@ public class MonomeConfiguration {
 				}
 			}
 			
-			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-			if (monomeDisplayFrame != null) {
-				monomeDisplayFrame.setLedState(ledState);
+			if (this.monomeFrame != null) {
+				MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+				if (monomeDisplayFrame != null) {
+					monomeDisplayFrame.setLedState(ledState);
+				}
 			}
 
 			Object args[] = new Object[1];
@@ -844,6 +916,12 @@ public class MonomeConfiguration {
 		return ConfigurationFactory.getConfiguration().getMIDIReceiverByName(midiDeviceName);
 	}
 	
+	/**
+	 * The Transmitter object for the MIDI device named midiDeviceName.
+	 * 
+	 * @param midiDeviceName The name of the MIDI device to get the Transmitter for
+	 * @return The MIDI transmitter
+	 */
 	public Transmitter getMidiTransmitter(String midiDeviceName) {
 		return ConfigurationFactory.getConfiguration().getMIDITransmitterByName(midiDeviceName);
 	}
@@ -871,7 +949,8 @@ public class MonomeConfiguration {
 		if (sizeX != 0 && sizeY != 0) {
 			title += " | " + sizeX + "x" + sizeY;
 		}
-		monomeFrame.setTitle(title);
+		if (this.monomeFrame != null) {
+			monomeFrame.setTitle(title);
+		}
 	}
-
 }
