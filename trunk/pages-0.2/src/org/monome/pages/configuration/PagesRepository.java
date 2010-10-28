@@ -31,7 +31,6 @@ public class PagesRepository {
 		int i = 0;
 		for (Class<? extends Page> clz : pageTypes){
 			res[i++] = clz.getName();
-			System.out.println(clz.getName());
 		}
 		return res;
 	}
@@ -39,7 +38,6 @@ public class PagesRepository {
 	static Page getPageInstance(String name, MonomeConfiguration conf, int index){
 		Page page;
 		for (Class<? extends Page> clz : pageTypes){
-			System.out.println("compare '" + clz.getName() + "' to '" + name + "'");
 			if (clz.getName().equals(name)) {
 				try {
 					Constructor<? extends Page> ctor = clz.getConstructor(MonomeConfiguration.class, int.class);

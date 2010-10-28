@@ -1,15 +1,36 @@
+/*
+ *  Main.java
+ * 
+ *  Copyright (c) 2010, Tom Dinchak
+ * 
+ *  This file is part of Pages.
+ *
+ *  Pages is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Pages is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *  You should have received a copy of the GNU General Public License
+ *  along with Pages; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ *
+ */
 package org.monome.pages.gui;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 import javax.sound.midi.MidiDevice.Info;
-import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+
 import java.beans.PropertyVetoException;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -22,6 +43,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.SwingUtilities;
+
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
@@ -34,7 +57,7 @@ import java.io.IOException;
 public class Main extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static Main thisObj = null;
+	private static Main mainFrame = null;
 	private static JDesktopPane jDesktopPane = null;
 	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
 	private AbletonSetupFrame abletonSetupFrame = null;
@@ -52,199 +75,18 @@ public class Main extends JFrame {
 	
 	private JMenu configurationMenu = null;
 	private JMenuItem monomeSerialSetupItem = null;
+	private JMenuItem abletonSetupItem = null;
 	private static JMenuItem newMonomeItem = null;
 	
-	private File configurationFile = null;  //  @jve:decl-index=0:
 	private JMenu midiMenu = null;
 	private JMenu midiInMenu = null;
 	private JMenu midiOutMenu = null;
-	private JMenuItem abletonSetupItem = null;
 	
-	public static Main getGUI() {
-		return thisObj;
-	}
-		
-	/**
-	 * This method initializes midiMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
-	private JMenu getMidiMenu() {
-		if (midiMenu == null) {
-			midiMenu = new JMenu();
-			midiMenu.setText("MIDI");
-			midiMenu.add(getMidiInMenu());
-			midiMenu.add(getMidiOutMenu());
-			midiMenu.setEnabled(false);
-		}
-		return midiMenu;
-	}
-
-	/**
-	 * This method initializes midiInMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
-	private JMenu getMidiInMenu() {
-		if (midiInMenu == null) {
-			midiInMenu = new JMenu();
-			midiInMenu.setText("MIDI In");			
-			midiInMenu.setMnemonic(KeyEvent.VK_I);
-			midiInMenu.getAccessibleContext().setAccessibleDescription("MIDI In Menu");
-
-			Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
-			for (int i=0; i < midiInfo.length; i++) {
-				try {
-					MidiDevice midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
-					if (midiDevice.getMaxTransmitters() != 0) {
-						JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Input: " + midiInfo[i].getName());
-						cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
-							public void actionPerformed(java.awt.event.ActionEvent e) {
-								String[] pieces = e.getActionCommand().split("MIDI Input: ");
-								System.out.println("addMidiInput: " + pieces[1]);
-								actionAddMidiInput(pieces[1]);
-							}});
-						midiInMenu.add(cbMenuItem);
-					}
-				} catch (MidiUnavailableException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return midiInMenu;
-	}
-	
-	public void actionAddMidiInput(String sMidiDevice) {
-		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
-		MidiDevice midiDevice;
-
-		for (int i=0; i < midiInfo.length; i++) {
-			try {
-				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
-				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
-					if (midiDevice.getMaxTransmitters() != 0) {
-						ConfigurationFactory.getConfiguration().toggleMidiInDevice(midiDevice);
-					}
-				}
-			} catch (MidiUnavailableException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	public void enableMidiInOption(String deviceName, boolean enabled) {
-		for (int i=0; i < midiInMenu.getItemCount(); i++) {
-			String name = midiInMenu.getItem(i).getText();
-			String[] pieces = name.split("MIDI Input: ");
-			if (pieces[1].compareTo(deviceName) == 0) {
-				midiInMenu.getItem(i).setSelected(enabled);
-			}
-		}
-	}
-	
-	public void enableMidiOutOption(String deviceName, boolean enabled) {
-		for (int i=0; i < midiOutMenu.getItemCount(); i++) {
-			String name = midiOutMenu.getItem(i).getText();
-			String[] pieces = name.split("MIDI Output: ");
-			if (pieces[1].compareTo(deviceName) == 0) {
-				midiOutMenu.getItem(i).setSelected(enabled);
-			}
-		}
-	}
-
-	/**
-	 * This method initializes midiOutMenu	
-	 * 	
-	 * @return javax.swing.JMenu	
-	 */
-	private JMenu getMidiOutMenu() {
-		if (midiOutMenu == null) {
-			midiOutMenu = new JMenu();
-			midiOutMenu.setText("MIDI Out");
-			midiInMenu.setMnemonic(KeyEvent.VK_I);
-			midiInMenu.getAccessibleContext().setAccessibleDescription("MIDI In Menu");
+	private File configurationFile = null;
 			
-			Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
-			for (int i=0; i < midiInfo.length; i++) {
-				try {
-					MidiDevice midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
-					if (midiDevice.getMaxReceivers() != 0) {
-						JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Output: " + midiInfo[i].getName());
-						cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
-							public void actionPerformed(java.awt.event.ActionEvent e) {
-								String[] pieces = e.getActionCommand().split("MIDI Output: ");
-								actionAddMidiOutput(pieces[1]);
-							}});
-						midiOutMenu.add(cbMenuItem);
-					}
-				} catch (MidiUnavailableException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return midiOutMenu;
-	}
-	
-	public void actionAddMidiOutput(String sMidiDevice) {
-		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
-		MidiDevice midiDevice;
-
-		for (int i=0; i < midiInfo.length; i++) {
-			try {
-				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
-				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
-					if (midiDevice.getMaxReceivers() != 0) {
-						ConfigurationFactory.getConfiguration().toggleMidiOutDevice(midiDevice);
-					}
-				}
-			} catch (MidiUnavailableException e) {
-				e.printStackTrace();
-			}
-		}		
-	}
-
 	/**
-	 * This method initializes abletonConfigurationItem	
-	 * 	
-	 * @return javax.swing.JMenuItem	
-	 */
-	private JMenuItem getAbletonSetupItem() {
-		if (abletonSetupItem == null) {
-			abletonSetupItem = new JMenuItem();
-			abletonSetupItem.setText("Ableton Setup...");
-			abletonSetupItem.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					showAbletonConfiguration();
-				}
-			});
-		}
-		return abletonSetupItem;
-	}
-	
-	private void showAbletonConfiguration() {
-		if (abletonSetupFrame != null && abletonSetupFrame.isShowing()) {
-			try {
-				abletonSetupFrame.setSelected(true);
-			} catch (PropertyVetoException e) {
-				e.printStackTrace();
-			}
-			return;
-		}
-		
-		abletonSetupFrame = new AbletonSetupFrame();
-		abletonSetupFrame.setSize(new Dimension(235, 200));
-		abletonSetupFrame.setVisible(true);
-		jDesktopPane.add(abletonSetupFrame);
-		try {
-			abletonSetupFrame.setSelected(true);
-		} catch (PropertyVetoException e) {
-			e.printStackTrace();
-		}
-		
-		jDesktopPane.validate();
-	}
-
-	/**
+	 * And away we go!
+	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
@@ -261,20 +103,17 @@ public class Main extends JFrame {
 				} catch (UnsupportedLookAndFeelException e) {
 					e.printStackTrace();
 				}
-				Main thisClass = new Main();
-				thisClass.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				thisClass.setVisible(true);
+				Main theClass = new Main();
+				mainFrame = theClass;
+				mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				mainFrame.setVisible(true);
+				// TODO: load filename passed as cmd line arg
 			}
 		});
 	}
 	
-	/**
-	 * This is the default constructor
-	 * 
-	 */
 	public Main() {
 		super();
-		thisObj = this;
 		initialize();
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    public void windowClosing(WindowEvent winEvt) {
@@ -282,9 +121,18 @@ public class Main extends JFrame {
 		    }
 		});
 	}
+
+	/**
+	 * Returns a static instance of the main GUI.  Configuration uses it to update MIDI menu items.
+	 * 
+	 * @return a static instance of the main GUI
+	 */
+	public static Main getGUI() {
+		return mainFrame;
+	}
 	
 	/**
-	 * This method initializes this
+	 * Initializes the GUI.
 	 * 
 	 * @return void
 	 */
@@ -296,9 +144,9 @@ public class Main extends JFrame {
 		// maximize the window
 	    //this.setExtendedState(this.getExtendedState() | Frame.MAXIMIZED_BOTH);
 	}
-	
+
 	/**
-	 * This method initializes jContentPane
+	 * Initializes jContentPane.
 	 * 
 	 * @return javax.swing.JPanel
 	 */
@@ -312,6 +160,11 @@ public class Main extends JFrame {
 		return jDesktopPane;
 	}
 	
+	/**
+	 * Returns this.
+	 * 
+	 * @return this
+	 */
 	private JFrame getFrame() {
 		return this;
 	}
@@ -461,6 +314,9 @@ public class Main extends JFrame {
 		return closeItem;
 	}
 	
+	/**
+	 * Handles closing the configuration.  Disables MIDI devices, stops OSC listening.
+	 */
 	public void actionClose() {
 		Configuration configuration = ConfigurationFactory.getConfiguration();
 		if (configuration != null) {
@@ -509,6 +365,11 @@ public class Main extends JFrame {
 		return saveItem;
 	}
 	
+	/**
+	 * Saves the current configuration to the current configuration file, or displays a file chooser.
+	 * 
+	 * @param e the event that triggered this action 
+	 */
 	public void actionSave(java.awt.event.ActionEvent e) {
 		if (getConfigurationFile() == null) {
 			JFileChooser fc = new JFileChooser();
@@ -593,6 +454,9 @@ public class Main extends JFrame {
 		return exitItem;
 	}
 	
+	/**
+	 * Exits the application cleanly.
+	 */
 	public void actionExit() {
 		Configuration configuration = ConfigurationFactory.getConfiguration();
 		int confirm = 1;
@@ -605,7 +469,6 @@ public class Main extends JFrame {
 					JOptionPane.INFORMATION_MESSAGE
 					);
 		}
-		System.out.println("confirm is " + confirm);
 		if (confirm == 0) {
 			this.getSaveItem().doClick();
 		}
@@ -666,7 +529,6 @@ public class Main extends JFrame {
 		monomeSerialSetupFrame = new MonomeSerialSetupFrame();
 		monomeSerialSetupFrame.setSize(new Dimension(235, 188));
 		monomeSerialSetupFrame.setVisible(true);
-		//monomeSerialSetupFrame.setNewMonomeItem(this.newMonomeItem);
 		jDesktopPane.add(monomeSerialSetupFrame);
 		try {
 			monomeSerialSetupFrame.setSelected(true);
@@ -677,6 +539,50 @@ public class Main extends JFrame {
 		jDesktopPane.validate();
 	}
 
+	/**
+	 * This method initializes abletonConfigurationItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getAbletonSetupItem() {
+		if (abletonSetupItem == null) {
+			abletonSetupItem = new JMenuItem();
+			abletonSetupItem.setText("Ableton Setup...");
+			abletonSetupItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showAbletonConfiguration();
+				}
+			});
+		}
+		return abletonSetupItem;
+	}
+	
+	/**
+	 * Shows the Ableton configuration frame
+	 */
+	private void showAbletonConfiguration() {
+		if (abletonSetupFrame != null && abletonSetupFrame.isShowing()) {
+			try {
+				abletonSetupFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		abletonSetupFrame = new AbletonSetupFrame();
+		abletonSetupFrame.setSize(new Dimension(235, 200));
+		abletonSetupFrame.setVisible(true);
+		jDesktopPane.add(abletonSetupFrame);
+		try {
+			abletonSetupFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		
+		jDesktopPane.validate();
+	}
+	
 	/**
 	 * This method initializes newMonomeItem	
 	 * 	
@@ -720,17 +626,182 @@ public class Main extends JFrame {
 		
 		jDesktopPane.validate();
 	}
-		
+	
+	/**
+	 * This method initializes midiMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getMidiMenu() {
+		if (midiMenu == null) {
+			midiMenu = new JMenu();
+			midiMenu.setText("MIDI");
+			midiMenu.add(getMidiInMenu());
+			midiMenu.add(getMidiOutMenu());
+			midiMenu.setEnabled(false);
+		}
+		return midiMenu;
+	}
+
+	/**
+	 * This method initializes midiInMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getMidiInMenu() {
+		if (midiInMenu == null) {
+			midiInMenu = new JMenu();
+			midiInMenu.setText("MIDI In");			
+			midiInMenu.setMnemonic(KeyEvent.VK_I);
+			midiInMenu.getAccessibleContext().setAccessibleDescription("MIDI In Menu");
+
+			Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+			for (int i=0; i < midiInfo.length; i++) {
+				try {
+					MidiDevice midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+					if (midiDevice.getMaxTransmitters() != 0) {
+						JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Input: " + midiInfo[i].getName());
+						cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
+							public void actionPerformed(java.awt.event.ActionEvent e) {
+								String[] pieces = e.getActionCommand().split("MIDI Input: ");
+								actionAddMidiInput(pieces[1]);
+							}});
+						midiInMenu.add(cbMenuItem);
+					}
+				} catch (MidiUnavailableException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return midiInMenu;
+	}
+	
+	/**
+	 * Handles a click on a MIDI in device.  Toggles it on or off.
+	 * 
+	 * @param sMidiDevice the name of the MIDI device to toggle
+	 */
+	public void actionAddMidiInput(String sMidiDevice) {
+		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+		MidiDevice midiDevice;
+
+		for (int i=0; i < midiInfo.length; i++) {
+			try {
+				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
+					if (midiDevice.getMaxTransmitters() != 0) {
+						ConfigurationFactory.getConfiguration().toggleMidiInDevice(midiDevice);
+					}
+				}
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Only enables or disables the option in the MIDI In menu.  Used when loading configuration.
+	 * 
+	 * @param deviceName the name of the MIDI in device
+	 * @param enabled true = checked, false = not
+	 */
+	public void enableMidiInOption(String deviceName, boolean enabled) {
+		for (int i=0; i < midiInMenu.getItemCount(); i++) {
+			String name = midiInMenu.getItem(i).getText();
+			String[] pieces = name.split("MIDI Input: ");
+			if (pieces[1].compareTo(deviceName) == 0) {
+				midiInMenu.getItem(i).setSelected(enabled);
+			}
+		}
+	}
+	
+	/**
+	 * This method initializes midiOutMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getMidiOutMenu() {
+		if (midiOutMenu == null) {
+			midiOutMenu = new JMenu();
+			midiOutMenu.setText("MIDI Out");
+			midiInMenu.setMnemonic(KeyEvent.VK_I);
+			midiInMenu.getAccessibleContext().setAccessibleDescription("MIDI In Menu");
+			
+			Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+			for (int i=0; i < midiInfo.length; i++) {
+				try {
+					MidiDevice midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+					if (midiDevice.getMaxReceivers() != 0) {
+						JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Output: " + midiInfo[i].getName());
+						cbMenuItem.addActionListener(new java.awt.event.ActionListener() {
+							public void actionPerformed(java.awt.event.ActionEvent e) {
+								String[] pieces = e.getActionCommand().split("MIDI Output: ");
+								actionAddMidiOutput(pieces[1]);
+							}});
+						midiOutMenu.add(cbMenuItem);
+					}
+				} catch (MidiUnavailableException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return midiOutMenu;
+	}
+	
+	/**
+	 * Handles a click on a MIDI out device.  Toggles it on or off.
+	 * 
+	 * @param sMidiDevice the name of the MIDI device to toggle
+	 */
+	public void actionAddMidiOutput(String sMidiDevice) {
+		Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+		MidiDevice midiDevice;
+
+		for (int i=0; i < midiInfo.length; i++) {
+			try {
+				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
+				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
+					if (midiDevice.getMaxReceivers() != 0) {
+						ConfigurationFactory.getConfiguration().toggleMidiOutDevice(midiDevice);
+					}
+				}
+			} catch (MidiUnavailableException e) {
+				e.printStackTrace();
+			}
+		}		
+	}
+	
+   /**
+	 * Only enables or disabled the option in the MIDI Out menu.  Used when loading configuration.
+	 * 
+	 * @param deviceName the name of the MIDI in device
+	 * @param enabled true = checked, false = not
+	 */
+	public void enableMidiOutOption(String deviceName, boolean enabled) {
+		for (int i=0; i < midiOutMenu.getItemCount(); i++) {
+			String name = midiOutMenu.getItem(i).getText();
+			String[] pieces = name.split("MIDI Output: ");
+			if (pieces[1].compareTo(deviceName) == 0) {
+				midiOutMenu.getItem(i).setSelected(enabled);
+			}
+		}
+	}
+					
+	/**
+	 * Returns the current open configuration file.  This file is used when File -> Save is clicked.
+	 * 
+	 * @return the current open configuration file
+	 */
 	private File getConfigurationFile() {
 		return configurationFile;
 	}
 	
+	/**
+	 * Sets the current open configuration file.  This file is used when File -> Save is clicked.
+	 * 
+	 * @param cf the file to set to the current open configuration file.
+	 */
 	private void setConfigurationFile(File cf) {
 		configurationFile = cf;
 	}
-
-	public void setNewMonomeItem(JMenuItem newMonomeItem) {
-		Main.newMonomeItem = newMonomeItem;
-	}
-	
 }

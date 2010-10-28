@@ -22,13 +22,13 @@ public class AbletonOSCListener implements OSCListener {
 	 */
 	public synchronized void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();
-		
+		/*
 		System.out.print(msg.getAddress());
 		for (int i = 0; i < args.length; i++) {
 			System.out.print(" " + args[i].toString());
 		}
 		System.out.println();
-		
+		*/
 		
 		if (msg.getAddress().contains("/live/track/info")) {
 
@@ -38,7 +38,6 @@ public class AbletonOSCListener implements OSCListener {
 			if (track == null) {
 				track = ConfigurationFactory.getConfiguration().abletonState.createTrack(trackId);
 			}
-			System.out.println("track is " + track);
 			track.setArm(armed);
 			for (int i=2; i < args.length; i+=3) {
 				int clipId = ((Integer) args[i]).intValue();

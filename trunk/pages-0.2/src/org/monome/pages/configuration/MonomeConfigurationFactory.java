@@ -1,11 +1,9 @@
 package org.monome.pages.configuration;
 
-import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.monome.pages.gui.Main;
 import org.monome.pages.gui.MonomeFrame;
 
 public class MonomeConfigurationFactory {
@@ -42,22 +40,25 @@ public class MonomeConfigurationFactory {
 		return null;
 	}
 	
-	public static synchronized MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
+	public static synchronized MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
 		System.out.println("adding new monome with index " + index);
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
-		Integer i = new Integer(monomeConfigurations.size());
-		
-		MonomeFrame monomeFrame = new MonomeFrame(index);
-		Main.getDesktopPane().add(monomeFrame);
-		try {
-			monomeFrame.setSelected(true);
-		} catch (PropertyVetoException e) {
-			e.printStackTrace();
-		}
-		
+		Integer i = new Integer(monomeConfigurations.size());		
 		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
+		monomeConfigurations.put(i, monomeConfiguration);
+		monomeConfiguration.setFrameTitle();
+		return monomeConfiguration;
+	}
+	
+	public static synchronized MonomeConfiguration addFakeMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
+		System.out.println("adding new fake monome with index " + index);
+		if (monomeConfigurations == null) {
+			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
+		}
+		Integer i = new Integer(monomeConfigurations.size());		
+		FakeMonomeConfiguration monomeConfiguration = new FakeMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
 		monomeConfigurations.put(i, monomeConfiguration);
 		monomeConfiguration.setFrameTitle();
 		return monomeConfiguration;
@@ -81,10 +82,11 @@ public class MonomeConfigurationFactory {
 	
 	public static void removeMonomeConfiguration(int index) {
 		MonomeConfiguration monomeConfig = monomeConfigurations.get(new Integer(index));
-		if (monomeConfig != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
+		if (monomeConfig != null && monomeConfig.monomeFrame != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
 			monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
+			monomeConfig.monomeFrame.dispose();
 		}
-		monomeConfig.monomeFrame.dispose();
+		monomeConfigurations.remove(new Integer(index));
 	}
 
 	public static boolean prefixExists(String prefix) {
