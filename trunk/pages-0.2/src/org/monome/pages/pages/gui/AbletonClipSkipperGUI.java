@@ -8,7 +8,6 @@ import org.monome.pages.pages.AbletonClipSkipperPage;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JButton;
-import java.awt.Dimension;
 
 public class AbletonClipSkipperGUI extends JPanel {
 

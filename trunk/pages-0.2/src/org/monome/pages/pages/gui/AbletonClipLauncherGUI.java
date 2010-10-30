@@ -8,7 +8,6 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import java.awt.Dimension;
 
 public class AbletonClipLauncherGUI extends JPanel {
 

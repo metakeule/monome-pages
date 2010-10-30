@@ -13,7 +13,6 @@ import javax.swing.JButton;
 
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
-import java.awt.Dimension;
 
 public class PageChangeConfigurationFrame extends JInternalFrame {
 

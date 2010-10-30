@@ -7,7 +7,6 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import java.awt.Dimension;
 
 public class MIDIGeneratorGUI extends JPanel {
 
