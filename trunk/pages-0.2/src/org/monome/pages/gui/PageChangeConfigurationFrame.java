@@ -13,6 +13,7 @@ import javax.swing.JButton;
 
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
+import java.awt.Dimension;
 
 public class PageChangeConfigurationFrame extends JInternalFrame {
 
@@ -64,7 +65,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	 */
 	private void initialize() {
 		this.setContentPane(getJContentPane());
-		this.setSize(201, 284);
+		this.setSize(211, 241);
 		this.setTitle("Page Change Configuration");
 		this.setResizable(true);
 	}
@@ -98,7 +99,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (pageLabel == null) {
 			pageLabel = new JLabel();
 			pageLabel.setText("Page Change Configuration");
-			pageLabel.setBounds(new Rectangle(5, 5, 158, 21));
+			pageLabel.setBounds(new Rectangle(5, 5, 191, 21));
 		}
 		return pageLabel;
 	}
@@ -152,7 +153,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (channelLBL == null) {
 			channelLBL = new JLabel();
 			channelLBL.setText("MIDI Channel");
-			channelLBL.setBounds(new Rectangle(15, 55, 86, 21));
+			channelLBL.setBounds(new Rectangle(15, 55, 101, 21));
 		}
 		return channelLBL;
 	}
@@ -165,7 +166,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getChannelTF() {
 		if (channelTF == null) {
 			channelTF = new JTextField();
-			channelTF.setBounds(new Rectangle(105, 55, 41, 21));
+			channelTF.setBounds(new Rectangle(120, 55, 51, 21));
 		}
 		return channelTF;
 	}
@@ -179,7 +180,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (noteLBL == null) {
 			noteLBL = new JLabel();
 			noteLBL.setText("MIDI Note #");
-			noteLBL.setBounds(new Rectangle(15, 80, 86, 21));
+			noteLBL.setBounds(new Rectangle(15, 80, 101, 21));
 		}
 		return noteLBL;
 	}
@@ -192,7 +193,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getNoteTF() {
 		if (noteTF == null) {
 			noteTF = new JTextField();
-			noteTF.setBounds(new Rectangle(105, 80, 41, 21));
+			noteTF.setBounds(new Rectangle(120, 80, 51, 21));
 		}
 		return noteTF;
 	}
@@ -259,7 +260,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getSaveBtn() {
 		if (saveBtn == null) {
 			saveBtn = new JButton();
-			saveBtn.setBounds(new Rectangle(10, 160, 76, 21));
+			saveBtn.setBounds(new Rectangle(20, 160, 76, 21));
 			saveBtn.setText("Save");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -287,7 +288,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getCancelBtn() {
 		if (cancelBtn == null) {
 			cancelBtn = new JButton();
-			cancelBtn.setBounds(new Rectangle(100, 160, 76, 21));
+			cancelBtn.setBounds(new Rectangle(105, 160, 76, 21));
 			cancelBtn.setText("Cancel");
 			cancelBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

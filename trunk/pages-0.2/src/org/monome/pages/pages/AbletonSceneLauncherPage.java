@@ -103,21 +103,25 @@ public class AbletonSceneLauncherPage implements Page {
 				if (y == 0) {
 					if (this.clipOffset > 0) {
 						this.clipOffset -= 1;
+						redrawMonome();
 					}
 				// plus 1 clip offset
 				} else if (y == 1) {
 					if ((this.clipOffset + 1) * (this.monome.sizeY - this.numEnabledRows) < 960) {
 						this.clipOffset += 1;
+						redrawMonome();
 					}
 				// minus 1 track offset
 				} else if (y == 2) {
 					if (this.trackOffset > 0) {
 						this.trackOffset -= 1;
+						redrawMonome();
 					}
 				// plus 1 track offset
 				} else if (y == 3) {
 					if ((this.trackOffset + 1) * (this.monome.sizeX - 1) < 100) {
 						this.trackOffset += 1;
+						redrawMonome();
 					}
 				} else if (y == 4) {
 					this.tempoDown();
@@ -131,6 +135,7 @@ public class AbletonSceneLauncherPage implements Page {
 					}					
 				} else if (y == 7) {
 					this.abletonUndo();
+					redrawMonome();
 				}
 			} else {
 				// left hand column scene operations

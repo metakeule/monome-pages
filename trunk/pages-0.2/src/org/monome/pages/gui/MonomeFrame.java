@@ -14,6 +14,7 @@ import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.pages.Page;
 
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 
 public class MonomeFrame extends JInternalFrame {
@@ -47,6 +48,7 @@ public class MonomeFrame extends JInternalFrame {
 	private String[] quantizationOptions = {"1", "1/2", "1/4", "1/8", "1/16", "1/32", "1/48", "1/96"};
 	private JMenuItem monomeSetupItem = null;
 	private JMenuItem removeMonomeItem = null;
+	private JMenu showPageMenu = null;
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -111,6 +113,8 @@ public class MonomeFrame extends JInternalFrame {
 			pageMenu.addSeparator();
 			pageMenu.add(getPrevPageItem());
 			pageMenu.add(getNextPageItem());
+			pageMenu.add(getShowPageMenu());
+			pageMenu.setMnemonic(KeyEvent.VK_P);
 		}
 		return pageMenu;
 	}
@@ -124,6 +128,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (prevPageItem == null) {
 			prevPageItem = new JMenuItem();
 			prevPageItem.setText("Previous Page");
+			prevPageItem.setMnemonic(KeyEvent.VK_P);
 			prevPageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
@@ -146,6 +151,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (nextPageItem == null) {
 			nextPageItem = new JMenuItem();
 			nextPageItem.setText("Next Page");
+			nextPageItem.setMnemonic(KeyEvent.VK_N);
 			nextPageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
@@ -168,6 +174,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (deletePageItem == null) {
 			deletePageItem = new JMenuItem();
 			deletePageItem.setText("Delete Page...");
+			deletePageItem.setMnemonic(KeyEvent.VK_D);
 			deletePageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					int confirm = JOptionPane.showConfirmDialog(
@@ -196,6 +203,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (newPageItem == null) {
 			newPageItem = new JMenuItem();
 			newPageItem.setText("New Page...");
+			newPageItem.setMnemonic(KeyEvent.VK_N);
 			newPageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					String[] options = PagesRepository.getPageNames();
@@ -246,6 +254,7 @@ public class MonomeFrame extends JInternalFrame {
 			configurationMenu.add(getPageChangeMidiInMenu());
 			configurationMenu.addSeparator();
 			configurationMenu.add(getMonomeDisplayItem());
+			configurationMenu.setMnemonic(KeyEvent.VK_C);
 		}
 		return configurationMenu;
 	}
@@ -259,6 +268,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (monomeDisplayItem == null) {
 			monomeDisplayItem = new JMenuItem();
 			monomeDisplayItem.setText("Show Monome Display...");
+			monomeDisplayItem.setMnemonic(KeyEvent.VK_M);
 			monomeDisplayItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					showMonomeDisplay();
@@ -315,6 +325,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (renamePageItem == null) {
 			renamePageItem = new JMenuItem();
 			renamePageItem.setText("Rename Page...");
+			renamePageItem.setMnemonic(KeyEvent.VK_R);
 			renamePageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
@@ -348,6 +359,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (setPatternQuantizationItem == null) {
 			setPatternQuantizationItem = new JMenuItem();
 			setPatternQuantizationItem.setText("Set Pattern Quantization...");
+			setPatternQuantizationItem.setMnemonic(KeyEvent.VK_Q);
 			setPatternQuantizationItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
@@ -415,6 +427,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (patternLengthItem == null) {
 			patternLengthItem = new JMenuItem();
 			patternLengthItem.setText("Set Pattern Length...");
+			patternLengthItem.setMnemonic(KeyEvent.VK_L);
 			patternLengthItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
@@ -455,6 +468,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (pageChangeConfigurationItem == null) {
 			pageChangeConfigurationItem = new JMenuItem();
 			pageChangeConfigurationItem.setText("Page Change Configuration...");
+			pageChangeConfigurationItem.setMnemonic(KeyEvent.VK_C);
 			pageChangeConfigurationItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					showPageChangeConfiguration();
@@ -475,7 +489,7 @@ public class MonomeFrame extends JInternalFrame {
 		}
 		
 		pccFrame = new PageChangeConfigurationFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
-		pccFrame.setSize(new Dimension(200, 225));
+		pccFrame.setSize(new Dimension(211, 241));
 		pccFrame.setVisible(true);
 		Main.getGUI().add(pccFrame);
 		try {
@@ -496,7 +510,7 @@ public class MonomeFrame extends JInternalFrame {
 		}
 
 		monomeSetupFrame = new MonomeSetupFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
-		monomeSetupFrame.setSize(new Dimension(134, 192));
+		monomeSetupFrame.setSize(new Dimension(148, 207));
 		monomeSetupFrame.setVisible(true);
 		Main.getGUI().add(monomeSetupFrame);
 		try {
@@ -518,6 +532,8 @@ public class MonomeFrame extends JInternalFrame {
 			midiMenu.add(getMidiInMenu());
 			midiMenu.add(getMidiOutMenu());
 			midiMenu.setEnabled(false);
+			midiMenu.setMnemonic(KeyEvent.VK_M);
+			
 		}
 		return midiMenu;
 	}
@@ -535,6 +551,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (midiInMenu == null) {
 			midiInMenu = new JMenu();
 			midiInMenu.setText("MIDI In");
+			midiInMenu.setMnemonic(KeyEvent.VK_I);
 			midiInMenu.add(getNoInputDevicesEnabledItem());
 		}
 		return midiInMenu;
@@ -549,6 +566,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (pageChangeMidiInMenu == null) {
 			pageChangeMidiInMenu = new JMenu();
 			pageChangeMidiInMenu.setText("Page Change MIDI In");
+			pageChangeMidiInMenu.setMnemonic(KeyEvent.VK_I);
 			pageChangeMidiInMenu.add(getNoInputDevicesEnabledItem2());
 		}
 		return pageChangeMidiInMenu;
@@ -651,6 +669,7 @@ public class MonomeFrame extends JInternalFrame {
 			midiOutMenu = new JMenu();
 			midiOutMenu.setText("MIDI Out");
 			midiOutMenu.add(getNoOutputDevicesEnabledItem());
+			midiOutMenu.setMnemonic(KeyEvent.VK_O);
 		}
 		return midiOutMenu;
 	}
@@ -737,6 +756,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (monomeSetupItem == null) {
 			monomeSetupItem = new JMenuItem();
 			monomeSetupItem.setText("Monome Setup...");
+			monomeSetupItem.setMnemonic(KeyEvent.VK_S);
 			monomeSetupItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					showMonomeSetup();
@@ -755,6 +775,7 @@ public class MonomeFrame extends JInternalFrame {
 		if (removeMonomeItem == null) {
 			removeMonomeItem = new JMenuItem();
 			removeMonomeItem.setText("Remove Monome");
+			removeMonomeItem.setMnemonic(KeyEvent.VK_R);
 			removeMonomeItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					MonomeConfigurationFactory.removeMonomeConfiguration(index);
@@ -762,5 +783,34 @@ public class MonomeFrame extends JInternalFrame {
 			});
 		}
 		return removeMonomeItem;
+	}
+
+	/**
+	 * This method initializes showPageMenu	
+	 * 	
+	 * @return javax.swing.JMenu	
+	 */
+	private JMenu getShowPageMenu() {
+		if (showPageMenu == null) {
+			showPageMenu = new JMenu();
+			showPageMenu.setText("Show Page");
+		}
+		return showPageMenu;
+	}
+	
+	public void updateShowPageMenuItems(String[] pages) {
+		showPageMenu.removeAll();
+		for (int i = 0; i < pages.length; i++) {
+			JMenuItem pageItem = new JMenuItem("" + (i + 1) + ": " + pages[i]);
+			pageItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String[] pieces = e.getActionCommand().split(":");
+					int pageIndex = Integer.parseInt(pieces[0]) - 1;
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+					monomeConfig.switchPage(monomeConfig.pages.get(pageIndex), pageIndex, true);
+				}
+			});
+			showPageMenu.add(pageItem);
+		}		
 	}
 }

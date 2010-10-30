@@ -8,6 +8,7 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class AbletonClipLauncherGUI extends JPanel {
 
@@ -64,7 +65,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 		this.add(getRefreshButton(), null);
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
-		this.setSize(186, 182);
+		this.setSize(208, 198);
 	}
 	
 	public void setName(String name) {
@@ -145,7 +146,7 @@ public class AbletonClipLauncherGUI extends JPanel {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(20, 135, 146, 21));
+			refreshButton.setBounds(new Rectangle(20, 135, 165, 21));
 			refreshButton.setText("Refresh From Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

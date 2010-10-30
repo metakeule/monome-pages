@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
+import java.awt.Dimension;
 
 public class AbletonSetupFrame extends JInternalFrame {
 
@@ -38,7 +39,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(234, 189);
+		this.setSize(233, 216);
 		this.setTitle("Ableton");
 		this.setContentPane(getJContentPane());
 		this.setResizable(true);
@@ -84,7 +85,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JTextField getHost() {
 		if (host == null) {
 			host = new JTextField();
-			host.setBounds(new Rectangle(120, 10, 76, 21));
+			host.setBounds(new Rectangle(120, 10, 91, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			host.setText(config.getAbletonHostname());
 		}
@@ -99,7 +100,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JTextField getInPort() {
 		if (inPort == null) {
 			inPort = new JTextField();
-			inPort.setBounds(new Rectangle(120, 40, 46, 21));
+			inPort.setBounds(new Rectangle(120, 40, 56, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			inPort.setText("" + config.getAbletonOSCInPortNumber());
 		}
@@ -114,7 +115,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JTextField getOutPort() {
 		if (outPort == null) {
 			outPort = new JTextField();
-			outPort.setBounds(new Rectangle(120, 70, 46, 21));
+			outPort.setBounds(new Rectangle(120, 70, 56, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			outPort.setText("" + config.getAbletonOSCOutPortNumber());
 		}
@@ -203,4 +204,4 @@ public class AbletonSetupFrame extends JInternalFrame {
 		}
 	}
 
-}
+}  //  @jve:decl-index=0:visual-constraint="10,10"

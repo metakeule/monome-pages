@@ -8,6 +8,7 @@ import org.monome.pages.pages.AbletonClipSkipperPage;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class AbletonClipSkipperGUI extends JPanel {
 
@@ -36,7 +37,7 @@ public class AbletonClipSkipperGUI extends JPanel {
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(getRefreshButton(), null);
-		this.setSize(185, 75);
+		this.setSize(220, 91);
 	}
 	
 	public void setName(String name) {
@@ -51,7 +52,7 @@ public class AbletonClipSkipperGUI extends JPanel {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(15, 30, 146, 21));
+			refreshButton.setBounds(new Rectangle(15, 30, 162, 21));
 			refreshButton.setText("Refresh From Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

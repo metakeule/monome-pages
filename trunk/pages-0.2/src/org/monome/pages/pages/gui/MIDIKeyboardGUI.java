@@ -37,7 +37,7 @@ public class MIDIKeyboardGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(211, 190);
+		this.setSize(230, 210);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		setName("MIDI Keyboard Page");

@@ -14,6 +14,7 @@ import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
+import java.awt.Dimension;
 
 public class NewMonomeConfigurationFrame extends JInternalFrame {
 
@@ -42,7 +43,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(231, 160);
+		this.setSize(235, 184);
 		this.setContentPane(getJContentPane());
 		this.setTitle("New Monome Configuration");
 		this.setResizable(true);
@@ -87,7 +88,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JTextField getSizeY() {
 		if (sizeY == null) {
 			sizeY = new JTextField();
-			sizeY.setBounds(new Rectangle(120, 40, 26, 21));
+			sizeY.setBounds(new Rectangle(120, 40, 36, 21));
 			sizeY.setText("8");
 		}
 		return sizeY;
@@ -101,7 +102,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 	private JTextField getSizeX() {
 		if (sizeX == null) {
 			sizeX = new JTextField();
-			sizeX.setBounds(new Rectangle(120, 10, 26, 21));
+			sizeX.setBounds(new Rectangle(120, 10, 36, 21));
 			sizeX.setText("8");
 		}
 		return sizeX;

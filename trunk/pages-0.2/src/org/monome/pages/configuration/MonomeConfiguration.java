@@ -203,6 +203,13 @@ public class MonomeConfiguration {
 		this.numPages++;
 		if (this.monomeFrame != null) {
 			this.monomeFrame.enableMidiMenu(true);
+			String[] pageNames = new String[this.pages.size()];
+			for (int i = 0; i < this.pages.size(); i++) {
+				Page tmpPage = this.pages.get(i);
+				String pageName = tmpPage.getName();
+				pageNames[i] = pageName;
+			}
+			this.monomeFrame.updateShowPageMenuItems(pageNames);
 		}
 		return page;
 	}

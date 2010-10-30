@@ -49,7 +49,7 @@ public class MIDITriggersGUI extends JPanel {
 	private void initialize() {
 		pageLabel = new JLabel();
 		pageLabel.setBounds(new Rectangle(5, 5, 186, 21));
-		this.setSize(185, 153);
+		this.setSize(205, 175);
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		setName("MIDI Triggers Page");
