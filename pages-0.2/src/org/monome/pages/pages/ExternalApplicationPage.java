@@ -105,6 +105,9 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void initOSC() {
 		this.stopOSC();
+		System.out.println("External page: initOSC()");
+		System.out.println("External page listening on port " + this.inPort);
+		System.out.println("External page sending on port " + this.outPort);
 		this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
 		this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
 		this.oscIn.addListener(this.prefix + "/led", this);

@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
+import java.awt.Dimension;
 
 public class MonomeSerialSetupFrame extends JInternalFrame {
 
@@ -38,7 +39,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(234, 189);
+		this.setSize(237, 204);
 		this.setTitle("Monome Serial Setup");
 		this.setContentPane(getJContentPane());
 		this.setResizable(true);
@@ -84,7 +85,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JTextField getHost() {
 		if (host == null) {
 			host = new JTextField();
-			host.setBounds(new Rectangle(120, 10, 76, 21));
+			host.setBounds(new Rectangle(120, 10, 91, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			host.setText(config.getMonomeHostname());
 		}
@@ -99,7 +100,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JTextField getInPort() {
 		if (inPort == null) {
 			inPort = new JTextField();
-			inPort.setBounds(new Rectangle(120, 40, 46, 21));
+			inPort.setBounds(new Rectangle(120, 40, 56, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			inPort.setText("" + config.getMonomeSerialOSCInPortNumber());
 		}
@@ -114,7 +115,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 	private JTextField getOutPort() {
 		if (outPort == null) {
 			outPort = new JTextField();
-			outPort.setBounds(new Rectangle(120, 70, 46, 21));
+			outPort.setBounds(new Rectangle(120, 70, 56, 21));
 			Configuration config = ConfigurationFactory.getConfiguration();
 			outPort.setText("" + config.getMonomeSerialOSCOutPortNumber());
 		}
@@ -212,5 +213,5 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		this.dispose();
 	}
 
-}
+}  //  @jve:decl-index=0:visual-constraint="10,10"
 

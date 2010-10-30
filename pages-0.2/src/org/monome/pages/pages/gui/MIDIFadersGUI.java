@@ -36,7 +36,7 @@ public class MIDIFadersGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(169, 142);
+		this.setSize(180, 160);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		setName("MIDI Faders Page");

@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class AbletonLiveLooperGUI extends JPanel {
 
@@ -65,7 +66,7 @@ public class AbletonLiveLooperGUI extends JPanel {
 		this.add(getRefreshButton(), null);
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
-		this.setSize(192, 181);
+		this.setSize(209, 192);
 	}
 	
 	public void setName(String name) {
@@ -146,7 +147,7 @@ public class AbletonLiveLooperGUI extends JPanel {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(15, 135, 146, 21));
+			refreshButton.setBounds(new Rectangle(15, 135, 161, 21));
 			refreshButton.setText("Refresh From Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

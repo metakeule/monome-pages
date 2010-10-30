@@ -60,7 +60,7 @@ public class ExternalApplicationGUI extends JPanel {
 		pageLabel = new JLabel();
 		setName("External Application");
 		pageLabel.setBounds(new Rectangle(5, 5, 291, 21));
-		this.setSize(273, 225);
+		this.setSize(280, 240);
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(oscInLabel, null);
@@ -74,6 +74,10 @@ public class ExternalApplicationGUI extends JPanel {
 		this.add(getDisableLedCacheCB(), null);
 		this.add(disableLedCacheLabel, null);
 		this.add(getUpdatePreferencesButton(), null);
+	}
+	
+	public void setName(String name) {
+		pageLabel.setText((page.getIndex() + 1) + ": " + name);
 	}
 
 	/**
@@ -177,4 +181,4 @@ public class ExternalApplicationGUI extends JPanel {
 		
 	}
 
-}  //  @jve:decl-index=0:visual-constraint="8,9"
+}

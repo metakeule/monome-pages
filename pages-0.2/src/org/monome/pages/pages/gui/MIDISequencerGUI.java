@@ -51,7 +51,7 @@ public class MIDISequencerGUI extends JPanel {
 		bankSizeLBL = new JLabel();
 		bankSizeLBL.setBounds(new Rectangle(30, 55, 56, 21));
 		bankSizeLBL.setText("Bank Size");
-		this.setSize(219, 170);
+		this.setSize(240, 190);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		this.add(getRowCB(), null);

@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class MonomeSetupFrame extends JInternalFrame {
 
@@ -40,7 +41,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(134, 192);
+		this.setSize(148, 207);
 		this.setTitle("Monome Setup");
 		this.setContentPane(getJContentPane());
 	}
@@ -103,7 +104,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JTextField getPrefixTF() {
 		if (prefixTF == null) {
 			prefixTF = new JTextField();
-			prefixTF.setBounds(new Rectangle(60, 30, 51, 21));
+			prefixTF.setBounds(new Rectangle(60, 30, 61, 21));
 			prefixTF.setText(monome.prefix);
 		}
 		return prefixTF;
@@ -131,7 +132,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JTextField getWidthTF() {
 		if (widthTF == null) {
 			widthTF = new JTextField();
-			widthTF.setBounds(new Rectangle(60, 55, 51, 21));
+			widthTF.setBounds(new Rectangle(60, 55, 46, 21));
 			widthTF.setText("" + monome.sizeX);
 		}
 		return widthTF;
@@ -159,7 +160,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JTextField getHeightTF() {
 		if (heightTF == null) {
 			heightTF = new JTextField();
-			heightTF.setBounds(new Rectangle(60, 80, 51, 21));
+			heightTF.setBounds(new Rectangle(60, 80, 46, 21));
 			heightTF.setText("" + monome.sizeY);
 		}
 		return heightTF;
@@ -173,7 +174,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JButton getSaveBtn() {
 		if (saveBtn == null) {
 			saveBtn = new JButton();
-			saveBtn.setBounds(new Rectangle(20, 105, 81, 21));
+			saveBtn.setBounds(new Rectangle(25, 105, 81, 21));
 			saveBtn.setText("Save");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -206,7 +207,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JButton getCancelBtn() {
 		if (cancelBtn == null) {
 			cancelBtn = new JButton();
-			cancelBtn.setBounds(new Rectangle(20, 130, 81, 21));
+			cancelBtn.setBounds(new Rectangle(25, 130, 81, 21));
 			cancelBtn.setText("Cancel");
 			cancelBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

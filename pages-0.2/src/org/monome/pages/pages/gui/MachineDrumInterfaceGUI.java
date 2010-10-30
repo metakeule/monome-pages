@@ -34,7 +34,7 @@ public class MachineDrumInterfaceGUI extends JPanel {
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		setName("MachineDrum Interface Page");
-		this.setSize(174, 180);
+		this.setSize(200, 200);
 		this.add(getSpeedTF(), null);
 		this.add(getSpeedLBL(), null);
 		this.add(getUpdatePrefsBtn(), null);

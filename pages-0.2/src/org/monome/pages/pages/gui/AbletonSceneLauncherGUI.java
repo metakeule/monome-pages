@@ -65,7 +65,7 @@ public class AbletonSceneLauncherGUI extends JPanel {
 		this.add(getRefreshButton(), null);
 		this.add(getDisableStopCB(), null);
 		this.add(disableStopLabel, null);
-		this.setSize(203, 199);
+		this.setSize(220, 215);
 	}
 	
 	public void setName(String name) {

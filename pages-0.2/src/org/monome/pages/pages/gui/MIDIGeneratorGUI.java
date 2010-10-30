@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class MIDIGeneratorGUI extends JPanel {
 
@@ -48,7 +49,7 @@ public class MIDIGeneratorGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(196, 293);
+		this.setSize(230, 330);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		setName("MIDI Generator Page");

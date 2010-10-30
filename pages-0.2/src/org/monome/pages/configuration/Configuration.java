@@ -190,7 +190,6 @@ public class Configuration {
 	public Configuration(String name) {
 		this.name = name;
 		this.abletonState = new AbletonState();
-		startMonomeSerialOSC();
 	}
 
 	/**
@@ -226,6 +225,7 @@ public class Configuration {
 		try {
 			if (this.monomeSerialOSCPortIn == null) {
 				this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
+				System.out.println("Listening on port " + this.monomeSerialOSCInPortNumber);
 				if (this.monomeSerialOSCPortIn == null) {
 					JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + this.monomeSerialOSCInPortNumber + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
 					return;
@@ -825,6 +825,7 @@ public class Configuration {
 			String oscoutport = ((Node) rootNL2.item(0)).getNodeValue();
 
 			setMonomeSerialOSCOutPortNumber(Integer.valueOf(oscoutport).intValue());
+			startMonomeSerialOSC();
 
 			// read <abletonhostname> from the configuration file
 			rootNL = doc.getElementsByTagName("abletonhostname");
@@ -855,6 +856,7 @@ public class Configuration {
 				String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
 				setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
 			}
+			initAbleton();
 
 			// read <midiinport> from the configuration file
 			rootNL = doc.getElementsByTagName("midiinport");

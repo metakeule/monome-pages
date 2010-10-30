@@ -27,6 +27,7 @@ public class OSCPortFactory {
 	}
 	
 	public OSCPortIn getOSCPortIn(Integer portNum) {
+		System.out.println("getOSCPortIn(" + portNum + ")");
 		if (oscInPorts.containsKey(portNum)) {
 			return oscInPorts.get(portNum);
 		}

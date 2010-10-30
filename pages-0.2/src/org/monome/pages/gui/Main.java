@@ -265,13 +265,14 @@ public class Main extends JFrame {
 						actionClose();
 						File file = fc.getSelectedFile();
 						setConfigurationFile(file);
+						System.out.println("Creating Configuration object");
 						Configuration configuration = new Configuration("Loading");
 						ConfigurationFactory.setConfiguration(configuration);
+						System.out.println("Reading configuration file");
 						configuration.readConfigurationFile(file);
 						getConfigurationMenu().setEnabled(true);
 						getMidiMenu().setEnabled(true);
 						getFrame().setTitle("Pages : " + configuration.name);
-						configuration.initAbleton();
 						for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 							MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
 							if (monomeConfig.pages.size() > 0) {
@@ -527,7 +528,7 @@ public class Main extends JFrame {
 		}
 		
 		monomeSerialSetupFrame = new MonomeSerialSetupFrame();
-		monomeSerialSetupFrame.setSize(new Dimension(235, 188));
+		monomeSerialSetupFrame.setSize(new Dimension(237, 204));
 		monomeSerialSetupFrame.setVisible(true);
 		jDesktopPane.add(monomeSerialSetupFrame);
 		try {
@@ -571,7 +572,7 @@ public class Main extends JFrame {
 		}
 		
 		abletonSetupFrame = new AbletonSetupFrame();
-		abletonSetupFrame.setSize(new Dimension(235, 200));
+		abletonSetupFrame.setSize(new Dimension(233, 216));
 		abletonSetupFrame.setVisible(true);
 		jDesktopPane.add(abletonSetupFrame);
 		try {
@@ -615,7 +616,7 @@ public class Main extends JFrame {
 		}
 		
 		showNewMonomeFrame = new NewMonomeConfigurationFrame();
-		showNewMonomeFrame.setSize(new Dimension(235, 160));
+		showNewMonomeFrame.setSize(new Dimension(235, 184));
 		showNewMonomeFrame.setVisible(true);
 		jDesktopPane.add(showNewMonomeFrame);
 		try {
