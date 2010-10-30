@@ -14,7 +14,6 @@ import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
-import java.awt.Dimension;
 
 public class NewMonomeConfigurationFrame extends JInternalFrame {
 
