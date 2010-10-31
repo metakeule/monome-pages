@@ -54,9 +54,9 @@ public class MIDISequencerPolyGUI extends JPanel {
 		this.setSize(240, 190);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
+		this.add(getNoteTF(), null);
 		this.add(getRowCB(), null);
 		this.add(getRowLBL(), null);
-		this.add(getNoteTF(), null);
 		this.add(getSaveBtn(), null);
 		this.add(bankSizeLBL, null);
 		this.add(getBankSizeTF(), null);
@@ -68,6 +68,7 @@ public class MIDISequencerPolyGUI extends JPanel {
 		for (int i = 0; i < rowChoices.length; i++) {
 			rowCB.addItem(rowChoices[i]);
 		}
+		getNoteTF().setText("C-1");
 	}
 	
 	public void setName(String name) {
@@ -129,6 +130,7 @@ public class MIDISequencerPolyGUI extends JPanel {
 	private JTextField getNoteTF() {
 		if (noteTF == null) {
 			noteTF = new JTextField();
+			noteTF.setText("C-1");
 			noteTF.setBounds(new Rectangle(160, 30, 36, 21));
 		}
 		return noteTF;
