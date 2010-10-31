@@ -208,6 +208,8 @@ public class MIDISequencerPolyPage implements Page {
 		this.monome = monome;
 		this.index = index;
 		this.gui = new MIDISequencerPolyGUI(this);
+		gui.channelTF.setText(midiChannel);
+		gui.bankSizeTF.setText(""+bankSize);
 		// setup default notes
 		this.noteNumbers[0] = this.noteToMidiNumber("C-1");
 		this.noteNumbers[1] = this.noteToMidiNumber("D-1");
@@ -1480,16 +1482,18 @@ public class MIDISequencerPolyPage implements Page {
 						if (velocity > 0) {
 							try {
 								heldNotes[iSeq][y] = true;
-								note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
-								heldNotesNum[iSeq][y] = note_num;
-								String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-								for (int j = 0; j < midiOutOptions.length; j++) {
-									if (midiOutOptions[j] == null) {
-										continue;
-									}
-									Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
-									if (recv != null) {
-										recv.send(note_out, -1);
+								if (note_num > -1) {
+									note_out.setMessage(ShortMessage.NOTE_ON, midiChannel, note_num, velocity);
+									heldNotesNum[iSeq][y] = note_num;
+									String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+									for (int j = 0; j < midiOutOptions.length; j++) {
+										if (midiOutOptions[j] == null) {
+											continue;
+										}
+										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
+										if (recv != null) {
+											recv.send(note_out, -1);
+										}
 									}
 								}
 								if (this.bankMode == 1)
@@ -1641,7 +1645,9 @@ public class MIDISequencerPolyPage implements Page {
 	 */
 	public void setNoteValue(int num, int value) {
 		this.noteNumbers[num] = value;
-
+		if (num == gui.rowCB.getSelectedIndex()) {
+			gui.noteTF.setText(this.numberToMidiNote(value));
+		}
 	}
 
 	/*
