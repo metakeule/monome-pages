@@ -45,9 +45,8 @@ public class MonomeConfigurationFactory {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
-		Integer i = new Integer(monomeConfigurations.size());		
 		MonomeConfiguration monomeConfiguration = new MonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
-		monomeConfigurations.put(i, monomeConfiguration);
+		monomeConfigurations.put(index, monomeConfiguration);
 		monomeConfiguration.setFrameTitle();
 		return monomeConfiguration;
 	}
@@ -69,18 +68,18 @@ public class MonomeConfigurationFactory {
 		monomeConfigurations.remove(new Integer(oldIndex));
 	}
 	
-	public static int getNumMonomeConfigurations() {
+	public static synchronized int getNumMonomeConfigurations() {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
 		return monomeConfigurations.size();
 	}
 	
-	public static void removeMonomeConfigurations() {
+	public static synchronized void removeMonomeConfigurations() {
 		monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 	}
 	
-	public static void removeMonomeConfiguration(int index) {
+	public static synchronized void removeMonomeConfiguration(int index) {
 		MonomeConfiguration monomeConfig = monomeConfigurations.get(new Integer(index));
 		if (monomeConfig != null && monomeConfig.monomeFrame != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
 			monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
@@ -89,7 +88,7 @@ public class MonomeConfigurationFactory {
 		monomeConfigurations.remove(new Integer(index));
 	}
 
-	public static boolean prefixExists(String prefix) {
+	public static synchronized boolean prefixExists(String prefix) {
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}

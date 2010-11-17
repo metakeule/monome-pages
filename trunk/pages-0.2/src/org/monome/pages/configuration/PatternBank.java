@@ -13,6 +13,7 @@ public class PatternBank {
 	private int numPatterns;
 	private int patternLength = 96 * 4;
 	private int quantify = 6;
+	private int curPattern = 0;
 	private int[] recordPosition;
 	
 	public PatternBank(int numPatterns) {
@@ -26,6 +27,7 @@ public class PatternBank {
 	}
 
 	public void handlePress(int patternNum) {
+		/*
 		for (int i=0; i < this.numPatterns; i++) {
 			if (i == patternNum) {
 				continue;
@@ -34,7 +36,8 @@ public class PatternBank {
 				this.patternState[i] = PATTERN_STATE_RECORDED;
 			}
 		}
-		
+		*/
+		curPattern = patternNum;
 		if (this.patternState[patternNum] == PATTERN_STATE_EMPTY) {
 			this.patternState[patternNum] = PATTERN_STATE_TRIGGERED;
 		} else if (this.patternState[patternNum] == PATTERN_STATE_TRIGGERED) {
@@ -46,22 +49,26 @@ public class PatternBank {
 	}
 	
 	public void recordPress(int x, int y, int value) {
-		for (int i=0; i < this.numPatterns; i++) {
-			if (this.patternState[i] == PATTERN_STATE_TRIGGERED) {
-				Pattern pattern = this.patterns.get(i);
-				pattern.recordPress(this.recordPosition[i], x, y, value);
-			}
+		if (this.patternState[curPattern] == PATTERN_STATE_TRIGGERED) {
+			Pattern pattern = this.patterns.get(curPattern);
+			pattern.recordPress(this.recordPosition[curPattern], x, y, value);
 		}
 	}
 	
 	public ArrayList<Press> getRecordedPresses() {
+		ArrayList<Press> recordedPresses = new ArrayList<Press>();
 		for (int i=0; i < this.numPatterns; i++) {
 			if (this.patternState[i] == PATTERN_STATE_TRIGGERED) {
 				Pattern pattern = this.patterns.get(i);
-				return pattern.getRecordedPress(this.patternPosition[i]);
+				ArrayList<Press> patternPresses = pattern.getRecordedPress(this.patternPosition[i]);
+				if (patternPresses != null) {
+					for (int j = 0; j < patternPresses.size(); j++) {
+						recordedPresses.add(patternPresses.get(j));
+					}
+				}
 			}
 		}
-		return null;
+		return recordedPresses;
 	}
 	
 	public void handleTick() {
