@@ -82,7 +82,7 @@ public class MonomeConfiguration {
 	/**
 	 * ledState[x][y] - The LED state cache for the monome
 	 */
-	public int[][] ledState = new int[32][32];;
+	public int[][] ledState = new int[32][32];
 
 	/**
 	 * pageState[page_num][x][y] - The LED state cache for each page
@@ -362,6 +362,7 @@ public class MonomeConfiguration {
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
 			this.pageChangeMode = 1;
 			this.pageChanged = false;
+			this.clear(0, -1);
 			this.drawPatternState();
 			return;
 		}
@@ -378,7 +379,10 @@ public class MonomeConfiguration {
 					this.patternBanks.get(curPage).recordPress(x, y, 0);
 				}
 			}
-			this.pages.get(curPage).redrawMonome();
+			if (this.pages.get(curPage) != null) {
+				this.ledState = new int[32][32];
+				this.pages.get(curPage).redrawMonome();
+			}
 			return;
 		}
 		
@@ -405,6 +409,25 @@ public class MonomeConfiguration {
 				this.led(x, 0, 1, -1);
 			} else if (this.patternBanks.get(curPage).getPatternState(x) == PatternBank.PATTERN_STATE_EMPTY) {
 				this.led(x, 0, 0, -1);
+			}
+		}
+		
+		for (int x = 0; x < this.sizeX; x++) {
+			for (int y = 0; y < this.sizeY; y++) {
+				int pageNum = x + (y * this.sizeY);
+				if (pageNum < this.numPages) {
+					int ledX = x;
+					int ledY = this.sizeY - y - 1;
+					if (pageNum == curPage) {
+						if (this.ledState[ledX][ledY] == 1) {
+							this.led(ledX, ledY, 0, -1);
+						} else {
+							this.led(ledX, ledY, 1, -1);
+						}
+					} else {
+						this.led(ledX, ledY, 1, -1);
+					}
+				}
 			}
 		}
 	}
@@ -612,7 +635,7 @@ public class MonomeConfiguration {
 	 * @param index The index of the page making the request
 	 */
 	public synchronized void led(int x, int y, int value, int index) {
-		if (x < 0 || y < 0 || value < 0) {
+		if (x < 0 || y < 0 || value < 0 || x >= this.sizeX || y >= this.sizeY || value > 1) {
 			return;
 		}
 				
@@ -620,6 +643,10 @@ public class MonomeConfiguration {
 			this.pageState[index][x][y] = value;
 	
 			if (index != this.curPage) {
+				return;
+			}
+			
+			if (this.pageChangeMode == 1) {
 				return;
 			}
 	
@@ -642,7 +669,7 @@ public class MonomeConfiguration {
 				monomeDisplayFrame.setLedState(ledState);
 			}
 		}
-
+		
 		Object args[] = new Object[3];
 		args[0] = new Integer(x);
 		args[1] = new Integer(y);
@@ -682,24 +709,30 @@ public class MonomeConfiguration {
 			numValues++;
 		}
 		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
-		for (int y=0; y < this.sizeY; y++) {
-			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
-			this.pageState[index][col][y] = bit;
-		}
-
-		if (index != this.curPage) {
-			return;
-		}
-
-		for (int y=0; y < this.sizeY; y++) {
-			int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
-			this.ledState[col][y] = bit;
-		}
-		
-		if (this.monomeFrame != null) {
-			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-			if (monomeDisplayFrame != null) {
-				monomeDisplayFrame.setLedState(ledState);
+		if (index > -1) {
+			for (int y=0; y < this.sizeY; y++) {
+				int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
+				this.pageState[index][col][y] = bit;
+			}
+	
+			if (index != this.curPage) {
+				return;
+			}
+			
+			if (this.pageChangeMode == 1) {
+				return;
+			}
+	
+			for (int y=0; y < this.sizeY; y++) {
+				int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
+				this.ledState[col][y] = bit;
+			}
+			
+			if (this.monomeFrame != null) {
+				MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+				if (monomeDisplayFrame != null) {
+					monomeDisplayFrame.setLedState(ledState);
+				}
 			}
 		}
 
@@ -737,24 +770,30 @@ public class MonomeConfiguration {
 			numValues++;
 		}
 		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
-		for (int x=0; x < this.sizeX; x++) {
-			int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
-			this.pageState[index][x][row] = bit;
-		}
-
-		if (index != this.curPage) {
-			return;
-		}
-
-		for (int x=0; x < this.sizeX; x++) {
-			int bit = (fullvalue >> (this.sizeX - x - 1)) & 1;
-			this.ledState[x][row] = bit;
-		}
-		
-		if (this.monomeFrame != null) {
-			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-			if (monomeDisplayFrame != null) {
-				monomeDisplayFrame.setLedState(ledState);
+		if (index > -1) {
+			for (int x=0; x < this.sizeX; x++) {
+				int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
+				this.pageState[index][x][row] = bit;
+			}
+	
+			if (index != this.curPage) {
+				return;
+			}
+			
+			if (this.pageChangeMode == 1) {
+				return;
+			}
+	
+			for (int x=0; x < this.sizeX; x++) {
+				int bit = (fullvalue >> (this.sizeX - x - 1)) & 1;
+				this.ledState[x][row] = bit;
+			}
+			
+			if (this.monomeFrame != null) {
+				MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+				if (monomeDisplayFrame != null) {
+					monomeDisplayFrame.setLedState(ledState);
+				}
 			}
 		}
 
@@ -794,26 +833,33 @@ public class MonomeConfiguration {
 	 */
 	public synchronized void clear(int state, int index) {		
 		if (state == 0 || state == 1) {
-			for (int x = 0; x < this.sizeX; x++) {
-				for (int y = 0; y < this.sizeY; y++) {
-					this.pageState[index][x][y] = state;
-				}
-			}
-
-			if (index != this.curPage) {
-				return;
-			}
-
-			for (int x = 0; x < this.sizeX; x++) {
-				for (int y = 0; y < this.sizeY; y++) {
-					this.ledState[x][y] = state;
-				}
-			}
 			
-			if (this.monomeFrame != null) {
-				MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
-				if (monomeDisplayFrame != null) {
-					monomeDisplayFrame.setLedState(ledState);
+			if (index > -1) {
+				for (int x = 0; x < this.sizeX; x++) {
+					for (int y = 0; y < this.sizeY; y++) {
+						this.pageState[index][x][y] = state;
+					}
+				}
+	
+				if (index != this.curPage) {
+					return;
+				}
+				
+				if (this.pageChangeMode == 1) {
+					return;
+				}
+	
+				for (int x = 0; x < this.sizeX; x++) {
+					for (int y = 0; y < this.sizeY; y++) {
+						this.ledState[x][y] = state;
+					}
+				}
+				
+				if (this.monomeFrame != null) {
+					MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
+					if (monomeDisplayFrame != null) {
+						monomeDisplayFrame.setLedState(ledState);
+					}
 				}
 			}
 

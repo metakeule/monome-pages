@@ -759,9 +759,13 @@ public class Configuration {
 	 * Redraws all Ableton pages
 	 */
 	public void redrawAbletonPages() {
-		
 		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-			MonomeConfigurationFactory.getMonomeConfiguration(i).redrawAbletonPages();
+			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+			if (monomeConfig != null) {
+				monomeConfig.redrawAbletonPages();
+			} else {
+				System.out.println("monomeConfig is null in redrawAbletonPages (i = " + i + ")");
+			}
 		}		
 	}
 	
