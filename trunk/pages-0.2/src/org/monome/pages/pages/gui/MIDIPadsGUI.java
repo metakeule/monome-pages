@@ -192,7 +192,7 @@ public class MIDIPadsGUI extends JPanel {
 						int midiStartNote = Integer.parseInt(midiStartTF.getText()); 
 						int velocityFactor = Integer.parseInt(velocityFactorTF.getText());
 						int delayTime = Integer.parseInt(delayTimeTF.getText());
-						int midiChannel = Integer.parseInt(midiChannelTF.getText());
+						int midiChannel = Integer.parseInt(midiChannelTF.getText()) - 1;
 						page.setMidiStartNote(midiStartNote);
 						page.setVelocityFactor(velocityFactor);
 						page.setDelayTime(delayTime);

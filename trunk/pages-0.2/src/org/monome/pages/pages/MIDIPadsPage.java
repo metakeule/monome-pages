@@ -63,7 +63,7 @@ public class MIDIPadsPage implements Page {
 	
 	public void setMidiChannel(int midiChannel) {
 		this.midiChannel = midiChannel;
-		this.gui.setMidiChannel(midiChannel);
+		this.gui.setMidiChannel(midiChannel + 1);
 	}
 	
 	public void setVelocityFactor(int velocityFactor) {
