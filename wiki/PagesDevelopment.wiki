@@ -241,8 +241,8 @@ Now overwrite the handlePress method with this:
 {{{
 	public void handlePress(int x, int y, int value) {
 		this.monome.led(x, y, value, index);
-		int velX = (int) Math.floor((double) x / 2.0);
-		int velY = (int) Math.floor((double) y / 2.0);
+		int velX = x / 2;
+		int velY = y / 2;
 		int midiNote = midiStartNote + velX + (velY * (this.monome.sizeY));
 		
 		if (value == 1) {
