@@ -192,10 +192,10 @@ public class MIDIPadsGUI extends JPanel {
 
 What we did here:
 
-1) We defined the "page" member variable as the type MIDIPadsPage.
-2) In the MIDIPadsGUI constructor we set this.page = padsPage.
-3) We defined the setName function to change the text of pageLabel based on the page index.
-4) We added a call to setName in the initialize() method.
+  # We defined the "page" member variable as the type MIDIPadsPage.
+  # In the MIDIPadsGUI constructor we set this.page = padsPage.
+  # We defined the setName function to change the text of pageLabel based on the page index.
+  # We added a call to setName in the initialize() method.
 
 What it accomplished:
 
