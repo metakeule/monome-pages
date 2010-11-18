@@ -331,54 +331,12 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	}
 
 	public void configure(Element pageElement) {
-		NodeList nl = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);
-			
-		}
-		
-		nl = pageElement.getElementsByTagName("prefix");
-		el = (Element) nl.item(0);
-		if (el != null){
-			nl = el.getChildNodes();
-			String extPrefix = ((Node) nl.item(0)).getNodeValue();
-			this.setPrefix(extPrefix);
-		}
-
-		nl = pageElement.getElementsByTagName("oscinport");
-		el = (Element) nl.item(0);
-		if (el != null){
-			nl = el.getChildNodes();
-			String extInPort = ((Node) nl.item(0)).getNodeValue();
-			this.setInPort(extInPort);
-		}
-
-		nl = pageElement.getElementsByTagName("oscoutport");
-		el = (Element) nl.item(0);
-		if (el != null){
-			nl = el.getChildNodes();
-			String extOutPort = ((Node) nl.item(0)).getNodeValue();
-			this.setOutPort(extOutPort);
-		}
-
-		nl = pageElement.getElementsByTagName("hostname");
-		el = (Element) nl.item(0);
-		if (el != null){
-			nl = el.getChildNodes();
-			String extHostname = ((Node) nl.item(0)).getNodeValue();
-			this.setHostname(extHostname);
-		}
-
-		nl = pageElement.getElementsByTagName("disablecache");
-		el = (Element) nl.item(0);
-		if (el != null){
-			nl = el.getChildNodes();
-			String cacheDisabled = ((Node) nl.item(0)).getNodeValue();
-			gui.setCacheDisabled(cacheDisabled);
-		}
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
+		this.setPrefix(this.monome.readConfigValue(pageElement, "prefix"));
+		this.setInPort(this.monome.readConfigValue(pageElement, "oscinport"));
+		this.setOutPort(this.monome.readConfigValue(pageElement, "oscoutport"));
+		this.setHostname(this.monome.readConfigValue(pageElement, "hostname"));
+		gui.setCacheDisabled(this.monome.readConfigValue(pageElement, "disablecache"));
 		this.initOSC();		
 	}
 

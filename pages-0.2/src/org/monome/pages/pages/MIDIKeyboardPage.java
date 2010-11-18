@@ -974,15 +974,11 @@ public class MIDIKeyboardPage implements Page {
 		
 
 	public void configure(Element pageElement) {		
-		NodeList nl = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
 		
 		String s[] = new String[6];
+		NodeList nl = null;
+		Element el = null;
 		for(int i=1; i<7; i++) {
 			nl = pageElement.getElementsByTagName("scaleStr" + i);
 			el = (Element) nl.item(0);

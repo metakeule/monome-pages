@@ -282,13 +282,7 @@ public class AbletonClipSkipperPage implements Page {
 	}
 */
 	public void configure(Element pageElement) {
-		NodeList nameNL = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));		
 	}
 
 	public int getIndex() {

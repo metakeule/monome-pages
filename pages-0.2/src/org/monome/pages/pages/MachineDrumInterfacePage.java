@@ -512,21 +512,8 @@ public class MachineDrumInterfacePage implements Page {
 	*/
 
 	public void configure(Element pageElement) {
-		NodeList nameNL = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
-		
-		NodeList rowNL = pageElement.getElementsByTagName("speed");
-		el = (Element) rowNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String speed = ((Node) nl.item(0)).getNodeValue();
-			this.setSpeed(Integer.parseInt(speed));
-		}		
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
+		this.setSpeed(Integer.parseInt(this.monome.readConfigValue(pageElement, "speed")));
 	}
 
 	public int getIndex() {
