@@ -517,54 +517,16 @@ Next let's define what our XML is going to look like in the configuration file:
 This will now get saved to the configuration file.  We need to do something with this information when we load it, so let's implement the configure() method:
 
 {{{
-	public void configure(Element pageElement) {
-		NodeList nameNL = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
-		
-		NodeList msNL = pageElement.getElementsByTagName("midiStartNote");
-		el = (Element) msNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sMidiStartNote = ((Node) nl.item(0)).getNodeValue();
-			int midiStartNote = Integer.parseInt(sMidiStartNote);
-			this.setMidiStartNote(midiStartNote);
-		}
-		
-		NodeList vfNL = pageElement.getElementsByTagName("velocityFactor");
-		el = (Element) vfNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sVelocityFactor = ((Node) nl.item(0)).getNodeValue();
-			int velocityFactor = Integer.parseInt(sVelocityFactor);
-			this.setVelocityFactor(velocityFactor);
-		}
-		
-		NodeList delayNL = pageElement.getElementsByTagName("delayTime");
-		el = (Element) delayNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sDelayTime = ((Node) nl.item(0)).getNodeValue();
-			int delayTime = Integer.parseInt(sDelayTime);
-			this.setDelayTime(delayTime);
-		}
-		
-		NodeList mcNL = pageElement.getElementsByTagName("midiChannel");
-		el = (Element) mcNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sMidiChannel = ((Node) nl.item(0)).getNodeValue();
-			int midiChannel = Integer.parseInt(sMidiChannel);
-			this.setMidiChannel(midiChannel);
-		}
+	public void configure(Element pageElement) {		
+		this.setName(monome.readConfigValue(pageElement, "pageName"));
+		this.setMidiStartNote(Integer.parseInt(monome.readConfigValue(pageElement, "midiStartNote")));
+		this.setVelocityFactor(Integer.parseInt(monome.readConfigValue(pageElement, "velocityFactor")));
+		this.setDelayTime(Integer.parseInt(monome.readConfigValue(pageElement, "delayTime")));
+		this.setMidiChannel(Integer.parseInt(monome.readConfigValue(pageElement, "midiChannel")));
 	}
 }}}
 
-It's a bit wordy but there you have it.  These properties will now be saved and loaded from the configuration file.  We don't have anywhere on the GUI to see them or update them though so let's build that part.  Ignore the errors in MIDIPadsPage for now and open up MIDIPadsGUI.java in Visual Editor.  Create a label and name it midiStartLBL.  Place it in the GUI and set its text to "MIDI Start Note".  Now create a JTextField and name it midiStartTF.
+These properties will now be saved and loaded from the configuration file.  We don't have anywhere on the GUI to see them or update them though so let's build that part.  Ignore the errors in MIDIPadsPage for now and open up MIDIPadsGUI.java in Visual Editor.  Create a label and name it midiStartLBL.  Place it in the GUI and set its text to "MIDI Start Note".  Now create a JTextField and name it midiStartTF.
 
 Repeat this process for the other 3 attributes: velocityFactorLBL/TF, delayTimeLBL/TF, and midiChannelLBL/TF.
 
