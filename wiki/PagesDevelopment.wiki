@@ -541,7 +541,7 @@ This will now get saved to the configuration file.  We need to do something with
 			NodeList nl = el.getChildNodes();
 			String sVelocityFactor = ((Node) nl.item(0)).getNodeValue();
 			int velocityFactor = Integer.parseInt(sVelocityFactor);
-			this.setMidiStartNote(velocityFactor);
+			this.setVelocityFactor(velocityFactor);
 		}
 		
 		NodeList delayNL = pageElement.getElementsByTagName("delayTime");
