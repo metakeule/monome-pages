@@ -185,6 +185,11 @@ public class Configuration {
 	private boolean abletonInitialized = false;
 
 	/**
+	 * True if we should not send any 'View Track' commands to Ableton.
+	 */
+	private boolean abletonIgnoreViewTrack = false;
+
+	/**
 	 * @param name The name of the configuration
 	 */
 	public Configuration(String name) {
@@ -860,6 +865,20 @@ public class Configuration {
 				String abletonoscoutport = ((Node) rootNL2.item(0)).getNodeValue();
 				setAbletonOSCOutPortNumber(Integer.valueOf(abletonoscoutport).intValue());
 			}
+			
+			// read <abletonignoreviewtrack> from the configuration file
+			rootNL = doc.getElementsByTagName("abletonignoreviewtrack");
+			rootEL = (Element) rootNL.item(0);
+			// old versions might not have this setting
+			if (rootEL != null) {
+				rootNL2 = rootEL.getChildNodes();
+				String abletonignoreviewtrack = ((Node) rootNL2.item(0)).getNodeValue();
+				if (abletonignoreviewtrack.compareTo("true") == 0) {
+					this.abletonIgnoreViewTrack = true;
+				} else {
+					this.abletonIgnoreViewTrack = false;
+				}
+			}
 			initAbleton();
 
 			// read <midiinport> from the configuration file
@@ -1104,6 +1123,11 @@ public class Configuration {
 		xml += "  <abletonhostname>" + this.abletonHostname + "</abletonhostname>\n";
 		xml += "  <abletonoscinport>" + this.abletonOSCInPortNumber + "</abletonoscinport>\n";
 		xml += "  <abletonoscoutport>" + this.abletonOSCOutPortNumber + "</abletonoscoutport>\n";
+		String ignoreViewTrack = "false";
+		if (this.abletonIgnoreViewTrack) {
+			ignoreViewTrack = "true";
+		}
+		xml += "  <abletonignoreviewtrack>" + ignoreViewTrack + "</abletonignoreviewtrack>\n";
 		for (int i=0; i < this.midiInDevices.size(); i++) {
 			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(this.midiInDevices.get(i).getDeviceInfo().toString()) + "</midiinport>\n";
 		}
@@ -1117,5 +1141,13 @@ public class Configuration {
 		}
 		xml += "</configuration>\n";
 		return xml;
+	}
+
+	public void setAbletonIgnoreViewTrack(boolean selected) {
+		this.abletonIgnoreViewTrack = selected;
+	}
+
+	public boolean getAbletonIgnoreViewTrack() {
+		return this.abletonIgnoreViewTrack;
 	}	
 }
