@@ -387,5 +387,8 @@ public class MIDIGeneratorPage implements Page {
 		}
 		return -1;
 	}
-
+	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
 }

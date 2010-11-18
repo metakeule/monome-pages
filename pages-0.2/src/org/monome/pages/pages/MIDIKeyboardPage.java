@@ -1052,5 +1052,9 @@ public class MIDIKeyboardPage implements Page {
 	public void handleADC(float x, float y) {
 		// TODO Auto-generated method stub
 		
-	}	
+	}
+	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
 }

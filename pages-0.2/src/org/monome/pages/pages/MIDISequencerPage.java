@@ -1107,4 +1107,8 @@ public class MIDISequencerPage implements Page {
 		// TODO Auto-generated method stub
 		return index;
 	}
+	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
 }

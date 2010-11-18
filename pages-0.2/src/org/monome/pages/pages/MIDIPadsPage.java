@@ -71,50 +71,12 @@ public class MIDIPadsPage implements Page {
 		this.gui.setVelocityFactor(velocityFactor);
 	}
 
-	public void configure(Element pageElement) {
-		NodeList nameNL = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
-		
-		NodeList msNL = pageElement.getElementsByTagName("midiStartNote");
-		el = (Element) msNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sMidiStartNote = ((Node) nl.item(0)).getNodeValue();
-			int midiStartNote = Integer.parseInt(sMidiStartNote);
-			this.setMidiStartNote(midiStartNote);
-		}
-		
-		NodeList vfNL = pageElement.getElementsByTagName("velocityFactor");
-		el = (Element) vfNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sVelocityFactor = ((Node) nl.item(0)).getNodeValue();
-			int velocityFactor = Integer.parseInt(sVelocityFactor);
-			this.setVelocityFactor(velocityFactor);
-		}
-		
-		NodeList delayNL = pageElement.getElementsByTagName("delayTime");
-		el = (Element) delayNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sDelayTime = ((Node) nl.item(0)).getNodeValue();
-			int delayTime = Integer.parseInt(sDelayTime);
-			this.setDelayTime(delayTime);
-		}
-		
-		NodeList mcNL = pageElement.getElementsByTagName("midiChannel");
-		el = (Element) mcNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String sMidiChannel = ((Node) nl.item(0)).getNodeValue();
-			int midiChannel = Integer.parseInt(sMidiChannel);
-			this.setMidiChannel(midiChannel);
-		}
+	public void configure(Element pageElement) {		
+		this.setName(monome.readConfigValue(pageElement, "pageName"));
+		this.setMidiStartNote(Integer.parseInt(monome.readConfigValue(pageElement, "midiStartNote")));
+		this.setVelocityFactor(Integer.parseInt(monome.readConfigValue(pageElement, "velocityFactor")));
+		this.setDelayTime(Integer.parseInt(monome.readConfigValue(pageElement, "delayTime")));
+		this.setMidiChannel(Integer.parseInt(monome.readConfigValue(pageElement, "midiChannel")));
 	}
 	
 	public void destroyPage() {
@@ -168,19 +130,10 @@ public class MIDIPadsPage implements Page {
 		} else {
 			velocities[velX][velY] -= velocityFactor;
 			if (velocities[velX][velY] == 0) {
-				ShortMessage midiMsg = new ShortMessage();
 				try {
-					midiMsg.setMessage(ShortMessage.NOTE_OFF, 0, midiNote, 0);
-					String[] midiOutOptions = monome.getMidiOutOptions(index);
-					for (int i = 0; i < midiOutOptions.length; i++) {
-						if (midiOutOptions[i] == null) {
-							continue;
-						}
-						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-						if (recv != null) {
-							recv.send(midiMsg, -1);
-						}
-					}
+					ShortMessage midiMsg = new ShortMessage();
+					midiMsg.setMessage(ShortMessage.NOTE_OFF, midiChannel, midiNote, 0);
+					monome.sendMidi(midiMsg, index);
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}
@@ -218,26 +171,15 @@ public class MIDIPadsPage implements Page {
 		public void run() {
 			try {
 				Thread.sleep(delayTime);
+				if (velocity > 127) {
+					velocity = 127;
+				}
 				ShortMessage midiMsg = new ShortMessage();
-				try {
-					if (velocity > 127) {
-						velocity = 127;
-					}
-					midiMsg.setMessage(ShortMessage.NOTE_ON, midiChannel, midiNote, velocity);
-				} catch (InvalidMidiDataException e) {
-					e.printStackTrace();
-				}
-				String[] midiOutOptions = monome.getMidiOutOptions(this.pageIndex);
-				for (int i = 0; i < midiOutOptions.length; i++) {
-					if (midiOutOptions[i] == null) {
-						continue;
-					}
-					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-					if (recv != null) {
-						recv.send(midiMsg, -1);
-					}
-				}
+				midiMsg.setMessage(ShortMessage.NOTE_ON, midiChannel, midiNote, velocity);
+				monome.sendMidi(midiMsg, index);
 			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();
 			}
 			this.complete = true;
@@ -288,5 +230,8 @@ public class MIDIPadsPage implements Page {
 		xml += "      <midiChannel>" + this.midiChannel + "</midiChannel>\n";
 		return xml;
 	}
-
+	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
 }

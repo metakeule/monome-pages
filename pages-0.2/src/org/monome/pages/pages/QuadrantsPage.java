@@ -205,4 +205,8 @@ public class QuadrantsPage implements Page {
 		this.gui = new QuadrantsGUI(this, selectedQuadConf);
 		MonomeConfigurationFactory.getMonomeConfiguration(index).monomeFrame.redrawPagePanel(this);
 	}
+	
+	public boolean redrawOnAbletonEvent() {
+		return true;
+	}
 }

@@ -499,4 +499,9 @@ public class MIDITriggersPage implements Page {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
+
 }

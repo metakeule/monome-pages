@@ -110,4 +110,6 @@ public interface Page {
 	public JPanel getPanel();
 	
 	public int getIndex();
+	
+	public boolean redrawOnAbletonEvent();
 }

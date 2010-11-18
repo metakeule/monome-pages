@@ -24,6 +24,7 @@ package org.monome.pages.configuration;
 
 import java.util.ArrayList;
 
+import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -40,6 +41,9 @@ import org.monome.pages.pages.AbletonClipSkipperPage;
 import org.monome.pages.pages.AbletonLiveLooperPage;
 import org.monome.pages.pages.AbletonSceneLauncherPage;
 import org.monome.pages.pages.Page;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.illposed.osc.OSCMessage;
 
@@ -103,6 +107,10 @@ public class MonomeConfiguration {
 	 * The pages that belong to this monome
 	 */
 	public ArrayList<Page> pages = new ArrayList<Page>();
+	
+	/**
+	 * The monome's pattern banks
+	 */
 	public ArrayList<PatternBank> patternBanks = new ArrayList<PatternBank>();
 
 	/**
@@ -272,30 +280,9 @@ public class MonomeConfiguration {
 		}
 		
 		for (int i = 0; i < this.pages.size(); i++) {
-			if (pages.get(i) instanceof AbletonClipLauncherPage) {
-				AbletonClipLauncherPage page = (AbletonClipLauncherPage) pages.get(i);
-				page.redrawMonome();
-			}			
-			if (pages.get(i) instanceof AbletonLiveLooperPage) {
-				AbletonLiveLooperPage page = (AbletonLiveLooperPage) pages.get(i);
-				page.redrawMonome();
+			if (pages.get(i).redrawOnAbletonEvent()) {
+				pages.get(i).redrawMonome();
 			}
-			if (pages.get(i) instanceof AbletonClipSkipperPage) {
-				AbletonClipSkipperPage page = (AbletonClipSkipperPage) pages.get(i);
-				page.redrawMonome();
-			}
-			if (pages.get(i) instanceof AbletonSceneLauncherPage) {
-				AbletonSceneLauncherPage page = (AbletonSceneLauncherPage) pages.get(i);
-				page.redrawMonome();
-			}
-			
-			/*
-			if (pages.get(i) instanceof AbletonClipControlPage) {
-				AbletonClipControlPage page = (AbletonClipControlPage) pages.get(i);
-				page.redrawMonome();
-			}
-			*/
-			
 		}
 	}
 	
@@ -938,6 +925,17 @@ public class MonomeConfiguration {
 		return xml;
 	}
 	
+	public String readConfigValue(Element pageElement, String name) {
+		NodeList nameNL = pageElement.getElementsByTagName(name);
+		Element el = (Element) nameNL.item(0);
+		if (el != null) {
+			NodeList nl = el.getChildNodes();
+			String value = ((Node) nl.item(0)).getNodeValue();
+			return value;			
+		}
+		return null;
+	}
+	
 	public void setPatternLength(int pageNum, int length) {
 		if (this.patternBanks.size() <= pageNum) {
 			this.patternBanks.add(pageNum, new PatternBank(this.sizeX));
@@ -1005,5 +1003,18 @@ public class MonomeConfiguration {
 		if (this.monomeFrame != null) {
 			monomeFrame.setTitle(title);
 		}
+	}
+
+	public void sendMidi(ShortMessage midiMsg, int index) {
+		String[] midiOutOptions = getMidiOutOptions(index);
+		for (int i = 0; i < midiOutOptions.length; i++) {
+			if (midiOutOptions[i] == null) {
+				continue;
+			}
+			Receiver recv = getMidiReceiver(midiOutOptions[i]);
+			if (recv != null) {
+				recv.send(midiMsg, -1);
+			}
+		}	
 	}
 }

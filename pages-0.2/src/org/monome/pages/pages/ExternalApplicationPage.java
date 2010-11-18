@@ -403,4 +403,8 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
 }
