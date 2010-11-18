@@ -572,7 +572,7 @@ public class Main extends JFrame {
 		}
 		
 		abletonSetupFrame = new AbletonSetupFrame();
-		abletonSetupFrame.setSize(new Dimension(233, 216));
+		abletonSetupFrame.setSize(new Dimension(233, 246));
 		abletonSetupFrame.setVisible(true);
 		jDesktopPane.add(abletonSetupFrame);
 		try {

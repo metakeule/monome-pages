@@ -446,7 +446,7 @@ public class MonomeFrame extends JInternalFrame {
 						}
 						try {
 							int iLength = Integer.parseInt(length);
-							if (iLength > 0 && iLength < 16) {
+							if (iLength > 0 && iLength <= 16) {
 								monomeConfig.patternBanks.get(monomeConfig.curPage).setPatternLength(iLength);
 							}
 						} catch (NumberFormatException ex) {

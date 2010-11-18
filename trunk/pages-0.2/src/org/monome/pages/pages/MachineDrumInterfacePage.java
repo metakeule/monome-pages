@@ -398,37 +398,22 @@ public class MachineDrumInterfacePage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
-		String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-		for (int i = 0; i < midiOutOptions.length; i++) {
-			if (midiOutOptions[i] == null) {
-				continue;
-			}
-			Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-			// pass midi clock messages on to the machinedrum for tempo sync
-			if (recv != null) {
-				ShortMessage shortMessage;
-				if (message instanceof ShortMessage) {
-					shortMessage = (ShortMessage) message;
-					switch (shortMessage.getCommand()) {
-					case 0xF0:
+		if (message instanceof ShortMessage) {
+			ShortMessage shortMessage = (ShortMessage) message;
+			switch (shortMessage.getCommand()) {
+				case 0xF0:
 						// midi clock message
-						if (shortMessage.getChannel() == 0x08) {
-							recv.send(message, timeStamp);
-						}
+					if (shortMessage.getChannel() == 0x08 ||
 						// midi start message
-						if (shortMessage.getChannel() == 0x0A) {
-							recv.send(message, timeStamp);
-						}
+						shortMessage.getChannel() == 0x0A ||
 						// midi stop message
-						if (shortMessage.getChannel() == 0x0C) {
-							recv.send(message, timeStamp);
-						}
-						break;
-					default:
-						recv.send(message, timeStamp);
-						break;
+						shortMessage.getChannel() == 0x0C) {
+							monome.sendMidi(shortMessage, index);
 					}
-				}
+					break;
+				default:
+					monome.sendMidi(shortMessage, index);
+					break;
 			}
 		}
 	}

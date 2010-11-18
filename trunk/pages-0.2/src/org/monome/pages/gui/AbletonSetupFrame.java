@@ -10,6 +10,8 @@ import javax.swing.JTextField;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
+import java.awt.Dimension;
+import javax.swing.JCheckBox;
 
 public class AbletonSetupFrame extends JInternalFrame {
 
@@ -24,6 +26,8 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JButton saveButton = null;
 	private JButton cancelButton = null;
 	private JButton refreshButton = null;
+	private JLabel ignoreViewLabel = null;
+	private JCheckBox ignoreViewCB = null;
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -38,7 +42,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(233, 216);
+		this.setSize(231, 256);
 		this.setTitle("Ableton");
 		this.setContentPane(getJContentPane());
 		this.setResizable(true);
@@ -52,6 +56,9 @@ public class AbletonSetupFrame extends JInternalFrame {
 	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
+			ignoreViewLabel = new JLabel();
+			ignoreViewLabel.setBounds(new Rectangle(25, 100, 126, 21));
+			ignoreViewLabel.setText("Ignore View Track");
 			outPortLabel = new JLabel();
 			outPortLabel.setBounds(new Rectangle(25, 70, 96, 21));
 			outPortLabel.setText("Listen Port");
@@ -72,6 +79,8 @@ public class AbletonSetupFrame extends JInternalFrame {
 			jContentPane.add(getSaveButton(), null);
 			jContentPane.add(getCancelButton(), null);
 			jContentPane.add(getRefreshButton(), null);
+			jContentPane.add(ignoreViewLabel, null);
+			jContentPane.add(getIgnoreViewCB(), null);
 		}
 		return jContentPane;
 	}
@@ -129,7 +138,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JButton getSaveButton() {
 		if (saveButton == null) {
 			saveButton = new JButton();
-			saveButton.setBounds(new Rectangle(30, 100, 76, 21));
+			saveButton.setBounds(new Rectangle(30, 130, 76, 21));
 			saveButton.setText("Save");
 			saveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -149,6 +158,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 		config.setAbletonOSCInPortNumber(inport);
 		config.setAbletonOSCOutPortNumber(outport);
 		config.setAbletonHostname(hostname);
+		config.setAbletonIgnoreViewTrack(this.ignoreViewCB.isSelected());
 		
 		this.dispose();
 	}
@@ -161,7 +171,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
-			cancelButton.setBounds(new Rectangle(120, 100, 76, 21));
+			cancelButton.setBounds(new Rectangle(120, 130, 76, 21));
 			cancelButton.setText("Cancel");
 			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -184,7 +194,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	private JButton getRefreshButton() {
 		if (refreshButton == null) {
 			refreshButton = new JButton();
-			refreshButton.setBounds(new Rectangle(30, 130, 166, 21));
+			refreshButton.setBounds(new Rectangle(30, 160, 166, 21));
 			refreshButton.setText("Refresh Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -201,6 +211,21 @@ public class AbletonSetupFrame extends JInternalFrame {
 		if (control != null) {
 			control.refreshAbleton();
 		}
+	}
+
+	/**
+	 * This method initializes ignoreViewCB	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getIgnoreViewCB() {
+		if (ignoreViewCB == null) {
+			ignoreViewCB = new JCheckBox();
+			ignoreViewCB.setBounds(new Rectangle(155, 100, 21, 21));
+			Configuration config = ConfigurationFactory.getConfiguration();
+			ignoreViewCB.setSelected(config.getAbletonIgnoreViewTrack());
+		}
+		return ignoreViewCB;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

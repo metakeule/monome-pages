@@ -313,13 +313,15 @@ public class AbletonOSCControl implements AbletonControl {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void viewTrack(int track) {
-		Object args[] = new Object[1];
-		args[0] = new Integer(track);
-		OSCMessage msg = new OSCMessage("/live/track/view", args);
-		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (ConfigurationFactory.getConfiguration().getAbletonIgnoreViewTrack() == false) {
+			Object args[] = new Object[1];
+			args[0] = new Integer(track);
+			OSCMessage msg = new OSCMessage("/live/track/view", args);
+			try {
+				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
