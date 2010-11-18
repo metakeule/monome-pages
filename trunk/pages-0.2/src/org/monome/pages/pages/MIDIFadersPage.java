@@ -376,40 +376,10 @@ public class MIDIFadersPage implements Page {
 	}
 
 	public void configure(Element pageElement) {
-		NodeList nl = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);
-			
-		}
-		
-		NodeList rowNL = pageElement.getElementsByTagName("delayamount");
-		el = (Element) rowNL.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String delayAmount = ((Node) nl.item(0)).getNodeValue();
-			this.setDelayAmount(delayAmount);
-		}
-		
-		NodeList channelNL = pageElement.getElementsByTagName("midichannel");
-		el = (Element) channelNL.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String midiChannel = ((Node) nl.item(0)).getNodeValue();
-			this.setMidiChannel(midiChannel);
-		}
-
-		NodeList ccOffsetNL = pageElement.getElementsByTagName("ccoffset");
-		el = (Element) ccOffsetNL.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String ccOffset = ((Node) nl.item(0)).getNodeValue();
-			this.setCCOffset(ccOffset);
-		}
-		
-		
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
+		this.setDelayAmount(this.monome.readConfigValue(pageElement, "delayamount"));
+		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
+		this.setCCOffset(this.monome.readConfigValue(pageElement, "ccoffset"));
 		/*
 		nl = pageElement.getElementsByTagName("ccoffsetADC");
 		el = (Element) nl.item(0);

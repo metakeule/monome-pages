@@ -75,94 +75,34 @@ public class MIDIGeneratorPage implements Page {
 	}
 	
 	public void configure(Element pageElement) {
-		NodeList nameNL = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
 		
-		nameNL = pageElement.getElementsByTagName("scale");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String scale = ((Node) nl.item(0)).getNodeValue();
-			this.scale = scale;
-			this.gui.getScaleTF().setText(scale);
-		}
+		this.scale = this.monome.readConfigValue(pageElement, "scale");
+		this.gui.getScaleTF().setText(scale);
 		
-		nameNL = pageElement.getElementsByTagName("patternLength");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String patternLength = ((Node) nl.item(0)).getNodeValue();
-			this.patternLength = Integer.parseInt(patternLength);
-			this.gui.getPatternLengthTF().setText("" + this.patternLength);
-		}
-
-		nameNL = pageElement.getElementsByTagName("quantization");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String quantization = ((Node) nl.item(0)).getNodeValue();
-			this.quantization = Integer.parseInt(quantization);
-			this.gui.getQuantizationTF().setText("" + this.quantization);
-		}
+		this.patternLength = Integer.parseInt(this.monome.readConfigValue(pageElement, "patternLength"));
+		this.gui.getPatternLengthTF().setText("" + this.patternLength);
 		
-		nameNL = pageElement.getElementsByTagName("startNote");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String startNote = ((Node) nl.item(0)).getNodeValue();
-			this.startNote = Integer.parseInt(startNote);
-			this.gui.getStartNoteTF().setText("" + this.startNote);
-		}
+		this.quantization = Integer.parseInt(this.monome.readConfigValue(pageElement, "quantization"));
+		this.gui.getQuantizationTF().setText("" + this.quantization);
 		
-		nameNL = pageElement.getElementsByTagName("maxNote");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String maxNote = ((Node) nl.item(0)).getNodeValue();
-			this.maxNote = Integer.parseInt(maxNote);
-			this.gui.getMaxNoteTF().setText("" + this.maxNote);
-		}
+		this.startNote = Integer.parseInt(this.monome.readConfigValue(pageElement, "startNote"));
+		this.gui.getStartNoteTF().setText("" + this.startNote);
 		
-		nameNL = pageElement.getElementsByTagName("numNotes");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String numNotes = ((Node) nl.item(0)).getNodeValue();
-			this.numNotes = Integer.parseInt(numNotes);
-			this.gui.getNumNotesTF().setText(""+this.numNotes);
-		}
+		this.maxNote = Integer.parseInt(this.monome.readConfigValue(pageElement, "maxNote"));
+		this.gui.getMaxNoteTF().setText("" + this.maxNote);
 		
-		nameNL = pageElement.getElementsByTagName("chance");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String chance = ((Node) nl.item(0)).getNodeValue();
-			this.chance = Integer.parseInt(chance);
-			this.gui.getChanceTF().setText(""+this.chance);
-		}
+		this.numNotes = Integer.parseInt(this.monome.readConfigValue(pageElement, "numNotes"));
+		this.gui.getNumNotesTF().setText(""+this.numNotes);
 		
-		nameNL = pageElement.getElementsByTagName("maxRadius");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String maxRadius = ((Node) nl.item(0)).getNodeValue();
-			this.maxRadius = Integer.parseInt(maxRadius);
-			this.gui.getMaxRadiusTF().setText("" + this.maxRadius);
-		}
+		this.numNotes = Integer.parseInt(this.monome.readConfigValue(pageElement, "chance"));
+		this.gui.getChanceTF().setText(""+this.chance);
 		
-		nameNL = pageElement.getElementsByTagName("midiChannel");
-		el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String midiChannel = ((Node) nl.item(0)).getNodeValue();
-			this.midiChannel = Integer.parseInt(midiChannel);
-			this.gui.getMidiChannelTF().setText("" + this.midiChannel);
-		}
+		this.maxRadius = Integer.parseInt(this.monome.readConfigValue(pageElement, "maxRadius"));
+		this.gui.getMaxRadiusTF().setText("" + this.maxRadius);
+		
+		this.midiChannel = Integer.parseInt(this.monome.readConfigValue(pageElement, "midiChannel"));
+		this.gui.getMidiChannelTF().setText("" + this.midiChannel);				
 	}
 
 	public void destroyPage() {

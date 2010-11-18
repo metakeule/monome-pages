@@ -402,28 +402,15 @@ public class MIDITriggersPage implements Page {
 		return false;
 	}
 	
-	public void configure(Element pageElement) {		
-		NodeList nameNL = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
-				
-		NodeList nl = pageElement.getElementsByTagName("mode");
-		el = (Element) nl.item(0);
-		if (el != null) {
-			nl = el.getChildNodes();
-			String mode = ((Node) nl.item(0)).getNodeValue();
-			this.setMode(mode);
-		}
-		
+	public void configure(Element pageElement) {
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
+		this.setMode(this.monome.readConfigValue(pageElement, "mode"));
+						
 		NodeList seqNL = pageElement.getElementsByTagName("toggles");
 		for (int l=0; l < seqNL.getLength(); l++) {
-			el = (Element) seqNL.item(l);
+			Element el = (Element) seqNL.item(l);
 			if (el != null) {
-				nl = el.getChildNodes();
+				NodeList nl = el.getChildNodes();
 				String mode = ((Node) nl.item(0)).getNodeValue();
 				if (mode.equals("on")) {
 					this.enableToggle(l);
@@ -433,9 +420,9 @@ public class MIDITriggersPage implements Page {
 		
 		seqNL = pageElement.getElementsByTagName("onandoff");
 		for (int l=0; l < seqNL.getLength(); l++) {
-			el = (Element) seqNL.item(l);
+			Element el = (Element) seqNL.item(l);
 			if (el != null) {
-				nl = el.getChildNodes();
+				NodeList nl = el.getChildNodes();
 				String mode = ((Node) nl.item(0)).getNodeValue();
 				if (mode.equals("on")) {
 					this.enableOnAndOff(l);

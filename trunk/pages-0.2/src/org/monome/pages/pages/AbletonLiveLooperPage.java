@@ -570,42 +570,11 @@ public class AbletonLiveLooperPage implements Page {
 	}
 */
 	public void configure(Element pageElement) {
-		NodeList nameNL = pageElement.getElementsByTagName("pageName");
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String	name = ((Node) nl.item(0)).getNodeValue();
-			this.setName(name);			
-		}
-		
-		NodeList armNL = pageElement.getElementsByTagName("disablearm");
-		el = (Element) armNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String disableArm = ((Node) nl.item(0)).getNodeValue();
-			this.setDisableArm(disableArm);
-		}
-		NodeList soloNL = pageElement.getElementsByTagName("disablesolo");
-		el = (Element) soloNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String disableSolo = ((Node) nl.item(0)).getNodeValue();
-			this.setDisableSolo(disableSolo);
-		}
-		NodeList muteNL = pageElement.getElementsByTagName("disablemute");
-		el = (Element) muteNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String disableMute = ((Node) nl.item(0)).getNodeValue();
-			this.setDisableMute(disableMute);
-		}
-		NodeList stopNL = pageElement.getElementsByTagName("disablestop");
-		el = (Element) stopNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String disableStop = ((Node) nl.item(0)).getNodeValue();
-			this.setDisableStop(disableStop);
-		}
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
+		this.setDisableArm(this.monome.readConfigValue(pageElement, "disablearm"));
+		this.setDisableSolo(this.monome.readConfigValue(pageElement, "disablesolo"));
+		this.setDisableMute(this.monome.readConfigValue(pageElement, "disablemute"));
+		this.setDisableStop(this.monome.readConfigValue(pageElement, "disablestop"));		
 	}
 
 	public int getIndex() {

@@ -2,15 +2,13 @@ package org.monome.pages.pages;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
-import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JPanel;
 
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDIPadsGUI;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+
 
 public class MIDIPadsPage implements Page {
 
@@ -116,8 +114,8 @@ public class MIDIPadsPage implements Page {
 
 	public void handlePress(int x, int y, int value) {
 		this.monome.led(x, y, value, index);
-		int velX = (int) Math.floor((double) x / 2.0);
-		int velY = (int) Math.floor((double) y / 2.0);
+		int velX = x / 2;
+		int velY = y / 2;
 		int midiNote = midiStartNote + velX + (velY * (this.monome.sizeY));
 		
 		if (value == 1) {
