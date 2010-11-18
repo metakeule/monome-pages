@@ -493,7 +493,7 @@ There's other things you could come up with but this is enough for the tutorial.
 	
 	public void setMidiChannel(int midiChannel) {
 		this.midiChannel = midiChannel;
-		this.gui.setMidiChannel(midiChannel);
+		this.gui.setMidiChannel(midiChannel + 1);
 	}
 }}}	
 
@@ -584,7 +584,7 @@ When the button is clicked we want to update the MIDIPadsPage with the values co
 						int midiStartNote = Integer.parseInt(midiStartTF.getText()); 
 						int velocityFactor = Integer.parseInt(velocityFactorTF.getText());
 						int delayTime = Integer.parseInt(delayTimeTF.getText());
-						int midiChannel = Integer.parseInt(midiChannelTF.getText());
+						int midiChannel = Integer.parseInt(midiChannelTF.getText()) - 1;
 						page.setMidiStartNote(midiStartNote);
 						page.setVelocityFactor(velocityFactor);
 						page.setDelayTime(delayTime);
