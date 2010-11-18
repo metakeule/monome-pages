@@ -6,10 +6,10 @@
 
 I develop pages using the Eclipse IDE, which is free and available for all platforms.  Prerequisites for this tutorial include:
 
-* JDK 1.5 or later
-* Eclipse version 3.4 (Ganymede) -- don't get the latest, Helios, some of the plugins we need don't work in it yet.
-* Subclipse plugin
-* Visual Editor plugin
+  * JDK 1.5 or later
+  * Eclipse version 3.4 (Ganymede) -- don't get the latest, Helios, some of the plugins we need don't work in it yet.
+  * Subclipse plugin
+  * Visual Editor plugin
 
 First install JDK 1.5.  Just go to java.sun.com and navigate around the site until you find the Downloads area, shouldn't be too hard.  OSX has an Apple installer for this.
 
@@ -449,10 +449,10 @@ Next is the run() method.  This is the method that does the actual work and is w
 		
 That's it, the page is now fully functional, can be created, and can be saved into configurations.  The last thing we want to do is actually give it some configuration options.  It would be nice if you could configure the following things:
 
-# The MIDI start note number (right now it's hard coded to 31).
-# The amount of velocity each button represents (right now it's hard coded to 32)
-# The delay time before the MIDI note is sent out (right now it's hard coded to 5ms).
-# The MIDI channel that is used (right now it's hard coded to 0--this is actually MIDI channel 1).
+  # The MIDI start note number (right now it's hard coded to 31).
+  # The amount of velocity each button represents (right now it's hard coded to 32)
+  # The delay time before the MIDI note is sent out (right now it's hard coded to 5ms).
+  # The MIDI channel that is used (right now it's hard coded to 0--this is actually MIDI channel 1).
 
 There's other things you could come up with but this is enough for the tutorial.  First let's create member variables in MIDIPadsPage.java to store these values.  They're all integers and pretty straightforward.  Let's also initialize them in the constructor to the defaults above:
 
