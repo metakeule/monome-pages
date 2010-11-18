@@ -347,7 +347,6 @@ That's it for handlePress.  The only piece left is the MIDINoteDelay object itse
 		}
 		
 		public void setVelocity(int velocity) {
-			System.out.println("set velocity to " + velocity);
 			this.velocity = velocity;
 		}
 		
@@ -410,7 +409,6 @@ Next are two utility methods meant to be called from the MIDIPadsPage class itse
 
 {{{
 		public void setVelocity(int velocity) {
-			System.out.println("set velocity to " + velocity);
 			this.velocity = velocity;
 		}
 		
@@ -600,7 +598,65 @@ When the button is clicked we want to update the MIDIPadsPage with the values co
 		return updatePrefsBtn;
 	}
 }}}
-	
+
+Now let's make these new parameters actually modify the behavior of things.  For MIDI start note, make the following change:
+
+{{{
+int midiNote = 31+ velX + (velY * (this.monome.sizeY));
+}}}
+to
+{{{
+int midiNote = midiStartNote + velX + (velY * (this.monome.sizeY));
+}}}
+
+For velocity factor:
+
+{{{
+velocities[velX][velY] += 32;
+}}}
+to
+{{{
+velocities[velX][velY] += velocityFactor;
+}}}
+
+and
+
+{{{
+velocities[velX][velY] -= 32;
+}}}
+to
+{{{
+velocities[velX][velY] -= velocityFactor;
+}}}
+
+For delay time:
+
+{{{
+midiNoteDelays[velX][velY] = new MIDINoteDelay(monome, index, 5, midiNote);
+}}}
+to
+{{{
+midiNoteDelays[velX][velY] = new MIDINoteDelay(monome, index, delayTime, midiNote);
+}}}
+
+For MIDI channel, woops I didn't plan this well, we don't have a way to send it in yet.  Let's add it as an argument to the MIDINoteDelay constructor:
+
+{{{
+midiNoteDelays[velX][velY] = new MIDINoteDelay(monome, index, delayTime, midiNote, midiChannel);
+}}}
+
+and in the MIDINoteDelay class:
+
+{{{
+private int midiChannel;
+...
+		public MIDINoteDelay(MonomeConfiguration monome, int pageIndex, int delayTime, int midiNote, int midiChannel) {
+...
+			this.midiChannel = midiChannel;
+...
+					midiMsg.setMessage(ShortMessage.NOTE_ON, midiChannel, midiNote, velocity);
+}}}
+
 The only thing left is to implement the setMidiStartNote, setDelayTime, setMidiChannel, and setVelocityFactor methods in the MIDIPadsGUI.java file.  You can hover over the errors in MIDIPadsPage.java and choose "Create method..." to quickly create stub methods for each of these.  Finally, implement the stub methods to update the text field values when called:
 
 {{{
