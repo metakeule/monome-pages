@@ -276,8 +276,8 @@ So what's going on here: first, I ask the MonomeConfiguration object to light up
 Next I calculate the offsets into the "velocities" and "padDelays" arrays above based on the X and Y received.  I'm making each group of four represent one note, and then calculating the actual MIDI note based on that:
 
 {{{
-		int velX = (int) Math.floor((double) x / 2.0);
-		int velY = (int) Math.floor((double) y / 2.0);
+		int velX = x / 2;
+		int velY = y / 2;
 		int midiNote = 31 + velX + (velY * (this.monome.sizeY));
 }}}
 
