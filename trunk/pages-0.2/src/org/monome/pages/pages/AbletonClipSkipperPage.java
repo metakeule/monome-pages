@@ -294,4 +294,8 @@ public class AbletonClipSkipperPage implements Page {
 	public int getIndex() {
 		return index;
 	}
+	
+	public boolean redrawOnAbletonEvent() {
+		return true;
+	}
 }

@@ -2444,4 +2444,9 @@ public class MIDISequencerPolyPage implements Page {
 		// TODO Auto-generated method stub
 
 	}
+	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
+
 }

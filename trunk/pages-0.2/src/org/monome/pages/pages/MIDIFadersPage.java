@@ -473,6 +473,7 @@ public class MIDIFadersPage implements Page {
 		
 	}
 
-	
-	
+	public boolean redrawOnAbletonEvent() {
+		return false;
+	}
 }
