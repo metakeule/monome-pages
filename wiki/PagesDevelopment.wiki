@@ -7,13 +7,17 @@
 I develop pages using the Eclipse IDE, which is free and available for all platforms.  Prerequisites for this tutorial include:
 
   * JDK 1.5 or later
-  * Eclipse version 3.4 (Ganymede) -- don't get the latest, Helios, some of the plugins we need don't work in it yet.
+  * Eclipse version 3.4 (Ganymede) -- You can use a later version if you'd like but instructions here are for this version.
   * Subclipse plugin
   * Visual Editor plugin
 
 First install JDK 1.5.  Just go to java.sun.com and navigate around the site until you find the Downloads area, shouldn't be too hard.  OSX has an Apple installer for this.
 
-Next get Eclipse.  Go to www.eclipse.org and make sure you get the Ganymede version.  Download this and unzip it somewhere, it doesn't have an installer so you just need to put it where you want it.
+Next get Eclipse.  The Ganymede release is available here:
+
+http://www.eclipse.org/downloads/packages/release/ganymede/sr2
+
+Download this and unzip it somewhere, it doesn't have an installer so you just need to put it where you want it.
 
 Now run Eclipse.  You'll get some funny circular icons on a welcome page.  Find the "Go To Workbench" icon and click it.  It'll probably ask you to create a workspace, go ahead and pick some folder where all the code and project settings should be stored.
 
