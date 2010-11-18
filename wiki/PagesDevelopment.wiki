@@ -243,31 +243,22 @@ Now overwrite the handlePress method with this:
 		this.monome.led(x, y, value, index);
 		int velX = (int) Math.floor((double) x / 2.0);
 		int velY = (int) Math.floor((double) y / 2.0);
-		int midiNote = 31 + velX + (velY * (this.monome.sizeY));
+		int midiNote = midiStartNote + velX + (velY * (this.monome.sizeY));
 		
 		if (value == 1) {
-			velocities[velX][velY] += 32;
-			if (padDelays[velX][velY] == null || padDelays[velX][velY].isComplete()) {
-				padDelays[velX][velY] = new PadDelay(monome, index, 5, midiNote);
-				new Thread(padDelays[velX][velY]).start();
+			velocities[velX][velY] += velocityFactor;
+			if (midiNoteDelays[velX][velY] == null || midiNoteDelays[velX][velY].isComplete()) {
+				midiNoteDelays[velX][velY] = new MIDINoteDelay(monome, index, delayTime, midiNote, midiChannel);
+				new Thread(midiNoteDelays[velX][velY]).start();
 			}
-			padDelays[velX][velY].setVelocity(velocities[velX][velY]);
+			midiNoteDelays[velX][velY].setVelocity(velocities[velX][velY]);
 		} else {
-			velocities[velX][velY] -= 32;
+			velocities[velX][velY] -= velocityFactor;
 			if (velocities[velX][velY] == 0) {
-				ShortMessage midiMsg = new ShortMessage();
 				try {
+					ShortMessage midiMsg = new ShortMessage();
 					midiMsg.setMessage(ShortMessage.NOTE_OFF, 0, midiNote, 0);
-					String[] midiOutOptions = monome.getMidiOutOptions(index);
-					for (int i = 0; i < midiOutOptions.length; i++) {
-						if (midiOutOptions[i] == null) {
-							continue;
-						}
-						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-						if (recv != null) {
-							recv.send(midiMsg, -1);
-						}
-					}
+					monome.sendMidi(midiMsg, index);
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}
@@ -306,19 +297,10 @@ This covers it for the "user pressed a button case".  Now let's handle the "user
 		} else {
 			velocities[velX][velY] -= 32;
 			if (velocities[velX][velY] == 0) {
-				ShortMessage midiMsg = new ShortMessage();
 				try {
+					ShortMessage midiMsg = new ShortMessage();
 					midiMsg.setMessage(ShortMessage.NOTE_OFF, 0, midiNote, 0);
-					String[] midiOutOptions = monome.getMidiOutOptions(index);
-					for (int i = 0; i < midiOutOptions.length; i++) {
-						if (midiOutOptions[i] == null) {
-							continue;
-						}
-						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-						if (recv != null) {
-							recv.send(midiMsg, -1);
-						}
-					}
+					monome.sendMidi(midiMsg, index);
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
 				}
@@ -357,26 +339,15 @@ That's it for handlePress.  The only piece left is the MIDINoteDelay object itse
 		public void run() {
 			try {
 				Thread.sleep(delayTime);
+				if (velocity > 127) {
+					velocity = 127;
+				}
 				ShortMessage midiMsg = new ShortMessage();
-				try {
-					if (velocity > 127) {
-						velocity = 127;
-					}
-					midiMsg.setMessage(ShortMessage.NOTE_ON, 0, midiNote, velocity);
-				} catch (InvalidMidiDataException e) {
-					e.printStackTrace();
-				}
-				String[] midiOutOptions = monome.getMidiOutOptions(this.pageIndex);
-				for (int i = 0; i < midiOutOptions.length; i++) {
-					if (midiOutOptions[i] == null) {
-						continue;
-					}
-					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-					if (recv != null) {
-						recv.send(midiMsg, -1);
-					}
-				}
+				midiMsg.setMessage(ShortMessage.NOTE_ON, 0, midiNote, velocity);
+				monome.sendMidi(midiMsg, index);
 			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();
 			}
 			this.complete = true;
@@ -423,26 +394,15 @@ Next is the run() method.  This is the method that does the actual work and is w
 		public void run() {
 			try {
 				Thread.sleep(delayTime);
+				if (velocity > 127) {
+					velocity = 127;
+				}
 				ShortMessage midiMsg = new ShortMessage();
-				try {
-					if (velocity > 127) {
-						velocity = 127;
-					}
-					midiMsg.setMessage(ShortMessage.NOTE_ON, 0, midiNote, velocity);
-				} catch (InvalidMidiDataException e) {
-					e.printStackTrace();
-				}
-				String[] midiOutOptions = monome.getMidiOutOptions(this.pageIndex);
-				for (int i = 0; i < midiOutOptions.length; i++) {
-					if (midiOutOptions[i] == null) {
-						continue;
-					}
-					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-					if (recv != null) {
-						recv.send(midiMsg, -1);
-					}
-				}
+				midiMsg.setMessage(ShortMessage.NOTE_ON, 0, midiNote, velocity);
+				monome.sendMidi(midiMsg, index);
 			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();
 			}
 			this.complete = true;
@@ -608,6 +568,8 @@ For MIDI channel, woops I didn't plan this well, we don't have a way to send it 
 
 {{{
 midiNoteDelays[velX][velY] = new MIDINoteDelay(monome, index, delayTime, midiNote, midiChannel);
+...
+midiMsg.setMessage(ShortMessage.NOTE_OFF, midiChannel, midiNote, 0);
 }}}
 
 and in the MIDINoteDelay class:
@@ -615,11 +577,11 @@ and in the MIDINoteDelay class:
 {{{
 private int midiChannel;
 ...
-		public MIDINoteDelay(MonomeConfiguration monome, int pageIndex, int delayTime, int midiNote, int midiChannel) {
+public MIDINoteDelay(MonomeConfiguration monome, int pageIndex, int delayTime, int midiNote, int midiChannel) {
 ...
-			this.midiChannel = midiChannel;
+this.midiChannel = midiChannel;
 ...
-					midiMsg.setMessage(ShortMessage.NOTE_ON, midiChannel, midiNote, velocity);
+midiMsg.setMessage(ShortMessage.NOTE_ON, midiChannel, midiNote, velocity);
 }}}
 
 The only thing left is to implement the setMidiStartNote, setDelayTime, setMidiChannel, and setVelocityFactor methods in the MIDIPadsGUI.java file.  You can hover over the errors in MIDIPadsPage.java and choose "Create method..." to quickly create stub methods for each of these.  Finally, implement the stub methods to update the text field values when called:
