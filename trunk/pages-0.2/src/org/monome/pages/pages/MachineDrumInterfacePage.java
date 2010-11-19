@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.sound.midi.MidiMessage;
@@ -50,31 +51,6 @@ public class MachineDrumInterfacePage implements Page {
 	private int index;
 
 	/**
-	 * morph_machines[machine_number] - 1 if machine_number machine should be sent random parameter changes
-	 */
-	private int[] morph_machines = new int[16];
-
-	/**
-	 * morph_params[param_number] - 1 if the param_number paramater should be sent random changes 
-	 */
-	private int[] morph_params = new int[24];
-
-	/**
-	 * fx_morph[fx_number] - 1 if the fx_number fx unit should be sent random parameter changes, [0] = echo, [1] = gate, [2] = eq, [3] = compressor
-	 */
-	private int[] fx_morph = new int[4];
-
-	/**
-	 * true randomly enables and disables morph_machines and morph_params
-	 */
-	private boolean auto_morph = false;
-
-	/**
-	 * Random number generator 
-	 */
-	private Random generator;
-
-	/**
 	 * Utility class for sending MIDI messages to the MachineDrum 
 	 */
 	private MachineDrum machinedrum;
@@ -90,20 +66,29 @@ public class MachineDrumInterfacePage implements Page {
 	private int speed = 100;
 	
 	/**
+	 * Random number generator 
+	 */
+	private Random generator;
+	
+	/**
 	 * The name of the page 
 	 */
 	private String pageName = "Machine Drum Interface";
+	
+	private ArrayList<LoadedModule> loadedModules;
 
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index The index of this page (the page number)
 	 */
 	public MachineDrumInterfacePage(MonomeConfiguration monome, int index) {
-		gui = new MachineDrumInterfaceGUI(this);
 		this.machinedrum = new MachineDrum();
 		this.monome = monome;
 		this.index = index;
 		this.generator = new Random();
+		this.loadedModules = new ArrayList<LoadedModule>();
+		this.loadedModules.add(new LoadedModule(new MDMKitRandomizer(this, 0), 0, 0));
+		gui = new MachineDrumInterfaceGUI(this);
 	}
 
 	/* (non-Javadoc)
@@ -123,88 +108,6 @@ public class MachineDrumInterfacePage implements Page {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handlePress(int, int, int)
 	 */
-	public void handlePress(int x, int y, int value) {
-		// only act on press events
-		if (value == 1) {
-			// top two rows, toggle morph_machines on and off
-			if (y < 2) {
-				int machine_num = getMachineNum(x, y);
-				if (morph_machines[machine_num] == 1) {
-					morph_machines[machine_num] = 0;
-					this.monome.led(x, y, 0, this.index);
-				} else {
-					morph_machines[machine_num] = 1;
-					this.monome.led(x, y, 1, this.index);
-				}
-				// next 3 rows, toggle morph_params on and off
-			} else if (y < 5) {
-				int param_num = getMachineNum(x, y - 2);
-				if (morph_params[param_num] == 1) {
-					morph_params[param_num] = 0;
-					this.monome.led(x, y, 0, this.index);
-				} else {
-					morph_params[param_num] = 1;
-					this.monome.led(x, y, 1, this.index);
-				}
-				// 6th row, initialize new kits
-			} else if (y == 5) {
-				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-				for (int i = 0; i < midiOutOptions.length; i++) {
-					if (midiOutOptions[i] == null) {
-						continue;
-					}
-					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-					if (recv != null) {
-						machinedrum.initKit(recv, x);
-					}
-				}
-				// 7th row, kit load and save
-			} else if (y == 6) {
-				System.out.println("kit function");
-				if (x < 4) {
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-					for (int i = 0; i < midiOutOptions.length; i++) {
-						if (midiOutOptions[i] == null) {
-							continue;
-						}
-						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-						if (recv != null) {
-							machinedrum.sendKitLoad(recv, x);
-						}
-					}
-				} else {
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-					for (int i = 0; i < midiOutOptions.length; i++) {
-						if (midiOutOptions[i] == null) {
-							continue;
-						}
-						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-						if (recv != null) {
-							machinedrum.sendKitSave(recv, x - 4);
-						}
-					}
-				}
-				// last row, auto morph toggle and fx morph toggles
-			} else if (y == 7) {
-				if (x == 0) {
-					if (auto_morph == false) {
-						auto_morph = true;
-						this.monome.led(x, y, 1, this.index);
-					} else {
-						auto_morph = false;
-						this.monome.led(x, y, 0, this.index);
-					}
-				} else if (x > 0 && x < 5) {
-					if (fx_morph[x-1] == 0) {
-						fx_morph[x-1] = 1;
-					} else {
-						fx_morph[x-1] = 0;
-					}
-					this.monome.led(x, y, fx_morph[x-1], this.index);
-				}
-			}
-		}
-	}
 
 	/**
 	 * Translate monome x/y to a MachineDrum machine number
@@ -223,175 +126,6 @@ public class MachineDrumInterfacePage implements Page {
 	public void handleReset() {
 		// reset ticks to 0 when clock is reset
 		ticks = 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#handleTick()
-	 */
-	public void handleTick() {
-		// count from 0 to 5 and reset
-		if (ticks == 6) {
-			ticks = 0;
-		}
-
-		// turn off and on random machines/params to morph
-		if (auto_morph == true && generator.nextInt(this.speed) == 1) {
-			int machine_num = generator.nextInt(12) + 2;
-			int param_num = generator.nextInt(24);
-			int x_m = machine_num % 8;
-			int y_m = machine_num / 8;
-			int x_p = param_num % 8;
-			int y_p = (param_num / 8) + 2;
-
-			if (morph_machines[machine_num] == 1) {
-				morph_machines[machine_num] = 0;
-				this.monome.led(x_m, y_m, 0, this.index);
-			} else {
-				morph_machines[machine_num] = 1;
-				this.monome.led(x_m, y_m, 1, this.index);
-			}
-			if (morph_params[param_num] == 1) {
-				morph_params[param_num] = 0;
-				this.monome.led(x_p, y_p, 0, this.index);
-			} else {
-				morph_params[param_num] = 1;
-				this.monome.led(x_p, y_p, 1, this.index);
-			}
-		}
-
-		// send a param change to the echo effect
-		if (fx_morph[0] == 1 && ticks == 0) {
-			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-			for (int i = 0; i < midiOutOptions.length; i++) {
-				if (midiOutOptions[i] == null) {
-					continue;
-				}
-				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				if (recv != null) {
-					machinedrum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
-				}
-			}
-		}
-
-		// send a param change to the gate effect
-		if (fx_morph[1] == 1 && ticks == 1) {
-			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-			for (int i = 0; i < midiOutOptions.length; i++) {
-				if (midiOutOptions[i] == null) {
-					continue;
-				}
-				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				if (recv != null) {
-					machinedrum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
-				}
-			}
-		}
-
-		// send a param change to the eq effect
-		if (fx_morph[2] == 1 && ticks == 2) {
-			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-			for (int i = 0; i < midiOutOptions.length; i++) {
-				if (midiOutOptions[i] == null) {
-					continue;
-				}
-				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				if (recv != null) {
-					machinedrum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
-				}
-			}
-		}
-
-		// send a param change to the compressor effect
-		if (fx_morph[3] == 1 && ticks == 3) {
-			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-			for (int i = 0; i < midiOutOptions.length; i++) {
-				if (midiOutOptions[i] == null) {
-					continue;
-				}
-				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-				if (recv != null) {
-					machinedrum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
-				}
-			}
-		}
-
-		// send random parameter changes
-
-		// for each machine
-		for (int x = 0; x < 16; x++) {
-			// divide out the sends so we don't saturate the midi channel
-			if (ticks == 0 && (x >  2)) { continue; }
-			else if (ticks == 1 && (x >  5 || x <  3)) { continue; }
-			else if (ticks == 2 && (x >  8 || x <  6)) { continue; }
-			else if (ticks == 3 && (x > 11 || x <  9)) { continue; }
-			else if (ticks == 4 && (x > 14 || x < 12)) { continue; }
-			else if (ticks == 5 && (x > 16 || x < 15)) { continue; }
-			// for each morph parameter
-			for (int y = 0; y < 24; y++) {
-				// if the machine morph and the param morph are on and we pass a random check, send
-				// a random param change
-				if (morph_machines[x] == 1) {
-					if (morph_params[y] == 1) {
-						if (generator.nextInt(this.speed) == 1) {
-							String[] midiOutOptions = monome.getMidiOutOptions(this.index);
-							for (int i = 0; i < midiOutOptions.length; i++) {
-								if (midiOutOptions[i] == null) {
-									continue;
-								}
-								Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
-								if (recv != null) {
-									machinedrum.sendRandomParamChange(recv, x, y);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		ticks++;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#redrawMonome()
-	 */
-	public void redrawMonome() {
-		for (int x = 0; x < 8; x++) {
-			for (int y = 0; y < 8; y++) {
-				// redraw the morph machine state (top 2 rows)
-				if (y < 2) {
-					int machine_num = getMachineNum(x, y);
-					if (morph_machines[machine_num] == 1) {
-						this.monome.led(x, y, 1, this.index);
-					} else {
-						this.monome.led(x, y, 0, this.index);
-					}
-					// redraw the morph param state (next 3 rows)
-				} else if (y < 5) {
-					int param_num = getMachineNum(x, y - 2);
-					if (morph_params[param_num] == 1) {
-						this.monome.led(x, y, 1, this.index);
-					} else {
-						this.monome.led(x, y, 0, this.index);
-					}
-					// redraw the bottom row (auto morph and fx toggles)
-				} else if (y == 7) {
-					if (x == 0) {
-						if (auto_morph == true) {
-							this.monome.led(x, y, 1, this.index);
-						} else {
-							this.monome.led(x, y, 0, this.index);
-						}
-					} else if (x > 0 && x < 5) {
-						this.monome.led(x, y, fx_morph[x-1], this.index);
-					} else {
-						this.monome.led(x, y, 0, this.index);
-					}
-					// everything else should be off
-				} else {
-					this.monome.led(x, y, 0, this.index);
-				}
-			}
-		}
 	}
 
 	/* (non-Javadoc)
@@ -507,6 +241,429 @@ public class MachineDrumInterfacePage implements Page {
 	
 	public boolean redrawOnAbletonEvent() {
 		return false;
+	}
+	
+	public void led(int x, int y, int value, int index) {
+		LoadedModule module = loadedModules.get(index);
+		this.monome.led(x + module.xOffset, y + module.yOffset, value, this.index);
+	}
+	
+	public void redrawMonome() {
+		for (int i = 0; i < this.loadedModules.size(); i++) {
+			loadedModules.get(i).module.redrawMonome();
+		}
+	}
+
+	public void handlePress(int x, int y, int value) {
+		for (int i = 0; i < this.loadedModules.size(); i++) {
+			LoadedModule lm = loadedModules.get(i);
+			MachineDrumModule module = lm.module;
+			module.handlePress(x - lm.xOffset, y - lm.yOffset, value);
+		}
+	}
+	
+	public void handleTick() {
+		for (int i = 0; i < this.loadedModules.size(); i++) {
+			loadedModules.get(i).module.handleTick();
+		}
+	}
+	
+	public class LoadedModule {
+		MachineDrumModule module;
+		int xOffset;
+		int yOffset;
+		
+		public LoadedModule(MachineDrumModule module, int xOffset, int yOffset) {
+			this.module = module;
+			this.xOffset = xOffset;
+			this.yOffset = yOffset;
+		}
+
+		public MachineDrumModule getModule() {
+			return module;
+		}
+
+		public void setModule(MachineDrumModule module) {
+			this.module = module;
+		}
+
+		public int getXOffset() {
+			return xOffset;
+		}
+
+		public void setXOffset(int offset) {
+			xOffset = offset;
+		}
+
+		public int getYOffset() {
+			return yOffset;
+		}
+
+		public void setYOffset(int offset) {
+			yOffset = offset;
+		}
+	}
+	
+	public interface MachineDrumModule {
+		public void handlePress(int x, int y, int value);	
+		public void handleTick();
+		public void redrawMonome();
+	}
+	
+	public class MDMLFOManager implements MachineDrumModule {
+		MachineDrumInterfacePage page;
+		int index;
+		
+		int lfo;
+		int[] paramNum = new int[16];
+		int[] paramValue = new int[16];
+		
+		public MDMLFOManager(MachineDrumInterfacePage page, int index) {
+			this.page = page;
+			this.index = index;
+		}
+
+		public void handlePress(int x, int y, int value) {
+			if (value == 1) {
+				boolean sendLfoChange = false;
+				if (y < 2) {
+					this.lfo = x + (y * 8);
+				} else if (y < 3) {
+					this.paramNum[this.lfo] = x;
+					sendLfoChange = true;
+				} else {
+					this.paramValue[this.lfo] = (x + (y * 8)) * 4;
+					if (this.paramValue[this.lfo] > 127) {
+						this.paramValue[this.lfo] = 127;
+					}
+					sendLfoChange = true;
+				}
+				
+				if (sendLfoChange) {
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							machinedrum.sendAssignLFO(recv, this.lfo, paramNum[this.lfo], paramValue[this.lfo]);
+						}
+					}
+				}
+			}
+			
+		}
+
+		public void handleTick() {
+		}
+
+		public void redrawMonome() {
+			for (int x = 0; x < 8; x++) {
+				for (int y = 0; y < 8; y++) {
+					if (y < 2) {
+						int checkLfo = x + (y * 8);
+						if (checkLfo == lfo) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y < 3) {
+						if (x == this.paramNum[lfo]) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else {
+						int checkVal = (x + (y * 8)) * 4;
+						if (checkVal == this.paramValue[lfo]) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					}
+				}
+			}
+		}
+				
+	}
+	
+	public class MDMKitRandomizer implements MachineDrumModule {
+		MachineDrumInterfacePage page;
+		int index;
+		
+		/**
+		 * morph_machines[machine_number] - 1 if machine_number machine should be sent random parameter changes
+		 */
+		private int[] morph_machines = new int[16];
+
+		/**
+		 * morph_params[param_number] - 1 if the param_number paramater should be sent random changes 
+		 */
+		private int[] morph_params = new int[24];
+
+		/**
+		 * fx_morph[fx_number] - 1 if the fx_number fx unit should be sent random parameter changes, [0] = echo, [1] = gate, [2] = eq, [3] = compressor
+		 */
+		private int[] fx_morph = new int[4];
+
+		/**
+		 * true randomly enables and disables morph_machines and morph_params
+		 */
+		private boolean auto_morph = false;
+		
+		public MDMKitRandomizer(MachineDrumInterfacePage page, int index) {
+			this.page = page;
+			this.index = index;
+		}
+
+		public void handlePress(int x, int y, int value) {
+			// only act on press events
+			if (value == 1) {
+				// top two rows, toggle morph_machines on and off
+				if (y < 2) {
+					int machine_num = getMachineNum(x, y);
+					if (morph_machines[machine_num] == 1) {
+						morph_machines[machine_num] = 0;
+						this.page.led(x, y, 0, this.index);
+					} else {
+						morph_machines[machine_num] = 1;
+						this.page.led(x, y, 1, this.index);
+					}
+					// next 3 rows, toggle morph_params on and off
+				} else if (y < 5) {
+					int param_num = getMachineNum(x, y - 2);
+					if (morph_params[param_num] == 1) {
+						morph_params[param_num] = 0;
+						this.page.led(x, y, 0, this.index);
+					} else {
+						morph_params[param_num] = 1;
+						this.page.led(x, y, 1, this.index);
+					}
+					// 6th row, initialize new kits
+				} else if (y == 5) {
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							machinedrum.initKit(recv, x);
+						}
+					}
+					// 7th row, kit load and save
+				} else if (y == 6) {
+					if (x < 4) {
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendKitLoad(recv, x);
+							}
+						}
+					} else {
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendKitSave(recv, x - 4);
+							}
+						}
+					}
+					// last row, auto morph toggle and fx morph toggles
+				} else if (y == 7) {
+					if (x == 0) {
+						if (auto_morph == false) {
+							auto_morph = true;
+							this.page.led(x, y, 1, this.index);
+						} else {
+							auto_morph = false;
+							this.page.led(x, y, 0, this.index);
+						}
+					} else if (x > 0 && x < 5) {
+						if (fx_morph[x-1] == 0) {
+							fx_morph[x-1] = 1;
+						} else {
+							fx_morph[x-1] = 0;
+						}
+						this.page.led(x, y, fx_morph[x-1], this.index);
+					}
+				}
+			}
+		}
+
+		
+		public void handleTick() {
+			// count from 0 to 5 and reset
+			if (ticks == 6) {
+				ticks = 0;
+			}
+
+			// turn off and on random machines/params to morph
+			if (auto_morph == true && generator.nextInt(page.speed) == 1) {
+				int machine_num = generator.nextInt(12) + 2;
+				int param_num = generator.nextInt(24);
+				int x_m = machine_num % 8;
+				int y_m = machine_num / 8;
+				int x_p = param_num % 8;
+				int y_p = (param_num / 8) + 2;
+
+				if (morph_machines[machine_num] == 1) {
+					morph_machines[machine_num] = 0;
+					this.page.led(x_m, y_m, 0, this.index);
+				} else {
+					morph_machines[machine_num] = 1;
+					this.page.led(x_m, y_m, 1, this.index);
+				}
+				if (morph_params[param_num] == 1) {
+					morph_params[param_num] = 0;
+					this.page.led(x_p, y_p, 0, this.index);
+				} else {
+					morph_params[param_num] = 1;
+					this.page.led(x_p, y_p, 1, this.index);
+				}
+			}
+
+			// send a param change to the echo effect
+			if (fx_morph[0] == 1 && ticks == 0) {
+				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				for (int i = 0; i < midiOutOptions.length; i++) {
+					if (midiOutOptions[i] == null) {
+						continue;
+					}
+					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+					if (recv != null) {
+						machinedrum.sendFxParam(recv, "echo", generator.nextInt(8), generator.nextInt(127));
+					}
+				}
+			}
+
+			// send a param change to the gate effect
+			if (fx_morph[1] == 1 && ticks == 1) {
+				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				for (int i = 0; i < midiOutOptions.length; i++) {
+					if (midiOutOptions[i] == null) {
+						continue;
+					}
+					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+					if (recv != null) {
+						machinedrum.sendFxParam(recv, "gate", generator.nextInt(8), generator.nextInt(127));
+					}
+				}
+			}
+
+			// send a param change to the eq effect
+			if (fx_morph[2] == 1 && ticks == 2) {
+				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				for (int i = 0; i < midiOutOptions.length; i++) {
+					if (midiOutOptions[i] == null) {
+						continue;
+					}
+					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+					if (recv != null) {
+						machinedrum.sendFxParam(recv, "eq", generator.nextInt(8), generator.nextInt(127));
+					}
+				}
+			}
+
+			// send a param change to the compressor effect
+			if (fx_morph[3] == 1 && ticks == 3) {
+				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				for (int i = 0; i < midiOutOptions.length; i++) {
+					if (midiOutOptions[i] == null) {
+						continue;
+					}
+					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+					if (recv != null) {
+						machinedrum.sendFxParam(recv, "compressor", generator.nextInt(8), generator.nextInt(127));
+					}
+				}
+			}
+
+			// send random parameter changes
+
+			// for each machine
+			for (int x = 0; x < 16; x++) {
+				// divide out the sends so we don't saturate the midi channel
+				if (ticks == 0 && (x >  2)) { continue; }
+				else if (ticks == 1 && (x >  5 || x <  3)) { continue; }
+				else if (ticks == 2 && (x >  8 || x <  6)) { continue; }
+				else if (ticks == 3 && (x > 11 || x <  9)) { continue; }
+				else if (ticks == 4 && (x > 14 || x < 12)) { continue; }
+				else if (ticks == 5 && (x > 16 || x < 15)) { continue; }
+				// for each morph parameter
+				for (int y = 0; y < 24; y++) {
+					// if the machine morph and the param morph are on and we pass a random check, send
+					// a random param change
+					if (morph_machines[x] == 1) {
+						if (morph_params[y] == 1) {
+							if (generator.nextInt(page.speed) == 1) {
+								String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+								for (int i = 0; i < midiOutOptions.length; i++) {
+									if (midiOutOptions[i] == null) {
+										continue;
+									}
+									Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+									if (recv != null) {
+										machinedrum.sendRandomParamChange(recv, x, y);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			ticks++;
+		}
+
+
+		public void redrawMonome() {
+			for (int x = 0; x < 8; x++) {
+				for (int y = 0; y < 8; y++) {
+					// redraw the morph machine state (top 2 rows)
+					if (y < 2) {
+						int machine_num = getMachineNum(x, y);
+						if (morph_machines[machine_num] == 1) {
+							this.page.led(x, y, 1, this.index);
+						} else {
+							this.page.led(x, y, 0, this.index);
+						}
+						// redraw the morph param state (next 3 rows)
+					} else if (y < 5) {
+						int param_num = getMachineNum(x, y - 2);
+						if (morph_params[param_num] == 1) {
+							this.page.led(x, y, 1, this.index);
+						} else {
+							this.page.led(x, y, 0, this.index);
+						}
+						// redraw the bottom row (auto morph and fx toggles)
+					} else if (y == 7) {
+						if (x == 0) {
+							if (auto_morph == true) {
+								this.page.led(x, y, 1, this.index);
+							} else {
+								this.page.led(x, y, 0, this.index);
+							}
+						} else if (x > 0 && x < 5) {
+							this.page.led(x, y, fx_morph[x-1], this.index);
+						} else {
+							this.page.led(x, y, 0, this.index);
+						}
+						// everything else should be off
+					} else {
+						this.page.led(x, y, 0, this.index);
+					}
+				}
+			}
+		}
+		
 	}
 
 }

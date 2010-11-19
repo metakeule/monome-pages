@@ -387,18 +387,18 @@ public class AbletonSceneLauncherPage implements Page {
 					if (clip != null) {
 						if (clip.getState() == AbletonClip.STATE_PLAYING) {
 							if (tickNum % 24 == 0) {
-								this.monome.led(x, y, 1, this.index);
+								this.monome.led(x + 1, y, 1, this.index);
 							}
 							if ((tickNum + 12) % 24 == 0) {
-								this.monome.led(x, y, 0, this.index);
+								this.monome.led(x + 1, y, 0, this.index);
 							}
 						}
 						if (clip.getState() == AbletonClip.STATE_TRIGGERED) {
 							if (tickNum % 12 == 0) {
-								this.monome.led(x, y, 1, this.index);
+								this.monome.led(x + 1, y, 1, this.index);
 							}
 							if ((tickNum + 6) % 12 == 0) {
-								this.monome.led(x, y, 0, this.index);
+								this.monome.led(x + 1, y, 0, this.index);
 							}
 						}
 					}

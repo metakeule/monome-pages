@@ -152,6 +152,45 @@ public class MachineDrum {
 			e.printStackTrace();
 		}
 	}
+	
+	public void sendAssignLFO(Receiver output_device, int lfoNum, int paramNum, int paramValue) {
+		if (output_device == null) {
+			return;
+		}
+		if (lfoNum < 0 || lfoNum > 15) {
+			return;
+		}
+		if (paramNum < 0 || paramNum > 7) {
+			return;
+		}
+		if (paramValue < 0 || paramValue > 127) {
+			return;
+		}
+		
+		byte b1 = (byte) ((lfoNum << 3) + paramNum);
+		byte b2 = (byte) paramValue;
+		
+		SysexMessage msg = new SysexMessage();
+		byte[] data = new byte[12];
+		data[0] = (byte) 0xF0;
+		data[1] = (byte) 0x00;
+		data[2] = (byte) 0x20;
+		data[3] = (byte) 0x3c;
+		data[4] = (byte) 0x02;
+		data[5] = (byte) 0x00;
+		data[6] = b1;
+		data[7] = b2;
+		data[8] = (byte) 0x5b;
+		data[9] = (byte) 0xF7;
+		data[10] = (byte) 0x00;
+		data[11] = (byte) 0x02;
+		try {
+			msg.setMessage(data, 12);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Sends a request to set the value of a global fx unit parameter. 

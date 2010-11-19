@@ -204,10 +204,6 @@ public class MIDIFadersPage implements Page {
 	 */
 	public void send(MidiMessage message, long timeStamp) {
 		byte[] msg = message.getMessage();
-		for (int i = 0; i < msg.length; i++) {
-			System.out.print(msg[i] + " | ");
-		}
-		System.out.println();
 		int cc = 0;
 		int val = 0;
 		if (msg.length != 3) {
