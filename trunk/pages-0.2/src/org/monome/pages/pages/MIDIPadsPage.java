@@ -174,7 +174,7 @@ public class MIDIPadsPage implements Page {
 				}
 				ShortMessage midiMsg = new ShortMessage();
 				midiMsg.setMessage(ShortMessage.NOTE_ON, midiChannel, midiNote, velocity);
-				monome.sendMidi(midiMsg, index);
+				monome.sendMidi(midiMsg, pageIndex);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			} catch (InvalidMidiDataException e) {

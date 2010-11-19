@@ -1,12 +1,10 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
 import javax.swing.JPanel;
 
 import org.monome.pages.pages.MIDIPadsPage;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
-import java.awt.Dimension;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 

@@ -13,8 +13,6 @@ import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.AbletonClipSkipperGUI;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * The Template page, a good starting point for creating your own pages.  
