@@ -10,7 +10,6 @@ import javax.swing.JTextField;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
-import java.awt.Dimension;
 import javax.swing.JCheckBox;
 
 public class AbletonSetupFrame extends JInternalFrame {

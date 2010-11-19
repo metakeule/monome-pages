@@ -12,8 +12,6 @@ import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.AbletonSceneLauncherGUI;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * The Ableton Clip Launcher page.  Usage information is available at:

@@ -11,8 +11,6 @@ import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;

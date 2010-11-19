@@ -24,7 +24,6 @@ package org.monome.pages.configuration;
 
 import java.util.ArrayList;
 
-import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -36,10 +35,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.gui.MonomeDisplayFrame;
 import org.monome.pages.gui.MonomeFrame;
 
-import org.monome.pages.pages.AbletonClipLauncherPage;
-import org.monome.pages.pages.AbletonClipSkipperPage;
-import org.monome.pages.pages.AbletonLiveLooperPage;
-import org.monome.pages.pages.AbletonSceneLauncherPage;
 import org.monome.pages.pages.Page;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
