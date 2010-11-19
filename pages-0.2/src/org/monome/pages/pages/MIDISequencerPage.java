@@ -1055,7 +1055,7 @@ public class MIDISequencerPage implements Page {
 	public void configure(Element pageElement) {
 		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
 		this.setHoldMode(this.monome.readConfigValue(pageElement, "holdmode"));
-		this.setBankSize(Integer.parseInt(this.monome.readConfigValue(pageElement, "holdmode")));
+		this.setBankSize(Integer.parseInt(this.monome.readConfigValue(pageElement, "banksize")));
 		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
 		this.setNoteValue(1, Integer.parseInt(this.monome.readConfigValue(pageElement, "row")));
 		this.setSequence(1, this.monome.readConfigValue(pageElement, "sequence"));

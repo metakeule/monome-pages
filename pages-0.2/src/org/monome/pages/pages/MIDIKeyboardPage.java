@@ -841,6 +841,24 @@ public class MIDIKeyboardPage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
+		if (message instanceof ShortMessage) {
+			ShortMessage msg = (ShortMessage) message;
+			int d1 = msg.getData1();
+			int d2 = msg.getData2();
+			for (int x = 0; x < this.monome.sizeX - 2; x++) {
+				for (int y = 0; y < this.monome.sizeY - 1; y++) {
+					int note_num = this.getNoteNumber(x) + (this.octave[y] * 24);
+					if (note_num == d1) {
+						if (d2 == 0) {
+							this.monome.led(x, y, 0, this.index);
+						} else {
+							this.monome.led(x, y, 1, this.index);
+						}
+					}
+				}
+			}
+		}
+		
 		return;
 	}
 

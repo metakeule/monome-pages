@@ -33,7 +33,6 @@ public class AbletonState {
 	}
 
 	public void setOverdub(int overdub) {
-		System.out.println("Ableton State: set overdub scene to " + overdub);
 		this.overdub = overdub;
 	}
 
@@ -42,12 +41,10 @@ public class AbletonState {
 	}
 	
 	public void setTempo(float tempo) {
-		System.out.println("Ableton State: set tempo to " + tempo);
 		this.tempo = tempo;
 	}
 
 	public void setSelectedScene(int selectedScene) {
-		System.out.println("Ableton State: set selected scene to " + selectedScene);
 		this.selectedScene = selectedScene;
 	}
 
@@ -65,6 +62,4 @@ public class AbletonState {
 		tracks.put(key, track);
 		return track;
 	}
-	
-	
 }

@@ -357,6 +357,11 @@ public class MonomeConfiguration {
 		// if this is the bottom right button and we let go turn it off
 		// and send the value == 1 press along to the page
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0) {
+			ArrayList<Integer> args = new ArrayList<Integer>();
+			args.add(this.sizeX - 1);
+			args.add(0);
+			args.add(0);
+			this.led_row(args, -1);
 			this.pageChangeMode = 0;
 			if (this.pageChanged == false) {
 				if (this.pages.get(curPage) != null) {
