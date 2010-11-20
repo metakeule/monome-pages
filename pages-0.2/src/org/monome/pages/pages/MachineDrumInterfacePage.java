@@ -6,6 +6,7 @@ import java.util.Random;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
+import javax.sound.midi.SysexMessage;
 import javax.swing.JPanel;
 
 //import org.monome.pages.configuration.ADCOptions;
@@ -54,11 +55,6 @@ public class MachineDrumInterfacePage implements Page {
 	private MachineDrum machinedrum;
 
 	/**
-	 * A counter for MIDI clock sync ticks 
-	 */
-	private int ticks;
-
-	/**
 	 * How often random param changes are sent. 
 	 */
 	private int speed = 100;
@@ -85,7 +81,10 @@ public class MachineDrumInterfacePage implements Page {
 		this.index = index;
 		this.generator = new Random();
 		this.loadedModules = new ArrayList<LoadedModule>();
-		this.loadedModules.add(new LoadedModule(new MDMKitRandomizer(this, 0), 0, 0));
+		this.loadedModules.add(new LoadedModule(new MDMPatternManager(this, 0), 0, 0));
+		this.loadedModules.add(new LoadedModule(new MDMKitRandomizer(this, 1), 8, 0));
+		this.loadedModules.add(new LoadedModule(new MDMKitEditor(this, 2), 0, 8));
+		this.loadedModules.add(new LoadedModule(new MDMLFOManager(this, 3), 8, 8));
 		gui = new MachineDrumInterfaceGUI(this);
 	}
 
@@ -122,14 +121,24 @@ public class MachineDrumInterfacePage implements Page {
 	 * @see org.monome.pages.Page#handleReset()
 	 */
 	public void handleReset() {
-		// reset ticks to 0 when clock is reset
-		ticks = 0;
+		for (int i = 0; i < this.loadedModules.size(); i++) {
+			loadedModules.get(i).module.handleReset();
+		}
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
+		if (message instanceof SysexMessage) {
+			SysexMessage msg = (SysexMessage) message;
+			System.out.print("Sysex received: '" + msg.getData());
+			byte[] data = msg.getData();
+			for (int i = 0; i < data.length; i++) {
+				System.out.print("" + (int) data[i]);
+			}
+			System.out.println("'");
+		}
 		if (message instanceof ShortMessage) {
 			ShortMessage shortMessage = (ShortMessage) message;
 			switch (shortMessage.getCommand()) {
@@ -255,8 +264,11 @@ public class MachineDrumInterfacePage implements Page {
 	public void handlePress(int x, int y, int value) {
 		for (int i = 0; i < this.loadedModules.size(); i++) {
 			LoadedModule lm = loadedModules.get(i);
-			MachineDrumModule module = lm.module;
-			module.handlePress(x - lm.xOffset, y - lm.yOffset, value);
+			if (x >= lm.xOffset && y >= lm.yOffset &&
+				x < lm.xOffset + 8 && y < lm.yOffset + 8) {
+					MachineDrumModule module = lm.module;
+					module.handlePress(x - lm.xOffset, y - lm.yOffset, value);			
+			}
 		}
 	}
 	
@@ -305,6 +317,7 @@ public class MachineDrumInterfacePage implements Page {
 	public interface MachineDrumModule {
 		public void handlePress(int x, int y, int value);	
 		public void handleTick();
+		public void handleReset();
 		public void redrawMonome();
 	}
 	
@@ -314,25 +327,28 @@ public class MachineDrumInterfacePage implements Page {
 		
 		int lfo;
 		int[] paramNum = new int[16];
-		int[] paramValue = new int[16];
+		int[][] paramValue = new int[16][8];
 		
 		public MDMLFOManager(MachineDrumInterfacePage page, int index) {
 			this.page = page;
 			this.index = index;
+			for (int i = 0; i < 16; i++) {
+				paramValue[i][0] = i;
+			}
 		}
 
 		public void handlePress(int x, int y, int value) {
+			System.out.println("LFO handlePress: " + x + ", " + y + ", " + value);
 			if (value == 1) {
 				boolean sendLfoChange = false;
 				if (y < 2) {
 					this.lfo = x + (y * 8);
 				} else if (y < 3) {
 					this.paramNum[this.lfo] = x;
-					sendLfoChange = true;
 				} else {
-					this.paramValue[this.lfo] = (x + (y * 8)) * 4;
-					if (this.paramValue[this.lfo] > 127) {
-						this.paramValue[this.lfo] = 127;
+					this.paramValue[this.lfo][this.paramNum[this.lfo]] = (x + ((y - 3) * 8));
+					if (this.paramValue[this.lfo][this.paramNum[this.lfo]] > 127) {
+						this.paramValue[this.lfo][this.paramNum[this.lfo]] = 127;
 					}
 					sendLfoChange = true;
 				}
@@ -345,12 +361,37 @@ public class MachineDrumInterfacePage implements Page {
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 						if (recv != null) {
-							machinedrum.sendAssignLFO(recv, this.lfo, paramNum[this.lfo], paramValue[this.lfo]);
+							System.out.println("sendAssignLFO(recv, " + this.lfo + ", " + this.paramNum[this.lfo] + ", " + this.paramValue[this.lfo]);
+							int sendVal = paramValue[this.lfo][this.paramNum[this.lfo]];
+							// track num 0-15
+							if (paramNum[this.lfo] == 0) {
+								sendVal = sendVal % 16;
+							}
+							// track param 0-23
+							if (paramNum[this.lfo] == 1) {
+								sendVal = sendVal % 24;
+							}
+							// waveshapes 0-5
+							if (paramNum[this.lfo] == 2 || paramNum[this.lfo] == 3) {
+								sendVal = sendVal % 6;
+							}
+							// update 0-2
+							if (paramNum[this.lfo] == 4) {
+								sendVal = sendVal % 3;
+							}
+							// speed, depth, shmix 0-127
+							if (paramNum[this.lfo] > 4) {
+								sendVal = (int)((double) sendVal * 3.2);
+								if (sendVal > 127) {
+									sendVal = 127;
+								}
+							}
+							machinedrum.sendAssignLFO(recv, this.lfo, paramNum[this.lfo], sendVal);
 						}
 					}
 				}
+				this.redrawMonome();
 			}
-			
 		}
 
 		public void handleTick() {
@@ -373,8 +414,8 @@ public class MachineDrumInterfacePage implements Page {
 							this.page.led(x, y, 0, index);
 						}
 					} else {
-						int checkVal = (x + (y * 8)) * 4;
-						if (checkVal == this.paramValue[lfo]) {
+						int checkVal = (x + ((y - 3) * 8));
+						if (checkVal == this.paramValue[lfo][this.paramNum[lfo]]) {
 							this.page.led(x, y, 1, index);
 						} else {
 							this.page.led(x, y, 0, index);
@@ -383,12 +424,487 @@ public class MachineDrumInterfacePage implements Page {
 				}
 			}
 		}
-				
+
+		public void handleReset() {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	public class MDMKitEditor implements MachineDrumModule {
+		MachineDrumInterfacePage page;
+		int index;
+
+		int curMachine;
+		int curParam;
+		int[][] paramValues = new int[16][24];
+		int incDecVal = 1;
+		
+		public MDMKitEditor(MachineDrumInterfacePage page, int index) {
+			this.page = page;
+			this.index = index;
+			for (int m = 0; m < 16; m++) {
+				for (int p = 0; p < 24; p++) {
+					paramValues[m][p] = 63;
+				}
+			}
+		}
+
+		public void handlePress(int x, int y, int value) {
+			if (value == 1) {
+				if (y < 2) {
+					curMachine = x + (y * 8);
+				} else if (y < 5) {
+					curParam = x + ((y - 2) * 8);
+				} else if (y == 5) {
+					int sendVal = x * 18;
+					if (sendVal > 127) {
+						sendVal = 127;
+					}
+					paramValues[curMachine][curParam] = sendVal;
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							machinedrum.sendParamChange(recv, curMachine, curParam, sendVal);
+						}
+					}
+				} else if (y == 6) {
+					if (x < 4) {
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendKitLoad(recv, x);
+								machinedrum.requestKit(recv, x);
+							}
+						}
+					} else {
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendKitSave(recv, x - 4);
+							}
+						}
+					}
+				} else if (y == 7) {
+					if (x == 0) {
+						paramValues[curMachine][curParam] -= incDecVal;
+						if (paramValues[curMachine][curParam] < 0) {
+							paramValues[curMachine][curParam] = 0;
+						}
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendParamChange(recv, curMachine, curParam, paramValues[curMachine][curParam]);
+							}
+						}
+					} else if (x == 1) {
+						paramValues[curMachine][curParam] += incDecVal;
+						if (paramValues[curMachine][curParam] > 127) {
+							paramValues[curMachine][curParam] = 127;
+						}
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendParamChange(recv, curMachine, curParam, paramValues[curMachine][curParam]);
+							}
+						}
+					} else if (x == 2) {
+						if (incDecVal == 1) {
+							incDecVal = 3;
+						} else {
+							incDecVal = 1;
+						}
+					} else if (x == 3) {
+						paramValues[curMachine][curParam] = 63;
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendParamChange(recv, curMachine, curParam, paramValues[curMachine][curParam]);
+							}
+						}						
+					} else if (x == 4) {
+						String[] choices = machinedrum.getMachineChoices(curMachine);
+						int choice = machinedrum.getMachine(choices[generator.nextInt(choices.length)]);
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendAssignMachine(recv, curMachine, choice);
+							}
+						}						
+					} else if (x == 5) {
+						int choice = machinedrum.getRandomMachineNumber();
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendAssignMachine(recv, curMachine, choice);
+							}
+						}						
+					} else if (x == 6) {
+						for (int p = 0; p < 24; p++) {
+							int val = generator.nextInt(128);
+							paramValues[curMachine][p] = val;
+							String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+							for (int i = 0; i < midiOutOptions.length; i++) {
+								if (midiOutOptions[i] == null) {
+									continue;
+								}
+								Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+								if (recv != null) {
+									machinedrum.sendParamChange(recv, curMachine, p, val);
+								}
+							}						
+						}
+					} else if (x == 7) {
+						int val = generator.nextInt(128);
+						paramValues[curMachine][curParam] = val;
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.sendParamChange(recv, curMachine, curParam, val);
+							}
+						}						
+					}
+				}
+				redrawMonome();
+			}
+		}
+
+		public void handleTick() {
+			
+		}
+
+		public void redrawMonome() {
+			for (int x = 0; x < 8; x++) {
+				for (int y = 0; y < 8; y++) {
+					if (y < 2) {
+						int check = x + (y * 8);
+						if (check == curMachine) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y < 5) {
+						int check = x + ((y - 2) * 8);
+						if (check == curParam) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y == 5) {
+						int upTo = this.paramValues[curMachine][curParam] / 18;
+						if (x <= upTo) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y == 7) {
+						if (x == 2) {
+							if (incDecVal == 3) {
+								this.page.led(x, y, 1, index);
+							} else {
+								this.page.led(x, y, 0, index);
+							}
+						}
+					} else {
+						this.page.led(x, y, 0, index);
+					}
+				}
+			}
+		}
+
+		public void handleReset() {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+	
+	public class MDMPatternManager implements MachineDrumModule {
+		MachineDrumInterfacePage page;
+		int index;
+		
+		int patBank;
+		int pattern;
+		int songBank;
+		int song;
+		int extendedMode = 0;
+		int songMode = 0;
+		int global = 0;
+		
+		int seqOn = 0;
+		int seqPos = 0;
+		int[] seqPatterns = {0, 1, 2, 3, 4, 5, 6, 7};
+		int[] muteState = new int[16];
+		boolean playPatternNow = false;
+		int tickNum = 0;
+		
+		public MDMPatternManager(MachineDrumInterfacePage page, int index) {
+			this.page = page;
+			this.index = index;
+		}
+		
+		public void handlePress(int x, int y, int value) {
+			if (value == 1) {
+				if (y == 0) {
+					patBank = x;
+				} else if (y < 3) {
+					pattern = x + ((y - 1) * 8);
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					this.seqPatterns[seqPos] = pattern;
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							machinedrum.setPattern(recv, (16 * patBank) + pattern);
+						}
+					}
+				} else if (y == 3) {
+					seqPos = x;
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							machinedrum.setPattern(recv, (16 * patBank) + this.seqPatterns[seqPos]);
+						}
+					}
+					this.playPatternNow = true;
+				} else if (y < 6) {
+					int track = x + ((y - 4) * 8);
+					if (this.muteState[track] == 0) {
+						this.muteState[track] = 1;
+					} else {
+						this.muteState[track] = 0;
+					}
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							machinedrum.setMute(recv, track, muteState[track]);
+						}
+					}
+				} else if (y == 6) {
+					song = x;
+					int songNum = song * songBank;
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							machinedrum.setSong(recv, songNum);
+						}
+					}
+				} else if (y == 7) {
+					if (x < 4) {
+						songBank = x;
+					} else if (x == 4) {
+						if (extendedMode == 0) {
+							extendedMode = 1;
+						} else {
+							extendedMode = 0;
+						}
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.setExtendedMode(recv, extendedMode);
+							}
+						}
+					} else if (x == 5) {
+						if (songMode == 0) {
+							songMode = 1;
+						} else {
+							songMode = 0;
+						}
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.setSongMode(recv, songMode);
+							}
+						}
+					} else if (x == 6) {
+						if (global == 0) {
+							global = 1;
+						} else {
+							global = 0;
+						}
+						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						for (int i = 0; i < midiOutOptions.length; i++) {
+							if (midiOutOptions[i] == null) {
+								continue;
+							}
+							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+							if (recv != null) {
+								machinedrum.setGlobal(recv, global);
+							}
+						}
+					} else if (x == 7) {
+						if (seqOn == 0) {
+							seqOn = 1;
+						} else {
+							seqOn = 0;
+						}
+					}
+				}
+				redrawMonome();
+			}
+		}
+
+		public void handleTick() {				
+			if (tickNum == 0 || this.playPatternNow) {
+				if (seqOn == 1) {
+					pattern = this.seqPatterns[seqPos];
+					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					for (int i = 0; i < midiOutOptions.length; i++) {
+						if (midiOutOptions[i] == null) {
+							continue;
+						}
+						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+						if (recv != null) {
+							int nextSeqPos = seqPos + 1;
+							if (nextSeqPos == 8) {
+								nextSeqPos = 0;
+							}
+							machinedrum.setPattern(recv, this.seqPatterns[nextSeqPos] + (16 * patBank));
+						}
+					}
+					redrawMonome();
+				}
+			}
+			
+			tickNum++;
+			if (tickNum == 96) {
+				tickNum = 0;
+				seqPos++;
+				if (seqPos > 7) {
+					seqPos = 0;
+				}
+				redrawMonome();
+			}
+		}
+		
+		public void handleReset() {
+			tickNum = 0;
+			seqPos = 0;
+			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+			for (int i = 0; i < midiOutOptions.length; i++) {
+				if (midiOutOptions[i] == null) {
+					continue;
+				}
+				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
+				if (recv != null) {
+					machinedrum.setPattern(recv, this.seqPatterns[0]);
+				}
+			}
+			redrawMonome();
+		}
+
+		public void redrawMonome() {
+			for (int x = 0; x < 8; x++) {
+				for (int y = 0; y < 8; y++) {
+					if (y == 0) {
+						if (patBank == x) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y < 3) {
+						if (pattern == x + ((y - 1) * 8)) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y == 3) {
+						if (seqPos == x) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y < 6) {
+						this.page.led(x, y, muteState[x + ((y - 4) * 8)], index);
+					} else if (y == 6) {
+						if (song == x) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					} else if (y == 7) {
+						if (x == songBank) {
+							this.page.led(x, y, 1, index);
+						} else if (x == 4 && extendedMode == 1) {
+							this.page.led(x, y, 1, index);
+						} else if (x == 5 && songMode == 1) {
+							this.page.led(x, y, 1, index);
+						} else if (x == 6 && global == 1) {
+							this.page.led(x, y, 1, index);
+						} else if (x == 7 && seqOn == 1) {
+							this.page.led(x, y, 1, index);
+						} else {
+							this.page.led(x, y, 0, index);
+						}
+					}
+				}
+			}
+		}
+		
 	}
 	
 	public class MDMKitRandomizer implements MachineDrumModule {
 		MachineDrumInterfacePage page;
 		int index;
+		
+		int ticks;
 		
 		/**
 		 * morph_machines[machine_number] - 1 if machine_number machine should be sent random parameter changes
@@ -440,7 +956,7 @@ public class MachineDrumInterfacePage implements Page {
 					}
 					// 6th row, initialize new kits
 				} else if (y == 5) {
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -453,7 +969,7 @@ public class MachineDrumInterfacePage implements Page {
 					// 7th row, kit load and save
 				} else if (y == 6) {
 					if (x < 4) {
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -461,10 +977,11 @@ public class MachineDrumInterfacePage implements Page {
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 							if (recv != null) {
 								machinedrum.sendKitLoad(recv, x);
+								machinedrum.requestKit(recv, x);
 							}
 						}
 					} else {
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -483,7 +1000,13 @@ public class MachineDrumInterfacePage implements Page {
 							this.page.led(x, y, 1, this.index);
 						} else {
 							auto_morph = false;
-							this.page.led(x, y, 0, this.index);
+							for (int i = 0; i < 16; i++) {
+								morph_machines[i] = 0;
+							}
+							for (int i = 0; i < 24; i++) {
+								morph_params[i] = 0;
+							}
+							this.redrawMonome();
 						}
 					} else if (x > 0 && x < 5) {
 						if (fx_morph[x-1] == 0) {
@@ -531,7 +1054,7 @@ public class MachineDrumInterfacePage implements Page {
 
 			// send a param change to the echo effect
 			if (fx_morph[0] == 1 && ticks == 0) {
-				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
 						continue;
@@ -545,7 +1068,7 @@ public class MachineDrumInterfacePage implements Page {
 
 			// send a param change to the gate effect
 			if (fx_morph[1] == 1 && ticks == 1) {
-				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
 						continue;
@@ -559,7 +1082,7 @@ public class MachineDrumInterfacePage implements Page {
 
 			// send a param change to the eq effect
 			if (fx_morph[2] == 1 && ticks == 2) {
-				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
 						continue;
@@ -573,7 +1096,7 @@ public class MachineDrumInterfacePage implements Page {
 
 			// send a param change to the compressor effect
 			if (fx_morph[3] == 1 && ticks == 3) {
-				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+				String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
 						continue;
@@ -603,7 +1126,7 @@ public class MachineDrumInterfacePage implements Page {
 					if (morph_machines[x] == 1) {
 						if (morph_params[y] == 1) {
 							if (generator.nextInt(page.speed) == 1) {
-								String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+								String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 								for (int i = 0; i < midiOutOptions.length; i++) {
 									if (midiOutOptions[i] == null) {
 										continue;
@@ -660,6 +1183,10 @@ public class MachineDrumInterfacePage implements Page {
 					}
 				}
 			}
+		}
+
+		public void handleReset() {
+			ticks = 0;
 		}
 		
 	}

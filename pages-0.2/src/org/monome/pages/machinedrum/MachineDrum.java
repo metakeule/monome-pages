@@ -31,6 +31,25 @@ public class MachineDrum {
 		ctrl_out = new ShortMessage();
 		generator = new Random();
 	}
+	
+	public void sendParamChange(Receiver output_device, int machine_number, int param_number, int value) {
+		if (output_device == null) {
+			return;
+		}
+
+		// see appendix of machinedrum manual
+		int midi_channel = (int) Math.floor(machine_number / 4);
+		int cc = (param_number + 16) + ((machine_number % 4) * 24);
+		if (cc >= 64) {
+			cc += 8;
+		}
+		try {
+			ctrl_out.setMessage(ShortMessage.CONTROL_CHANGE, midi_channel, cc, value);
+			output_device.send(ctrl_out, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Sends a random MIDI CC value from 0-127 to machine_number's param_number through the output_device.
@@ -70,6 +89,7 @@ public class MachineDrum {
 			return;
 		}
 
+		System.out.println("sendKitLoad(" + kit_number + ")");
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[9];
 		data[0] = (byte) 0xF0;
@@ -124,13 +144,13 @@ public class MachineDrum {
 	 * 
 	 * @param output_device The MIDI output to use
 	 * @param track The track number (0=BD, 1=SD, etc.)
-	 * @param machine The machine number to assign, see the MachineDrum manual's appendix
+	 * @param choice The machine number to assign, see the MachineDrum manual's appendix
 	 */
-	public void sendAssignMachine(Receiver output_device, int track, byte machine) {
+	public void sendAssignMachine(Receiver output_device, int track, int choice) {
 		if (output_device == null) {
 			return;
 		}
-		System.out.println("assigning machine " + track + " / " + machine);
+		System.out.println("assigning machine " + track + " / " + choice);
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[12];
 		data[0] = (byte) 0xF0;
@@ -141,7 +161,7 @@ public class MachineDrum {
 		data[5] = (byte) 0x00;
 		data[6] = (byte) 0x5b;
 		data[7] = (byte) (track);
-		data[8] = (byte) (machine);
+		data[8] = (byte) (choice);
 		data[9] = (byte) 0xF7;
 		data[10] = (byte) 0x00;
 		data[11] = (byte) 0x02;
@@ -171,21 +191,19 @@ public class MachineDrum {
 		byte b2 = (byte) paramValue;
 		
 		SysexMessage msg = new SysexMessage();
-		byte[] data = new byte[12];
+		byte[] data = new byte[10];
 		data[0] = (byte) 0xF0;
 		data[1] = (byte) 0x00;
 		data[2] = (byte) 0x20;
 		data[3] = (byte) 0x3c;
 		data[4] = (byte) 0x02;
 		data[5] = (byte) 0x00;
-		data[6] = b1;
-		data[7] = b2;
-		data[8] = (byte) 0x5b;
+		data[6] = (byte) 0x62;
+		data[7] = b1;
+		data[8] = b2;
 		data[9] = (byte) 0xF7;
-		data[10] = (byte) 0x00;
-		data[11] = (byte) 0x02;
 		try {
-			msg.setMessage(data, 12);
+			msg.setMessage(data, 10);
 			output_device.send(msg, -1);
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
@@ -234,6 +252,160 @@ public class MachineDrum {
 			e.printStackTrace();
 		}
 	}
+	
+	public void requestKit(Receiver output_device, int kitNum) {
+		if (output_device == null) {
+			return;
+		}
+
+		SysexMessage msg = new SysexMessage();
+		byte[] data = new byte[9];
+		data[0] = (byte) 0xF0;
+		data[1] = (byte) 0x00;
+		data[2] = (byte) 0x20;
+		data[3] = (byte) 0x3c;
+		data[4] = (byte) 0x02;
+		data[5] = (byte) 0x00;
+		data[6] = (byte) 0x53;
+		data[7] = (byte) kitNum;
+		data[8] = (byte) 0xF7;
+		try {
+			msg.setMessage(data, 9);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String[] getMachineChoices(int slot) {
+		String[] bd = {
+				"TRX-BD",
+				"TRX-B2",
+				"EFM-BD",
+				"P-I-BD",
+				"E12-BD"
+		};
+		String[] sd = {
+				"TRX-SD",
+				"EFM-SD",
+				"P-I-SD",
+				"E12-SD",
+				"E12-BR"
+		};
+		String[] ht = {
+				"TRX-XT",
+				"TRX-XC",
+				"EFM-XT",
+				"E12-HT",
+				"E12-LT",
+				"E12-BC",
+				"P-I-XT"
+		};
+		String[] mt = {
+				"TRX-XT",
+				"TRX-XC",
+				"EFM-XT",
+				"E12-HT",
+				"E12-LT",
+				"E12-BC",
+				"P-I-XT"
+		};
+		String[] lt = {
+				"TRX-XT",
+				"TRX-XC",
+				"EFM-XT",
+				"E12-HT",
+				"E12-LT",
+				"E12-BC",
+				"P-I-XT"
+		};
+		String[] cp = {
+				"TRX-CP",
+				"EFM-CP",
+				"E12-CP",
+				"E12-TA",
+				"E12-SH"
+		};
+
+		String[] rs = {
+				"TRX-RS",
+				"EFM-RS",
+				"E12-RS",
+				"E12-BR",
+				"E12-SH",
+				"P-I-RS"
+		};
+
+		String[] cb = {
+				"TRX-CB",
+				"TRX-CL",
+				"EFM-CB",
+				"E12-CB",
+				"E12-TR",
+				"P-I-ML"
+		};
+
+		String[] ch = {
+				"GND-NS",
+				"TRX-CH",
+				"EFM-HH",
+				"E12-CH",
+				"P-I-HH"
+		};
+
+		String[] oh = {
+				"P-I-ML",
+				"TRX-OH",
+				"EFM-HH",
+				"E12-OH",
+				"P-I-HH"
+		};
+
+		String[] rc = {
+				"TRX-CY",
+				"EFM-CY",
+				"P-I-RC",
+				"P-I-ML",
+				"E12-RC"
+		};
+
+		String[] cc = {
+				"TRX-CY",
+				"EFM-CY",
+				"P-I-CC",
+				"P-I-ML",
+				"E12-CC"
+		};
+
+		String[] m1 = {
+				"TRX-MA",
+				"TRX-CL",
+				"TRX-XC"
+		};
+
+		String[] m2 = {
+				"E12-TA",
+				"E12-BC",
+				"E12-TR"
+		};
+		
+		if (slot == 0) { return bd; }
+		if (slot == 1) { return sd; }
+		if (slot == 2) { return ht; }
+		if (slot == 3) { return mt; }
+		if (slot == 4) { return lt; }
+		if (slot == 5) { return cp; }
+		if (slot == 6) { return rs; }
+		if (slot == 7) { return cb; }
+		if (slot == 8) { return ch; }
+		if (slot == 9) { return oh; }
+		if (slot == 10) { return rc; }
+		if (slot == 11) { return cc; }
+		if (slot == 12) { return m1; }
+		if (slot == 13) { return m2; }
+		return ch;
+
+	}
 
 	/**
 	 * Sends a request to initialize a new drum kit.  This means initializing all tracks with machines randomly selected from a pool.
@@ -245,151 +417,15 @@ public class MachineDrum {
 		byte[] choice = new byte[16];
 		System.out.println("x is " + machinePool);
 		if (machinePool == 0) {
-			String[] bd = {
-					"TRX-BD",
-					"TRX-B2",
-					"EFM-BD",
-					"P-I-BD",
-					"E12-BD"
-			};
-
-			String[] sd = {
-					"TRX-SD",
-					"EFM-SD",
-					"P-I-SD",
-					"E12-SD",
-					"E12-BR"
-			};
-
-			String[] ht = {
-					"TRX-XT",
-					"TRX-XC",
-					"EFM-XT",
-					"E12-HT",
-					"E12-LT",
-					"E12-BC",
-					"P-I-XT"
-			};
-
-			String[] mt = {
-					"TRX-XT",
-					"TRX-XC",
-					"EFM-XT",
-					"E12-HT",
-					"E12-LT",
-					"E12-BC",
-					"P-I-XT"
-			};
-
-			String[] lt = {
-					"TRX-XT",
-					"TRX-XC",
-					"EFM-XT",
-					"E12-HT",
-					"E12-LT",
-					"E12-BC",
-					"P-I-XT"
-			};
-
-			String[] cp = {
-					"TRX-CP",
-					"EFM-CP",
-					"E12-CP",
-					"E12-TA",
-					"E12-SH"
-			};
-
-			String[] rs = {
-					"TRX-RS",
-					"EFM-RS",
-					"E12-RS",
-					"E12-BR",
-					"E12-SH",
-					"P-I-RS"
-			};
-
-			String[] cb = {
-					"TRX-CB",
-					"TRX-CL",
-					"EFM-CB",
-					"E12-CB",
-					"E12-TR",
-					"P-I-ML"
-			};
-
-			String[] ch = {
-					"GND-NS",
-					"TRX-CH",
-					"EFM-HH",
-					"E12-CH",
-					"P-I-HH"
-			};
-
-			String[] oh = {
-					"P-I-ML",
-					"TRX-OH",
-					"EFM-HH",
-					"E12-OH",
-					"P-I-HH"
-			};
-
-			String[] rc = {
-					"TRX-CY",
-					"EFM-CY",
-					"P-I-RC",
-					"P-I-ML",
-					"E12-RC"
-			};
-
-			String[] cc = {
-					"TRX-CY",
-					"EFM-CY",
-					"P-I-CC",
-					"P-I-ML",
-					"E12-CC"
-			};
-
-			String[] m1 = {
-					"TRX-MA",
-					"TRX-CL",
-					"TRX-XC"
-			};
-
-			String[] m2 = {
-					"E12-TA",
-					"E12-BC",
-					"E12-TR"
-			};
-			choice[0] = getMachine(bd[generator.nextInt(bd.length)]);
-			choice[1] = getMachine(sd[generator.nextInt(sd.length)]);
-			choice[2] = getMachine(ht[generator.nextInt(ht.length)]);
-			choice[3] = getMachine(mt[generator.nextInt(mt.length)]);
-			choice[4] = getMachine(lt[generator.nextInt(lt.length)]);
-			choice[5] = getMachine(cp[generator.nextInt(cp.length)]);
-			choice[6] = getMachine(rs[generator.nextInt(rs.length)]);
-			choice[7] = getMachine(cb[generator.nextInt(cb.length)]);
-			choice[8] = getMachine(ch[generator.nextInt(ch.length)]);
-			choice[9] = getMachine(oh[generator.nextInt(oh.length)]);
-			choice[10] = getMachine(rc[generator.nextInt(rc.length)]);
-			choice[11] = getMachine(cc[generator.nextInt(cc.length)]);
-			choice[12] = getMachine(m1[generator.nextInt(m1.length)]);
-			choice[13] = getMachine(m2[generator.nextInt(m2.length)]);
+			for (int i = 0; i < 14; i++) {
+				String[] choices = getMachineChoices(i);
+				choice[i] = getMachine(choices[generator.nextInt(choices.length)]);
+			}
 		}
 		if (machinePool == 1) {
-			choice[0] = getRandomMachineNumber();
-			choice[1] = getRandomMachineNumber();
-			choice[2] = getRandomMachineNumber();
-			choice[3] = getRandomMachineNumber();
-			choice[4] = getRandomMachineNumber();
-			choice[5] = getRandomMachineNumber();
-			choice[6] = getRandomMachineNumber();
-			choice[7] = getRandomMachineNumber();
-			choice[8] = getRandomMachineNumber();
-			choice[9] = getRandomMachineNumber();
-			choice[10] = getRandomMachineNumber();
-			choice[11] = getRandomMachineNumber();
-			choice[12] = getRandomMachineNumber();
-			choice[13] = getRandomMachineNumber();
+			for (int i = 0; i < 14; i++) {
+				choice[i] = getRandomMachineNumber();
+			}
 		}
 		for (int x = 0; x < 14; x++) {
 			sendAssignMachine(output_device, x, choice[x]);
@@ -566,7 +602,7 @@ public class MachineDrum {
 		return (byte) 0;
 	}
 	
-	private byte getRandomMachineNumber() {
+	public byte getRandomMachineNumber() {
 		byte[] choices = {01, 02, 03, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
 				          32, 33, 34, 35, 36, 37, 38, 39, 48, 49, 50, 51, 52, 53, 54, 55,
 				          56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
@@ -574,4 +610,141 @@ public class MachineDrum {
 		return choices[this.generator.nextInt(choices.length)];
 		
 	}
+	
+	public void setPattern(Receiver output_device, int patternNum) {
+		if (output_device == null) {
+			return;
+		}
+		SysexMessage msg = new SysexMessage();
+		byte[] data = new byte[10];
+		data[0] = (byte) 0xF0;
+		data[1] = (byte) 0x00;
+		data[2] = (byte) 0x20;
+		data[3] = (byte) 0x3c;
+		data[4] = (byte) 0x02;
+		data[5] = (byte) 0x00;
+		data[6] = (byte) 0x71;
+		data[7] = (byte) 0x04;
+		data[8] = (byte) (patternNum);
+		data[9] = (byte) 0xF7;
+		try {
+			msg.setMessage(data, 10);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setSong(Receiver output_device, int songNum) {
+		if (output_device == null) {
+			return;
+		}
+		SysexMessage msg = new SysexMessage();
+		byte[] data = new byte[10];
+		data[0] = (byte) 0xF0;
+		data[1] = (byte) 0x00;
+		data[2] = (byte) 0x20;
+		data[3] = (byte) 0x3c;
+		data[4] = (byte) 0x02;
+		data[5] = (byte) 0x00;
+		data[6] = (byte) 0x71;
+		data[7] = (byte) 0x08;
+		data[8] = (byte) (songNum);
+		data[9] = (byte) 0xF7;
+		try {
+			msg.setMessage(data, 10);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setMute(Receiver output_device, int machineNum, int muted) {
+		if (output_device == null) {
+			return;
+		}
+		
+		int midiChan = machineNum / 4;
+		int midiCC = 12 + (machineNum % 4);
+		ShortMessage msg = new ShortMessage();
+		try {
+			msg.setMessage(ShortMessage.CONTROL_CHANGE, midiChan, midiCC, muted);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setExtendedMode(Receiver output_device, int mode) {
+		if (output_device == null) {
+			return;
+		}
+		SysexMessage msg = new SysexMessage();
+		byte[] data = new byte[10];
+		data[0] = (byte) 0xF0;
+		data[1] = (byte) 0x00;
+		data[2] = (byte) 0x20;
+		data[3] = (byte) 0x3c;
+		data[4] = (byte) 0x02;
+		data[5] = (byte) 0x00;
+		data[6] = (byte) 0x71;
+		data[7] = (byte) 0x20;
+		data[8] = (byte) (mode);
+		data[9] = (byte) 0xF7;
+		try {
+			msg.setMessage(data, 10);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setSongMode(Receiver output_device, int mode) {
+		if (output_device == null) {
+			return;
+		}
+		SysexMessage msg = new SysexMessage();
+		byte[] data = new byte[10];
+		data[0] = (byte) 0xF0;
+		data[1] = (byte) 0x00;
+		data[2] = (byte) 0x20;
+		data[3] = (byte) 0x3c;
+		data[4] = (byte) 0x02;
+		data[5] = (byte) 0x00;
+		data[6] = (byte) 0x71;
+		data[7] = (byte) 0x10;
+		data[8] = (byte) (mode);
+		data[9] = (byte) 0xF7;
+		try {
+			msg.setMessage(data, 10);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void setGlobal(Receiver output_device, int mode) {
+		if (output_device == null) {
+			return;
+		}
+		SysexMessage msg = new SysexMessage();
+		byte[] data = new byte[10];
+		data[0] = (byte) 0xF0;
+		data[1] = (byte) 0x00;
+		data[2] = (byte) 0x20;
+		data[3] = (byte) 0x3c;
+		data[4] = (byte) 0x02;
+		data[5] = (byte) 0x00;
+		data[6] = (byte) 0x71;
+		data[7] = (byte) 0x01;
+		data[8] = (byte) (mode);
+		data[9] = (byte) 0xF7;
+		try {
+			msg.setMessage(data, 10);
+			output_device.send(msg, -1);
+		} catch (InvalidMidiDataException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
