@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDISequencerPolyGUI;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * This code was edited or generated using CloudGarden's Jigloo
@@ -2349,9 +2351,21 @@ public class MIDISequencerPolyPage implements Page {
 		this.setHoldMode(this.monome.readConfigValue(pageElement, "holdmode"));
 		this.setBankSize(Integer.parseInt(this.monome.readConfigValue(pageElement, "banksize")));
 		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
-		this.setNoteValue(1, Integer.parseInt(this.monome.readConfigValue(pageElement, "row")));
-		this.setSequence(1, this.monome.readConfigValue(pageElement, "sequence"));
-
+		NodeList rowNL = pageElement.getElementsByTagName("row");		
+		for (int l=0; l < rowNL.getLength(); l++) {		
+			Element el = (Element) rowNL.item(l);		
+			NodeList nl = el.getChildNodes();		
+			String midiNote = ((Node) nl.item(0)).getNodeValue();		
+			this.setNoteValue(l, Integer.parseInt(midiNote));		
+		}		
+		
+		NodeList seqNL = pageElement.getElementsByTagName("sequence");		
+		for (int l=0; l < seqNL.getLength(); l++) {		
+			Element el = (Element) seqNL.item(l);		
+			NodeList nl = el.getChildNodes();		
+			String sequence = ((Node) nl.item(0)).getNodeValue();		
+			this.setSequence(l, sequence);		
+		}
 		/*
 		 * NodeList nl = pageElement.getElementsByTagName("ccoffset"); el =
 		 * (Element) nl.item(0); if (el != null) { nl = el.getChildNodes();
