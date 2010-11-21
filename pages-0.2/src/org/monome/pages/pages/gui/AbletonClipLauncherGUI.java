@@ -82,11 +82,12 @@ public class AbletonClipLauncherGUI extends JPanel {
 			disableMuteCB.setBounds(new Rectangle(15, 30, 21, 21));
 			disableMuteCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (disableMuteCB.isEnabled()) {
-						page.numEnabledRows++;
-					} else {
+					if (disableMuteCB.isSelected()) {
 						page.numEnabledRows--;
+					} else {
+						page.numEnabledRows++;
 					}
+					page.redrawMonome();
 				}
 			});
 		}
@@ -104,11 +105,12 @@ public class AbletonClipLauncherGUI extends JPanel {
 			disableSoloCB.setBounds(new Rectangle(15, 55, 21, 21));
 			disableSoloCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (disableSoloCB.isEnabled()) {
-						page.numEnabledRows++;
-					} else {
+					if (disableSoloCB.isSelected()) {
 						page.numEnabledRows--;
+					} else {
+						page.numEnabledRows++;
 					}
+					page.redrawMonome();
 				}
 			});
 		}
@@ -126,11 +128,12 @@ public class AbletonClipLauncherGUI extends JPanel {
 			disableArmCB.setBounds(new Rectangle(15, 80, 21, 21));
 			disableArmCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (disableArmCB.isEnabled()) {
-						page.numEnabledRows++;
-					} else {
+					if (disableArmCB.isSelected()) {
 						page.numEnabledRows--;
+					} else {
+						page.numEnabledRows++;
 					}
+					page.redrawMonome();
 				}
 			});
 		}
@@ -167,11 +170,12 @@ public class AbletonClipLauncherGUI extends JPanel {
 			disableStopCB.setBounds(new Rectangle(15, 105, 21, 21));
 			disableStopCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					if (disableStopCB.isEnabled()) {
-						page.numEnabledRows++;
-					} else {
+					if (disableStopCB.isSelected()) {
 						page.numEnabledRows--;
+					} else {
+						page.numEnabledRows++;
 					}
+					page.redrawMonome();
 				}
 			});
 		}

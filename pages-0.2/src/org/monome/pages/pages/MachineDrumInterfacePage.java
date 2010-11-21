@@ -354,7 +354,7 @@ public class MachineDrumInterfacePage implements Page {
 				}
 				
 				if (sendLfoChange) {
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -462,7 +462,7 @@ public class MachineDrumInterfacePage implements Page {
 						sendVal = 127;
 					}
 					paramValues[curMachine][curParam] = sendVal;
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -474,7 +474,7 @@ public class MachineDrumInterfacePage implements Page {
 					}
 				} else if (y == 6) {
 					if (x < 4) {
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -486,7 +486,7 @@ public class MachineDrumInterfacePage implements Page {
 							}
 						}
 					} else {
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -503,7 +503,7 @@ public class MachineDrumInterfacePage implements Page {
 						if (paramValues[curMachine][curParam] < 0) {
 							paramValues[curMachine][curParam] = 0;
 						}
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -518,7 +518,7 @@ public class MachineDrumInterfacePage implements Page {
 						if (paramValues[curMachine][curParam] > 127) {
 							paramValues[curMachine][curParam] = 127;
 						}
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -536,7 +536,7 @@ public class MachineDrumInterfacePage implements Page {
 						}
 					} else if (x == 3) {
 						paramValues[curMachine][curParam] = 63;
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -549,7 +549,7 @@ public class MachineDrumInterfacePage implements Page {
 					} else if (x == 4) {
 						String[] choices = machinedrum.getMachineChoices(curMachine);
 						int choice = machinedrum.getMachine(choices[generator.nextInt(choices.length)]);
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -561,7 +561,7 @@ public class MachineDrumInterfacePage implements Page {
 						}						
 					} else if (x == 5) {
 						int choice = machinedrum.getRandomMachineNumber();
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -575,7 +575,7 @@ public class MachineDrumInterfacePage implements Page {
 						for (int p = 0; p < 24; p++) {
 							int val = generator.nextInt(128);
 							paramValues[curMachine][p] = val;
-							String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+							String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 							for (int i = 0; i < midiOutOptions.length; i++) {
 								if (midiOutOptions[i] == null) {
 									continue;
@@ -589,7 +589,7 @@ public class MachineDrumInterfacePage implements Page {
 					} else if (x == 7) {
 						int val = generator.nextInt(128);
 						paramValues[curMachine][curParam] = val;
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -684,7 +684,7 @@ public class MachineDrumInterfacePage implements Page {
 					patBank = x;
 				} else if (y < 3) {
 					pattern = x + ((y - 1) * 8);
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					this.seqPatterns[seqPos] = pattern;
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
@@ -697,7 +697,7 @@ public class MachineDrumInterfacePage implements Page {
 					}
 				} else if (y == 3) {
 					seqPos = x;
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -715,7 +715,7 @@ public class MachineDrumInterfacePage implements Page {
 					} else {
 						this.muteState[track] = 0;
 					}
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -728,7 +728,7 @@ public class MachineDrumInterfacePage implements Page {
 				} else if (y == 6) {
 					song = x;
 					int songNum = song * songBank;
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -747,7 +747,7 @@ public class MachineDrumInterfacePage implements Page {
 						} else {
 							extendedMode = 0;
 						}
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -763,7 +763,7 @@ public class MachineDrumInterfacePage implements Page {
 						} else {
 							songMode = 0;
 						}
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -779,7 +779,7 @@ public class MachineDrumInterfacePage implements Page {
 						} else {
 							global = 0;
 						}
-						String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+						String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 						for (int i = 0; i < midiOutOptions.length; i++) {
 							if (midiOutOptions[i] == null) {
 								continue;
@@ -805,7 +805,7 @@ public class MachineDrumInterfacePage implements Page {
 			if (tickNum == 0 || this.playPatternNow) {
 				if (seqOn == 1) {
 					pattern = this.seqPatterns[seqPos];
-					String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+					String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 					for (int i = 0; i < midiOutOptions.length; i++) {
 						if (midiOutOptions[i] == null) {
 							continue;
@@ -837,7 +837,7 @@ public class MachineDrumInterfacePage implements Page {
 		public void handleReset() {
 			tickNum = 0;
 			seqPos = 0;
-			String[] midiOutOptions = monome.getMidiOutOptions(this.index);
+			String[] midiOutOptions = monome.getMidiOutOptions(page.index);
 			for (int i = 0; i < midiOutOptions.length; i++) {
 				if (midiOutOptions[i] == null) {
 					continue;
