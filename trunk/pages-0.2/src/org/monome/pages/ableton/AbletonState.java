@@ -16,15 +16,17 @@ public class AbletonState {
 		setSelectedScene(1);
 	}
 	
-	public synchronized AbletonTrack getTrack(int i) {
+	public AbletonTrack getTrack(int i) {
 		Integer key = new Integer(i);
-		if (tracks.containsKey(key)) {
-			return tracks.get(key);
+		synchronized(tracks) {
+			if (tracks.containsKey(key)) {
+				return tracks.get(key);
+			}
 		}
 		return null;
 	}
 	
-	public synchronized HashMap<Integer, AbletonTrack> getTracks() {
+	public HashMap<Integer, AbletonTrack> getTracks() {
 		return tracks;
 	}
 	
@@ -52,14 +54,18 @@ public class AbletonState {
 		return selectedScene;
 	}
 
-	public synchronized void  reset() {
-		this.tracks = new HashMap<Integer, AbletonTrack>();
+	public synchronized void reset() {
+		synchronized(tracks) {
+			this.tracks = new HashMap<Integer, AbletonTrack>();
+		}
 	}
 
 	public AbletonTrack createTrack(int trackId) {
 		AbletonTrack track = new AbletonTrack();
 		Integer key = new Integer(trackId);
-		tracks.put(key, track);
+		synchronized(tracks) {
+			tracks.put(key, track);
+		}
 		return track;
 	}
 }

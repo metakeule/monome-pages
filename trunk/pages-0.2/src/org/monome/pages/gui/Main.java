@@ -272,6 +272,7 @@ public class Main extends JFrame {
 						configuration.readConfigurationFile(file);
 						getConfigurationMenu().setEnabled(true);
 						getMidiMenu().setEnabled(true);
+						
 						getFrame().setTitle("Pages : " + configuration.name);
 						for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 							MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);

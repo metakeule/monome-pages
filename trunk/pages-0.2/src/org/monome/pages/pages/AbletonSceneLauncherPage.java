@@ -223,7 +223,7 @@ public class AbletonSceneLauncherPage implements Page {
 				// otherwise play the clip
 				else {
 					int clip_num = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1 - this.trackOffset;
 					this.viewTrack(track_num);
 					this.playClip(track_num, clip_num);
 				}

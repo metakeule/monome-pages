@@ -242,7 +242,12 @@ public class Configuration {
 				this.monomeSerialOSCPortIn.addListener("/sys/cable", discoverOSCListener);
 				this.monomeSerialOSCPortIn.addListener("/sys/offset", discoverOSCListener);
 				this.monomeSerialOSCPortIn.addListener("/sys/serial", discoverOSCListener);
-				this.monomeSerialOSCPortIn.startListening();
+				
+				for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+					initMonome(monomeConfig);
+				}
+			
 			}
 			if (this.monomeSerialOSCPortOut == null) {
 				this.monomeSerialOSCPortOut = new OSCPortOut(InetAddress.getByName(this.monomeHostname), this.monomeSerialOSCOutPortNumber);

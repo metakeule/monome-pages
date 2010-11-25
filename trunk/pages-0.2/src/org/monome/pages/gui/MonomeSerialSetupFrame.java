@@ -146,6 +146,14 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		String hostname = this.host.getText();
 		
 		Configuration config = ConfigurationFactory.getConfiguration();
+		config.stopMonomeSerialOSC();
+		
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		
 		config.setMonomeSerialOSCInPortNumber(inport);
 		config.setMonomeSerialOSCOutPortNumber(outport);
 		config.setMonomeHostname(hostname);

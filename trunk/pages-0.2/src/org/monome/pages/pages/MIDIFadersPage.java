@@ -128,7 +128,9 @@ public class MIDIFadersPage implements Page {
 			if (startY == endY) {
 				return;
 			}
-				
+			if (startY < 0) {
+				startY = 0;
+			}				
 			if (this.monome.sizeY == 8) {
 				startVal = this.buttonValuesSmall[startY];
 				endVal = this.buttonValuesSmall[endY];
@@ -136,7 +138,6 @@ public class MIDIFadersPage implements Page {
 				startVal = this.buttonValuesLarge[startY];
 				endVal = this.buttonValuesLarge[endY];
 			}
-
 			if (this.monome.sizeY == 8) {
 				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
@@ -234,7 +235,6 @@ public class MIDIFadersPage implements Page {
 				}
 			}
 		}
-		endY--;
 		if (endY > monome.sizeY) {
 			endY = monome.sizeY;
 		}
@@ -244,7 +244,7 @@ public class MIDIFadersPage implements Page {
 		intArgs.add(new Integer(0));
 		intArgs.add(new Integer(0));
 		for (int y = this.monome.sizeY - 1; y > -1; y--) {
-			if (y > endY) {
+			if (y >= endY) {
 				this.monome.led(x, y, 1, this.index);
 			} else {
 				this.monome.led(x, y, 0, this.index);
@@ -340,7 +340,6 @@ public class MIDIFadersPage implements Page {
 	public void setIndex(int index) {
 		this.index = index;
 	}
-	
 
 	/*
 	public void handleADC(int adcNum, float value) {
