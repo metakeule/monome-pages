@@ -6,6 +6,8 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.Main;
 import org.monome.pages.pages.gui.MIDIKeyboardGUI;
@@ -849,10 +851,8 @@ public class MIDIKeyboardPage implements Page {
 				for (int y = 0; y < this.monome.sizeY - 1; y++) {
 					int note_num = this.getNoteNumber(x) + (this.octave[y] * 24);
 					if (note_num == d1) {
-						if (d2 == 0) {
-							this.monome.led(x, y, 0, this.index);
-						} else {
-							this.monome.led(x, y, 1, this.index);
+						if (d2 != 0) {
+							new Thread(new LEDBlink(monome, x, y, 100, this.index)).start();
 						}
 					}
 				}

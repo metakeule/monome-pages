@@ -130,24 +130,30 @@ public class MIDIFader implements Runnable {
 		int msgs = this.startVal;
 		int curButton = this.startY; 
 
-		for (int i = this.startVal; i != this.endVal; i += valueDirection) {
-			if (valueDirection == 1) {			
-				if (msgs + 1 >= this.buttonValues[curButton]) {
+		for (int i = this.startVal; i != this.endVal + valueDirection; i += valueDirection) {
+			if (valueDirection == 1) {		
+				if (msgs >= this.buttonValues[curButton]) {
 					if (buttonDirection == -1) {
 						this.monome.led(this.col, curButton, 1, this.pageIndex);
 					} else {
 						this.monome.led(this.col, curButton, 0, this.pageIndex);
 					}
 					curButton += buttonDirection;
+					if (curButton < 0) {
+						curButton = 0;
+					}
 				}
 			} else {
-				if (msgs <= this.buttonValues[curButton]) {
+				if (msgs < this.buttonValues[curButton]) {
 					if (buttonDirection == -1) {
 						this.monome.led(this.col, curButton, 1, this.pageIndex);
 					} else {
 						this.monome.led(this.col, curButton, 0, this.pageIndex);
 					}
 					curButton += buttonDirection;
+					if (curButton < 0) {
+						curButton = 0;
+					}
 				}
 			}
 

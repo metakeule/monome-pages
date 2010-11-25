@@ -390,20 +390,21 @@ public class AbletonOSCControl implements AbletonControl {
 		}
 		
 		HashMap<Integer, AbletonTrack> tracks = ConfigurationFactory.getConfiguration().abletonState.getTracks();
-		System.out.println("track size is " + tracks.size());
-		Iterator<Integer> i = tracks.keySet().iterator();
-		while (i.hasNext()) {
-			Integer trackNum = i.next();
-			System.out.println("refresh track # " + trackNum.intValue());
-			Object args[] = new Object[1];
-			args[0] = trackNum;
-			msg = new OSCMessage("/live/mute", args);
-			OSCMessage msg2 = new OSCMessage("/live/solo", args);
-			try {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg2);
-			} catch (IOException e) {
-				e.printStackTrace();
+		synchronized (tracks) {
+			Iterator<Integer> i = tracks.keySet().iterator();
+			while (i.hasNext()) {
+				Integer trackNum = i.next();
+				System.out.println("refresh track # " + trackNum.intValue());
+				Object args[] = new Object[1];
+				args[0] = trackNum;
+				msg = new OSCMessage("/live/mute", args);
+				OSCMessage msg2 = new OSCMessage("/live/solo", args);
+				try {
+					ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+					ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg2);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
