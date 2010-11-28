@@ -7,7 +7,6 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 
 import org.monome.pages.pages.MIDIFadersPage;
-import java.awt.Dimension;
 import javax.swing.JCheckBox;
 
 public class MIDIFadersGUI extends JPanel {
