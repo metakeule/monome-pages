@@ -145,4 +145,14 @@ public interface AbletonControl {
 	 * @param track
 	 */
 	public void unsoloTrack(int track);
+	
+	/**
+	 * Sets the red ring in ableton.
+	 * 
+	 * @param startX
+	 * @param endX
+	 * @param startY
+	 * @param endY
+	 */
+	public void setSelection(int widthOffset, int sceneOffset, int width, int height);
 }

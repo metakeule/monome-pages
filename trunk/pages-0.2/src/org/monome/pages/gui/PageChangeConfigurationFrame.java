@@ -13,6 +13,7 @@ import javax.swing.JButton;
 
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
+import java.awt.Dimension;
 
 public class PageChangeConfigurationFrame extends JInternalFrame {
 
@@ -34,6 +35,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private int[] midiChannels = new int[255];
 	private int[] midiNotes = new int[255];
 	private int pageIndex = 0;
+	private JLabel pageChangeTimerLBL = null;
+	private JTextField pageChangeDelayTF = null;
 
 	/**
 	 * This is the default constructor
@@ -64,13 +67,16 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	 */
 	private void initialize() {
 		this.setContentPane(getJContentPane());
-		this.setSize(211, 241);
+		this.setSize(212, 256);
 		this.setTitle("Page Change Configuration");
 		this.setResizable(true);
 	}
 	
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
+			pageChangeTimerLBL = new JLabel();
+			pageChangeTimerLBL.setBounds(new Rectangle(15, 105, 101, 21));
+			pageChangeTimerLBL.setText("PC Button Delay");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
 			jContentPane.add(getPageLabel(), null);
@@ -85,6 +91,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			jContentPane.add(getMidiChangingLBL(), null);
 			jContentPane.add(getSaveBtn(), null);
 			jContentPane.add(getCancelBtn(), null);
+			jContentPane.add(pageChangeTimerLBL, null);
+			jContentPane.add(getPageChangeDelayTF(), null);
 		}
 		return jContentPane;
 	}
@@ -131,6 +139,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			midiChannels[pageIndex] = value - 1;
 			value = Integer.parseInt(getNoteTF().getText());
 			midiNotes[pageIndex] = value;
+			value = Integer.parseInt(getPageChangeDelayTF().getText());
+			monome.pageChangeDelay = value;
 		} catch (NumberFormatException ex) {
 		}
 	}
@@ -141,6 +151,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		pageIndex = Integer.parseInt(pieces[0]) - 1;
 		getChannelTF().setText(""+(midiChannels[pageIndex] + 1));
 		getNoteTF().setText(""+midiNotes[pageIndex]);
+		getPageChangeDelayTF().setText("" + this.monome.pageChangeDelay);
 	}
 
 	/**
@@ -205,7 +216,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JCheckBox getMonomeChangeCB() {
 		if (monomeChangeCB == null) {
 			monomeChangeCB = new JCheckBox();
-			monomeChangeCB.setBounds(new Rectangle(15, 105, 21, 21));
+			monomeChangeCB.setBounds(new Rectangle(15, 130, 21, 21));
 		}
 		return monomeChangeCB;
 	}
@@ -218,7 +229,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JCheckBox getMidiChangeCB() {
 		if (midiChangeCB == null) {
 			midiChangeCB = new JCheckBox();
-			midiChangeCB.setBounds(new Rectangle(15, 130, 21, 21));
+			midiChangeCB.setBounds(new Rectangle(15, 155, 21, 21));
 		}
 		return midiChangeCB;
 	}
@@ -232,7 +243,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (monomeChangeLBL == null) {
 			monomeChangeLBL = new JLabel();
 			monomeChangeLBL.setText("Page Change Button");
-			monomeChangeLBL.setBounds(new Rectangle(40, 105, 141, 21));
+			monomeChangeLBL.setBounds(new Rectangle(40, 130, 141, 21));
 		}
 		return monomeChangeLBL;
 	}
@@ -246,7 +257,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (midiChangingLBL == null) {
 			midiChangingLBL = new JLabel();
 			midiChangingLBL.setText("MIDI Page Changing");
-			midiChangingLBL.setBounds(new Rectangle(40, 130, 141, 21));
+			midiChangingLBL.setBounds(new Rectangle(40, 155, 141, 21));
 		}
 		return midiChangingLBL;
 	}
@@ -259,7 +270,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getSaveBtn() {
 		if (saveBtn == null) {
 			saveBtn = new JButton();
-			saveBtn.setBounds(new Rectangle(20, 160, 76, 21));
+			saveBtn.setBounds(new Rectangle(20, 185, 76, 21));
 			saveBtn.setText("Save");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -287,7 +298,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getCancelBtn() {
 		if (cancelBtn == null) {
 			cancelBtn = new JButton();
-			cancelBtn.setBounds(new Rectangle(105, 160, 76, 21));
+			cancelBtn.setBounds(new Rectangle(105, 185, 76, 21));
 			cancelBtn.setText("Cancel");
 			cancelBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -300,5 +311,18 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	
 	private void cancel() {
 		this.dispose();
+	}
+
+	/**
+	 * This method initializes pageChangeDelayTF	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getPageChangeDelayTF() {
+		if (pageChangeDelayTF == null) {
+			pageChangeDelayTF = new JTextField();
+			pageChangeDelayTF.setBounds(new Rectangle(120, 105, 51, 21));
+		}
+		return pageChangeDelayTF;
 	}
 }  //  @jve:decl-index=0:visual-constraint="10,10"

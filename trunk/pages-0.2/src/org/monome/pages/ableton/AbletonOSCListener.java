@@ -3,6 +3,7 @@
 package org.monome.pages.ableton;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.monome.pages.configuration.ConfigurationFactory;
 
@@ -22,13 +23,21 @@ public class AbletonOSCListener implements OSCListener {
 	 */
 	public synchronized void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();
-		/*
-		System.out.print(msg.getAddress());
-		for (int i = 0; i < args.length; i++) {
-			System.out.print(" " + args[i].toString());
+		if (msg.getAddress().compareTo("/live/track") == 0) {
+			int trackId = ((Integer) args[0]).intValue();
+			((AbletonOSCControl) ConfigurationFactory.getConfiguration().getAbletonControl()).refreshTrackInfo(trackId);
 		}
-		System.out.println();
-		*/
+		
+		if (msg.getAddress().compareTo("/live/name/track") == 0) {
+			int trackId = ((Integer) args[0]).intValue();
+			HashMap<Integer, AbletonTrack> tracks = ConfigurationFactory.getConfiguration().abletonState.getTracks();
+			for (int i = trackId + 1; i < tracks.size(); i++) {
+				System.out.println("remove track " + i);
+				ConfigurationFactory.getConfiguration().abletonState.removeTrack(i);
+			}
+			((AbletonOSCControl) ConfigurationFactory.getConfiguration().getAbletonControl()).refreshTrackInfo(trackId);
+			//ConfigurationFactory.getConfiguration().redrawAbletonPages();
+		}
 		
 		if (msg.getAddress().contains("/live/track/info")) {
 

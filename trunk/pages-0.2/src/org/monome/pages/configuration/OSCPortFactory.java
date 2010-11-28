@@ -1,5 +1,6 @@
 package org.monome.pages.configuration;
 
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -28,44 +29,57 @@ public class OSCPortFactory {
 	
 	public OSCPortIn getOSCPortIn(Integer portNum) {
 		System.out.println("getOSCPortIn(" + portNum + ")");
-		if (oscInPorts.containsKey(portNum)) {
-			return oscInPorts.get(portNum);
+		synchronized(oscInPorts) {
+			if (oscInPorts.containsKey(portNum)) {
+				return oscInPorts.get(portNum);
+			}
+			
+			OSCPortIn newPort;
+			try {
+				newPort = new OSCPortIn(portNum);
+				newPort.startListening();
+				oscInPorts.put(portNum, newPort);
+				return newPort;
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (SocketException e) {
+				e.printStackTrace();
+			}
+			
+			return null;
 		}
-		
-		OSCPortIn newPort;
-		try {
-			newPort = new OSCPortIn(portNum);
-			newPort.startListening();
-			oscInPorts.put(portNum, newPort);
-			return newPort;
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (SocketException e) {
-			e.printStackTrace();
+	}
+	
+	public void destroyOSCPortIn(Integer portNum) {
+		synchronized(oscInPorts) {
+			if (oscInPorts.containsKey(portNum)) {
+				oscInPorts.remove(portNum);
+			}
 		}
-		
-		return null;
 	}
 	
 	public OSCPortOut getOSCPortOut(String hostName, Integer portNum) {
-		if (oscInPorts.containsKey(portNum)) {
-			return oscOutPorts.get(portNum);
+		System.out.println("getOSCPortOut(" + portNum + ")");
+		synchronized(oscOutPorts) {
+			if (oscOutPorts.containsKey(portNum)) {
+				return oscOutPorts.get(portNum);
+			}
+			
+			OSCPortOut newPort;
+			try {
+				newPort = new OSCPortOut(InetAddress.getByName(hostName), portNum);
+				oscOutPorts.put(portNum, newPort);
+				return newPort;
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (SocketException e) {
+				e.printStackTrace();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			}
+	
+			return null;
 		}
-		
-		OSCPortOut newPort;
-		try {
-			newPort = new OSCPortOut(InetAddress.getByName(hostName), portNum);
-			oscOutPorts.put(portNum, newPort);
-			return newPort;
-		} catch (NumberFormatException e) {
-			e.printStackTrace();
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
 }

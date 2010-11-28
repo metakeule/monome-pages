@@ -453,6 +453,14 @@ public class AbletonLiveLooperPage implements Page {
 			}
 		}
 		
+		// set red ring
+		if (this.monome.curPage == this.index) {
+			int widthOffset = this.trackOffset * (this.monome.sizeX - 1);
+			int clipOffset = (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
+			int width = this.monome.sizeX - 1;
+			int height = this.monome.sizeY - this.numEnabledRows;
+			ConfigurationFactory.getConfiguration().getAbletonControl().setSelection(widthOffset, clipOffset, width, height);
+		}
 	}
 
 	/* (non-Javadoc)

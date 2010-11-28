@@ -489,7 +489,7 @@ public class MonomeFrame extends JInternalFrame {
 		}
 		
 		pccFrame = new PageChangeConfigurationFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
-		pccFrame.setSize(new Dimension(211, 241));
+		pccFrame.setSize(new Dimension(212, 256));
 		pccFrame.setVisible(true);
 		Main.getGUI().add(pccFrame);
 		try {

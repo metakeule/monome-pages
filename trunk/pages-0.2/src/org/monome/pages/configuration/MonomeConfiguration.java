@@ -133,6 +133,8 @@ public class MonomeConfiguration {
 	 */
 	private boolean pageChanged = false;
 	
+	public int pageChangeDelay = 0;
+	
 	/**
 	 * The current MIDI clock tick number (resets every measure, 1/96 resolution)
 	 */
@@ -323,14 +325,15 @@ public class MonomeConfiguration {
 			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
 			int patternNum = x;
 			int numPages = this.pages.size();
-			if (numPages > this.sizeY - 1) {
+			if (numPages > this.sizeX - 1) {
 				numPages++;
 			}
 			if (numPages > next_page && next_page < (this.sizeX * this.sizeY) / 2) {
 				// offset back by one because of the page change button
-				if (next_page > this.sizeY - 1) {
+				if (next_page > this.sizeX - 1) {
 					next_page--;
 				}
+				System.out.println("numPages = " + numPages + ", next_page = " + next_page);
 				this.curPage = next_page;
 				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
 			} else if (y == 0) {
@@ -344,6 +347,9 @@ public class MonomeConfiguration {
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
 			this.pageChangeMode = 1;
 			this.pageChanged = false;
+			if (this.pageChangeDelay > 0) {
+				new Thread(new PageChangeTimer(this, this.pageChangeDelay)).start();
+			}
 			this.clear(0, -1);
 			this.drawPatternState();
 			return;
@@ -352,11 +358,7 @@ public class MonomeConfiguration {
 		// if this is the bottom right button and we let go turn it off
 		// and send the value == 1 press along to the page
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0) {
-			ArrayList<Integer> args = new ArrayList<Integer>();
-			args.add(this.sizeX - 1);
-			args.add(0);
-			args.add(0);
-			this.led_row(args, -1);
+			this.clear(0, -1);
 			this.pageChangeMode = 0;
 			if (this.pageChanged == false) {
 				if (this.pages.get(curPage) != null) {
@@ -377,6 +379,26 @@ public class MonomeConfiguration {
 		if (this.pages.get(curPage) != null) {
 			this.patternBanks.get(curPage).recordPress(x, y, value);
 			this.pages.get(curPage).handlePress(x, y, value);
+		}
+	}
+	
+	class PageChangeTimer implements Runnable {
+
+		MonomeConfiguration monome;
+		int delay;
+		
+		public PageChangeTimer(MonomeConfiguration monome, int delay) {
+			this.monome = monome;
+			this.delay = delay;
+		}
+		
+		public void run() {
+			try {
+				Thread.sleep(delay);
+				this.monome.pageChanged = true;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}	
 		}
 	}
 
@@ -401,7 +423,14 @@ public class MonomeConfiguration {
 		
 		for (int x = 0; x < this.sizeX; x++) {
 			for (int y = 0; y < this.sizeY; y++) {
-				int pageNum = x + (y * this.sizeY);
+				int pageNum = x + (y * this.sizeX);
+				// offset by one for the page change button
+				if (pageNum == this.sizeX - 1) {
+					continue;
+				}
+				if (pageNum > this.sizeX - 1) {
+					pageNum--;
+				}
 				if (pageNum < this.numPages) {
 					int ledX = x;
 					int ledY = this.sizeY - y - 1;
@@ -879,6 +908,7 @@ public class MonomeConfiguration {
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
 		xml += "    <usePageChangeButton>" + (this.usePageChangeButton ? "true" : "false") + "</usePageChangeButton>\n";
 		xml += "    <useMIDIPageChanging>" + (this.useMIDIPageChanging ? "true" : "false") + "</useMIDIPageChanging>\n";
+		xml += "    <pageChangeDelay>" + this.pageChangeDelay + "</pageChangeDelay>\n";
 		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++ ) {
 			if (pageChangeMidiInDevices[i] == null || pageChangeMidiInDevices[i].compareTo("") == 0) {
 				continue;

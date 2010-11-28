@@ -16,8 +16,9 @@ public class DiscoverOSCListener implements OSCListener {
 	}
 
 	public synchronized void acceptMessage(Date time, OSCMessage message) {
-		Object[] args = message.getArguments();
 		
+		Object[] args = message.getArguments();
+		/*
 		System.out.print(message.getAddress());
 		for (int i = 0; i < args.length; i++) {
 			if (args[i] != null) {
@@ -25,15 +26,17 @@ public class DiscoverOSCListener implements OSCListener {
 			}
 		}
 		System.out.println();
-		
+		*/
 		
 		if (discoverMode) {
 			int index;
 			try {
 				index = ((Integer) args[0]).intValue();
 			} catch (NullPointerException e) {
+				e.printStackTrace();
 				return;
 			} catch (IndexOutOfBoundsException e) {
+				e.printStackTrace();
 				return;
 			}
 			
@@ -103,8 +106,9 @@ public class DiscoverOSCListener implements OSCListener {
 				}
 				Integer numDevices;
 				try {
-					numDevices = (Integer) args[1];
+					numDevices = (Integer) args[0];
 				} catch (IndexOutOfBoundsException e) {
+					e.printStackTrace();
 					return;
 				}
 				this.maxDevices = numDevices;

@@ -74,6 +74,8 @@ public class MIDIFadersPage implements Page {
 	 */
 	private String pageName = "MIDI Faders";
 	
+	private boolean horizontal;
+	
 	/**
 	 * Constructor.
 	 * 
@@ -88,14 +90,29 @@ public class MIDIFadersPage implements Page {
 		setDelayAmount("6");
 		setCCOffset("0");
 		setMidiChannel("1");
-
-		// initialize to the bottom row (0)
-		for (int i=0; i < 16; i++) {
-			this.buttonFaders[i] = this.monome.sizeY - 1;
-		}
-		
+		setHorizontal(false);
 	}
 	
+	public void setHorizontal(boolean b) {
+		this.horizontal = b;
+		this.gui.getHorizontalCB().setSelected(b);
+		for (int i=0; i < 16; i++) {
+			if (horizontal) {
+				this.buttonFaders[i] = this.monome.sizeX - 1;
+			} else {
+				this.buttonFaders[i] = this.monome.sizeY - 1;
+			}
+		}
+	}
+	
+	public void setHorizontal(String horiz) {
+		if (horiz != null && horiz.compareTo("true") == 0) {
+			setHorizontal(true);
+		} else {
+			setHorizontal(false);
+		}
+	}
+
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
 	 */	
@@ -113,7 +130,17 @@ public class MIDIFadersPage implements Page {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handlePress(int, int, int)
 	 */
-	public void handlePress(int x, int y, int value) {
+	public void handlePress(int x, int y, int value) {		
+		int sizeY = this.monome.sizeY;
+		
+		if (horizontal) {
+			sizeY = this.monome.sizeX;
+			int tmpX = x;
+			x = y;
+			y = tmpX;
+			//y = sizeY - y - 1;
+		}
+		
 		if(x<0) x = 0;
 		if(y<0) y = 0;
 		
@@ -122,7 +149,6 @@ public class MIDIFadersPage implements Page {
 		int cc = this.ccOffset + x;
 		
 		if (value == 1) {
-					
 			int startY = this.buttonFaders[x];
 			int endY = y;
 			if (startY == endY) {
@@ -130,15 +156,18 @@ public class MIDIFadersPage implements Page {
 			}
 			if (startY < 0) {
 				startY = 0;
-			}				
-			if (this.monome.sizeY == 8) {
+			}
+			if (sizeY == 8) {
 				startVal = this.buttonValuesSmall[startY];
 				endVal = this.buttonValuesSmall[endY];
-			} else if (this.monome.sizeY == 16) {
+			} else if (sizeY == 16) {
 				startVal = this.buttonValuesLarge[startY];
 				endVal = this.buttonValuesLarge[endY];
 			}
-			if (this.monome.sizeY == 8) {
+			if (sizeY == 8) {
+				// start the first thread with null recv, this changes leds only
+				MIDIFader fader = new MIDIFader(null, this.midiChannel, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount, this.horizontal);
+				new Thread(fader).start();
 				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
@@ -146,11 +175,14 @@ public class MIDIFadersPage implements Page {
 					}
 					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 					if (recv != null) {
-						MIDIFader fader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount);
-						new Thread(fader).start();
+						// these threads send the actual midi messages
+						MIDIFader midiFader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesSmall, this.monome, x, startY, endY, this.index, this.delayAmount, this.horizontal);
+						new Thread(midiFader).start();
 					}
 				}
-			} else if (this.monome.sizeY == 16) {
+			} else if (sizeY == 16) {
+				MIDIFader fader = new MIDIFader(null, this.midiChannel, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount, this.horizontal);
+				new Thread(fader).start();
 				String[] midiOutOptions = monome.getMidiOutOptions(this.index);
 				for (int i = 0; i < midiOutOptions.length; i++) {
 					if (midiOutOptions[i] == null) {
@@ -158,8 +190,8 @@ public class MIDIFadersPage implements Page {
 					}
 					Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 					if (recv != null) {
-						MIDIFader fader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount);
-						new Thread(fader).start();
+						MIDIFader midiFader = new MIDIFader(recv, this.midiChannel, cc, startVal, endVal, this.buttonValuesLarge, this.monome, x, startY, endY, this.index, this.delayAmount, this.horizontal);
+						new Thread(midiFader).start();
 					}
 				}
 			}
@@ -187,12 +219,26 @@ public class MIDIFadersPage implements Page {
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
 	public void redrawMonome() {
-		for (int x=0; x < this.monome.sizeX; x++) {
-			for (int y=0; y < this.monome.sizeY; y++) {
+		int sizeX = this.monome.sizeX;
+		int sizeY = this.monome.sizeY;
+		if (horizontal) {
+			sizeX = this.monome.sizeY;
+			sizeY = this.monome.sizeX;
+		}
+		for (int x=0; x < sizeX; x++) {
+			for (int y=0; y < sizeY; y++) {
 				if (this.buttonFaders[x] <= y) {
-					this.monome.led(x, y, 1, this.index);
+					if (horizontal) {
+						this.monome.led(y, x, 1, this.index);
+					} else {
+						this.monome.led(x, y, 1, this.index);
+					}
 				} else {
-					this.monome.led(x, y, 0, this.index);
+					if (horizontal) {
+						this.monome.led(y, x, 0, this.index);
+					} else {
+						this.monome.led(x, y, 0, this.index);
+					}
 				}
 			}
 		}
@@ -265,7 +311,7 @@ public class MIDIFadersPage implements Page {
 		xml += "      <delayamount>" + this.delayAmount + "</delayamount>\n";
 		xml += "      <midichannel>" + (this.midiChannel + 1) + "</midichannel>\n";
 		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
-		
+		xml += "      <horizontal>" + (this.horizontal == true ? "true" : "false") + "</horizontal>\n";
 		/*
 		xml += "      <ccoffsetADC>" + this.pageADCOptions.getCcOffset() + "</ccoffsetADC>\n";
 		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
@@ -373,6 +419,7 @@ public class MIDIFadersPage implements Page {
 		this.setDelayAmount(this.monome.readConfigValue(pageElement, "delayamount"));
 		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
 		this.setCCOffset(this.monome.readConfigValue(pageElement, "ccoffset"));
+		this.setHorizontal(this.monome.readConfigValue(pageElement, "horizontal"));
 		/*
 		nl = pageElement.getElementsByTagName("ccoffsetADC");
 		el = (Element) nl.item(0);
