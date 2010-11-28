@@ -444,5 +444,20 @@ public class AbletonOSCControl implements AbletonControl {
 		refreshState();
 		refreshAllTracks();
 		ConfigurationFactory.getConfiguration().redrawAbletonPages();
+	}
+
+	public void setSelection(int widthOffset, int sceneOffset, int width,
+			int height) {
+		Object args[] = new Object[4];
+		args[0] = widthOffset;
+		args[1] = sceneOffset;
+		args[2] = width;
+		args[3] = height;
+		OSCMessage msg = new OSCMessage("/live/selection", args);
+		try {
+			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
 	}	
 }

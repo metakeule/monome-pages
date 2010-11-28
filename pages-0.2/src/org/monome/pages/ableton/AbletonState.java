@@ -30,6 +30,12 @@ public class AbletonState {
 		return tracks;
 	}
 	
+	public void removeTrack(int trackId) {
+		if (tracks.containsKey(new Integer(trackId))) {
+			tracks.put(new Integer(trackId), null);
+		}
+	}
+	
 	public int getOverdub() {
 		return overdub;
 	}

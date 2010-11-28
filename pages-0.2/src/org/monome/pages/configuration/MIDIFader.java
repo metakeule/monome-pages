@@ -75,6 +75,8 @@ public class MIDIFader implements Runnable {
 	 * 
 	 */
 	private int[] buttonValues;
+	
+	private boolean horizontal;
 
 	/**
 	 * @param recv
@@ -91,7 +93,8 @@ public class MIDIFader implements Runnable {
 	 * @param delayAmount
 	 */
 	public MIDIFader(Receiver recv, int channel, int cc, int startVal, int endVal, int[] buttonValues, 
-			MonomeConfiguration monome, int col, int startY, int endY, int pageIndex, int delayAmount) {
+			MonomeConfiguration monome, int col, int startY, int endY, int pageIndex, int delayAmount,
+			boolean horizontal) {
 
 		this.recv = recv;
 		this.channel = channel;
@@ -105,7 +108,8 @@ public class MIDIFader implements Runnable {
 		this.endY = endY;
 		this.pageIndex = pageIndex;
 		this.buttonValues = buttonValues;
-		this.delayAmount = delayAmount;		
+		this.delayAmount = delayAmount;
+		this.horizontal = horizontal;
 	}
 
 	/* (non-Javadoc)
@@ -131,12 +135,25 @@ public class MIDIFader implements Runnable {
 		int curButton = this.startY; 
 
 		for (int i = this.startVal; i != this.endVal + valueDirection; i += valueDirection) {
-			if (valueDirection == 1) {		
-				if (msgs >= this.buttonValues[curButton]) {
+			if (valueDirection == 1) {
+				int curValue = this.buttonValues[curButton];
+				if (msgs >= curValue) {
 					if (buttonDirection == -1) {
-						this.monome.led(this.col, curButton, 1, this.pageIndex);
+						if (this.recv == null) {
+							if (horizontal) {
+								this.monome.led(curButton, this.col, 1, this.pageIndex);
+							} else {
+								this.monome.led(this.col, curButton, 1, this.pageIndex);
+							}
+						}
 					} else {
-						this.monome.led(this.col, curButton, 0, this.pageIndex);
+						if (this.recv == null) {
+							if (horizontal) {
+								this.monome.led(curButton, this.col, 0, this.pageIndex);
+							} else {
+								this.monome.led(this.col, curButton, 0, this.pageIndex);
+							}
+						}
 					}
 					curButton += buttonDirection;
 					if (curButton < 0) {
@@ -146,9 +163,21 @@ public class MIDIFader implements Runnable {
 			} else {
 				if (msgs < this.buttonValues[curButton]) {
 					if (buttonDirection == -1) {
-						this.monome.led(this.col, curButton, 1, this.pageIndex);
+						if (this.recv == null) {
+							if (horizontal) {
+								this.monome.led(curButton, this.col, 1, this.pageIndex);
+							} else {
+								this.monome.led(this.col, curButton, 1, this.pageIndex);
+							}
+						}
 					} else {
-						this.monome.led(this.col, curButton, 0, this.pageIndex);
+						if (this.recv == null) {
+							if (horizontal) {
+								this.monome.led(curButton, this.col, 0, this.pageIndex);
+							} else {
+								this.monome.led(this.col, curButton, 0, this.pageIndex);
+							}
+						}
 					}
 					curButton += buttonDirection;
 					if (curButton < 0) {

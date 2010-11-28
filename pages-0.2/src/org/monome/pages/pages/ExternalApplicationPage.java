@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.sound.midi.MidiMessage;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
+import org.monome.pages.gui.Main;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.w3c.dom.Element;
 
@@ -89,6 +91,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void stopOSC() {		
 		if (this.oscIn != null) {
+			this.oscIn.removeListener("/sys/prefix");
 			this.oscIn.removeListener(this.prefix + "/led");
 			this.oscIn.removeListener(this.prefix + "/led_col");
 			this.oscIn.removeListener(this.prefix + "/led_row");
@@ -108,6 +111,11 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		System.out.println("External page sending on port " + this.outPort);
 		this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
 		this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
+		if (this.oscIn == null) {
+			JOptionPane.showMessageDialog(Main.getDesktopPane(), "External Application Page was unable to bind to port " + this.inPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		this.oscIn.addListener("/sys/prefix", this);
 		this.oscIn.addListener(this.prefix + "/led", this);
 		this.oscIn.addListener(this.prefix + "/led_col", this);
 		this.oscIn.addListener(this.prefix + "/led_row", this);
@@ -215,13 +223,23 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
+		Object[] args = msg.getArguments();
+		if (msg.getAddress().compareTo("/sys/prefix") == 0) {
+			if (args.length == 1) {
+				this.setPrefix((String) args[0]);
+			} else if (args.length == 2) {
+				this.setPrefix((String) args[1]);
+			}
+			stopOSC();
+			initOSC();
+		}
+		
 		// only process messages from the external application
 		if (!msg.getAddress().contains(this.prefix)) {
 			return;
 		}
 		// handle a monome clear request from the external application
 		if (msg.getAddress().contains("clear")) {
-			Object[] args = msg.getArguments();
 			int int_arg = 0;
 			if (args.length > 0) {
 				if (!(args[0] instanceof Integer)) {
@@ -234,7 +252,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 
 		// handle a monome led_col request from the external application
 		if (msg.getAddress().contains("led_col")) {
-			Object[] args = msg.getArguments();
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {
@@ -247,7 +264,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 
 		// handle a monome led_row request from the external application
 		if (msg.getAddress().contains("led_row")) {
-			Object[] args = msg.getArguments();
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {
@@ -260,7 +276,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 
 		// handle a monome led request from the external application
 		else if (msg.getAddress().contains("led")) {
-			Object[] args = msg.getArguments();
 			int[] int_args = {0, 0, 0};
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {
@@ -272,7 +287,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		}
 		
 		else if (msg.getAddress().contains("clear")) {
-			Object[] args = msg.getArguments();
 			int[] int_args = {0};
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {

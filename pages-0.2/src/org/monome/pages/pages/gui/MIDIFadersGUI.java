@@ -7,6 +7,8 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 
 import org.monome.pages.pages.MIDIFadersPage;
+import java.awt.Dimension;
+import javax.swing.JCheckBox;
 
 public class MIDIFadersGUI extends JPanel {
 
@@ -20,6 +22,8 @@ public class MIDIFadersGUI extends JPanel {
 	private JLabel channelLBL = null;
 	private JTextField channelTF = null;
 	private JButton updatePrefsBtn = null;
+	private JCheckBox horizontalCB = null;
+	private JLabel horizontalLbl = null;
 
 	/**
 	 * This is the default constructor
@@ -36,7 +40,10 @@ public class MIDIFadersGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(180, 160);
+		horizontalLbl = new JLabel();
+		horizontalLbl.setBounds(new Rectangle(40, 105, 136, 21));
+		horizontalLbl.setText("Horizontal Mode");
+		this.setSize(205, 176);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		setName("MIDI Faders Page");
@@ -47,6 +54,8 @@ public class MIDIFadersGUI extends JPanel {
 		this.add(getChannelLBL(), null);
 		this.add(getChannelTF(), null);
 		this.add(getUpdatePrefsBtn(), null);
+		this.add(getHorizontalCB(), null);
+		this.add(horizontalLbl, null);
 	}
 	
 	public void setName(String name) {
@@ -61,7 +70,7 @@ public class MIDIFadersGUI extends JPanel {
 	private JLabel getPageLabel() {
 		if (pageLabel == null) {
 			pageLabel = new JLabel();
-			pageLabel.setBounds(new Rectangle(5, 5, 166, 21));
+			pageLabel.setBounds(new Rectangle(5, 5, 181, 21));
 		}
 		return pageLabel;
 	}
@@ -155,17 +164,32 @@ public class MIDIFadersGUI extends JPanel {
 	private JButton getUpdatePrefsBtn() {
 		if (updatePrefsBtn == null) {
 			updatePrefsBtn = new JButton();
-			updatePrefsBtn.setBounds(new Rectangle(10, 110, 146, 21));
+			updatePrefsBtn.setBounds(new Rectangle(10, 135, 165, 23));
 			updatePrefsBtn.setText("Update Preferences");
 			updatePrefsBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					page.setDelayAmount(getDelayTF().getText());
 					page.setCCOffset(getCcOffsetTF().getText());
 					page.setMidiChannel(getChannelTF().getText());
+					page.setHorizontal(getHorizontalCB().isSelected());
+					page.redrawMonome();
 				}
 			});
 		}
 		return updatePrefsBtn;
+	}
+
+	/**
+	 * This method initializes horizontalCB	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	public JCheckBox getHorizontalCB() {
+		if (horizontalCB == null) {
+			horizontalCB = new JCheckBox();
+			horizontalCB.setBounds(new Rectangle(15, 105, 21, 21));
+		}
+		return horizontalCB;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

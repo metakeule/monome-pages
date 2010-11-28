@@ -227,35 +227,28 @@ public class Configuration {
 	 * Binds to MonomeSerial input/output ports
 	 */
 	public void startMonomeSerialOSC() {
-		try {
+		if (this.monomeSerialOSCPortIn == null) {
+			this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
 			if (this.monomeSerialOSCPortIn == null) {
-				this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
-				System.out.println("Listening on port " + this.monomeSerialOSCInPortNumber);
-				if (this.monomeSerialOSCPortIn == null) {
-					JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + this.monomeSerialOSCInPortNumber + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				discoverOSCListener = new DiscoverOSCListener();
-				this.monomeSerialOSCPortIn.addListener("/sys/devices", discoverOSCListener);
-				this.monomeSerialOSCPortIn.addListener("/sys/prefix", discoverOSCListener);
-				this.monomeSerialOSCPortIn.addListener("/sys/type", discoverOSCListener);
-				this.monomeSerialOSCPortIn.addListener("/sys/cable", discoverOSCListener);
-				this.monomeSerialOSCPortIn.addListener("/sys/offset", discoverOSCListener);
-				this.monomeSerialOSCPortIn.addListener("/sys/serial", discoverOSCListener);
-				
-				for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-					initMonome(monomeConfig);
-				}
+				JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + this.monomeSerialOSCInPortNumber + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			discoverOSCListener = new DiscoverOSCListener();
+			this.monomeSerialOSCPortIn.addListener("/sys/devices", discoverOSCListener);
+			this.monomeSerialOSCPortIn.addListener("/sys/prefix", discoverOSCListener);
+			this.monomeSerialOSCPortIn.addListener("/sys/type", discoverOSCListener);
+			this.monomeSerialOSCPortIn.addListener("/sys/cable", discoverOSCListener);
+			this.monomeSerialOSCPortIn.addListener("/sys/offset", discoverOSCListener);
+			this.monomeSerialOSCPortIn.addListener("/sys/serial", discoverOSCListener);
 			
+			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+				initMonome(monomeConfig);
 			}
-			if (this.monomeSerialOSCPortOut == null) {
-				this.monomeSerialOSCPortOut = new OSCPortOut(InetAddress.getByName(this.monomeHostname), this.monomeSerialOSCOutPortNumber);
-			}
-		} catch (SocketException e) {
-			e.printStackTrace();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+		
+		}
+		if (this.monomeSerialOSCPortOut == null) {
+			this.monomeSerialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(this.monomeHostname, this.monomeSerialOSCOutPortNumber);
 		}		
 	}
 
@@ -266,8 +259,10 @@ public class Configuration {
 		if (this.monomeSerialOSCPortIn != null) {
 			if (this.monomeSerialOSCPortIn.isListening()) {
 				this.monomeSerialOSCPortIn.removeAllListeners();
-				this.monomeSerialOSCPortIn.stopListening();				
+				this.monomeSerialOSCPortIn.stopListening();
+				this.monomeSerialOSCPortIn.close();
 			}
+			OSCPortFactory.getInstance().destroyOSCPortIn(this.monomeSerialOSCInPortNumber);
 			this.monomeSerialOSCPortIn = null;
 		}
 
@@ -748,7 +743,9 @@ public class Configuration {
 				this.abletonOSCPortIn.close();
 			}
 			this.abletonOSCPortIn = new OSCPortIn(this.abletonOSCInPortNumber);
+			this.abletonOSCPortIn.addListener("/live/track", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/track/info", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/name/track", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/clip/info", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/state", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/mute", this.abletonOSCListener);
@@ -962,6 +959,20 @@ public class Configuration {
 						}
 					}
 					
+					int pageChangeDelay = 0;
+					nl = monomeElement.getElementsByTagName("pageChangeDelay");
+					el = (Element) nl.item(0);
+					if (el != null) {
+						nl = el.getChildNodes();
+						String sPageChangeDelay = ((Node) nl.item(0)).getNodeValue();
+						try {
+							pageChangeDelay = Integer.parseInt(sPageChangeDelay);
+						} catch (NumberFormatException ex) {
+							ex.printStackTrace();
+						}
+					}
+					
+					
 					NodeList rootNL3 = monomeElement.getElementsByTagName("MIDIPageChangeRule");
 					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 					for (int i2=0; i2 < rootNL3.getLength(); i2++) {
@@ -994,6 +1005,7 @@ public class Configuration {
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
 					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
 					monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+					monomeConfig.pageChangeDelay = pageChangeDelay;
 										
 					String s;
 					float [] min = {0,0,0,0};
