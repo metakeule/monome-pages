@@ -33,6 +33,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private MonomeConfiguration monome;
 	private int[] midiChannels = new int[255];
 	private int[] midiNotes = new int[255];
+	private int[] pageChangeDelays = new int[255];
 	private int pageIndex = 0;
 	private JLabel pageChangeTimerLBL = null;
 	private JTextField pageChangeDelayTF = null;
@@ -56,6 +57,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		for (int i = 0; i < midiPageChangeRules.size(); i++) {
 			midiChannels[i] = midiPageChangeRules.get(i).getChannel();
 			midiNotes[i] = midiPageChangeRules.get(i).getNote();
+			pageChangeDelays[i] = monome.pageChangeDelays[i];
 		}
 	}
 
@@ -139,18 +141,20 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			value = Integer.parseInt(getNoteTF().getText());
 			midiNotes[pageIndex] = value;
 			value = Integer.parseInt(getPageChangeDelayTF().getText());
-			monome.pageChangeDelay = value;
+			pageChangeDelays[pageIndex] = value;
 		} catch (NumberFormatException ex) {
 		}
 	}
 	
 	private void populateTextFields() {
 		String pageName = (String) getPageCB().getSelectedItem();
-		String[] pieces = pageName.split(":");
-		pageIndex = Integer.parseInt(pieces[0]) - 1;
-		getChannelTF().setText(""+(midiChannels[pageIndex] + 1));
-		getNoteTF().setText(""+midiNotes[pageIndex]);
-		getPageChangeDelayTF().setText("" + this.monome.pageChangeDelay);
+		if (pageName != null) {
+			String[] pieces = pageName.split(":");
+			pageIndex = Integer.parseInt(pieces[0]) - 1;
+			getChannelTF().setText(""+(midiChannels[pageIndex] + 1));
+			getNoteTF().setText(""+midiNotes[pageIndex]);
+			getPageChangeDelayTF().setText("" + pageChangeDelays[pageIndex]);
+		}
 	}
 
 	/**
@@ -280,6 +284,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 					for (int i = 0; i < monome.pages.size(); i++) {
 						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
 						midiPageChangeRules.add(mpcr);
+						monome.pageChangeDelays[i] = pageChangeDelays[i];
 					}
 					monome.midiPageChangeRules = midiPageChangeRules;
 					cancel();

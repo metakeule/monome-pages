@@ -84,6 +84,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.monome = monome;
 		this.index = index;
 		gui = new ExternalApplicationGUI(this);
+		this.initOSC();
 	}
 
 	/**

@@ -239,6 +239,7 @@ public class Main extends JFrame {
 					getFrame().setTitle("Pages : " + name);
 					ConfigurationFactory.setConfiguration(new Configuration(name));
 					ConfigurationFactory.getConfiguration().initAbleton();
+					configurationFile = null;
 				}
 					
 			});
@@ -347,6 +348,7 @@ public class Main extends JFrame {
 			}
 			MonomeConfigurationFactory.removeMonomeConfigurations();
 		}
+		configurationFile = null;
 	}
 
 	/**

@@ -161,7 +161,7 @@ public class AbletonSceneLauncherPage implements Page {
 				}
 				// if this is the bottom row then arm/disarm track number x
 				else if (y == this.monome.sizeY - 1 && this.gui.getDisableArmCB().isSelected() == false) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2));
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getArm() == 0) {
@@ -174,7 +174,7 @@ public class AbletonSceneLauncherPage implements Page {
 				// if this is the 2nd from the bottom row then solo/unsolo
 				else if ((y == this.monome.sizeY - 2 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false) ||
 						  y == this.monome.sizeY - 1 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2));
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getSolo() == 0) {
@@ -190,7 +190,7 @@ public class AbletonSceneLauncherPage implements Page {
 						 (y == this.monome.sizeY - 2 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == true) ||
 						 (y == this.monome.sizeY - 2 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == false) ||
                          (y == this.monome.sizeY - 1 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == true)) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2));
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getMute() == 0) {
@@ -215,7 +215,7 @@ public class AbletonSceneLauncherPage implements Page {
 						 (y == this.monome.sizeY - 2 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == true && this.gui.getDisableArmCB().isSelected() == false && this.gui.getDisableSoloCB().isSelected() == true) ||
 						 
                          (y == this.monome.sizeY - 1 && this.gui.getDisableStopCB().isSelected() == false && this.gui.getDisableMuteCB().isSelected() == true && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == true)) {
-					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
+					int track_num = x + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 					this.stopTrack(track_num);
 					this.viewTrack(track_num);
 				}

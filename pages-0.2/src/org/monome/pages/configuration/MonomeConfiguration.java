@@ -133,7 +133,7 @@ public class MonomeConfiguration {
 	 */
 	private boolean pageChanged = false;
 	
-	public int pageChangeDelay = 0;
+	public int[] pageChangeDelays = new int[255];
 	
 	/**
 	 * The current MIDI clock tick number (resets every measure, 1/96 resolution)
@@ -347,8 +347,8 @@ public class MonomeConfiguration {
 		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 1) {
 			this.pageChangeMode = 1;
 			this.pageChanged = false;
-			if (this.pageChangeDelay > 0) {
-				new Thread(new PageChangeTimer(this, this.pageChangeDelay)).start();
+			if (this.pageChangeDelays[this.curPage] > 0) {
+				new Thread(new PageChangeTimer(this, this.pageChangeDelays[this.curPage])).start();
 			}
 			this.clear(0, -1);
 			this.drawPatternState();
@@ -908,7 +908,6 @@ public class MonomeConfiguration {
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
 		xml += "    <usePageChangeButton>" + (this.usePageChangeButton ? "true" : "false") + "</usePageChangeButton>\n";
 		xml += "    <useMIDIPageChanging>" + (this.useMIDIPageChanging ? "true" : "false") + "</useMIDIPageChanging>\n";
-		xml += "    <pageChangeDelay>" + this.pageChangeDelay + "</pageChangeDelay>\n";
 		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++ ) {
 			if (pageChangeMidiInDevices[i] == null || pageChangeMidiInDevices[i].compareTo("") == 0) {
 				continue;
@@ -942,6 +941,7 @@ public class MonomeConfiguration {
 					}
 					xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(midiOutDevices[i][j]) + "</selectedmidioutport>\n"; 
 				}
+				xml += "      <pageChangeDelay>" + this.pageChangeDelays[i] + "</pageChangeDelay>\n";
 				xml += "    </page>\n";
 			}
 		}
