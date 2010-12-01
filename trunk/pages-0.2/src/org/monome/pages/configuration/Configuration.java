@@ -959,20 +959,6 @@ public class Configuration {
 						}
 					}
 					
-					int pageChangeDelay = 0;
-					nl = monomeElement.getElementsByTagName("pageChangeDelay");
-					el = (Element) nl.item(0);
-					if (el != null) {
-						nl = el.getChildNodes();
-						String sPageChangeDelay = ((Node) nl.item(0)).getNodeValue();
-						try {
-							pageChangeDelay = Integer.parseInt(sPageChangeDelay);
-						} catch (NumberFormatException ex) {
-							ex.printStackTrace();
-						}
-					}
-					
-					
 					NodeList rootNL3 = monomeElement.getElementsByTagName("MIDIPageChangeRule");
 					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 					for (int i2=0; i2 < rootNL3.getLength(); i2++) {
@@ -1005,7 +991,6 @@ public class Configuration {
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
 					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
 					monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
-					monomeConfig.pageChangeDelay = pageChangeDelay;
 										
 					String s;
 					float [] min = {0,0,0,0};
@@ -1094,6 +1079,21 @@ public class Configuration {
 								}
 							}
 							page.configure(pageElement);
+							
+							
+							int pageChangeDelay = 0;
+							nl = pageElement.getElementsByTagName("pageChangeDelay");
+							el = (Element) nl.item(0);
+							if (el != null) {
+								nl = el.getChildNodes();
+								String sPageChangeDelay = ((Node) nl.item(0)).getNodeValue();
+								try {
+									pageChangeDelay = Integer.parseInt(sPageChangeDelay);
+								} catch (NumberFormatException ex) {
+									ex.printStackTrace();
+								}
+							}
+							monomeConfig.pageChangeDelays[monomeConfig.curPage] = pageChangeDelay;
 						}
 					}
 					

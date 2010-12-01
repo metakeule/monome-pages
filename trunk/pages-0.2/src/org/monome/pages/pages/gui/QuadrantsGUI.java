@@ -1,6 +1,5 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,13 +34,11 @@ public class QuadrantsGUI extends JPanel implements ActionListener {
 	
 	private void initialize() {
 		
-		setLayout(null);		
+		setLayout(new GridLayout(2, 2));		
 		pageNameLBL = new JLabel("Page " + (page.getIndex() + 1) + ": Quadrants Page");
 		pageNameLBL.setBounds(0, 0, 250, 14);
 		add(pageNameLBL);
-		setSize(700,400);
-		JPanel subPanel = new JPanel();
-		subPanel.setLayout(new GridLayout(1, 1));
+		setSize(400,300);
 		quadrantBG = new ButtonGroup();
 		quadrantRB = new ArrayList<JRadioButton>();
 		
@@ -56,34 +53,16 @@ public class QuadrantsGUI extends JPanel implements ActionListener {
 			
 			this.quadrantBG.add(rb);
 			this.quadrantRB.add(rb);
-			subPanel.add(rb);
+			add(rb);
 		}
-		subPanel.setBounds(150, 0, 300, 40);
-		add(subPanel);
-		
-		subPanel = new JPanel();
-		subPanel.setLayout(new GridLayout(2, 2));
-		subPanel.setBounds(0, 40, 300, 300);
-		
 		QuadrantConfiguration quadConf = page.quadrantConfigurations.get(this.selectedQuadConf);
-		for (int i = 0; i < quadConf.getNumQuads(); i++) {
-			JPanel quadPanel = new JPanel();
-			quadPanel.setLayout(null);
-			quadPanel.setSize(quadConf.getWidth(i) * 15, (quadConf.getHeight(i) * 15) + 40);
-			//quadPanel.setPreferredSize(new java.awt.Dimension(200, 200));
-			int[] quad = quadConf.getQuad(i);
-			quadPanel.setBackground(new Color((int) (Math.random() * 8000)));
-			quadPanel.setBounds(quad[0] * 15, (quad[2] * 15) + 40, quad[1] * 15, (quad[3] * 15) + 40);
-			//quadConf.getMonomeConfiguration(i)
-			
+		for (int i = 0; i < quadConf.getNumQuads(); i++) {			
 			JButton newPageButton = new JButton();
 			newPageButton.setText("New Page " + i);
 			newPageButton.setBounds(0, 0, 100, 20);
 			newPageButton.addActionListener(this);
-			quadPanel.add(newPageButton);
-			subPanel.add(quadPanel);
+			add(newPageButton);			
 		}
-		add(subPanel);
 	}
 	
 	public void actionPerformed(ActionEvent e) {

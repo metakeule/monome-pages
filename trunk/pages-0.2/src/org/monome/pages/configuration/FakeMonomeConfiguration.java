@@ -127,6 +127,13 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 	}
 
 	public String toXml() {
-		return super.toXml();
+		String xml = "";
+		xml += "  <monome>\n";
+		xml += "    <prefix>" + this.prefix + "</prefix>\n";
+		xml += "    <serial>" + this.serial + "</serial>\n";
+		xml += "    <sizeX>" + this.sizeX + "</sizeX>\n";
+		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
+		xml += "  </monome>\n";
+		return xml;
 	}
 }
