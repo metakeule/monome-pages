@@ -69,8 +69,10 @@ class MonomeThread (threading.Thread):
                     act = 1 - (act >> 4)
                 if act == 0 or act == 1:
                     x = b2 >> 4
+                    x += self.deviceInfo['offsetX']
                     x = adjustCableX(x, self.deviceInfo);
                     y = b2 & 0x0F
+                    y += self.deviceInfo['offsetY']
                     y = adjustCableY(y, self.deviceInfo);
                     if debugMode == 1:
                         print "%s/press %d %d %d" % (self.deviceInfo['prefix'], x, y, act)
@@ -150,9 +152,13 @@ def ledRowHandler(addr, tags, stuff, source):
     if debugMode == 1:
         print addr + " " + str(stuff)
     matchingDevices = getDevicesFromAddress(addr)
+    didDouble = 0
     for i in range(len(stuff)):
         if i == 0:
             row = stuff[i]
+            continue
+        if didDouble == 1:
+            didDouble = 0
             continue
         for device in matchingDevices:
             width = getWidth(device['type'], device['grids'])
@@ -167,12 +173,12 @@ def ledRowHandler(addr, tags, stuff, source):
                 fortyHCmd = 0x70
                 seriesCmd = 0x40
                 seriesDoubleCmd = 0x60
-                deviceRow = adjustCableY(row, device)
+                deviceRow = adjustCableY(rowStartY, device)
             else:
                 fortyHCmd = 0x80
                 seriesCmd = 0x50
                 seriesDoubleCmd = 0x70
-                deviceRow = adjustCableX(row, device)
+                deviceRow = adjustCableX(rowStartY, device)
             if len(stuff) - i == 1 or device['type'] == "40h":
                 if device['type'] == "40h":
                     b1 = fortyHCmd + deviceRow
@@ -181,19 +187,24 @@ def ledRowHandler(addr, tags, stuff, source):
                 b2 = stuff[i]
                 device['device'].write(chr(b1) + chr(b2))
             else:
-                b1 = seriesDoubleCmd + deviceRow
-                b2 = stuff[i]
-                b3 = stuff[++i]
-                device['device'].write(chr(b1) + chr(b2) + chr(b3))
+                b1 = chr(int(seriesDoubleCmd) + int(deviceRow))
+                b2 = chr(stuff[i])
+                b3 = chr(stuff[i+1])
+                device['device'].write(str(b1) + str(b2) + str(b3))
+                didDouble = 1
     return None
 
 def ledColHandler(addr, tags, stuff, source):
     if debugMode == 1:
         print addr + " " + str(stuff)
+    didDouble = 0
     matchingDevices = getDevicesFromAddress(addr)
     for i in range(len(stuff)):
         if i == 0:
             col = stuff[i]
+            continue
+        if didDouble == 1:
+            didDouble = 0
             continue
         for device in matchingDevices:
             width = getWidth(device['type'], device['grids'])
@@ -208,12 +219,12 @@ def ledColHandler(addr, tags, stuff, source):
                 fortyHCmd = 0x80
                 seriesCmd = 0x50
                 seriesDoubleCmd = 0x70
-                deviceCol = adjustCableX(col, device)
+                deviceCol = adjustCableX(colStartX, device)
             else:
                 fortyHCmd = 0x70
                 seriesCmd = 0x40
                 seriesDoubleCmd = 0x60
-                deviceCol = adjustCableY(col, device)
+                deviceCol = adjustCableY(colStartX, device)
             if len(stuff) - i == 1 or device['type'] == "40h":
                 if device['type'] == "40h":
                     b1 = fortyHCmd + deviceCol
@@ -222,10 +233,11 @@ def ledColHandler(addr, tags, stuff, source):
                 b2 = stuff[i]
                 device['device'].write(chr(b1) + chr(b2))
             else:
-                b1 = seriesDoubleCmd + deviceCol
-                b2 = stuff[i]
-                b3 = stuff[++i]
-                device['device'].write(chr(b1) + chr(b2) + chr(b3))
+                b1 = chr(int(seriesDoubleCmd) + int(deviceCol))
+                b2 = chr(stuff[i])
+                b3 = chr(stuff[i+1])
+                device['device'].write(str(b1) + str(b2) + str(b3))
+                didDouble = 1
     return None
 
 def frameHandler(addr, tags, stuff, source):
@@ -268,10 +280,12 @@ def prefixHandler(addr, tags, stuff, source):
     if len(stuff) == 1:
         for i,deviceInfo in enumerate(devices):
             devices[i]['prefix'] = stuff[0]
+            initOscCallbacks(stuff[0])
     if len(stuff) == 2:
         if stuff[0] >= 0 and stuff[0] < len(devices):
             i = stuff[0]
             devices[i]['prefix'] = stuff[1]
+            initOscCallbacks(stuff[1])
     return None
 
 def offsetHandler(addr, tags, stuff, source):
@@ -469,12 +483,23 @@ def gridsHandler(addr, tags, stuff, source):
             devices[i]['device'].write(chr(b1))
     return None
 
+def initOscCallbacks(prefix):
+    if debugMode == 1:
+        print "initializing OSC callbacks for " + prefix
+    oscServer.addMsgHandler(prefix + "/led", ledHandler)
+    oscServer.addMsgHandler(prefix + "/led_row", ledRowHandler)
+    oscServer.addMsgHandler(prefix + "/led_col", ledColHandler)
+    oscServer.addMsgHandler(prefix + "/frame", frameHandler)
+    oscServer.addMsgHandler(prefix + "/clear", clearHandler)
+    oscServer.addMsgHandler(prefix + "/adc_enable", enableADCHandler)
+    oscServer.addMsgHandler(prefix + "/tiltmode", tiltmodeHandler)
+
 def init():
     deviceDescriptions = d2xx.listDevices(d2xx.OPEN_BY_DESCRIPTION)
     deviceSerials = d2xx.listDevices(d2xx.OPEN_BY_SERIAL_NUMBER)
     for i, description in enumerate(deviceDescriptions):
         serial = deviceSerials[i]
-        if description[:6] != "monome":
+        if description[:6] != "monome" and description[:2] != "mk":
             print "ignoring non-monome device id " + str(i) + ": " + description + " [" + serial + "]"
             continue
         device = d2xx.open(i)
@@ -482,13 +507,7 @@ def init():
         type = description[7:]
         grids = 0
         prefix = "/" + type
-        oscServer.addMsgHandler(prefix + "/led", ledHandler)
-        oscServer.addMsgHandler(prefix + "/led_row", ledRowHandler)
-        oscServer.addMsgHandler(prefix + "/led_col", ledColHandler)
-        oscServer.addMsgHandler(prefix + "/frame", frameHandler)
-        oscServer.addMsgHandler(prefix + "/clear", clearHandler)
-        oscServer.addMsgHandler(prefix + "/adc_enable", enableADCHandler)
-        oscServer.addMsgHandler(prefix + "/tiltmode", tiltmodeHandler)
+        initOscCallbacks(prefix)
         deviceInfo = {
             'description': description, 
             'serial': deviceSerials[i], 
