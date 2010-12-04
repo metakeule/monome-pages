@@ -45,6 +45,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
+import org.apache.log4j.PropertyConfigurator;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
@@ -53,6 +56,7 @@ import org.monome.pages.configuration.MonomeConfigurationFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class Main extends JFrame {
 
@@ -83,6 +87,8 @@ public class Main extends JFrame {
 	private JMenu midiOutMenu = null;
 	
 	private File configurationFile = null;
+	
+	public static Logger logger = Logger.getLogger("socketLogger");
 			
 	/**
 	 * And away we go!
@@ -90,6 +96,10 @@ public class Main extends JFrame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		PropertyConfigurator.configure("conf/log4j.properties");
+		StdOutErrLog.tieSystemOutAndErrToLog();
+		logger.error("Pages starting up");
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -110,6 +120,42 @@ public class Main extends JFrame {
 				// TODO: load filename passed as cmd line arg
 			}
 		});
+	}
+	
+	public static class StdOutErrLog {
+
+	    public static void tieSystemOutAndErrToLog() {
+	        System.setOut(createLoggingProxy(System.out));
+	        System.setErr(createLoggingProxy(System.err));
+	    }
+
+	    public static PrintStream createLoggingProxy(final PrintStream realPrintStream) {
+	        return new PrintStream(realPrintStream) {
+	            public void print(final String string) {
+	                try {
+	                	if (System.getProperty("user.name") != null) {
+	                		MDC.put("username", System.getProperty("user.name"));
+	                	}
+		                if (System.getProperty("os.name") != null) {
+		                	MDC.put("osname", System.getProperty("os.name"));
+		                }
+		                if (System.getProperty("os.version") != null) {
+		                	MDC.put("osversion", System.getProperty("os.version"));
+		                }
+		                if (System.getProperty("user.country") != null) {
+		                	MDC.put("region", System.getProperty("user.country"));
+		                }
+		                logger.error(string);
+		                MDC.remove("username");
+		                MDC.remove("osname");
+		                MDC.remove("osversion");
+		                MDC.remove("region");
+	                } catch (Exception e) {
+	                	e.printStackTrace(realPrintStream);
+	                }
+	            }
+	        };
+	    }
 	}
 	
 	public Main() {
