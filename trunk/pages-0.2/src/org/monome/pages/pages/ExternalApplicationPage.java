@@ -282,6 +282,9 @@ public class ExternalApplicationPage implements Page, OSCListener {
 				if (!(args[i] instanceof Integer)) {
 					return;
 				}
+				if (i > 2) {
+					continue;
+				}
 				int_args[i] = ((Integer) args[i]).intValue();
 			}
 			this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
