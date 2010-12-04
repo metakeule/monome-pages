@@ -10,6 +10,7 @@ import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.QuadrantConfiguration;
 import org.monome.pages.pages.gui.QuadrantsGUI;
+import org.monome.pages.pages.gui.QuadrantsGUI256;
 import org.w3c.dom.Element;
 
 public class QuadrantsPage implements Page {
@@ -24,7 +25,7 @@ public class QuadrantsPage implements Page {
 	 */
 	int index;
 	
-	QuadrantsGUI gui;
+	QuadrantsGUI256 gui;
 	
 	public ArrayList<QuadrantConfiguration> quadrantConfigurations;
 	
@@ -33,7 +34,7 @@ public class QuadrantsPage implements Page {
 		this.index = index;
 		this.quadrantConfigurations = new ArrayList<QuadrantConfiguration>();
 		this.createQuadrantConfigurations();
-		gui = new QuadrantsGUI(this, 0);
+		gui = new QuadrantsGUI256(this, 0);
 	}
 	
 	private void createQuadrantConfigurations() {
@@ -202,7 +203,7 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void recreateGUI(int selectedQuadConf) {
-		this.gui = new QuadrantsGUI(this, selectedQuadConf);
+		this.gui = new QuadrantsGUI256(this, selectedQuadConf);
 		MonomeConfigurationFactory.getMonomeConfiguration(index).monomeFrame.redrawPagePanel(this);
 	}
 	

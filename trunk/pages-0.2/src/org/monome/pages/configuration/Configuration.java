@@ -912,7 +912,10 @@ public class Configuration {
 					NodeList nl = monomeElement.getElementsByTagName("prefix");
 					Element el = (Element) nl.item(0);
 					nl = el.getChildNodes();
-					String prefix = ((Node) nl.item(0)).getNodeValue();
+					String prefix = "";
+					if (nl.item(0) != null) {
+						prefix = ((Node) nl.item(0)).getNodeValue();
+					}	
 					
 					// set the monome prefix
 					nl = monomeElement.getElementsByTagName("serial");
@@ -1154,6 +1157,9 @@ public class Configuration {
 
 		// monome and page configuration
 		for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+			if (MonomeConfigurationFactory.getMonomeConfiguration(i) instanceof FakeMonomeConfiguration) {
+				continue;
+			}
 			xml += MonomeConfigurationFactory.getMonomeConfiguration(i).toXml();
 		}
 		xml += "</configuration>\n";

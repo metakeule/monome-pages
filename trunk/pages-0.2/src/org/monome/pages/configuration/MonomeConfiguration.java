@@ -912,7 +912,7 @@ public class MonomeConfiguration {
 			if (pageChangeMidiInDevices[i] == null || pageChangeMidiInDevices[i].compareTo("") == 0) {
 				continue;
 			}
-			xml += "      <selectedpagechangemidiinport>" + StringEscapeUtils.escapeXml(pageChangeMidiInDevices[i]) + "</selectedpagechangemidiinport>\n";
+			xml += "    <selectedpagechangemidiinport>" + StringEscapeUtils.escapeXml(pageChangeMidiInDevices[i]) + "</selectedpagechangemidiinport>\n";
 		}
 		for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
 			MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
@@ -942,14 +942,12 @@ public class MonomeConfiguration {
 					xml += "      <selectedmidioutport>" + StringEscapeUtils.escapeXml(midiOutDevices[i][j]) + "</selectedmidioutport>\n"; 
 				}
 				xml += "      <pageChangeDelay>" + this.pageChangeDelays[i] + "</pageChangeDelay>\n";
+				int patternLength = this.patternBanks.get(i).getPatternLength();
+				int quantization = this.patternBanks.get(i).getQuantization();
+				xml += "      <patternlength>" + patternLength + "</patternlength>\n";
+				xml += "      <quantization>" + quantization + "</quantization>\n";
 				xml += "    </page>\n";
 			}
-		}
-		for (int i=0; i < this.numPages; i++) {
-			int patternLength = this.patternBanks.get(i).getPatternLength();
-			int quantization = this.patternBanks.get(i).getQuantization();
-			xml += "    <patternlength>" + patternLength + "</patternlength>\n";
-			xml += "    <quantization>" + quantization + "</quantization>\n";
 		}
 		xml += "  </monome>\n";
 		return xml;

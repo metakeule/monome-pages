@@ -10,6 +10,8 @@ import org.monome.pages.configuration.MIDIFader;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDIFadersGUI;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 /**
@@ -312,6 +314,9 @@ public class MIDIFadersPage implements Page {
 		xml += "      <midichannel>" + (this.midiChannel + 1) + "</midichannel>\n";
 		xml += "      <ccoffset>" + this.ccOffset + "</ccoffset>\n";
 		xml += "      <horizontal>" + (this.horizontal == true ? "true" : "false") + "</horizontal>\n";
+		for (int i = 0; i < 16; i++) {
+			xml += "      <faderPosition" + i + ">" + this.buttonFaders[i] + "</faderPosition" + i + ">\n";
+		}
 		/*
 		xml += "      <ccoffsetADC>" + this.pageADCOptions.getCcOffset() + "</ccoffsetADC>\n";
 		xml += "      <sendADC>" + this.pageADCOptions.isSendADC() + "</sendADC>\n";
@@ -420,6 +425,15 @@ public class MIDIFadersPage implements Page {
 		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
 		this.setCCOffset(this.monome.readConfigValue(pageElement, "ccoffset"));
 		this.setHorizontal(this.monome.readConfigValue(pageElement, "horizontal"));
+		for (int i=0; i < 16; i++) {
+			NodeList nl = pageElement.getElementsByTagName("faderPosition" + i);
+			Element el = (Element) nl.item(0);
+			if (el != null) {
+				nl = el.getChildNodes();
+				String faderPos = ((Node) nl.item(0)).getNodeValue();
+				this.buttonFaders[i] = Integer.parseInt(faderPos);
+			}
+		}
 		/*
 		nl = pageElement.getElementsByTagName("ccoffsetADC");
 		el = (Element) nl.item(0);

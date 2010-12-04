@@ -875,6 +875,15 @@ public class MIDIKeyboardPage implements Page {
 		xml += "      <scaleStr4>" + this.scaleStr[3].toString() + "</scaleStr4>\n";
 		xml += "      <scaleStr5>" + this.scaleStr[4].toString() + "</scaleStr5>\n";
 		xml += "      <scaleStr6>" + this.scaleStr[5].toString() + "</scaleStr6>\n";
+		for (int i = 0; i < 16; i++) {
+			xml += "      <octave" + i + ">" + this.octave[i] + "</octave" + i + ">\n";
+		}
+		xml += "      <myKey>" + myKey + "</myKey>\n";
+		xml += "      <myScale>" + myScale + "</myScale>\n";
+		xml += "      <midiChannel>" + midiChannel + "</midiChannel>\n";
+		xml += "      <accidental>" + accidental + "</accidental>\n";
+		xml += "      <transpose>" + transpose + "</transpose>\n";
+		xml += "      <sustain>" + sustain + "</sustain>\n";
 	
 		/*
 		xml += "      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n";
@@ -993,6 +1002,12 @@ public class MIDIKeyboardPage implements Page {
 
 	public void configure(Element pageElement) {		
 		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
+		this.myKey = Integer.parseInt(this.monome.readConfigValue(pageElement, "myKey"));
+		this.myScale = Integer.parseInt(this.monome.readConfigValue(pageElement, "myScale"));
+		this.midiChannel = Integer.parseInt(this.monome.readConfigValue(pageElement, "midiChannel"));
+		this.accidental = Integer.parseInt(this.monome.readConfigValue(pageElement, "accidental"));
+		this.transpose = Integer.parseInt(this.monome.readConfigValue(pageElement, "transpose"));
+		this.sustain = Integer.parseInt(this.monome.readConfigValue(pageElement, "sustain"));
 		
 		String s[] = new String[6];
 		NodeList nl = null;
@@ -1008,7 +1023,17 @@ public class MIDIKeyboardPage implements Page {
 		if (el != null) {
 			this.setScales(s);
 			this.getScales();
-		}	
+		}
+		
+		for (int i = 0; i < 16; i++) {
+			nl = pageElement.getElementsByTagName("octave" + i);
+			el = (Element) nl.item(0);
+			if (el != null) {
+				nl = el.getChildNodes();
+				int octave = Integer.parseInt(((Node) nl.item(0)).getNodeValue());
+				this.octave[i] = octave;
+			}
+		}
 		
 		/*
 		nl = pageElement.getElementsByTagName("ccoffset");
