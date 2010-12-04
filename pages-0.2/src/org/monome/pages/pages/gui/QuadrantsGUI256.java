@@ -1,6 +1,8 @@
 package org.monome.pages.pages.gui;
 
 import java.awt.GridBagLayout;
+
+import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
@@ -9,7 +11,9 @@ import javax.swing.JRadioButton;
 import java.awt.Dimension;
 import javax.swing.JButton;
 
-public class QuadrantsGUI2 extends JPanel {
+import org.monome.pages.pages.QuadrantsPage;
+
+public class QuadrantsGUI256 extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JLabel pageLabel = null;
@@ -33,12 +37,17 @@ public class QuadrantsGUI2 extends JPanel {
 	private JLabel page4LBL = null;
 	private JButton newPage4BTN = null;
 	private JButton openPage4BTN = null;
+	private int selectedQuadConf = 0;
+	private QuadrantsPage page;
 
 	/**
 	 * This is the default constructor
 	 */
-	public QuadrantsGUI2() {
+	
+	public QuadrantsGUI256(QuadrantsPage page, int selectedQuadConf) {
 		super();
+		this.selectedQuadConf = selectedQuadConf;
+		this.page = page;
 		initialize();
 	}
 
@@ -95,6 +104,11 @@ public class QuadrantsGUI2 extends JPanel {
 		this.add(page4LBL, null);
 		this.add(getNewPage4BTN(), null);
 		this.add(getOpenPage4BTN(), null);
+		ButtonGroup quadrantBG = new ButtonGroup();
+		quadrantBG.add(getQuad1RB());
+		quadrantBG.add(getQuad2RB());
+		quadrantBG.add(getQuad3RB());
+		quadrantBG.add(getQuad4RB());
 	}
 
 	/**
