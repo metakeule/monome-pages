@@ -1002,12 +1002,24 @@ public class MIDIKeyboardPage implements Page {
 
 	public void configure(Element pageElement) {		
 		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
-		this.myKey = Integer.parseInt(this.monome.readConfigValue(pageElement, "myKey"));
-		this.myScale = Integer.parseInt(this.monome.readConfigValue(pageElement, "myScale"));
-		this.midiChannel = Integer.parseInt(this.monome.readConfigValue(pageElement, "midiChannel"));
-		this.accidental = Integer.parseInt(this.monome.readConfigValue(pageElement, "accidental"));
-		this.transpose = Integer.parseInt(this.monome.readConfigValue(pageElement, "transpose"));
-		this.sustain = Integer.parseInt(this.monome.readConfigValue(pageElement, "sustain"));
+		if (this.monome.readConfigValue(pageElement, "myKey") != null) {
+			this.myKey = Integer.parseInt(this.monome.readConfigValue(pageElement, "myKey"));
+		}
+		if (this.monome.readConfigValue(pageElement, "myScale") != null) {
+			this.myScale = Integer.parseInt(this.monome.readConfigValue(pageElement, "myScale"));
+		}
+		if (this.monome.readConfigValue(pageElement, "midiChannel") != null) {
+			this.midiChannel = Integer.parseInt(this.monome.readConfigValue(pageElement, "midiChannel"));
+		}
+		if (this.monome.readConfigValue(pageElement, "accidental") != null) {
+			this.accidental = Integer.parseInt(this.monome.readConfigValue(pageElement, "accidental"));
+		}
+		if (this.monome.readConfigValue(pageElement, "transpose") != null) {
+			this.transpose = Integer.parseInt(this.monome.readConfigValue(pageElement, "transpose"));
+		}
+		if (this.monome.readConfigValue(pageElement, "sustain") != null) {
+			this.sustain = Integer.parseInt(this.monome.readConfigValue(pageElement, "sustain"));
+		}
 		
 		String s[] = new String[6];
 		NodeList nl = null;
