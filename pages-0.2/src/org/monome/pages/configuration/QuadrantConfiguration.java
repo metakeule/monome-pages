@@ -34,7 +34,7 @@ public class QuadrantConfiguration {
 		this.startY.add(numQuads, startY);
 		this.endY.add(numQuads, endY);
 		int index = MonomeConfigurationFactory.getNumMonomeConfigurations();
-		MonomeConfigurationFactory.addFakeMonomeConfiguration(index, "", "", endX - startX, endY - startY, false, false, null, null);
+		MonomeConfigurationFactory.addFakeMonomeConfiguration(index, "", "", endX - startX, endY - startY, false, false, null, null, this);
 		this.monomeConfigs.add(numQuads, (FakeMonomeConfiguration) MonomeConfigurationFactory.getMonomeConfiguration(index));
 		numQuads++;
 	}

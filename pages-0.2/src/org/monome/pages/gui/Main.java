@@ -312,10 +312,10 @@ public class Main extends JFrame {
 						actionClose();
 						File file = fc.getSelectedFile();
 						setConfigurationFile(file);
-						System.out.println("Creating Configuration object");
+						System.out.println("Main: Creating Configuration object");
 						Configuration configuration = new Configuration("Loading");
 						ConfigurationFactory.setConfiguration(configuration);
-						System.out.println("Reading configuration file");
+						System.out.println("Main: Reading configuration file");
 						configuration.readConfigurationFile(file);
 						getConfigurationMenu().setEnabled(true);
 						getMidiMenu().setEnabled(true);

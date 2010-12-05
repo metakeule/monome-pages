@@ -23,6 +23,7 @@ public class AbletonOSCListener implements OSCListener {
 	 */
 	public synchronized void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();
+		System.out.println(msg.getAddress());
 		if (msg.getAddress().compareTo("/live/track") == 0) {
 			int trackId = ((Integer) args[0]).intValue();
 			((AbletonOSCControl) ConfigurationFactory.getConfiguration().getAbletonControl()).refreshTrackInfo(trackId);
@@ -32,7 +33,6 @@ public class AbletonOSCListener implements OSCListener {
 			int trackId = ((Integer) args[0]).intValue();
 			HashMap<Integer, AbletonTrack> tracks = ConfigurationFactory.getConfiguration().abletonState.getTracks();
 			for (int i = trackId + 1; i < tracks.size(); i++) {
-				System.out.println("remove track " + i);
 				ConfigurationFactory.getConfiguration().abletonState.removeTrack(i);
 			}
 			((AbletonOSCControl) ConfigurationFactory.getConfiguration().getAbletonControl()).refreshTrackInfo(trackId);

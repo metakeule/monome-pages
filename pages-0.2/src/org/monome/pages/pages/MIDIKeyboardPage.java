@@ -174,7 +174,6 @@ public class MIDIKeyboardPage implements Page {
 	    		int i = 0;
 	    		while (blinkNow) {
 	    			if (monome.curPage == index){
-			    		//System.out.println(monome.sizeX);
 			    		for (int x=0; x<monome.sizeX; x++) {			    			
 		    				if (flashOn[x][0]) {
 		    					if (flashOn[x][1]){
@@ -903,7 +902,6 @@ public class MIDIKeyboardPage implements Page {
 		for(int i=0; i<6; i++) {
 			this.scaleStr[i] = new StringBuffer();
 			for (int j=0; j<6; j++) {		
-				System.out.println(Integer.toString(scales[i][j]));
 				this.scaleStr[i].append(Integer.toString(scales[i][j]) + ",");			
 			}
 			this.scaleStr[i].append(Integer.toString(scales[i][6]));			

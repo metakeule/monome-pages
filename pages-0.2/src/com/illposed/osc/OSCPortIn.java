@@ -31,7 +31,7 @@ public class OSCPortIn extends OSCPort implements Runnable {
 	public void run() {
 			// buffers were 1500 bytes in size, but this was
 			// increased to 1536, as this is a common MTU
-		byte[] buffer = new byte[1536];
+		byte[] buffer = new byte[8192];
 		DatagramPacket packet = new DatagramPacket(buffer, 1536);
 		while (isListening) {
 			try {

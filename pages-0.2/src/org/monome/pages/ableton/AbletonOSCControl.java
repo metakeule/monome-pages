@@ -101,7 +101,6 @@ public class AbletonOSCControl implements AbletonControl {
 	 * @see org.monome.pages.ableton.AbletonControl#playClip(int, int)
 	 */
 	public void playClip(int track, int clip) {
-		System.out.println("/live/play/clipslot " + track + " " + clip);
 		Object args[] = new Object[2];
 		args[0] = new Integer(track);
 		args[1] = new Integer(clip);
@@ -341,7 +340,6 @@ public class AbletonOSCControl implements AbletonControl {
 	 * Sends "/live/undo" to LiveOSC. 
 	 */
 	public void undo() {
-		System.out.println("ableton undo()");
 		OSCMessage msg = new OSCMessage("/live/undo");
 		try {
 			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
@@ -394,7 +392,6 @@ public class AbletonOSCControl implements AbletonControl {
 			Iterator<Integer> i = tracks.keySet().iterator();
 			while (i.hasNext()) {
 				Integer trackNum = i.next();
-				System.out.println("refresh track # " + trackNum.intValue());
 				Object args[] = new Object[1];
 				args[0] = trackNum;
 				msg = new OSCMessage("/live/mute", args);

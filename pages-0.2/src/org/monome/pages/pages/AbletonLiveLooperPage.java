@@ -348,7 +348,6 @@ public class AbletonLiveLooperPage implements Page {
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
 	public void redrawMonome() {
-		System.out.println("numEnabledRows is " + this.numEnabledRows);
 		// redraw the upper part of the monome (the clip state)
 		for (int x = 0; x < this.monome.sizeX - 1; x++) {
 			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 1));

@@ -282,7 +282,6 @@ public class MonomeFrame extends JInternalFrame {
 		if (monomeDisplayFrame == null || monomeDisplayFrame.isClosed()) {
 			MonomeConfiguration monomeConfiguration = MonomeConfigurationFactory.getMonomeConfiguration(index);
 			monomeDisplayFrame = new MonomeDisplayFrame(monomeConfiguration.sizeX, monomeConfiguration.sizeY);
-			System.out.println("creating monomeDisplayFrame");
 			Main.getDesktopPane().add(monomeDisplayFrame);
 			try {
 				monomeDisplayFrame.setSelected(true);
@@ -577,7 +576,6 @@ public class MonomeFrame extends JInternalFrame {
 		midiInMenu.removeAll();
 		pageChangeMidiInMenu.removeAll();
 		for (int i=0; i < midiInOptions.length; i++) {
-			System.out.println("adding " + midiInOptions[i]);
 			midiInMenu.remove(getNoInputDevicesEnabledItem());
 			pageChangeMidiInMenu.remove(getNoInputDevicesEnabledItem2());
 			JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("MIDI Input: " + midiInOptions[i]);
@@ -624,7 +622,6 @@ public class MonomeFrame extends JInternalFrame {
 				}
 			}
 			if (!found) {
-				System.out.println(name + " not found, disabling");
 				midiInMenu.getItem(i).setSelected(false);
 			}
 		}
@@ -653,7 +650,6 @@ public class MonomeFrame extends JInternalFrame {
 				}
 			}
 			if (!found) {
-				System.out.println(name + " not found, disabling");
 				pageChangeMidiInMenu.getItem(i).setSelected(false);
 			}
 		}

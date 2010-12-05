@@ -92,11 +92,9 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void destroyPage() {
-		for (int i = 0; i < quadrantConfigurations.size(); i++) {
-			for (int j = 0; j < quadrantConfigurations.get(i).getNumQuads(); j++) {
-				FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(i).getMonomeConfiguration(j);
-				MonomeConfigurationFactory.removeMonomeConfiguration(monomeConfig.index);
-			}
+		for (int j = 0; j < quadrantConfigurations.get(gui.selectedQuadConf).getNumQuads(); j++) {
+			FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(j);
+			MonomeConfigurationFactory.removeMonomeConfiguration(monomeConfig.index);
 		}
 	}
 
@@ -119,25 +117,35 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void handlePress(int x, int y, int value) {
-		for (int i = 0; i < quadrantConfigurations.size(); i++) {
-			for (int j = 0; j < quadrantConfigurations.get(i).getNumQuads(); j++) {
-				FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(i).getMonomeConfiguration(j);
-				monomeConfig.handlePress(x, y, value);
+		int quadNum = getQuadNum(x, y);
+		FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(quadNum);
+		monomeConfig.handlePress(x, y, value, quadNum);
+	}
+	
+	private int getQuadNum(int x, int y) {
+		int quadNum = 0;
+		for (int i = 0; i < quadrantConfigurations.get(gui.selectedQuadConf).getNumQuads(); i++) {
+			int[] quad = quadrantConfigurations.get(gui.selectedQuadConf).getQuad(i);
+			if (x >= quad[0] && x < quad[1]) {
+				if (y >= quad[2] && y < quad[3]) {
+					System.out.println("getQuadNum(" + x + ", " + y + "): identified quadNum " + i);
+					quadNum = i;
+					break;
+				}
 			}
-		}		
+		}
+		return quadNum;
 	}
 
 	public void handleReset() {
-		for (int i = 0; i < quadrantConfigurations.size(); i++) {
-			for (int j = 0; j < quadrantConfigurations.get(i).getNumQuads(); j++) {
-				FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(i).getMonomeConfiguration(j);
-				if (monomeConfig.pages != null) {
-					for (int k = 0; k < monomeConfig.pages.size(); k++) {
-						monomeConfig.pages.get(k).handleReset();
-					}
+		for (int j = 0; j < quadrantConfigurations.get(gui.selectedQuadConf).getNumQuads(); j++) {
+			FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(j);
+			if (monomeConfig.pages != null) {
+				for (int k = 0; k < monomeConfig.pages.size(); k++) {
+					monomeConfig.pages.get(k).handleReset();
 				}
 			}
-		}		
+		}
 	}
 
 	public void handleTick() {
@@ -150,7 +158,7 @@ public class QuadrantsPage implements Page {
 					}
 				}
 			}
-		}		
+		}
 	}
 
 	public boolean isTiltPage() {
@@ -158,16 +166,14 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void redrawMonome() {
-		for (int i = 0; i < quadrantConfigurations.size(); i++) {
-			for (int j = 0; j < quadrantConfigurations.get(i).getNumQuads(); j++) {
-				FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(i).getMonomeConfiguration(j);
-				if (monomeConfig.pages != null) {
-					for (int k = 0; k < monomeConfig.pages.size(); k++) {
-						monomeConfig.pages.get(k).redrawMonome();
-					}
+		for (int j = 0; j < quadrantConfigurations.get(gui.selectedQuadConf).getNumQuads(); j++) {
+			FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(j);
+			if (monomeConfig.pages != null) {
+				for (int k = 0; k < monomeConfig.pages.size(); k++) {
+					monomeConfig.pages.get(k).redrawMonome();
 				}
 			}
-		}		
+		}
 	}
 
 	public void send(MidiMessage message, long timeStamp) {
@@ -202,8 +208,7 @@ public class QuadrantsPage implements Page {
 		return index;
 	}
 
-	public void recreateGUI(int selectedQuadConf) {
-		this.gui = new QuadrantsGUI256(this, selectedQuadConf);
+	public void redrawPage(int selectedQuadConf) {
 		MonomeConfigurationFactory.getMonomeConfiguration(index).monomeFrame.redrawPagePanel(this);
 	}
 	

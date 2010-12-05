@@ -725,7 +725,6 @@ public class MIDISequencerPolyPage implements Page {
 		}
 		// octave +2
 		else if (this.hold5 && !this.hold6) {
-			System.out.println("oct + 2 " + x + " " + y);
 			this.stopNotes(y * (this.monome.sizeX) + x);
 			if (this.patOctgUp[this.monome.sizeX * y + x] == 1)
 				this.patOctgUp[this.monome.sizeX * y + x] = 0;
@@ -1666,7 +1665,6 @@ public class MIDISequencerPolyPage implements Page {
 
 		// redraw if we're in bank mode
 		if (this.bankMode == 1) {
-			System.out.println("bank mode is 1");
 			for (int x = 0; x < (this.monome.sizeX - 1); x++) {
 				for (int y = 0; y < (this.monome.sizeY); y++) {
 					if (this.bankSel[this.monome.sizeX * y + x] == true) {

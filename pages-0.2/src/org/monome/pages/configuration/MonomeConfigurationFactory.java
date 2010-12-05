@@ -41,7 +41,6 @@ public class MonomeConfigurationFactory {
 	}
 	
 	public static synchronized MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
-		System.out.println("adding new monome with index " + index);
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
@@ -51,13 +50,13 @@ public class MonomeConfigurationFactory {
 		return monomeConfiguration;
 	}
 	
-	public static synchronized MonomeConfiguration addFakeMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
-		System.out.println("adding new fake monome with index " + index);
+	public static synchronized MonomeConfiguration addFakeMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame, QuadrantConfiguration quadConf) {
+		System.out.println("MonomeConfigurationFactory: added FakeMonomeConfiguration with index=" + index + ", prefix=" + prefix);
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
 		Integer i = new Integer(monomeConfigurations.size());		
-		FakeMonomeConfiguration monomeConfiguration = new FakeMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
+		FakeMonomeConfiguration monomeConfiguration = new FakeMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame, quadConf);
 		monomeConfigurations.put(i, monomeConfiguration);
 		monomeConfiguration.setFrameTitle();
 		return monomeConfiguration;
@@ -100,7 +99,6 @@ public class MonomeConfigurationFactory {
 				return true;
 			}
 		}
-		System.out.println("Prefix not found '" + prefix + "'");
 		return false;
 	}
 
