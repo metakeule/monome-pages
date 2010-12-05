@@ -161,6 +161,7 @@ public class ExternalApplicationGUI extends JPanel {
 			updatePreferencesButton.setText("Update Preferences");
 			updatePreferencesButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					page.stopOSC();
 					page.setHostname(oscHostnameTF.getText());
 					page.setPrefix(oscPrefixTF.getText());
 					page.setInPort(oscInTF.getText());

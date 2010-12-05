@@ -321,7 +321,26 @@ public class MonomeConfiguration {
 		}
 		
 		// if page change mode is on and this is a button on the bottom row then change page and return
-		if (this.pageChangeMode == 1 && value == 1) {
+		if (this.pageChangeMode == 1) {
+			// if this is the bottom right button and we let go turn it off
+			// and send the value == 1 press along to the page
+			if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0) {
+				this.clear(0, -1);
+				this.pageChangeMode = 0;
+				if (this.pageChanged == false) {
+					if (this.pages.get(curPage) != null) {
+						this.pages.get(curPage).handlePress(x, y, 1);
+						this.patternBanks.get(curPage).recordPress(x, y, 1);
+						this.pages.get(curPage).handlePress(x, y, 0);
+						this.patternBanks.get(curPage).recordPress(x, y, 0);
+					}
+				}
+				if (this.pages.get(curPage) != null) {
+					this.ledState = new int[32][32];
+					this.pages.get(curPage).redrawMonome();
+				}
+				return;
+			}
 			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
 			int patternNum = x;
 			int numPages = this.pages.size();
@@ -333,7 +352,6 @@ public class MonomeConfiguration {
 				if (next_page > this.sizeX - 1) {
 					next_page--;
 				}
-				System.out.println("numPages = " + numPages + ", next_page = " + next_page);
 				this.curPage = next_page;
 				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
 			} else if (y == 0) {
@@ -352,26 +370,6 @@ public class MonomeConfiguration {
 			}
 			this.clear(0, -1);
 			this.drawPatternState();
-			return;
-		}
-
-		// if this is the bottom right button and we let go turn it off
-		// and send the value == 1 press along to the page
-		if (x == (this.sizeX - 1) && y == (this.sizeY - 1) && value == 0) {
-			this.clear(0, -1);
-			this.pageChangeMode = 0;
-			if (this.pageChanged == false) {
-				if (this.pages.get(curPage) != null) {
-					this.pages.get(curPage).handlePress(x, y, 1);
-					this.patternBanks.get(curPage).recordPress(x, y, 1);
-					this.pages.get(curPage).handlePress(x, y, 0);
-					this.patternBanks.get(curPage).recordPress(x, y, 0);
-				}
-			}
-			if (this.pages.get(curPage) != null) {
-				this.ledState = new int[32][32];
-				this.pages.get(curPage).redrawMonome();
-			}
 			return;
 		}
 		

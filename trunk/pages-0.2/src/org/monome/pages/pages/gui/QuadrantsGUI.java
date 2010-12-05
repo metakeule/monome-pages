@@ -93,7 +93,7 @@ public class QuadrantsGUI extends JPanel implements ActionListener {
 				QuadrantConfiguration quadConf = page.quadrantConfigurations.get(i);
 				if (quadConf.getPicture().equals(e.getActionCommand())) {
 					selectedQuadConf = i;
-					page.recreateGUI(selectedQuadConf);
+					page.redrawPage(selectedQuadConf);
 				}
 			}
 		}

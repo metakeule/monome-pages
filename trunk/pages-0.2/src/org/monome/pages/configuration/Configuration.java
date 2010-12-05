@@ -568,7 +568,9 @@ public class Configuration {
 				transmitter.close();
 				inDevice.close();
 				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+					if (MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame != null) {
+						MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+					}
 				}
 				Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), false);
 				return;
@@ -585,7 +587,9 @@ public class Configuration {
 			this.midiInTransmitters.add(transmitter);
 			this.midiInReceivers.add(receiver);
 			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-				MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+				if (MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame != null) {
+					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+				}
 			}
 			Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), true);
 		} catch (MidiUnavailableException e) {
@@ -770,8 +774,6 @@ public class Configuration {
 			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
 			if (monomeConfig != null) {
 				monomeConfig.redrawAbletonPages();
-			} else {
-				System.out.println("monomeConfig is null in redrawAbletonPages (i = " + i + ")");
 			}
 		}		
 	}

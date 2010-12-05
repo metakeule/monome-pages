@@ -71,7 +71,6 @@ public class MIDIGenerator {
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 				ShortMessage msg = new ShortMessage();
 				try {
-					System.out.println("played " + this.numberToMidiNote(noteMap[x][y]));
 					msg.setMessage(ShortMessage.NOTE_ON, midiChannel - 1, noteMap[x][y], 127);
 					if (recv != null) {
 						recv.send(msg, 0);

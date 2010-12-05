@@ -83,7 +83,6 @@ public class AbletonLiveLooperGUI extends JPanel {
 			disableMuteCB.setBounds(new Rectangle(15, 30, 21, 21));
 			disableMuteCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("Disable mute actionPerformed");
 					if (disableMuteCB.isSelected()) {
 						page.numEnabledRows--;
 					} else {
@@ -107,7 +106,6 @@ public class AbletonLiveLooperGUI extends JPanel {
 			disableSoloCB.setBounds(new Rectangle(15, 55, 21, 21));
 			disableSoloCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("Disable solo actionPerformed");
 					if (disableSoloCB.isSelected()) {
 						page.numEnabledRows--;
 					} else {
@@ -131,7 +129,6 @@ public class AbletonLiveLooperGUI extends JPanel {
 			disableArmCB.setBounds(new Rectangle(15, 80, 21, 21));
 			disableArmCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("Disable arm actionPerformed");
 					if (disableArmCB.isSelected()) {
 						page.numEnabledRows--;
 					} else {
@@ -174,7 +171,6 @@ public class AbletonLiveLooperGUI extends JPanel {
 			disableStopCB.setBounds(new Rectangle(15, 105, 21, 21));
 			disableStopCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					System.out.println("Disable stop actionPerformed");
 					if (disableStopCB.isSelected()) {
 						page.numEnabledRows--;
 					} else {

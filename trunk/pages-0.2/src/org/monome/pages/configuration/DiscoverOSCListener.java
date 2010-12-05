@@ -131,19 +131,14 @@ public class DiscoverOSCListener implements OSCListener {
 				}
 				
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
-				if (monomeConfig != null) {
-					System.out.println("monomeConfig is " + monomeConfig + " and prefix is " + monomeConfig.prefix + " == " + prefix);
-				}
 				if (monomeConfig != null && monomeConfig.prefix.equals(prefix)) {
-					System.out.println("index and prefix matches, skipping");
 					return;
 				}
 				if (monomeConfig != null) {
 					int newIndex = MonomeConfigurationFactory.getNumMonomeConfigurations();
-					System.out.println("*** moving index from " + index + " to " + newIndex);
 					MonomeConfigurationFactory.moveIndex(index, newIndex);
 				}
-				System.out.println("**** creating monomeConfig on " + prefix + " index=" + index);
+				System.out.println("Auto Discovery: creating monomeConfig on " + prefix + ", index = " + index);
 				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 				config.addMonomeConfiguration(index, prefix, "", 0, 0, true, false, midiPageChangeRules);
 			}

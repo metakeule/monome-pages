@@ -89,7 +89,6 @@ public class MachineDrum {
 			return;
 		}
 
-		System.out.println("sendKitLoad(" + kit_number + ")");
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[9];
 		data[0] = (byte) 0xF0;
@@ -150,7 +149,6 @@ public class MachineDrum {
 		if (output_device == null) {
 			return;
 		}
-		System.out.println("assigning machine " + track + " / " + choice);
 		SysexMessage msg = new SysexMessage();
 		byte[] data = new byte[12];
 		data[0] = (byte) 0xF0;
@@ -415,7 +413,6 @@ public class MachineDrum {
 	 */
 	public void initKit(Receiver output_device, int machinePool) {
 		byte[] choice = new byte[16];
-		System.out.println("x is " + machinePool);
 		if (machinePool == 0) {
 			for (int i = 0; i < 14; i++) {
 				String[] choices = getMachineChoices(i);

@@ -21,7 +21,8 @@ public class PagesRepository {
 		try { 
 			pageTypes = loadPages();
 		} catch(Exception e) {
-			System.out.println("couldn't load page implementations!!! " + e);
+			System.out.println("PagesRepository: couldn't load page implementations.");
+			e.printStackTrace();
 		}
 		
 	}
@@ -44,7 +45,8 @@ public class PagesRepository {
 					page = ctor.newInstance(conf, index);
 					return page;
 				} catch(Exception e) {
-					System.out.println("Page couldn't be created!!! " + e);
+					System.out.println("PagesRepository: Failed to create page with name " + name + " on index " + index);
+					e.printStackTrace();
 				}
 			}
 		}
@@ -81,7 +83,7 @@ public class PagesRepository {
 		      }
 		    }
 		    catch(Exception ex){
-		    	System.out.println(ex);
+		    	ex.printStackTrace();
 		    }
 		    finally {
 		      try{

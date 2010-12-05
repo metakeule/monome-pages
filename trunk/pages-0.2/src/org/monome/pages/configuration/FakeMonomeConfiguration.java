@@ -14,14 +14,17 @@ import org.monome.pages.pages.Page;
 
 
 public class FakeMonomeConfiguration extends MonomeConfiguration {
+	
+	QuadrantConfiguration quadConf;
 
 	public FakeMonomeConfiguration(int index, String prefix, String serial,
 			int sizeX, int sizeY, boolean usePageChangeButton,
 			boolean useMIDIPageChanging,
 			ArrayList<MIDIPageChangeRule> midiPageChangeRules,
-			MonomeFrame monomeFrame) {
+			MonomeFrame monomeFrame, QuadrantConfiguration quadConf) {
 		super(index, prefix, serial, sizeX, sizeY, usePageChangeButton,
 				useMIDIPageChanging, midiPageChangeRules, monomeFrame);
+		this.quadConf = quadConf;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -65,7 +68,11 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 		return super.getMidiTransmitter(midiDeviceName);
 	}
 
-	public synchronized void handlePress(int x, int y, int value) {
+	public synchronized void handlePress(int x, int y, int value, int quadNum) {
+		System.out.println("Fake Monome Configuration: handlePress(" + x + ", " + y + ", " + value + " [quad " + quadNum);
+		int[] quad = quadConf.getQuad(quadNum);
+		x -= quad[0];
+		y -= quad[2];
 		super.handlePress(x, y, value);
 	}
 

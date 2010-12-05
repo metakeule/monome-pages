@@ -130,6 +130,7 @@ public class MachineDrumInterfacePage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
+		/*
 		if (message instanceof SysexMessage) {
 			SysexMessage msg = (SysexMessage) message;
 			System.out.print("Sysex received: '" + msg.getData());
@@ -139,6 +140,7 @@ public class MachineDrumInterfacePage implements Page {
 			}
 			System.out.println("'");
 		}
+		*/
 		if (message instanceof ShortMessage) {
 			ShortMessage shortMessage = (ShortMessage) message;
 			switch (shortMessage.getCommand()) {
@@ -361,7 +363,6 @@ public class MachineDrumInterfacePage implements Page {
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 						if (recv != null) {
-							System.out.println("sendAssignLFO(recv, " + this.lfo + ", " + this.paramNum[this.lfo] + ", " + this.paramValue[this.lfo]);
 							int sendVal = paramValue[this.lfo][this.paramNum[this.lfo]];
 							// track num 0-15
 							if (paramNum[this.lfo] == 0) {
