@@ -50,13 +50,13 @@ public class MonomeConfigurationFactory {
 		return monomeConfiguration;
 	}
 	
-	public static synchronized MonomeConfiguration addFakeMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame, QuadrantConfiguration quadConf) {
+	public static synchronized MonomeConfiguration addFakeMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame, QuadrantConfiguration quadConf, int pageIndex, MonomeConfiguration parent, int quadNum) {
 		System.out.println("MonomeConfigurationFactory: added FakeMonomeConfiguration with index=" + index + ", prefix=" + prefix);
 		if (monomeConfigurations == null) {
 			monomeConfigurations = new HashMap<Integer, MonomeConfiguration>();
 		}
 		Integer i = new Integer(monomeConfigurations.size());		
-		FakeMonomeConfiguration monomeConfiguration = new FakeMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame, quadConf);
+		FakeMonomeConfiguration monomeConfiguration = new FakeMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame, quadConf, pageIndex, parent, quadNum);
 		monomeConfigurations.put(i, monomeConfiguration);
 		monomeConfiguration.setFrameTitle();
 		return monomeConfiguration;

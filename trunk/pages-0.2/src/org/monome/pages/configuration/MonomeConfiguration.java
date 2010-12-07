@@ -724,7 +724,10 @@ public class MonomeConfiguration {
 		}
 		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
 		if (index > -1) {
-			for (int y=0; y < this.sizeY; y++) {
+			for (int y=0; y < (intArgs.size() - 1) * 8; y++) {
+				if (y > sizeY) {
+					break;
+				}
 				int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 				this.pageState[index][col][y] = bit;
 			}
@@ -737,7 +740,7 @@ public class MonomeConfiguration {
 				return;
 			}
 	
-			for (int y=0; y < this.sizeY; y++) {
+			for (int y=0; y < (intArgs.size() - 1) * 8; y++) {
 				int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
 				this.ledState[col][y] = bit;
 			}
@@ -785,7 +788,7 @@ public class MonomeConfiguration {
 		}
 		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
 		if (index > -1) {
-			for (int x=0; x < this.sizeX; x++) {
+			for (int x=0; x < (intArgs.size() - 1) * 8; x++) {
 				int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
 				this.pageState[index][x][row] = bit;
 			}
@@ -798,7 +801,7 @@ public class MonomeConfiguration {
 				return;
 			}
 	
-			for (int x=0; x < this.sizeX; x++) {
+			for (int x=0; x < (intArgs.size() - 1) * 8; x++) {
 				int bit = (fullvalue >> (this.sizeX - x - 1)) & 1;
 				this.ledState[x][row] = bit;
 			}

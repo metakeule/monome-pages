@@ -283,6 +283,30 @@ public class QuadrantsGUI256 extends JPanel {
 			newPage2Btn = new JButton();
 			newPage2Btn.setBounds(new Rectangle(95, 110, 71, 21));
 			newPage2Btn.setText("New");
+			final QuadrantsGUI256 thisGui = this;
+			newPage2Btn.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String options[] = PagesRepository.getPageNames();
+					
+					//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
+					for (int i=0; i<options.length; i++) {
+						options[i] = options[i].substring(23);
+					}
+					String name = (String)JOptionPane.showInputDialog(
+							thisGui,
+							"Select a new page type",
+							"New Page",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							options,
+							"");
+					if (name == null) {
+						return;
+					}
+					name = "org.monome.pages.pages." + name;
+					page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(1).addPage(name);
+				}
+			});
 		}
 		return newPage2Btn;
 	}
@@ -311,6 +335,30 @@ public class QuadrantsGUI256 extends JPanel {
 			newPage3BTN = new JButton();
 			newPage3BTN.setBounds(new Rectangle(175, 110, 71, 21));
 			newPage3BTN.setText("New");
+			final QuadrantsGUI256 thisGui = this;
+			newPage3BTN.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String options[] = PagesRepository.getPageNames();
+					
+					//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
+					for (int i=0; i<options.length; i++) {
+						options[i] = options[i].substring(23);
+					}
+					String name = (String)JOptionPane.showInputDialog(
+							thisGui,
+							"Select a new page type",
+							"New Page",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							options,
+							"");
+					if (name == null) {
+						return;
+					}
+					name = "org.monome.pages.pages." + name;
+					page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(2).addPage(name);
+				}
+			});
 		}
 		return newPage3BTN;
 	}
@@ -339,6 +387,30 @@ public class QuadrantsGUI256 extends JPanel {
 			newPage4BTN = new JButton();
 			newPage4BTN.setBounds(new Rectangle(255, 110, 71, 21));
 			newPage4BTN.setText("New");
+			final QuadrantsGUI256 thisGui = this;
+			newPage4BTN.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String options[] = PagesRepository.getPageNames();
+					
+					//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
+					for (int i=0; i<options.length; i++) {
+						options[i] = options[i].substring(23);
+					}
+					String name = (String)JOptionPane.showInputDialog(
+							thisGui,
+							"Select a new page type",
+							"New Page",
+							JOptionPane.PLAIN_MESSAGE,
+							null,
+							options,
+							"");
+					if (name == null) {
+						return;
+					}
+					name = "org.monome.pages.pages." + name;
+					page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(3).addPage(name);
+				}
+			});
 		}
 		return newPage4BTN;
 	}

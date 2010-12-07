@@ -11,4 +11,3 @@ org.monome.pages.pages.MIDIPadsPage
 org.monome.pages.pages.MIDISequencerPage
 org.monome.pages.pages.MIDISequencerPolyPage
 org.monome.pages.pages.MIDITriggersPage
-org.monome.pages.pages.QuadrantsPage

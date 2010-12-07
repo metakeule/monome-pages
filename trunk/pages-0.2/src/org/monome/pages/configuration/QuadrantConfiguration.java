@@ -14,18 +14,21 @@ public class QuadrantConfiguration {
 	private ArrayList<JPanel> quadPanels;
 	
 	private int numQuads = 0;
-
-	private String picture;
+	private MonomeConfiguration parent;
+	private int pageIndex;
 	
+	private String picture;
 	private JPanel panel;
 		
-	public QuadrantConfiguration() {
+	public QuadrantConfiguration(int pageIndex, MonomeConfiguration parent) {
 		startX = new ArrayList<Integer>();
 		startY = new ArrayList<Integer>();
 		endX = new ArrayList<Integer>();
 		endY = new ArrayList<Integer>();
 		monomeConfigs = new ArrayList<FakeMonomeConfiguration>();
 		quadPanels = new ArrayList<JPanel>();
+		this.parent = parent;
+		this.pageIndex = pageIndex;
 	}
 	
 	public void addQuad(int startX, int endX, int startY, int endY) {
@@ -34,7 +37,7 @@ public class QuadrantConfiguration {
 		this.startY.add(numQuads, startY);
 		this.endY.add(numQuads, endY);
 		int index = MonomeConfigurationFactory.getNumMonomeConfigurations();
-		MonomeConfigurationFactory.addFakeMonomeConfiguration(index, "", "", endX - startX, endY - startY, false, false, null, null, this);
+		MonomeConfigurationFactory.addFakeMonomeConfiguration(index, "", "", endX - startX, endY - startY, false, false, null, null, this, pageIndex, parent, numQuads);
 		this.monomeConfigs.add(numQuads, (FakeMonomeConfiguration) MonomeConfigurationFactory.getMonomeConfiguration(index));
 		numQuads++;
 	}
