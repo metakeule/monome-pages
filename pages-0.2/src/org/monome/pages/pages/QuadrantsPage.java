@@ -40,7 +40,7 @@ public class QuadrantsPage implements Page {
 	private void createQuadrantConfigurations() {
 		// 40h/64 etc possible configurations
 		if (this.monome.sizeX == 8 && this.monome.sizeY == 8) {
-			QuadrantConfiguration quadConf = new QuadrantConfiguration();
+			QuadrantConfiguration quadConf = new QuadrantConfiguration(index, monome);
 			quadConf.addQuad(0, 8, 0, 8);
 			quadConf.setPicture("<html>[#]</html>");
 			quadrantConfigurations.add(quadConf);			
@@ -48,7 +48,7 @@ public class QuadrantsPage implements Page {
 
 		// 128 possible configurations
 		if (this.monome.sizeX == 16 && this.monome.sizeY == 8) {
-			QuadrantConfiguration quadConf = new QuadrantConfiguration();
+			QuadrantConfiguration quadConf = new QuadrantConfiguration(index, monome);
 			quadConf.addQuad(0, 8, 0, 8);
 			quadConf.addQuad(8, 16, 0, 8);
 			quadConf.setPicture("<html>[#][#]</html>");
@@ -57,27 +57,27 @@ public class QuadrantsPage implements Page {
 		
 		// 256 possible configurations
 		if (this.monome.sizeX == 16 && this.monome.sizeY == 16) {
-			QuadrantConfiguration quadConf = new QuadrantConfiguration();
+			QuadrantConfiguration quadConf = new QuadrantConfiguration(index, monome);
 			quadConf.addQuad(0, 16, 0, 8);
 			quadConf.addQuad(0, 16, 8, 16);
 			quadConf.setPicture("<html>[###]<br/>[###]</html>");
 			quadrantConfigurations.add(quadConf);
 			
-			quadConf = new QuadrantConfiguration();
+			quadConf = new QuadrantConfiguration(index, monome);
 			quadConf.addQuad(0, 16, 0, 8);
 			quadConf.addQuad(0, 8, 8, 16);
 			quadConf.addQuad(8, 16, 8, 16);
 			quadConf.setPicture("<html>[###]<br/>[#][#]</html>");
 			quadrantConfigurations.add(quadConf);
 			
-			quadConf = new QuadrantConfiguration();
+			quadConf = new QuadrantConfiguration(index, monome);
 			quadConf.addQuad(0, 8, 0, 8);
 			quadConf.addQuad(8, 16, 0, 8);
 			quadConf.addQuad(0, 16, 8, 16);
 			quadConf.setPicture("<html>[#][#]<br/>[###]</html>");
 			quadrantConfigurations.add(quadConf);
 			
-			quadConf = new QuadrantConfiguration();
+			quadConf = new QuadrantConfiguration(index, monome);
 			quadConf.addQuad(0, 8, 0, 8);
 			quadConf.addQuad(8, 16, 0, 8);
 			quadConf.addQuad(0, 8, 8, 16);
@@ -119,7 +119,7 @@ public class QuadrantsPage implements Page {
 	public void handlePress(int x, int y, int value) {
 		int quadNum = getQuadNum(x, y);
 		FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(quadNum);
-		monomeConfig.handlePress(x, y, value, quadNum);
+		monomeConfig.handlePress(x, y, value);
 	}
 	
 	private int getQuadNum(int x, int y) {

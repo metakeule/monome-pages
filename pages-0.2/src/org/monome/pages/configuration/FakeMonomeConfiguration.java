@@ -16,15 +16,22 @@ import org.monome.pages.pages.Page;
 public class FakeMonomeConfiguration extends MonomeConfiguration {
 	
 	QuadrantConfiguration quadConf;
+	MonomeConfiguration parent;
+	int quadNum;
+	int pageIndex;
 
 	public FakeMonomeConfiguration(int index, String prefix, String serial,
 			int sizeX, int sizeY, boolean usePageChangeButton,
 			boolean useMIDIPageChanging,
 			ArrayList<MIDIPageChangeRule> midiPageChangeRules,
-			MonomeFrame monomeFrame, QuadrantConfiguration quadConf) {
+			MonomeFrame monomeFrame, QuadrantConfiguration quadConf, 
+			int pageIndex, MonomeConfiguration parent, int quadNum) {
 		super(index, prefix, serial, sizeX, sizeY, usePageChangeButton,
 				useMIDIPageChanging, midiPageChangeRules, monomeFrame);
 		this.quadConf = quadConf;
+		this.parent = parent;
+		this.quadNum = quadNum;
+		this.pageIndex = pageIndex;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -33,7 +40,17 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 	}
 
 	public synchronized void clear(int state, int index) {
-		super.clear(state, index);
+		if (quadConf == null) {
+			return;
+		}
+		int[] quad = quadConf.getQuad(quadNum);
+		for (int y = quad[2]; y < quad[3]; y++) {
+			ArrayList<Integer> intArgs = new ArrayList<Integer>();
+			for (int numArgs = 0; numArgs < (quad[0] - quad[1]) / 8; numArgs++) {
+				intArgs.add(state * 255);
+			}
+			this.led_row(intArgs, y);
+		}
 	}
 
 	public void clearMonome() {
@@ -68,8 +85,7 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 		return super.getMidiTransmitter(midiDeviceName);
 	}
 
-	public synchronized void handlePress(int x, int y, int value, int quadNum) {
-		System.out.println("Fake Monome Configuration: handlePress(" + x + ", " + y + ", " + value + " [quad " + quadNum);
+	public synchronized void handlePress(int x, int y, int value) {
 		int[] quad = quadConf.getQuad(quadNum);
 		x -= quad[0];
 		y -= quad[2];
@@ -77,15 +93,51 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 	}
 
 	public synchronized void led_col(ArrayList<Integer> intArgs, int index) {
-		super.led_col(intArgs, index);
+		int[] quad = quadConf.getQuad(quadNum);
+		int shifts = quad[2] / 8;
+		int numArgs = ((quad[3] - quad[2]) / 8);
+		System.out.println("numArgs is " + numArgs);
+		ArrayList<Integer> newIntArgs = new ArrayList<Integer>();
+		int col = intArgs.get(0);
+		newIntArgs.add(col + quad[0]);
+		for (int i = 0; i < shifts; i++) {
+			int colState = 0;
+			for (int y = 0; y < 8; y++) {
+				colState += (parent.pageState[pageIndex][col][y] << y);
+			}
+			newIntArgs.add(new Integer(colState));
+		}
+		for (int i = 1; i < numArgs + 1; i++) {
+			newIntArgs.add(intArgs.get(i));
+		}
+		parent.led_col(newIntArgs, pageIndex);
 	}
 
 	public synchronized void led_row(ArrayList<Integer> intArgs, int index) {
-		super.led_row(intArgs, index);
+		int[] quad = quadConf.getQuad(quadNum);
+		int shifts = quad[0] / 8;
+		int numArgs = ((quad[1] - quad[0]) / 8);
+		ArrayList<Integer> newIntArgs = new ArrayList<Integer>();
+		int row = intArgs.get(0);
+		newIntArgs.add(row + quad[2]);
+		for (int i = 0; i < shifts; i++) {
+			int rowState = 0;
+			for (int x = 0; x < 8; x++) {
+				rowState += (parent.pageState[pageIndex][x][row] << x);
+			}
+			newIntArgs.add(new Integer(rowState));
+		}
+		for (int i = 1; i < numArgs + 1; i++) {
+			newIntArgs.add(intArgs.get(i));
+		}
+		parent.led_row(newIntArgs, pageIndex);
 	}
 
 	public synchronized void led(int x, int y, int value, int index) {
-		super.led(x, y, value, index);
+		int[] quad = quadConf.getQuad(quadNum);
+		x += quad[0];
+		y += quad[2];
+		parent.led(x, y, value, pageIndex);
 	}
 
 	public void redrawAbletonPages() {
@@ -135,12 +187,12 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 
 	public String toXml() {
 		String xml = "";
-		xml += "  <monome>\n";
+		xml += "  <fakemonome>\n";
 		xml += "    <prefix>" + this.prefix + "</prefix>\n";
 		xml += "    <serial>" + this.serial + "</serial>\n";
 		xml += "    <sizeX>" + this.sizeX + "</sizeX>\n";
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
-		xml += "  </monome>\n";
+		xml += "  </fakemonome>\n";
 		return xml;
 	}
 }
