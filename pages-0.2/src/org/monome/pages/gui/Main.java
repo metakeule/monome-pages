@@ -318,6 +318,7 @@ public class Main extends JFrame {
 						System.out.println("Main: Reading configuration file");
 						configuration.readConfigurationFile(file);
 						getConfigurationMenu().setEnabled(true);
+						getNewMonomeItem().setEnabled(true);
 						getMidiMenu().setEnabled(true);
 						
 						getFrame().setTitle("Pages : " + configuration.name);
@@ -327,6 +328,7 @@ public class Main extends JFrame {
 								monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
 							}
 						}
+						
 					}
 				}
 			});

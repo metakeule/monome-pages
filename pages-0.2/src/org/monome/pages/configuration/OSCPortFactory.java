@@ -50,6 +50,7 @@ public class OSCPortFactory {
 	}
 	
 	public void destroyOSCPortIn(Integer portNum) {
+		System.out.println("OSCPortFactory:destroyOSCPortIn(" + portNum + ")");
 		synchronized(oscInPorts) {
 			if (oscInPorts.containsKey(portNum)) {
 				oscInPorts.get(portNum).close();

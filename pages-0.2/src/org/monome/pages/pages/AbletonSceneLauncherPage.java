@@ -375,8 +375,8 @@ public class AbletonSceneLauncherPage implements Page {
 		
 		// iterate over the monome, adjust for the current offset, check
 		// track state and flash if appropriate
-		for (int x = 1; x < this.monome.sizeX; x++) {
-			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 2));
+		for (int x = 1; x < this.monome.sizeX - 1; x++) {
+			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackNum);
 			if (track != null) {
 				for (int y = 0; y < this.monome.sizeY - numEnabledRows; y++) {
@@ -385,18 +385,18 @@ public class AbletonSceneLauncherPage implements Page {
 					if (clip != null) {
 						if (clip.getState() == AbletonClip.STATE_PLAYING) {
 							if (tickNum % 24 == 0) {
-								this.monome.led(x + 1, y, 1, this.index);
+								this.monome.led(x , y, 1, this.index);
 							}
 							if ((tickNum + 12) % 24 == 0) {
-								this.monome.led(x + 1, y, 0, this.index);
+								this.monome.led(x, y, 0, this.index);
 							}
 						}
 						if (clip.getState() == AbletonClip.STATE_TRIGGERED) {
 							if (tickNum % 12 == 0) {
-								this.monome.led(x + 1, y, 1, this.index);
+								this.monome.led(x, y, 1, this.index);
 							}
 							if ((tickNum + 6) % 12 == 0) {
-								this.monome.led(x + 1, y, 0, this.index);
+								this.monome.led(x, y, 0, this.index);
 							}
 						}
 					}
@@ -449,7 +449,7 @@ public class AbletonSceneLauncherPage implements Page {
 		// redraw the track armed/disarmed state
 		if (this.gui.getDisableArmCB().isSelected() == false) {
 			for (int i = 1; i < this.monome.sizeX - 1; i++) {
-				int track_num = i + (this.trackOffset * (this.monome.sizeX - 2));
+				int track_num = i + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 				int yRow = this.monome.sizeY - 1;
 				AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
 				if (track != null) {
@@ -467,7 +467,7 @@ public class AbletonSceneLauncherPage implements Page {
 		// redraw the track solo/unsolo state
 		if (this.gui.getDisableSoloCB().isSelected() == false) {
 			for (int i = 1; i < this.monome.sizeX - 1; i++) {
-				int track_num = i + (this.trackOffset * (this.monome.sizeX - 2));
+				int track_num = i + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 				int yRow;
 				if (gui.getDisableArmCB().isSelected() == false) {
 					yRow = this.monome.sizeY - 2;
@@ -490,7 +490,7 @@ public class AbletonSceneLauncherPage implements Page {
 		// redraw the track mute/unmute state
 		if (this.gui.getDisableMuteCB().isSelected() == false) {
 			for (int i = 1; i < this.monome.sizeX - 1; i++) {
-				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1)) - 1;
+				int track_num = i + (this.trackOffset * (this.monome.sizeX - 2)) - 1;
 				int yRow;
 				if (gui.getDisableArmCB().isSelected() == true && gui.getDisableSoloCB().isSelected() == true) {
 					yRow = this.monome.sizeY - 1;

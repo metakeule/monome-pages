@@ -10,6 +10,7 @@ import javax.sound.midi.MidiMessage;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.gui.Main;
@@ -89,26 +90,28 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.index = index;
 		listenersAdded = new HashMap<String, Integer>();
 		gui = new ExternalApplicationGUI(this);
-		this.initOSC();
+		initOSC();
 	}
 
 	/**
 	 * Stops OSC communication with the external application
 	 */
-	public void stopOSC() {		
+	public void stopOSC() {
 		if (this.oscIn != null) {
 			this.oscIn.removeListener("/sys/prefix");
 			Set<String> keys = listenersAdded.keySet();
-			String[] keysArray = (String[]) keys.toArray();
+			Object[] keysArray = keys.toArray();
 			for (int i = 0; i < keysArray.length; i++) {
-				String prefix = keysArray[i];
+				String prefix = (String) keysArray[i];
 				this.oscIn.removeListener(prefix + "/led");
 				this.oscIn.removeListener(prefix + "/led_col");
 				this.oscIn.removeListener(prefix + "/led_row");
 				this.oscIn.removeListener(prefix + "/clear");
 				this.oscIn.removeListener(prefix + "/frame");
+				listenersAdded.remove(prefix);
 			}
 			OSCPortFactory.getInstance().destroyOSCPortIn(this.inPort);
+			this.oscIn = null;
 		}
 		
 	}
@@ -117,20 +120,26 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 * Initializes OSC communication with the external application
 	 */
 	public void initOSC() {
-		System.out.println("External Application Page initialized.  Listening on port " + this.inPort + ", sending on port " + this.outPort);
-		this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
-		this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
 		if (this.oscIn == null) {
-			JOptionPane.showMessageDialog(Main.getDesktopPane(), "External Application Page was unable to bind to port " + this.inPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
-			System.out.println("External Application Page unable to bind to port " + this.inPort);
-			return;
+			System.out.println("External Application Page initialized.  Listening on port " + this.inPort + ", sending on port " + this.outPort);
+			this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
+			if (this.oscIn == null) {
+				JOptionPane.showMessageDialog(Main.getDesktopPane(), "External Application Page was unable to bind to port " + this.inPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+				System.out.println("External Application Page unable to bind to port " + this.inPort);
+				this.oscIn = null;
+				return;
+			}
+			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
+			addListeners();
 		}
 	}
 	
 	public void addListeners() {
-		if (listenersAdded.get(this.prefix) == 1) {
+		System.out.println("ADDLISTENERSC ALLED");
+		if (listenersAdded.containsKey(this.prefix)) {
 			return;
 		}
+		System.out.println("contains key " + this.prefix);
 		this.oscIn.addListener("/sys/prefix", this);
 		this.oscIn.addListener(this.prefix + "/led", this);
 		this.oscIn.addListener(this.prefix + "/led_col", this);
@@ -368,6 +377,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.setOutPort(this.monome.readConfigValue(pageElement, "oscoutport"));
 		this.setHostname(this.monome.readConfigValue(pageElement, "hostname"));
 		gui.setCacheDisabled(this.monome.readConfigValue(pageElement, "disablecache"));
+		this.stopOSC();
 		this.initOSC();		
 	}
 
