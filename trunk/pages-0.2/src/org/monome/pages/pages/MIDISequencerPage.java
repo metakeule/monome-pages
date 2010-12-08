@@ -387,7 +387,7 @@ public class MIDISequencerPage implements Page {
 	 */
 	public void handleTick() {
 		
-		if (this.tickNum == quantization / 2 || this.tickNum == quantization) {
+		if (this.tickNum % 3 == 0) {
 			this.flashNotes();
 		}
 		
