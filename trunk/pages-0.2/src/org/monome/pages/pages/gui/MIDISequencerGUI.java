@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.monome.pages.pages.MIDISequencerPage;
+import java.awt.Dimension;
 
 public class MIDISequencerGUI extends JPanel {
 
@@ -28,6 +29,8 @@ public class MIDISequencerGUI extends JPanel {
 	private String[] rowChoices = {"Row 1", "Row 2", "Row 3", "Row 4", "Row 5", "Row 6",
 			"Row 7", "Row 8", "Row 9", "Row 10", "Row 11", "Row 12", "Row 13", "Row 14",
 			"Row 15", "Row 16"};
+	public JComboBox quantCB = null;
+	private JLabel quantLBL = null;
 
 	/**
 	 * This is the default constructor
@@ -45,13 +48,16 @@ public class MIDISequencerGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
+		quantLBL = new JLabel();
+		quantLBL.setBounds(new Rectangle(15, 135, 76, 16));
+		quantLBL.setText("Quantization");
 		channelLBL = new JLabel();
 		channelLBL.setBounds(new Rectangle(35, 80, 51, 21));
 		channelLBL.setText("Channel");
 		bankSizeLBL = new JLabel();
 		bankSizeLBL.setBounds(new Rectangle(30, 55, 56, 21));
 		bankSizeLBL.setText("Bank Size");
-		this.setSize(240, 190);
+		this.setSize(213, 213);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		this.add(getNoteTF(), null);
@@ -65,6 +71,8 @@ public class MIDISequencerGUI extends JPanel {
 		this.add(getHoldModeLBL(), null);
 		this.add(getHoldModeCB(), null);
 		setName("MIDI Sequencer");
+		this.add(getQuantCB(), null);
+		this.add(quantLBL, null);
 		for (int i = 0; i < rowChoices.length; i++) {
 			rowCB.addItem(rowChoices[i]);
 		}
@@ -143,13 +151,26 @@ public class MIDISequencerGUI extends JPanel {
 	private JButton getSaveBtn() {
 		if (saveBtn == null) {
 			saveBtn = new JButton();
-			saveBtn.setBounds(new Rectangle(25, 135, 151, 21));
+			saveBtn.setBounds(new Rectangle(22, 164, 151, 21));
 			saveBtn.setText("Update Preferences");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					String midiNote = noteTF.getText();
 					int index = rowCB.getSelectedIndex();
 					page.noteNumbers[index] = page.noteToMidiNumber(midiNote);
+					if (quantCB.getSelectedIndex() == 0) {
+						page.quantization = 96;
+					} else if (quantCB.getSelectedIndex() == 1) {
+						page.quantization = 48;
+					} else if (quantCB.getSelectedIndex() == 2) {
+						page.quantization = 24;
+					} else if (quantCB.getSelectedIndex() == 3) {
+						page.quantization = 12;
+					} else if (quantCB.getSelectedIndex() == 4) {
+						page.quantization = 6;
+					} else if (quantCB.getSelectedIndex() == 5) {
+						page.quantization = 3;
+					}
 					try {
 						int bankSize = Integer.parseInt(bankSizeTF.getText());
 						if (bankSize < 1 || bankSize > 32) {
@@ -224,6 +245,25 @@ public class MIDISequencerGUI extends JPanel {
 			holdModeCB.setBounds(new Rectangle(85, 105, 21, 21));
 		}
 		return holdModeCB;
+	}
+
+	/**
+	 * This method initializes quantCB	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */
+	private JComboBox getQuantCB() {
+		if (quantCB == null) {
+			quantCB = new JComboBox();
+			quantCB.setBounds(new Rectangle(90, 130, 66, 25));
+			quantCB.addItem("1 bar");
+			quantCB.addItem("1/2");
+			quantCB.addItem("1/4");
+			quantCB.addItem("1/8");
+			quantCB.addItem("1/16");
+			quantCB.addItem("1/32");
+		}
+		return quantCB;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

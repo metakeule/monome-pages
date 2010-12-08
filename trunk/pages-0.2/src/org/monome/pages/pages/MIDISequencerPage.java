@@ -124,6 +124,8 @@ public class MIDISequencerPage implements Page {
 	 * 1 = pattern clear mode enabled
 	 */
 	private int clearMode = 0;
+	
+	public int quantization = 6;
 
 	/**
 	 * Random number generator
@@ -164,6 +166,7 @@ public class MIDISequencerPage implements Page {
 		this.noteNumbers[13] = this.noteToMidiNumber("B-2");
 		this.noteNumbers[14] = this.noteToMidiNumber("C-3");
 		this.noteNumbers[15] = this.noteToMidiNumber("D-3");
+		this.setQuantization("6");
 	}
 
 	/* (non-Javadoc)
@@ -383,11 +386,12 @@ public class MIDISequencerPage implements Page {
 	 * @see org.monome.pages.Page#handleTick()
 	 */
 	public void handleTick() {
-		if (this.tickNum == 3 || this.tickNum == 6) {
+		
+		if (this.tickNum == quantization / 2 || this.tickNum == quantization) {
 			this.flashNotes();
 		}
 		
-		if (this.tickNum == 6) {
+		if (this.tickNum >= quantization) {
 			this.tickNum = 0;
 		}
 		
@@ -415,7 +419,7 @@ public class MIDISequencerPage implements Page {
 			this.playNotes(this.sequencePosition, 127);
 		}
 		// send a note off for lit leds on this sequence position
-		if (this.tickNum == 5) {
+		if (this.tickNum == quantization - 1) {
 			if (this.sequencePosition >= (this.pattern * (this.monome.sizeX)) && this.sequencePosition < ((this.pattern + 1) * (this.monome.sizeX))) {
 				if (this.bankMode == 0) {
 					ArrayList<Integer> colArgs = new ArrayList<Integer>();
@@ -907,6 +911,7 @@ public class MIDISequencerPage implements Page {
 		xml.append("      <holdmode>" + holdmode + "</holdmode>\n");
 		xml.append("      <banksize>" + this.bankSize + "</banksize>\n");
 		xml.append("      <midichannel>" + this.midiChannel + "</midichannel>\n");
+		xml.append("      <quantization>" + this.quantization + "</quantization>\n");
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");
 		}
@@ -1057,6 +1062,7 @@ public class MIDISequencerPage implements Page {
 		this.setHoldMode(this.monome.readConfigValue(pageElement, "holdmode"));
 		this.setBankSize(Integer.parseInt(this.monome.readConfigValue(pageElement, "banksize")));
 		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
+		this.setQuantization(this.monome.readConfigValue(pageElement, "quantization"));
 		NodeList rowNL = pageElement.getElementsByTagName("row");		
 		for (int l=0; l < rowNL.getLength(); l++) {		
 			Element el = (Element) rowNL.item(l);		
@@ -1074,6 +1080,25 @@ public class MIDISequencerPage implements Page {
 		}
 		this.redrawMonome();		
 	}
+
+	private void setQuantization(String quantization) {
+		this.quantization = Integer.parseInt(quantization);
+		if (this.quantization == 96) {
+			this.gui.quantCB.setSelectedIndex(0);
+		} else if (this.quantization == 48) {
+			this.gui.quantCB.setSelectedIndex(1);
+		} else if (this.quantization == 24) {
+			this.gui.quantCB.setSelectedIndex(2);
+		} else if (this.quantization == 12) {
+			this.gui.quantCB.setSelectedIndex(3);
+		} else if (this.quantization == 6) {
+			this.gui.quantCB.setSelectedIndex(4);
+		} else if (this.quantization == 3) {
+			this.gui.quantCB.setSelectedIndex(5);
+		}
+	}
+	
+	
 
 	public int getIndex() {
 		// TODO Auto-generated method stub
