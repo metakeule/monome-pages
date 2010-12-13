@@ -97,7 +97,7 @@ public class Main extends JFrame {
 	 */
 	public static void main(String[] args) {
 		PropertyConfigurator.configure("log4j.properties");
-		StdOutErrLog.tieSystemOutAndErrToLog();
+		//StdOutErrLog.tieSystemOutAndErrToLog();
 		logger.error("Pages starting up");
 		
 		SwingUtilities.invokeLater(new Runnable() {

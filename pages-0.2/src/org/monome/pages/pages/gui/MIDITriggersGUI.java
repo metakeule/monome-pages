@@ -10,6 +10,7 @@ import javax.swing.JComboBox;
 import org.monome.pages.pages.MIDITriggersPage;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
+import java.awt.Dimension;
 
 public class MIDITriggersGUI extends JPanel {
 
@@ -28,10 +29,10 @@ public class MIDITriggersGUI extends JPanel {
 	private JLabel rowLBL = null;
 	public JRadioButton colRB = null;
 	private JLabel colLBL = null;
-	public JCheckBox togglesCB = null;
-	private JLabel togglesLBL = null;
 	public JCheckBox onAndOffCB = null;
 	private JLabel onAndOffLBL = null;
+	private JComboBox modeCB = null;
+	private JLabel modeLBL = null;
 	/**
 	 * This is the default constructor
 	 */
@@ -47,9 +48,12 @@ public class MIDITriggersGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
+		modeLBL = new JLabel();
+		modeLBL.setBounds(new Rectangle(10, 105, 33, 26));
+		modeLBL.setText("Mode");
 		pageLabel = new JLabel();
 		pageLabel.setBounds(new Rectangle(5, 5, 186, 21));
-		this.setSize(205, 175);
+		this.setSize(210, 175);
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		setName("MIDI Triggers Page");
@@ -59,10 +63,10 @@ public class MIDITriggersGUI extends JPanel {
 		this.add(getRowLBL(), null);
 		this.add(getColRB(), null);
 		this.add(getColLBL(), null);
-		this.add(getTogglesCB(), null);
-		this.add(getTogglesLBL(), null);
 		this.add(getOnAndOffCB(), null);
 		this.add(getOnAndOffLBL(), null);
+		this.add(getModeCB(), null);
+		this.add(modeLBL, null);
 		ButtonGroup colRowBG = new ButtonGroup();
 		colRowBG.add(getRowRB());
 		colRowBG.add(getColRB());
@@ -111,8 +115,9 @@ public class MIDITriggersGUI extends JPanel {
 						pieces = label.split("Col ");
 					}
 					int index = Integer.parseInt(pieces[1]) - 1;
-					togglesCB.setSelected(page.toggles[index]);
+					//togglesCB.setSelected(page.mode[index]);
 					onAndOffCB.setSelected(page.onAndOff[index]);
+					modeCB.setSelectedIndex(page.mode[index]);
 				}
 			});
 		}
@@ -198,49 +203,6 @@ public class MIDITriggersGUI extends JPanel {
 	}
 
 	/**
-	 * This method initializes togglesCB	
-	 * 	
-	 * @return javax.swing.JCheckBox	
-	 */
-	private JCheckBox getTogglesCB() {
-		if (togglesCB == null) {
-			togglesCB = new JCheckBox();
-			togglesCB.setBounds(new Rectangle(45, 100, 21, 21));
-			togglesCB.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					String label = (String) rowColCB.getSelectedItem();
-					if (label == null) {
-						return;
-					}
-					String[] pieces;
-					if (rowRB.isSelected()) {
-						pieces = label.split("Row ");
-					} else {
-						pieces = label.split("Col ");
-					}
-					int index = Integer.parseInt(pieces[1]) - 1;
-					page.toggles[index] = togglesCB.isSelected();
-				}
-			});
-		}
-		return togglesCB;
-	}
-
-	/**
-	 * This method initializes togglesLBL	
-	 * 	
-	 * @return javax.swing.JLabel	
-	 */
-	private JLabel getTogglesLBL() {
-		if (togglesLBL == null) {
-			togglesLBL = new JLabel();
-			togglesLBL.setText("Toggles");
-			togglesLBL.setBounds(new Rectangle(70, 100, 76, 21));
-		}
-		return togglesLBL;
-	}
-
-	/**
 	 * This method initializes onAndOffCB	
 	 * 	
 	 * @return javax.swing.JCheckBox	
@@ -248,7 +210,7 @@ public class MIDITriggersGUI extends JPanel {
 	private JCheckBox getOnAndOffCB() {
 		if (onAndOffCB == null) {
 			onAndOffCB = new JCheckBox();
-			onAndOffCB.setBounds(new Rectangle(45, 120, 21, 21));
+			onAndOffCB.setBounds(new Rectangle(35, 135, 21, 21));
 			onAndOffCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					String label = (String) rowColCB.getSelectedItem();
@@ -277,10 +239,62 @@ public class MIDITriggersGUI extends JPanel {
 	private JLabel getOnAndOffLBL() {
 		if (onAndOffLBL == null) {
 			onAndOffLBL = new JLabel();
-			onAndOffLBL.setText("On And Off");
-			onAndOffLBL.setBounds(new Rectangle(70, 120, 76, 21));
+			
+			onAndOffLBL.setText("Toggles On And Off");
+			onAndOffLBL.setBounds(new Rectangle(60, 135, 131, 21));
 		}
 		return onAndOffLBL;
+	}
+
+	/**
+	 * This method initializes modeCB	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */
+	public JComboBox getModeCB() {
+		if (modeCB == null) {
+			modeCB = new JComboBox();
+			modeCB.setBounds(new Rectangle(45, 105, 151, 25));
+			modeCB.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String mode = (String) modeCB.getSelectedItem();
+					int index = getRowColIndex();
+					if (mode.compareTo("Triggers") == 0) {
+						page.mode[index] = page.MODE_TRIGGERS;
+					} else if (mode.compareTo("Toggles") == 0) {
+						page.mode[index] = page.MODE_TOGGLES;
+					} else if (mode.compareTo("Ableton Clip") == 0) {
+						page.mode[index] = page.MODE_CLIP_OVERLAY; 
+					} else if (mode.compareTo("Ableton Looper") == 0) {
+						page.mode[index] = MIDITriggersPage.MODE_LOOPER_OVERLAY;
+					}
+				}
+			});
+			modeCB.addItem("Triggers");
+			modeCB.addItem("Toggles");
+			modeCB.addItem("Ableton Clip");
+			modeCB.addItem("Ableton Looper");
+		}
+		return modeCB;
+	}
+	
+	public int getRowColIndex() {
+		String label = (String) rowColCB.getSelectedItem();
+		int index = 0;
+		if (label == null) {
+			return index;
+		}
+		String[] pieces;
+		if (rowRB.isSelected()) {
+			pieces = label.split("Row ");
+		} else {
+			pieces = label.split("Col ");
+		}
+		if (pieces.length < 2) {
+			return index;
+		}
+		index = Integer.parseInt(pieces[1]) - 1;
+		return index;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

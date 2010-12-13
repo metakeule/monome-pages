@@ -37,12 +37,12 @@ public class MIDITriggersPage implements Page {
 	/**
 	 * Toggles mode constant
 	 */
-	private static final int MODE_TOGGLES = 0;
+	public final int MODE_TOGGLES = 0;
 
 	/**
 	 * Triggers mode constant
 	 */
-	private static final int MODE_TRIGGERS = 1;
+	public final int MODE_TRIGGERS = 1;
 
 	/**
 	 * Rows orientation constant
@@ -58,8 +58,11 @@ public class MIDITriggersPage implements Page {
 	 * The toggled state of each button (on or off)
 	 */
 	private int[][] toggleValues = new int[16][16];
+	public final int MODE_CLIP_OVERLAY = 2;
+	public static final int MODE_LOOPER_OVERLAY = 3;
 	
-	public boolean[] toggles = new boolean[16];
+	
+	public int[] mode = new int[16];
 	public boolean[] onAndOff = new boolean[16];
 
 	/**
@@ -116,12 +119,8 @@ public class MIDITriggersPage implements Page {
 	 * @param index The index of the row/column
 	 * @return The mode of the checkbox (toggles or triggers)
 	 */
-	private int getToggleMode(int index) {
-		if (this.toggles[index]) {
-			return MODE_TOGGLES;
-		} else {
-			return MODE_TRIGGERS;
-		}
+	private int getMode(int index) {
+		return this.mode[index];
 	}
 
 	/**
@@ -153,7 +152,7 @@ public class MIDITriggersPage implements Page {
 			b = x;
 		}
 
-		if (this.getToggleMode(b) == MODE_TOGGLES) {
+		if (this.getMode(b) == MODE_TOGGLES) {
 			if (value == 1) {
 				if (this.toggleValues[a][b] == 1) {
 					this.toggleValues[a][b] = 0;
@@ -240,7 +239,7 @@ public class MIDITriggersPage implements Page {
 					a = y;
 					b = x;
 				}
-				if (this.getToggleMode(b) == MODE_TOGGLES) {
+				if (this.getMode(b) == MODE_TOGGLES) {
 					if (this.toggleValues[a][b] == 1) {
 						this.monome.led(x, y, 1, this.index);
 					} else {
@@ -286,7 +285,7 @@ public class MIDITriggersPage implements Page {
 		String xml = "";
 		xml += "      <name>MIDI Triggers</name>\n";
 		xml += "      <pageName>" + this.pageName + "</pageName>\n";
-		xml += "      <mode>" + mode + "</mode>\n";
+		xml += "      <rowcolmode>" + mode + "</rowcolmode>\n";
 
 		/*
 		xml += "      <ccoffset>" + this.pageADCOptions.getCcOffset() + "</ccoffset>\n";
@@ -297,13 +296,16 @@ public class MIDITriggersPage implements Page {
 		*/ 	
 		
 		for (int i=0; i < 16; i++) {
-			String state;
-			if (this.toggles[i]) {
-				state = "on";
-			} else {
-				state = "off";
+			if (this.mode[i] == MODE_TOGGLES) {
+				mode = "toggles";
+			} else if (this.mode[i] == MODE_TRIGGERS) {
+				mode = "triggers";
+			} else if (this.mode[i] == MODE_CLIP_OVERLAY) {
+				mode = "clipoverlay";
+			} else if (this.mode[i] == MODE_LOOPER_OVERLAY) {
+				mode = "looperoverlay";
 			}
-			xml += "      <toggles>" + state + "</toggles>\n";
+			xml += "      <mode>" + mode + "</mode>\n";
 		}
 		for (int i=0; i < 16; i++) {
 			String state;
@@ -324,7 +326,7 @@ public class MIDITriggersPage implements Page {
 	 * 
 	 * @param mode "rows" for row mode, "columns" for column mode
 	 */
-	public void setMode(String mode) {
+	public void setRowColMode(String mode) {
 		if (mode.equals("rows")) {
 			this.gui.rowRB.doClick();
 		} else if (mode.equals("columns")) {
@@ -338,10 +340,28 @@ public class MIDITriggersPage implements Page {
 	 * 
 	 * @param l 
 	 */
-	public void enableToggle(int l) {
-		this.toggles[l] = true;
-		if (l == 0) {
-			gui.togglesCB.setSelected(true);
+	public void setMode(int l, String value) {
+		int rowColIndex = gui.getRowColIndex();
+		if (value.compareTo("triggers") == 0) {
+			this.mode[l] = MODE_TRIGGERS;
+			if (rowColIndex == l) {
+				this.gui.getModeCB().setSelectedIndex(0);
+			}
+		} else if (value.compareTo("toggles") == 0) {
+			this.mode[l] = MODE_TOGGLES;
+			if (rowColIndex == l) {
+				this.gui.getModeCB().setSelectedIndex(1);
+			}
+		} else if (value.compareTo("clipoverlay") == 0) {
+			this.mode[l] = MODE_CLIP_OVERLAY;
+			if (rowColIndex == l) {
+				this.gui.getModeCB().setSelectedIndex(2);
+			}
+		} else if (value.compareTo("looperoverlay") == 0) {
+			this.mode[l] = MODE_LOOPER_OVERLAY;
+			if (rowColIndex == l) {
+				this.gui.getModeCB().setSelectedIndex(3);
+			}
 		}
 	}
 	
@@ -404,17 +424,15 @@ public class MIDITriggersPage implements Page {
 	
 	public void configure(Element pageElement) {
 		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
-		this.setMode(this.monome.readConfigValue(pageElement, "mode"));
+		this.setRowColMode(this.monome.readConfigValue(pageElement, "rowcolmode"));
 						
-		NodeList seqNL = pageElement.getElementsByTagName("toggles");
+		NodeList seqNL = pageElement.getElementsByTagName("mode");
 		for (int l=0; l < seqNL.getLength(); l++) {
 			Element el = (Element) seqNL.item(l);
 			if (el != null) {
 				NodeList nl = el.getChildNodes();
 				String mode = ((Node) nl.item(0)).getNodeValue();
-				if (mode.equals("on")) {
-					this.enableToggle(l);
-				}
+				this.setMode(l, mode);
 			}
 		}
 		
@@ -488,7 +506,7 @@ public class MIDITriggersPage implements Page {
 	}
 	
 	public boolean redrawOnAbletonEvent() {
-		return false;
+		return true;
 	}
 
 }
