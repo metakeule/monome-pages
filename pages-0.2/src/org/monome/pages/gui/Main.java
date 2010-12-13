@@ -96,7 +96,7 @@ public class Main extends JFrame {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		PropertyConfigurator.configure("conf/log4j.properties");
+		PropertyConfigurator.configure("log4j.properties");
 		StdOutErrLog.tieSystemOutAndErrToLog();
 		logger.error("Pages starting up");
 		

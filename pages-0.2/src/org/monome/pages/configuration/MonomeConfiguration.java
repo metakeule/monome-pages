@@ -160,6 +160,10 @@ public class MonomeConfiguration {
 	 */
 	String[] pageChangeMidiInDevices = new String[32];
 
+	public int offsetX;
+
+	public int offsetY;
+
 	/**
 	 * @param index the index to assign to this MonomeConfiguration
 	 * @param prefix the prefix of the monome (/40h)
@@ -886,7 +890,7 @@ public class MonomeConfiguration {
 
 			try {
 				Configuration configuration = ConfigurationFactory.getConfiguration();
-				if (configuration != null) {
+				if (configuration != null && configuration.monomeSerialOSCPortOut != null) {
 					configuration.monomeSerialOSCPortOut.send(msg);
 				}
 			} catch (Exception e) {

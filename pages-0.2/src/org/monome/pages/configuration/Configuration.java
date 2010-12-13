@@ -349,6 +349,7 @@ public class Configuration {
 				this.monomeSerialOSCPortOut.send(msg);
 				Thread.sleep(100);
 			}
+			MonomeConfigurationFactory.combineMonomeConfigurations();
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e1) {

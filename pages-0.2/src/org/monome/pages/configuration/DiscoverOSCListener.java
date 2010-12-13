@@ -100,6 +100,28 @@ public class DiscoverOSCListener implements OSCListener {
 				return;
 			}
 			
+			if (message.getAddress().contains("/sys/offset")) {
+				if (args.length != 3) {
+					return;
+				}
+				Integer X;
+				Integer Y;
+				try {
+					 X = (Integer) args[1];
+					 Y = (Integer) args[2];
+				} catch (IndexOutOfBoundsException e) {
+					return;
+				}
+								
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
+				if (monomeConfig != null) {
+					System.out.println("set offsets to " + X + ", " + Y + " for index " + index);
+					monomeConfig.offsetX = X;
+					monomeConfig.offsetY = Y;
+				}
+				return;
+			}
+			
 			if (message.getAddress().contains("/sys/devices")) {
 				if (args.length != 1) {
 					return;
@@ -138,7 +160,6 @@ public class DiscoverOSCListener implements OSCListener {
 					int newIndex = MonomeConfigurationFactory.getNumMonomeConfigurations();
 					MonomeConfigurationFactory.moveIndex(index, newIndex);
 				}
-				System.out.println("Auto Discovery: creating monomeConfig on " + prefix + ", index = " + index);
 				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 				config.addMonomeConfiguration(index, prefix, "", 0, 0, true, false, midiPageChangeRules);
 			}
