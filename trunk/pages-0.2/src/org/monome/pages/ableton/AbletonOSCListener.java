@@ -2,6 +2,7 @@
 
 package org.monome.pages.ableton;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -23,6 +24,50 @@ public class AbletonOSCListener implements OSCListener {
 	 */
 	public synchronized void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();
+		
+		System.out.print(msg.getAddress());
+		for (int i = 0; i < args.length; i++) {
+			System.out.print(" " + args[i].toString());
+		}
+		System.out.println();
+		
+		if (msg.getAddress().compareTo("/live/devicelist") == 0) {
+			int trackId = ((Integer) args[0]).intValue();
+			for (int i = 1; i < args.length; i += 2) {
+				if (((String) args[i+1]).compareTo("Looper") == 0) {
+					int deviceId = ((Integer) args[i]).intValue();
+					
+					ConfigurationFactory.getConfiguration().abletonState.getTrack(trackId).createLooper(deviceId);
+					
+					Object sendArgs[] = new Object[2];
+					sendArgs[0] = trackId;
+					sendArgs[1] = deviceId;
+					OSCMessage sendMsg = new OSCMessage("/live/device", sendArgs);
+					try {
+						ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(sendMsg);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}					
+				}
+			}
+		}
+		
+		if (msg.getAddress().compareTo("/live/device/allparam") == 0 || msg.getAddress().compareTo("/live/device/param") == 0) {
+			int trackId = ((Integer) args[0]).intValue();
+			int deviceId = ((Integer) args[1]).intValue();
+			AbletonLooper looper = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackId).getLooper(deviceId);
+			if (looper != null) {
+				for (int i = 2; i < args.length; i += 3) {
+					if (((String) args[i+2]).compareTo("State") == 0) {
+						if (((Float)args[i+1]).floatValue() != looper.getState()) {
+							looper.setState(((Float)args[i+1]).floatValue());
+							ConfigurationFactory.getConfiguration().redrawAbletonPages();
+						}
+					}
+				}
+			}
+		}
+
 		if (msg.getAddress().compareTo("/live/track") == 0) {
 			int trackId = ((Integer) args[0]).intValue();
 			((AbletonOSCControl) ConfigurationFactory.getConfiguration().getAbletonControl()).refreshTrackInfo(trackId);
@@ -59,6 +104,14 @@ public class AbletonOSCListener implements OSCListener {
 				clip.setLength(length);
 			}
 			ConfigurationFactory.getConfiguration().redrawAbletonPages();
+			Object sendArgs[] = new Object[1];
+			sendArgs[0] = trackId;
+			OSCMessage sendMsg = new OSCMessage("/live/devicelist", sendArgs);
+			try {
+				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(sendMsg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		if (msg.getAddress().contains("/live/clip/info")) {

@@ -5,12 +5,14 @@ import java.util.HashMap;
 public class AbletonTrack {
 	
 	private HashMap<Integer, AbletonClip> clips;
+	private HashMap<Integer, AbletonLooper> loopers;
 	private int arm;
 	private int solo;
 	private int mute;
 	
 	public AbletonTrack() {
 		clips = new HashMap<Integer, AbletonClip>();
+		loopers = new HashMap<Integer, AbletonLooper>();
 		arm = 0;
 		solo = 0;
 		mute = 0;
@@ -24,6 +26,14 @@ public class AbletonTrack {
 		Integer key = new Integer(i);
 		if (clips.containsKey(key)) {
 			return clips.get(key);
+		}
+		return null;
+	}
+	
+	public synchronized AbletonLooper getLooper(int i) {
+		Integer key = new Integer(i);
+		if (loopers.containsKey(key)) {
+			return loopers.get(key);
 		}
 		return null;
 	}
@@ -53,10 +63,23 @@ public class AbletonTrack {
 	}
 
 	public synchronized AbletonClip createClip(int clipId) {
-		AbletonClip clip = new AbletonClip();
 		Integer key = new Integer(clipId);
-		clips.put(key, clip);
-		return clip;
+		if (!clips.containsKey(key)) {
+			AbletonClip clip = new AbletonClip();
+			clips.put(key, clip);
+			return clip;
+		}
+		return clips.get(key);
+	}
+	
+	public synchronized AbletonLooper createLooper(int looperId) {
+		Integer key = new Integer(looperId);
+		if (!loopers.containsKey(key)) {
+			AbletonLooper looper = new AbletonLooper();
+			loopers.put(key, looper);
+			return looper;
+		}
+		return loopers.get(key);
 	}
 
 }

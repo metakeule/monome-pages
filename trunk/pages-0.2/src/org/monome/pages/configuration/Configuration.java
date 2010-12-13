@@ -761,6 +761,10 @@ public class Configuration {
 			this.abletonOSCPortIn.addListener("/live/overdub", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/refresh", this.abletonOSCListener);
 			this.abletonOSCPortIn.addListener("/live/reset", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/devicelist", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/device", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/device/allparam", this.abletonOSCListener);
+			this.abletonOSCPortIn.addListener("/live/device/param", this.abletonOSCListener);
 			this.abletonOSCPortIn.startListening();
 		} catch (SocketException e) {
 			e.printStackTrace();
