@@ -82,6 +82,8 @@ public class MonomeConfigurationFactory {
 		MonomeConfiguration monomeConfig = monomeConfigurations.get(new Integer(index));
 		if (monomeConfig != null && monomeConfig.monomeFrame != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
 			monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
+		}
+		if (monomeConfig != null && monomeConfig.monomeFrame != null) {
 			monomeConfig.monomeFrame.dispose();
 		}
 		monomeConfigurations.remove(new Integer(index));
@@ -100,6 +102,38 @@ public class MonomeConfigurationFactory {
 			}
 		}
 		return false;
+	}
+
+	public static void combineMonomeConfigurations() {
+		if (monomeConfigurations == null) {
+			return;
+		}
+		HashMap<Integer, MonomeConfiguration> tmpMonomeConfigurations = (HashMap<Integer, MonomeConfiguration>) monomeConfigurations.clone();
+		Iterator<Integer> it = tmpMonomeConfigurations.keySet().iterator();
+		while (it.hasNext()) {
+			Integer key = it.next();
+			MonomeConfiguration mainMonomeConfig = monomeConfigurations.get(key);
+			if (mainMonomeConfig == null) {
+				continue;
+			}
+			Iterator<Integer> it2 = tmpMonomeConfigurations.keySet().iterator();
+			while (it2.hasNext()) {
+				Integer key2 = it2.next();
+				MonomeConfiguration checkMonomeConfig = monomeConfigurations.get(key2);
+				if (checkMonomeConfig == null) {
+					continue;
+				}
+				if (checkMonomeConfig.prefix.compareTo(mainMonomeConfig.prefix) == 0 && checkMonomeConfig.index != mainMonomeConfig.index) {
+					mainMonomeConfig.sizeX += checkMonomeConfig.offsetX;
+					mainMonomeConfig.sizeY += checkMonomeConfig.offsetY;
+					System.out.println("combining monome configurations, added " + checkMonomeConfig.offsetX + " to X and " + checkMonomeConfig.offsetY + " to Y");
+					mainMonomeConfig.setFrameTitle();
+					removeMonomeConfiguration(key2);
+				}
+			}
+		}
+		
+		
 	}
 
 }

@@ -172,6 +172,12 @@ public class MIDIPadsPage implements Page {
 				if (velocity > 127) {
 					velocity = 127;
 				}
+				if (midiNote > 127) {
+					midiNote = 127;
+				}
+				if (midiChannel > 15) {
+					midiChannel = 15;
+				}
 				ShortMessage midiMsg = new ShortMessage();
 				midiMsg.setMessage(ShortMessage.NOTE_ON, midiChannel, midiNote, velocity);
 				monome.sendMidi(midiMsg, pageIndex);
