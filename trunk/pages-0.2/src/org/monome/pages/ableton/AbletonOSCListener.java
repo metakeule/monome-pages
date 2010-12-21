@@ -54,6 +54,9 @@ public class AbletonOSCListener implements OSCListener {
 		
 		if (msg.getAddress().compareTo("/live/device/allparam") == 0 || msg.getAddress().compareTo("/live/device/param") == 0) {
 			int trackId = ((Integer) args[0]).intValue();
+			if (ConfigurationFactory.getConfiguration().abletonState.getTrack(trackId) == null) {
+				return;
+			}
 			int deviceId = ((Integer) args[1]).intValue();
 			AbletonLooper looper = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackId).getLooper(deviceId);
 			if (looper != null) {
