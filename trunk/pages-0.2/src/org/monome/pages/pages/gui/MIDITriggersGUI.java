@@ -33,6 +33,7 @@ public class MIDITriggersGUI extends JPanel {
 	private JLabel onAndOffLBL = null;
 	private JComboBox modeCB = null;
 	private JLabel modeLBL = null;
+	private boolean ignoreModeCB = false;
 	/**
 	 * This is the default constructor
 	 */
@@ -83,6 +84,7 @@ public class MIDITriggersGUI extends JPanel {
 			rowColCB.addItem(colChoices[i]);
 		}
 		rowColLBL.setText("Col");
+		page.redrawMonome();
 	}
 	
 	private void rowMode() {
@@ -91,6 +93,7 @@ public class MIDITriggersGUI extends JPanel {
 			rowColCB.addItem(rowChoices[i]);
 		}
 		rowColLBL.setText("Row");
+		page.redrawMonome();
 	}
 
 	/**
@@ -115,8 +118,8 @@ public class MIDITriggersGUI extends JPanel {
 						pieces = label.split("Col ");
 					}
 					int index = Integer.parseInt(pieces[1]) - 1;
-					//togglesCB.setSelected(page.mode[index]);
 					onAndOffCB.setSelected(page.onAndOff[index]);
+					ignoreModeCB = true;
 					modeCB.setSelectedIndex(page.mode[index]);
 				}
 			});
@@ -257,6 +260,10 @@ public class MIDITriggersGUI extends JPanel {
 			modeCB.setBounds(new Rectangle(45, 105, 151, 25));
 			modeCB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					if (ignoreModeCB == true) {
+						ignoreModeCB = false;
+						return;
+					}
 					String mode = (String) modeCB.getSelectedItem();
 					int index = getRowColIndex();
 					if (mode.compareTo("Triggers") == 0) {
@@ -266,8 +273,9 @@ public class MIDITriggersGUI extends JPanel {
 					} else if (mode.compareTo("Ableton Clip") == 0) {
 						page.mode[index] = page.MODE_CLIP_OVERLAY; 
 					} else if (mode.compareTo("Ableton Looper") == 0) {
-						page.mode[index] = MIDITriggersPage.MODE_LOOPER_OVERLAY;
+						page.mode[index] = page.MODE_LOOPER_OVERLAY;
 					}
+					page.redrawMonome();
 				}
 			});
 			modeCB.addItem("Triggers");

@@ -358,7 +358,8 @@ public class MonomeConfiguration {
 				}
 				this.curPage = next_page;
 				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
-			} else if (y == 0) {
+			} else if (y == 0 && value == 1) {
+				System.out.println("patternbanks handlePress(" + patternNum + ")");
 				this.patternBanks.get(this.curPage).handlePress(patternNum);
 			}
 			this.pageChanged = true;
@@ -668,7 +669,7 @@ public class MonomeConfiguration {
 				return;
 			}
 	
-			if (this.pages.get(index) == null) {
+			if (this.pages.size() <= index || this.pages.get(index) == null) {
 				return;
 			}
 	
