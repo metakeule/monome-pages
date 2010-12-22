@@ -1,11 +1,20 @@
 package org.monome.pages.pages;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JPanel;
 
+import org.monome.pages.ableton.AbletonClip;
+import org.monome.pages.ableton.AbletonLooper;
+import org.monome.pages.ableton.AbletonState;
+import org.monome.pages.ableton.AbletonTrack;
+import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDITriggersGUI;
 import org.w3c.dom.Element;
@@ -37,12 +46,12 @@ public class MIDITriggersPage implements Page {
 	/**
 	 * Toggles mode constant
 	 */
-	public final int MODE_TOGGLES = 0;
+	public final int MODE_TOGGLES = 1;
 
 	/**
 	 * Triggers mode constant
 	 */
-	public final int MODE_TRIGGERS = 1;
+	public final int MODE_TRIGGERS = 0;
 
 	/**
 	 * Rows orientation constant
@@ -59,11 +68,12 @@ public class MIDITriggersPage implements Page {
 	 */
 	private int[][] toggleValues = new int[16][16];
 	public final int MODE_CLIP_OVERLAY = 2;
-	public static final int MODE_LOOPER_OVERLAY = 3;
+	public final int MODE_LOOPER_OVERLAY = 3;
 	
 	
 	public int[] mode = new int[16];
 	public boolean[] onAndOff = new boolean[16];
+	private int tickNum = 0;
 
 	/**
 	 * The MonomeConfiguration object this page belongs to
@@ -130,6 +140,9 @@ public class MIDITriggersPage implements Page {
 	 */
 	private int getOrientation() {
 		// default to rows
+		if (this.gui == null) {
+			return ORIENTATION_ROWS;
+		}
 		if (this.gui.rowRB == null) {
 			return ORIENTATION_ROWS;
 		}
@@ -173,7 +186,9 @@ public class MIDITriggersPage implements Page {
 				}
 			}
 		} else {
-			this.monome.led(x, y, value, this.index);
+			if (this.getMode(b) == MODE_TRIGGERS) {
+				this.monome.led(x, y, value, this.index);
+			}
 			this.playNote(a, b, value);
 			// note on
 			// note off
@@ -224,13 +239,40 @@ public class MIDITriggersPage implements Page {
 	 * @see org.monome.pages.Page#handleTick()
 	 */
 	public void handleTick() {
+		tickNum++;
+		if (tickNum == 96) {
+			tickNum = 0;
+		}
+		int numRowsCols = this.monome.sizeY;
+		if (getOrientation() == ORIENTATION_COLUMNS) {
+			numRowsCols = this.monome.sizeY;
+		}
+		for (int b = 0; b < numRowsCols; b++) {
+			if (mode[b] == this.MODE_CLIP_OVERLAY) {
+				int playingFlashState = 0;
+				int triggeredFlashState = 0;
+				if (tickNum % 24 < 12) {
+					playingFlashState = 1;
+				} else {
+					playingFlashState = 0;
+				}
+				
+				if (tickNum % 12 < 6) {
+					triggeredFlashState = 1;
+				} else {
+					triggeredFlashState = 0;
+				}
+				this.handleClipRedraw(b, playingFlashState, triggeredFlashState);
+			}
+		}
+		
 		return;
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
-	public void redrawMonome() {		
+	public void redrawMonome() {
 		for (int x = 0; x < this.monome.sizeX; x++) {
 			for (int y = 0; y < this.monome.sizeY; y++) {
 				int a = x;
@@ -245,8 +287,132 @@ public class MIDITriggersPage implements Page {
 					} else {
 						this.monome.led(x, y, 0, this.index);
 					}
-				} else {
+				} else if (this.getMode(b) == MODE_TRIGGERS) {
 					this.monome.led(x, y, 0, this.index);
+				} else if (this.getMode(b) == MODE_LOOPER_OVERLAY) {
+					handleLooperRedraw(b);
+				} else if (this.getMode(b) == MODE_CLIP_OVERLAY) {
+					handleClipRedraw(b, 1, 1);
+				}
+			}
+		}
+	}
+	
+	private void handleClipRedraw(int b, int playingFlashState, int triggeredFlashState) {
+		int trackNum = 0;
+		for (int i = 0; i < b; i++) {
+			if (i == b) {
+				break;
+			}
+			if (this.getMode(i) == MODE_CLIP_OVERLAY) {
+				trackNum++;
+			}
+		}
+		AbletonState abletonState = ConfigurationFactory.getConfiguration().abletonState;
+		HashMap<Integer, AbletonTrack> tracks = abletonState.getTracks();
+		if (trackNum >= tracks.size()) {
+			return;
+		}
+
+		AbletonTrack track = tracks.get(trackNum);
+		if (track == null) {
+			return;
+		}
+		HashMap<Integer, AbletonClip> clips = track.getClips();
+		Set<Integer> keySet = clips.keySet();
+		Iterator<Integer> it = keySet.iterator();
+		while (it.hasNext()) {
+			int clipId = (Integer) it.next();
+			AbletonClip clip = clips.get(clipId);
+			if (clip.getState() == AbletonClip.STATE_EMPTY) {
+				if (getOrientation() == ORIENTATION_COLUMNS) {
+					this.monome.led(b, clipId, 0, this.index);
+				} else {
+					this.monome.led(clipId, b, 0, this.index);
+				}
+			} else if (clip.getState() == AbletonClip.STATE_STOPPED) {
+				if (getOrientation() == ORIENTATION_COLUMNS) {
+					this.monome.led(b, clipId, 1, this.index);
+				} else {
+					this.monome.led(clipId, b, 1, this.index);
+				}
+			} else if (clip.getState() == AbletonClip.STATE_PLAYING) {
+				if (getOrientation() == ORIENTATION_COLUMNS) {
+					this.monome.led(b, clipId, playingFlashState, this.index);
+				} else {
+					this.monome.led(clipId, b, playingFlashState, this.index);
+				}
+			} else if (clip.getState() == AbletonClip.STATE_TRIGGERED) {
+				if (getOrientation() == ORIENTATION_COLUMNS) {
+					this.monome.led(b, clipId, triggeredFlashState, this.index);
+				} else {
+					this.monome.led(clipId, b, triggeredFlashState, this.index);
+				}
+			}
+		}
+	}
+	
+	private void handleLooperRedraw(int b) {
+		int looperNum = 0;
+		for (int i = 0; i < b; i++) {
+			if (i == b) {
+				break;
+			}
+			if (this.getMode(i) == MODE_LOOPER_OVERLAY) {
+				looperNum++;
+			}
+		}
+		AbletonState abletonState = ConfigurationFactory.getConfiguration().abletonState;
+		HashMap<Integer, AbletonTrack> tracks = abletonState.getTracks();
+		int foundLoopersNum = -1;
+		for (int i = 0; i < tracks.size(); i++) {
+			AbletonTrack track = tracks.get(new Integer(i));
+			if (track == null) {
+				continue;
+			}
+			HashMap<Integer, AbletonLooper> loopers = track.getLoopers();
+			Set<Integer> keySet = loopers.keySet();
+			Iterator it = keySet.iterator();
+			//for (int j = 0; j < loopers.size(); j++) {
+			while (it.hasNext()) {
+				foundLoopersNum++;
+				Integer deviceId = (Integer) it.next();
+				if (foundLoopersNum != looperNum) {
+					continue;
+				}
+				AbletonLooper looper = loopers.get(deviceId);
+				if (looper.getState() == 0.0f) {
+					if (getOrientation() == ORIENTATION_COLUMNS) {
+						this.monome.led(b, 0, 0, this.index);
+						this.monome.led(b, 1, 0, this.index);
+					} else {
+						this.monome.led(0, b, 0, this.index);
+						this.monome.led(1, b, 0, this.index);
+					}
+				} else if (looper.getState() == 1.0f) {
+					if (getOrientation() == ORIENTATION_COLUMNS) {
+						this.monome.led(b, 0, 0, this.index);
+						this.monome.led(b, 1, 1, this.index);
+					} else {
+						this.monome.led(0, b, 0, this.index);
+						this.monome.led(1, b, 1, this.index);
+					}
+				} else if (looper.getState() == 2.0f) {
+					if (getOrientation() == ORIENTATION_COLUMNS) {
+						this.monome.led(b, 0, 1, this.index);
+						this.monome.led(b, 1, 0, this.index);
+					} else {
+						this.monome.led(0, b, 1, this.index);
+						this.monome.led(1, b, 0, this.index);
+					}
+				} else if (looper.getState() == 3.0f) {
+					if (getOrientation() == ORIENTATION_COLUMNS) {
+						this.monome.led(b, 0, 1, this.index);
+						this.monome.led(b, 1, 1, this.index);
+					} else {
+						this.monome.led(0, b, 1, this.index);
+						this.monome.led(1, b, 1, this.index);
+					}
 				}
 			}
 		}
@@ -327,6 +493,9 @@ public class MIDITriggersPage implements Page {
 	 * @param mode "rows" for row mode, "columns" for column mode
 	 */
 	public void setRowColMode(String mode) {
+		if (mode == null) {
+			return;
+		}
 		if (mode.equals("rows")) {
 			this.gui.rowRB.doClick();
 		} else if (mode.equals("columns")) {

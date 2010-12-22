@@ -22,6 +22,10 @@ public class AbletonTrack {
 		return clips;
 	}
 	
+	public synchronized HashMap<Integer, AbletonLooper> getLoopers() {
+		return loopers;
+	}
+	
 	public synchronized AbletonClip getClip(int i) {
 		Integer key = new Integer(i);
 		if (clips.containsKey(key)) {
@@ -72,8 +76,8 @@ public class AbletonTrack {
 		return clips.get(key);
 	}
 	
-	public synchronized AbletonLooper createLooper(int looperId) {
-		Integer key = new Integer(looperId);
+	public synchronized AbletonLooper createLooper(int deviceId) {
+		Integer key = new Integer(deviceId);
 		if (!loopers.containsKey(key)) {
 			AbletonLooper looper = new AbletonLooper();
 			loopers.put(key, looper);
