@@ -121,6 +121,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void initOSC() {
 		if (this.oscIn == null) {
+			
 			System.out.println("External Application Page initialized.  Listening on port " + this.inPort + ", sending on port " + this.outPort);
 			this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
 			if (this.oscIn == null) {
@@ -129,17 +130,18 @@ public class ExternalApplicationPage implements Page, OSCListener {
 				this.oscIn = null;
 				return;
 			}
-			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
+			
 			addListeners();
+			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
+
 		}
+		
 	}
 	
 	public void addListeners() {
-		System.out.println("ADDLISTENERSC ALLED");
 		if (listenersAdded.containsKey(this.prefix)) {
 			return;
 		}
-		System.out.println("contains key " + this.prefix);
 		this.oscIn.addListener("/sys/prefix", this);
 		this.oscIn.addListener(this.prefix + "/led", this);
 		this.oscIn.addListener(this.prefix + "/led_col", this);
