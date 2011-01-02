@@ -122,11 +122,9 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	public void initOSC() {
 		if (this.oscIn == null) {
 			
-			System.out.println("External Application Page initialized.  Listening on port " + this.inPort + ", sending on port " + this.outPort);
 			this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
 			if (this.oscIn == null) {
 				JOptionPane.showMessageDialog(Main.getDesktopPane(), "External Application Page was unable to bind to port " + this.inPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
-				System.out.println("External Application Page unable to bind to port " + this.inPort);
 				this.oscIn = null;
 				return;
 			}

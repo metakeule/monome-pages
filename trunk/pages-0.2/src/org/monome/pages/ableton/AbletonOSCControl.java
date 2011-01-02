@@ -422,7 +422,6 @@ public class AbletonOSCControl implements AbletonControl {
 	}
 	
 	public void refreshState() {
-		System.out.println("Refresh state");
 		OSCMessage msg  = new OSCMessage("/live/state");
 		OSCMessage msg2 = new OSCMessage("/live/tempo");
 		OSCMessage msg3 = new OSCMessage("/live/overdub");

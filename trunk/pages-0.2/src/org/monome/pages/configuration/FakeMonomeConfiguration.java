@@ -96,7 +96,6 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 		int[] quad = quadConf.getQuad(quadNum);
 		int shifts = quad[2] / 8;
 		int numArgs = ((quad[3] - quad[2]) / 8);
-		System.out.println("numArgs is " + numArgs);
 		ArrayList<Integer> newIntArgs = new ArrayList<Integer>();
 		int col = intArgs.get(0);
 		newIntArgs.add(col + quad[0]);

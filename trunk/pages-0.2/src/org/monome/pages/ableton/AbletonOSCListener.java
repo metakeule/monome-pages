@@ -23,14 +23,7 @@ public class AbletonOSCListener implements OSCListener {
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
 	public synchronized void acceptMessage(Date arg0, OSCMessage msg) {
-		Object[] args = msg.getArguments();
-		
-		System.out.print(msg.getAddress());
-		for (int i = 0; i < args.length; i++) {
-			System.out.print(" " + args[i].toString());
-		}
-		System.out.println();
-		
+		Object[] args = msg.getArguments();		
 		if (msg.getAddress().compareTo("/live/devicelist") == 0) {
 			int trackId = ((Integer) args[0]).intValue();
 			for (int i = 1; i < args.length; i += 2) {

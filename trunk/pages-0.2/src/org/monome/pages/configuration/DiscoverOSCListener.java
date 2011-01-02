@@ -17,17 +17,7 @@ public class DiscoverOSCListener implements OSCListener {
 
 	public synchronized void acceptMessage(Date time, OSCMessage message) {
 		
-		Object[] args = message.getArguments();
-		/*
-		System.out.print(message.getAddress());
-		for (int i = 0; i < args.length; i++) {
-			if (args[i] != null) {
-				System.out.print(" " + args[i].toString());
-			}
-		}
-		System.out.println();
-		*/
-		
+		Object[] args = message.getArguments();		
 		if (discoverMode) {
 			int index;
 			try {
@@ -115,7 +105,6 @@ public class DiscoverOSCListener implements OSCListener {
 								
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(index);
 				if (monomeConfig != null) {
-					System.out.println("set offsets to " + X + ", " + Y + " for index " + index);
 					monomeConfig.offsetX = X;
 					monomeConfig.offsetY = Y;
 				}

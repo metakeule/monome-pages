@@ -97,7 +97,7 @@ public class Main extends JFrame {
 	 */
 	public static void main(String[] args) {
 		PropertyConfigurator.configure("log4j.properties");
-		//StdOutErrLog.tieSystemOutAndErrToLog();
+		StdOutErrLog.tieSystemOutAndErrToLog();
 		logger.error("Pages starting up");
 		
 		SwingUtilities.invokeLater(new Runnable() {
@@ -312,10 +312,8 @@ public class Main extends JFrame {
 						actionClose();
 						File file = fc.getSelectedFile();
 						setConfigurationFile(file);
-						System.out.println("Main: Creating Configuration object");
 						Configuration configuration = new Configuration("Loading");
 						ConfigurationFactory.setConfiguration(configuration);
-						System.out.println("Main: Reading configuration file");
 						configuration.readConfigurationFile(file);
 						getConfigurationMenu().setEnabled(true);
 						getNewMonomeItem().setEnabled(true);
