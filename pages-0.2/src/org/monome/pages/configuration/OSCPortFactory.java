@@ -27,7 +27,6 @@ public class OSCPortFactory {
 	}
 	
 	public OSCPortIn getOSCPortIn(Integer portNum) {
-		System.out.println("OSCPortFactory: getOSCPortIn(" + portNum + ");");
 		synchronized(oscInPorts) {
 			if (oscInPorts.containsKey(portNum)) {
 				return oscInPorts.get(portNum);
@@ -50,7 +49,6 @@ public class OSCPortFactory {
 	}
 	
 	public void destroyOSCPortIn(Integer portNum) {
-		System.out.println("OSCPortFactory:destroyOSCPortIn(" + portNum + ")");
 		/*
 		synchronized(oscInPorts) {
 			if (oscInPorts.containsKey(portNum)) {
@@ -62,7 +60,6 @@ public class OSCPortFactory {
 	}
 	
 	public OSCPortOut getOSCPortOut(String hostName, Integer portNum) {
-		System.out.println("OSCPortFactory:getOSCPortOut(" + portNum + ");");
 		synchronized(oscOutPorts) {
 			if (oscOutPorts.containsKey(portNum)) {
 				return oscOutPorts.get(portNum);

@@ -72,7 +72,7 @@ public class OSCPortIn extends OSCPort implements Runnable {
 	 * @param listener   the object to invoke when a message comes in
 	 */
 	public void addListener(String anAddress, OSCListener listener) {
-		System.err.println("Adding OSC listener for "+anAddress);
+		//System.err.println("Adding OSC listener for "+anAddress);
 		dispatcher.addListener(anAddress, listener);
 	}
 	/**
@@ -84,7 +84,7 @@ public class OSCPortIn extends OSCPort implements Runnable {
 		dispatcher.removeAllListeners();
 	}
 	public boolean removeListener(String anAddress) {
-		System.err.println("Removing OSC listener for "+anAddress);
+		//System.err.println("Removing OSC listener for "+anAddress);
 		return dispatcher.removeListener(anAddress);
 	}
 	

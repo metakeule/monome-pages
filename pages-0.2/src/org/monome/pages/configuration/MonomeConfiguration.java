@@ -359,7 +359,6 @@ public class MonomeConfiguration {
 				this.curPage = next_page;
 				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
 			} else if (y == 0 && value == 1) {
-				System.out.println("patternbanks handlePress(" + patternNum + ")");
 				this.patternBanks.get(this.curPage).handlePress(patternNum);
 			}
 			this.pageChanged = true;
