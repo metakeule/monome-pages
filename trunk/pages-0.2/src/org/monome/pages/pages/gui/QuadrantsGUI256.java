@@ -3,6 +3,8 @@ package org.monome.pages.pages.gui;
 import java.awt.GridBagLayout;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -10,9 +12,14 @@ import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JRadioButton;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 
+import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
+import org.monome.pages.gui.Main;
 import org.monome.pages.pages.QuadrantsPage;
 
 public class QuadrantsGUI256 extends JPanel {
@@ -71,46 +78,58 @@ public class QuadrantsGUI256 extends JPanel {
 		page1LBL = new JLabel();
 		page1LBL.setBounds(new Rectangle(15, 85, 71, 21));
 		page1LBL.setText("Page 1");
-		quad4LBL = new JLabel();
-		quad4LBL.setBounds(new Rectangle(280, 30, 36, 46));
-		quad4LBL.setText("<html>[#][#]<br/>[#][#]</html>");
-		quad3LBL = new JLabel();
-		quad3LBL.setBounds(new Rectangle(200, 30, 36, 46));
-		quad3LBL.setText("<html>[#][#]<br/>[###]</html>");
-		quad2LBL = new JLabel();
-		quad2LBL.setBounds(new Rectangle(120, 30, 36, 46));
-		quad2LBL.setText("<html>[###]<br/>[#][#]</html>");
-		quad1LBL = new JLabel();
-		quad1LBL.setBounds(new Rectangle(40, 30, 36, 46));
-		quad1LBL.setText("<html>[###]<br/>[###]</html>");
+		if (this.page.monome.sizeY == 16) {
+			quad4LBL = new JLabel();
+			quad4LBL.setBounds(new Rectangle(280, 30, 36, 46));
+			quad4LBL.setText("<html>[#][#]<br/>[#][#]</html>");
+			quad3LBL = new JLabel();
+			quad3LBL.setBounds(new Rectangle(200, 30, 36, 46));
+			quad3LBL.setText("<html>[#][#]<br/>[###]</html>");
+			quad2LBL = new JLabel();
+			quad2LBL.setBounds(new Rectangle(120, 30, 36, 46));
+			quad2LBL.setText("<html>[###]<br/>[#][#]</html>");
+			quad1LBL = new JLabel();
+			quad1LBL.setBounds(new Rectangle(40, 30, 36, 46));
+			quad1LBL.setText("<html>[###]<br/>[###]</html>");
+		} else {
+			quad1LBL = new JLabel();
+			quad1LBL.setBounds(new Rectangle(40, 30, 36, 46));
+			quad1LBL.setText("<html>[#][#]</html>");
+		}
 		this.setSize(343, 174);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		this.add(getQuad1RB(), null);
 		this.add(quad1LBL, null);
-		this.add(getQuad2RB(), null);
-		this.add(quad2LBL, null);
-		this.add(getQuad3RB(), null);
-		this.add(quad3LBL, null);
-		this.add(getQuad4RB(), null);
-		this.add(quad4LBL, null);
+		if (this.page.monome.sizeY == 16) {
+			this.add(getQuad2RB(), null);
+			this.add(quad2LBL, null);
+			this.add(getQuad3RB(), null);
+			this.add(quad3LBL, null);
+			this.add(getQuad4RB(), null);
+			this.add(quad4LBL, null);
+		}
 		this.add(getNewPage1Btn(), null);
 		this.add(getOpenPage1Btn(), null);
-		this.add(getNewPage2Btn(), null);
-		this.add(getOpenPage2Btn(), null);
 		this.add(page1LBL, null);
 		this.add(page2LBL, null);
-		this.add(page3LBL, null);
-		this.add(getNewPage3BTN(), null);
-		this.add(getOpenPage3BTN(), null);
-		this.add(page4LBL, null);
-		this.add(getNewPage4BTN(), null);
-		this.add(getOpenPage4BTN(), null);
+		this.add(getNewPage2Btn(), null);
+		this.add(getOpenPage2Btn(), null);
+		if (this.page.monome.sizeY == 16) {
+			this.add(page3LBL, null);
+			this.add(getNewPage3BTN(), null);
+			this.add(getOpenPage3BTN(), null);
+			this.add(page4LBL, null);
+			this.add(getNewPage4BTN(), null);
+			this.add(getOpenPage4BTN(), null);
+		}
 		ButtonGroup quadrantBG = new ButtonGroup();
 		quadrantBG.add(getQuad1RB());
-		quadrantBG.add(getQuad2RB());
-		quadrantBG.add(getQuad3RB());
-		quadrantBG.add(getQuad4RB());
+		if (this.page.monome.sizeY == 16) {
+			quadrantBG.add(getQuad2RB());
+			quadrantBG.add(getQuad3RB());
+			quadrantBG.add(getQuad4RB());
+		}
 	}
 
 	/**
@@ -132,7 +151,7 @@ public class QuadrantsGUI256 extends JPanel {
 	 * 	
 	 * @return javax.swing.JRadioButton	
 	 */
-	private JRadioButton getQuad1RB() {
+	public JRadioButton getQuad1RB() {
 		if (quad1RB == null) {
 			quad1RB = new JRadioButton();
 			quad1RB.setBounds(new Rectangle(15, 40, 21, 21));
@@ -142,6 +161,8 @@ public class QuadrantsGUI256 extends JPanel {
 			final QuadrantsGUI256 thisGui = this;
 			quad1RB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					page.quadrantConfigurations.get(selectedQuadConf).refreshQuads();
+					page.monome.clearMonome();
 					thisGui.selectedQuadConf = 0;
 				}
 			});			
@@ -154,7 +175,7 @@ public class QuadrantsGUI256 extends JPanel {
 	 * 	
 	 * @return javax.swing.JRadioButton	
 	 */
-	private JRadioButton getQuad2RB() {
+	public JRadioButton getQuad2RB() {
 		if (quad2RB == null) {
 			quad2RB = new JRadioButton();
 			quad2RB.setBounds(new Rectangle(95, 40, 21, 21));
@@ -164,6 +185,8 @@ public class QuadrantsGUI256 extends JPanel {
 			final QuadrantsGUI256 thisGui = this;
 			quad2RB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					page.quadrantConfigurations.get(selectedQuadConf).refreshQuads();
+					page.monome.clearMonome();
 					thisGui.selectedQuadConf = 1;
 				}
 			});			
@@ -176,7 +199,7 @@ public class QuadrantsGUI256 extends JPanel {
 	 * 	
 	 * @return javax.swing.JRadioButton	
 	 */
-	private JRadioButton getQuad3RB() {
+	public JRadioButton getQuad3RB() {
 		if (quad3RB == null) {
 			quad3RB = new JRadioButton();
 			quad3RB.setBounds(new Rectangle(175, 40, 21, 21));
@@ -186,6 +209,8 @@ public class QuadrantsGUI256 extends JPanel {
 			final QuadrantsGUI256 thisGui = this;
 			quad3RB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					page.quadrantConfigurations.get(selectedQuadConf).refreshQuads();
+					page.monome.clearMonome();
 					thisGui.selectedQuadConf = 2;
 				}
 			});			
@@ -198,7 +223,7 @@ public class QuadrantsGUI256 extends JPanel {
 	 * 	
 	 * @return javax.swing.JRadioButton	
 	 */
-	private JRadioButton getQuad4RB() {
+	public JRadioButton getQuad4RB() {
 		if (quad4RB == null) {
 			quad4RB = new JRadioButton();
 			quad4RB.setBounds(new Rectangle(255, 40, 21, 21));
@@ -208,6 +233,8 @@ public class QuadrantsGUI256 extends JPanel {
 			final QuadrantsGUI256 thisGui = this;
 			quad4RB.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
+					page.quadrantConfigurations.get(selectedQuadConf).refreshQuads();
+					page.monome.clearMonome();
 					thisGui.selectedQuadConf = 3;
 				}
 			});			
@@ -225,32 +252,39 @@ public class QuadrantsGUI256 extends JPanel {
 			newPage1Btn = new JButton();
 			newPage1Btn.setBounds(new Rectangle(15, 110, 71, 21));
 			newPage1Btn.setText("New");
-			final QuadrantsGUI256 thisGui = this;
 			newPage1Btn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					String options[] = PagesRepository.getPageNames();
-					
-					//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
-					for (int i=0; i<options.length; i++) {
-						options[i] = options[i].substring(23);
-					}
-					String name = (String)JOptionPane.showInputDialog(
-							thisGui,
-							"Select a new page type",
-							"New Page",
-							JOptionPane.PLAIN_MESSAGE,
-							null,
-							options,
-							"");
-					if (name == null) {
-						return;
-					}
-					name = "org.monome.pages.pages." + name;
-					page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(0).addPage(name);
+					newPage(0);
 				}
 			});
 		}
 		return newPage1Btn;
+	}
+	
+	private void newPage(int configNum) {
+		if (page.quadrantConfigurations.get(selectedQuadConf).getNumQuads() <= configNum) {
+			return;
+		}
+		String options[] = PagesRepository.getPageNames();
+		
+		for (int i=0; i<options.length; i++) {
+			options[i] = options[i].substring(23);
+		}
+		String name = (String)JOptionPane.showInputDialog(
+				this,
+				"Select a new page type",
+				"New Page",
+				JOptionPane.PLAIN_MESSAGE,
+				null,
+				options,
+				"");
+		if (name == null) {
+			return;
+		}
+		name = "org.monome.pages.pages." + name;
+		page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).deletePage(0);
+		page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).addPage(name);
+		page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).pages.get(0).redrawMonome();
 	}
 
 	/**
@@ -263,14 +297,35 @@ public class QuadrantsGUI256 extends JPanel {
 			openPage1Btn = new JButton();
 			openPage1Btn.setBounds(new Rectangle(15, 135, 71, 21));
 			openPage1Btn.setText("Open");
-			QuadrantsGUI256 thisGui = this;
 			openPage1Btn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					//thisGui.page.
+					openPageGUI(0);
 				}
 			});
 		}
 		return openPage1Btn;
+	}
+	
+	private void openPageGUI(int configNum) {
+		if (page.quadrantConfigurations.get(selectedQuadConf).getNumQuads() <= configNum) {
+			return;
+		}
+		JInternalFrame configFrame = new JInternalFrame();
+		configFrame.setClosable(true);
+		if (page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).pages.isEmpty()) {
+			return;
+		}
+		JPanel configPanel = page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).pages.get(0).getPanel();
+		Dimension size = configPanel.getSize();
+		size.width += 20;
+		size.height += 20;
+		configFrame.setLayout(null);
+		configFrame.add(configPanel);
+		configFrame.setSize(size);
+		configFrame.setVisible(true);
+		Main.getDesktopPane().add(configFrame);
+		Main.getDesktopPane().validate();
+		configFrame.moveToFront();
 	}
 
 	/**
@@ -283,28 +338,9 @@ public class QuadrantsGUI256 extends JPanel {
 			newPage2Btn = new JButton();
 			newPage2Btn.setBounds(new Rectangle(95, 110, 71, 21));
 			newPage2Btn.setText("New");
-			final QuadrantsGUI256 thisGui = this;
 			newPage2Btn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					String options[] = PagesRepository.getPageNames();
-					
-					//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
-					for (int i=0; i<options.length; i++) {
-						options[i] = options[i].substring(23);
-					}
-					String name = (String)JOptionPane.showInputDialog(
-							thisGui,
-							"Select a new page type",
-							"New Page",
-							JOptionPane.PLAIN_MESSAGE,
-							null,
-							options,
-							"");
-					if (name == null) {
-						return;
-					}
-					name = "org.monome.pages.pages." + name;
-					page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(1).addPage(name);
+					newPage(1);
 				}
 			});
 		}
@@ -321,6 +357,11 @@ public class QuadrantsGUI256 extends JPanel {
 			openPage2Btn = new JButton();
 			openPage2Btn.setBounds(new Rectangle(95, 135, 71, 21));
 			openPage2Btn.setText("Open");
+			openPage2Btn.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					openPageGUI(1);
+				}
+			});
 		}
 		return openPage2Btn;
 	}
@@ -335,28 +376,9 @@ public class QuadrantsGUI256 extends JPanel {
 			newPage3BTN = new JButton();
 			newPage3BTN.setBounds(new Rectangle(175, 110, 71, 21));
 			newPage3BTN.setText("New");
-			final QuadrantsGUI256 thisGui = this;
 			newPage3BTN.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					String options[] = PagesRepository.getPageNames();
-					
-					//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
-					for (int i=0; i<options.length; i++) {
-						options[i] = options[i].substring(23);
-					}
-					String name = (String)JOptionPane.showInputDialog(
-							thisGui,
-							"Select a new page type",
-							"New Page",
-							JOptionPane.PLAIN_MESSAGE,
-							null,
-							options,
-							"");
-					if (name == null) {
-						return;
-					}
-					name = "org.monome.pages.pages." + name;
-					page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(2).addPage(name);
+					newPage(2);
 				}
 			});
 		}
@@ -373,6 +395,11 @@ public class QuadrantsGUI256 extends JPanel {
 			openPage3BTN = new JButton();
 			openPage3BTN.setBounds(new Rectangle(175, 135, 71, 21));
 			openPage3BTN.setText("Open");
+			openPage3BTN.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					openPageGUI(2);
+				}
+			});
 		}
 		return openPage3BTN;
 	}
@@ -387,28 +414,9 @@ public class QuadrantsGUI256 extends JPanel {
 			newPage4BTN = new JButton();
 			newPage4BTN.setBounds(new Rectangle(255, 110, 71, 21));
 			newPage4BTN.setText("New");
-			final QuadrantsGUI256 thisGui = this;
 			newPage4BTN.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					String options[] = PagesRepository.getPageNames();
-					
-					//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
-					for (int i=0; i<options.length; i++) {
-						options[i] = options[i].substring(23);
-					}
-					String name = (String)JOptionPane.showInputDialog(
-							thisGui,
-							"Select a new page type",
-							"New Page",
-							JOptionPane.PLAIN_MESSAGE,
-							null,
-							options,
-							"");
-					if (name == null) {
-						return;
-					}
-					name = "org.monome.pages.pages." + name;
-					page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(3).addPage(name);
+					newPage(3);
 				}
 			});
 		}
@@ -425,6 +433,11 @@ public class QuadrantsGUI256 extends JPanel {
 			openPage4BTN = new JButton();
 			openPage4BTN.setBounds(new Rectangle(255, 135, 71, 21));
 			openPage4BTN.setText("Open");
+			openPage4BTN.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					openPageGUI(3);
+				}
+			});
 		}
 		return openPage4BTN;
 	}

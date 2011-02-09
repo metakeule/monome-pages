@@ -102,7 +102,7 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 		for (int i = 0; i < shifts; i++) {
 			int colState = 0;
 			for (int y = 0; y < 8; y++) {
-				colState += (parent.pageState[pageIndex][col][y] << y);
+				colState += (parent.pageState[pageIndex][col + quad[0]][y] << y);
 			}
 			newIntArgs.add(new Integer(colState));
 		}
@@ -113,6 +113,10 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 	}
 
 	public synchronized void led_row(ArrayList<Integer> intArgs, int index) {
+		if (intArgs.isEmpty()) {
+			return;
+		}
+		
 		int[] quad = quadConf.getQuad(quadNum);
 		int shifts = quad[0] / 8;
 		int numArgs = ((quad[1] - quad[0]) / 8);
