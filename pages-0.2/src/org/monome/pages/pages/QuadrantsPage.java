@@ -9,16 +9,16 @@ import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.QuadrantConfiguration;
-import org.monome.pages.pages.gui.QuadrantsGUI;
 import org.monome.pages.pages.gui.QuadrantsGUI256;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 public class QuadrantsPage implements Page {
 	
 	/**
 	 * The MonomeConfiguration that this page belongs to
 	 */
-	MonomeConfiguration monome;
+	public MonomeConfiguration monome;
 
 	/**
 	 * The index of this page (the page number) 
@@ -88,7 +88,36 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void configure(Element pageElement) {
-		// TODO Auto-generated method stub
+		this.setSelectedQuadConf(this.monome.readConfigValue(pageElement, "selectedQuadConf"));
+		NodeList page1NL = pageElement.getElementsByTagName("page1");
+		if (page1NL != null) {
+			Element page1EL = (Element) page1NL.item(0);
+			String className = page1EL.getAttribute("class");
+			System.out.println("className is " + className);
+		}
+	}
+
+	private void setSelectedQuadConf(String readConfigValue) {
+		int val = 0;
+		try {
+			val = Integer.parseInt(readConfigValue);
+		} catch (NumberFormatException e) {
+			return;
+		}
+		switch(val) {
+			case 0:
+				gui.getQuad1RB().doClick();
+				break;
+			case 1:
+				gui.getQuad2RB().doClick();
+				break;
+			case 2:
+				gui.getQuad3RB().doClick();
+				break;
+			case 3:
+				gui.getQuad4RB().doClick();
+				break;
+		}
 	}
 
 	public void destroyPage() {
@@ -128,7 +157,6 @@ public class QuadrantsPage implements Page {
 			int[] quad = quadrantConfigurations.get(gui.selectedQuadConf).getQuad(i);
 			if (x >= quad[0] && x < quad[1]) {
 				if (y >= quad[2] && y < quad[3]) {
-					System.out.println("getQuadNum(" + x + ", " + y + "): identified quadNum " + i);
 					quadNum = i;
 					break;
 				}
@@ -166,13 +194,18 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void redrawMonome() {
+		boolean didRedraw = false;
 		for (int j = 0; j < quadrantConfigurations.get(gui.selectedQuadConf).getNumQuads(); j++) {
 			FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(j);
 			if (monomeConfig.pages != null) {
 				for (int k = 0; k < monomeConfig.pages.size(); k++) {
 					monomeConfig.pages.get(k).redrawMonome();
+					didRedraw = true;
 				}
 			}
+		}
+		if (!didRedraw) {
+			monome.clearMonome();
 		}
 	}
 
@@ -201,6 +234,23 @@ public class QuadrantsPage implements Page {
 		// TODO: implement save
 		String xml = "";
 		xml += "      <name>Quadrants Page</name>\n";
+		xml += "      <selectedQuadConf>" + gui.selectedQuadConf + "</selectedQuadConf>\n";
+		for (int quadConfNum = 0; quadConfNum < this.quadrantConfigurations.size(); quadConfNum++) {
+			QuadrantConfiguration quadConf = this.quadrantConfigurations.get(quadConfNum);
+			for (int quadNum = 0; quadNum < quadConf.getNumQuads(); quadNum++) {
+				FakeMonomeConfiguration monomeConfig = quadConf.getMonomeConfiguration(quadNum);
+				if (monomeConfig.pages.isEmpty()) {
+					continue;
+				}
+				Page page = monomeConfig.pages.get(0);
+				String pageConfig = page.toXml();
+				xml += "      <page" + quadNum + " class=\"" + page.getClass().toString().replace("class ", "") + "\">\n  ";
+				// fix indent
+				pageConfig = pageConfig.replace("\n", "\n  ");
+				xml += pageConfig;
+				xml += "    </page" + quadNum + ">\n";
+			}
+		}
 		return xml;
 	}
 

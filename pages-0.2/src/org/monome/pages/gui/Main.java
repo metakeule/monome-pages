@@ -95,9 +95,12 @@ public class Main extends JFrame {
 	 * 
 	 * @param args
 	 */
-	public static void main(String[] args) {
-		PropertyConfigurator.configure("log4j.properties");
-		StdOutErrLog.tieSystemOutAndErrToLog();
+	public static void main(final String[] args) {
+		File logConfigFile = new File("log4j.properties");
+		if (logConfigFile.exists() && logConfigFile.canRead()) {
+			//PropertyConfigurator.configure("log4j.properties");
+			//StdOutErrLog.tieSystemOutAndErrToLog();
+		}
 		logger.error("Pages starting up");
 		
 		SwingUtilities.invokeLater(new Runnable() {
@@ -113,7 +116,7 @@ public class Main extends JFrame {
 				} catch (UnsupportedLookAndFeelException e) {
 					e.printStackTrace();
 				}
-				Main theClass = new Main();
+				Main theClass = new Main(args);
 				mainFrame = theClass;
 				mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				mainFrame.setVisible(true);
@@ -158,9 +161,17 @@ public class Main extends JFrame {
 	    }
 	}
 	
-	public Main() {
+	public Main(String[] args) {
 		super();
 		initialize();
+        if (args.length > 0) {
+            File file = new File(args[0]);
+            System.out.println("reading configuration file " + file.getPath());
+            if (file.canRead()) {
+                System.out.println("file is readable");
+                this.actionOpen(file);
+            }
+        }
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    public void windowClosing(WindowEvent winEvt) {
 		    	actionExit();
@@ -311,27 +322,30 @@ public class Main extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						actionClose();
 						File file = fc.getSelectedFile();
-						setConfigurationFile(file);
-						Configuration configuration = new Configuration("Loading");
-						ConfigurationFactory.setConfiguration(configuration);
-						configuration.readConfigurationFile(file);
-						getConfigurationMenu().setEnabled(true);
-						getNewMonomeItem().setEnabled(true);
-						getMidiMenu().setEnabled(true);
-						
-						getFrame().setTitle("Pages : " + configuration.name);
-						for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-							MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-							if (monomeConfig.pages.size() > 0) {
-								monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
-							}
-						}
-						
+						actionOpen(file);
 					}
 				}
 			});
 		}
 		return openItem;
+	}
+	
+	private void actionOpen(File file) {
+		setConfigurationFile(file);
+		Configuration configuration = new Configuration("Loading");
+		ConfigurationFactory.setConfiguration(configuration);
+		configuration.readConfigurationFile(file);
+		getConfigurationMenu().setEnabled(true);
+		getNewMonomeItem().setEnabled(true);
+		getMidiMenu().setEnabled(true);
+		
+		getFrame().setTitle("Pages : " + configuration.name);
+		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+			if (monomeConfig.pages.size() > 0) {
+				monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
+			}
+		}
 	}
 	
 	/**
@@ -369,7 +383,18 @@ public class Main extends JFrame {
 	public void actionClose() {
 		Configuration configuration = ConfigurationFactory.getConfiguration();
 		if (configuration != null) {
-			configuration.stopMonomeSerialOSC();
+			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+				if (monomeConfig != null) {
+					monomeConfig.clear(0, -1);
+				}
+				if (monomeConfig != null && monomeConfig.monomeFrame != null) {
+					if (monomeConfig.monomeFrame.monomeDisplayFrame != null) {
+						monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
+					}
+					monomeConfig.monomeFrame.dispose();
+				}
+			}
 			configuration.stopAbleton();
 			configuration.destroyAllPages();
 			configuration.closeMidiDevices();
@@ -382,17 +407,9 @@ public class Main extends JFrame {
 			for (int i = 0; i < getMidiOutMenu().getItemCount(); i++) {
 				getMidiOutMenu().getItem(i).setSelected(false);
 			}
-			ConfigurationFactory.setConfiguration(null);
-			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-				if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-					if (monomeConfig.monomeFrame.monomeDisplayFrame != null) {
-						monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
-					}
-					monomeConfig.monomeFrame.dispose();
-				}
-			}
+			configuration.stopMonomeSerialOSC();
 			MonomeConfigurationFactory.removeMonomeConfigurations();
+			ConfigurationFactory.setConfiguration(null);
 		}
 		configurationFile = null;
 	}

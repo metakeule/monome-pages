@@ -224,6 +224,17 @@ public class MonomeConfiguration {
 	}
 	
 	/**
+	 * Destroys this object.
+	 *
+	 */
+	public void destroy() {
+		for (int i = 0; i < this.numPages; i++) {
+			deletePage(i);
+		}
+		MonomeConfigurationFactory.removeMonomeConfiguration(index);
+	}
+	
+	/**
 	 * Deletes a page.
 	 * 
 	 * @param i the index of the page to delete
@@ -652,7 +663,7 @@ public class MonomeConfiguration {
 	 * @param value The value of the led (1 = on, 0 = off)
 	 * @param index The index of the page making the request
 	 */
-	public synchronized void led(int x, int y, int value, int index) {
+	public void led(int x, int y, int value, int index) {
 		if (x < 0 || y < 0 || value < 0 || x >= this.sizeX || y >= this.sizeY || value > 1) {
 			return;
 		}
@@ -715,7 +726,7 @@ public class MonomeConfiguration {
 	 * @param value2 The second 8 bits of the value
 	 * @param index The index of the page making the call
 	 */
-	public synchronized void led_col(ArrayList<Integer> intArgs, int index) {
+	public void led_col(ArrayList<Integer> intArgs, int index) {
 		int col = intArgs.get(0);
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
@@ -733,7 +744,7 @@ public class MonomeConfiguration {
 					break;
 				}
 				int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
-				this.pageState[index][col][y] = bit;
+				this.pageState[index][col][sizeY - y - 1] = bit;
 			}
 	
 			if (index != this.curPage) {
@@ -779,7 +790,7 @@ public class MonomeConfiguration {
 	 * @param value2 The second 8 bits of the value
 	 * @param index The index of the page making the call
 	 */
-	public synchronized void led_row(ArrayList<Integer> intArgs, int index) {
+	public void led_row(ArrayList<Integer> intArgs, int index) {
 		int row = intArgs.get(0);
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
@@ -794,7 +805,7 @@ public class MonomeConfiguration {
 		if (index > -1) {
 			for (int x=0; x < (intArgs.size() - 1) * 8; x++) {
 				int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
-				this.pageState[index][x][row] = bit;
+				this.pageState[index][sizeX - x - 1][row] = bit;
 			}
 	
 			if (index != this.curPage) {
@@ -841,7 +852,7 @@ public class MonomeConfiguration {
 	 * @param values
 	 * @param index
 	 */
-	public synchronized void frame(int x, int y, int[] values, int index) {
+	public void frame(int x, int y, int[] values, int index) {
 		for (int i=0; i < values.length; i++) {
 		}
 	}
@@ -887,7 +898,7 @@ public class MonomeConfiguration {
 			Object args[] = new Object[1];
 			args[0] = new Integer(state);
 			OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
-
+			System.out.println("sending clear to " + this.prefix);
 			try {
 				Configuration configuration = ConfigurationFactory.getConfiguration();
 				if (configuration != null && configuration.monomeSerialOSCPortOut != null) {

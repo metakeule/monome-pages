@@ -51,6 +51,22 @@ public class QuadrantConfiguration {
 		return quadReturn;
 	}
 	
+	public void refreshQuads() {
+		for (int index = 0; index < numQuads; index++) {
+			int monomeIndex = this.monomeConfigs.get(index).index;
+			this.monomeConfigs.get(index).destroy();
+			
+			int startX = this.startX.get(index);
+			int endX = this.endX.get(index);
+			int startY = this.startY.get(index);
+			int endY = this.endY.get(index);
+			
+			MonomeConfigurationFactory.addFakeMonomeConfiguration(monomeIndex, "", "", endX - startX, endY - startY, false, false, null, null, this, pageIndex, parent, index);
+			this.monomeConfigs.set(index, (FakeMonomeConfiguration) MonomeConfigurationFactory.getMonomeConfiguration(monomeIndex));
+			MonomeConfigurationFactory.getMonomeConfiguration(monomeIndex).clearMonome();
+		}
+	}
+	
 	public int getWidth(int index) {
 		return startX.get(index) - endX.get(index);
 	}
