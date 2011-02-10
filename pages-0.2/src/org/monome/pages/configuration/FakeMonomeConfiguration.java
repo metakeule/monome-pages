@@ -74,7 +74,7 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 	}
 
 	public String[] getMidiOutOptions(int index) {
-		return super.getMidiOutOptions(index);
+		return parent.getMidiOutOptions(index);
 	}
 
 	public Receiver getMidiReceiver(String midiDeviceName) {

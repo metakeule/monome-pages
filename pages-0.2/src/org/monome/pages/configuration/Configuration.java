@@ -544,7 +544,9 @@ public class Configuration {
 			this.midiOutDevices.add(midiOutDevice);
 			this.midiOutReceivers.add(recv);
 			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-				MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+				if (MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame != null) {
+					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+				}
 			}
 			Main.getGUI().enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), true);
 		} catch (MidiUnavailableException e) {
