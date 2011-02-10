@@ -11,6 +11,7 @@ import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.QuadrantConfiguration;
 import org.monome.pages.pages.gui.QuadrantsGUI256;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class QuadrantsPage implements Page {
@@ -89,11 +90,16 @@ public class QuadrantsPage implements Page {
 
 	public void configure(Element pageElement) {
 		this.setSelectedQuadConf(this.monome.readConfigValue(pageElement, "selectedQuadConf"));
-		NodeList page1NL = pageElement.getElementsByTagName("page1");
-		if (page1NL != null) {
-			Element page1EL = (Element) page1NL.item(0);
-			String className = page1EL.getAttribute("class");
-			System.out.println("className is " + className);
+		for (int pageNum = 0; pageNum < 4; pageNum++) {
+			NodeList pageNL = pageElement.getElementsByTagName("page" + pageNum);
+			if (pageNL != null) {
+				for (int i = 0; i < pageNL.getLength(); i++) {
+					Node pageNode = pageNL.item(i);
+					String className = pageNode.getAttributes().getNamedItem("class").getNodeValue();
+					Page page = this.quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(pageNum).addPage(className);
+					page.configure((Element) pageNode);
+				}
+			}
 		}
 	}
 

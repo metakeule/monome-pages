@@ -98,10 +98,10 @@ public class Main extends JFrame {
 	public static void main(final String[] args) {
 		File logConfigFile = new File("log4j.properties");
 		if (logConfigFile.exists() && logConfigFile.canRead()) {
-			//PropertyConfigurator.configure("log4j.properties");
-			//StdOutErrLog.tieSystemOutAndErrToLog();
+			PropertyConfigurator.configure("log4j.properties");
+			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages starting up");
+		logger.error("Pages 0.2.1a28 starting up");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
