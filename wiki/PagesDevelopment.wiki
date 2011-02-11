@@ -7,15 +7,15 @@
 I develop pages using the Eclipse IDE, which is free and available for all platforms.  Prerequisites for this tutorial include:
 
   * JDK 1.5 or later
-  * Eclipse version 3.4 (Ganymede) -- You can use a later version if you'd like but instructions here are for this version.
+  * Eclipse version 3.6 (Helios)
   * Subclipse plugin
   * Visual Editor plugin
 
-First install JDK 1.5.  Just go to java.sun.com and navigate around the site until you find the Downloads area, shouldn't be too hard.  OSX has an Apple installer for this.
+First install JDK 1.5 or later (1.6 is fine).  Just go to java.sun.com and navigate around the site until you find the Downloads area, shouldn't be too hard.  OSX has an Apple installer for this.
 
 Next get Eclipse.  The Ganymede release is available here:
 
-http://www.eclipse.org/downloads/packages/release/ganymede/sr2
+http://www.eclipse.org
 
 Download this and unzip it somewhere, it doesn't have an installer so you just need to put it where you want it.
 
@@ -23,13 +23,13 @@ Now run Eclipse.  You'll get some funny circular icons on a welcome page.  Find 
 
 You should be in the application now.  First install Subclipse and Visual Editor.  Go to Help -> Software Updates.  Click the available software tab if you aren't already there.  Click 'Add Site' and add this URL:
 
-http://download.eclipse.org/tools/ve/updates/1.4
+http://download.eclipse.org/tools/ve/updates/1.5.0/
 
 Name it Visual Editor.  Now do this again for Subclipse:
 
-http://subclipse.tigris.org/update_1.4.x
+http://subclipse.tigris.org/update_1.6.x
 
-Now, back in the Available Software page, open up the Subclipse 1.4 update site and choose the Subclipse option.  For Visual Editor, all you actually need is "Visual Editor", not the SDK / Java EMF model / etc, so just select that.  Install your software, you probably have to accept some licenses.  You'll be asked to restart Eclipse when this is done, do that.
+Now, back in the Available Software page, open up the Subclipse 1.6 update site and choose the Subclipse option.  For Visual Editor, all you actually need is "Visual Editor", not the SDK / Java EMF model / etc, so just select that.  Install your software, you probably have to accept some licenses.  You'll be asked to restart Eclipse when this is done, do that.
 
 It's time to pull down the Pages code.  First, create a new project by going to the File menu -> New -> Project... You will be see the new project wizard. Expand the SVN folder and choose Checkout Projects from SVN and click Next.
 
