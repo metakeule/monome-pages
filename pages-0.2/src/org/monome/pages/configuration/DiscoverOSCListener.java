@@ -20,6 +20,9 @@ public class DiscoverOSCListener implements OSCListener {
 		Object[] args = message.getArguments();		
 		if (discoverMode) {
 			int index;
+			if (!(args[0] instanceof Integer)) {
+				return;
+			}
 			try {
 				index = ((Integer) args[0]).intValue();
 			} catch (NullPointerException e) {
