@@ -22,7 +22,7 @@ public class AbletonOSCListener implements OSCListener {
 	/* (non-Javadoc)
 	 * @see com.illposed.osc.OSCListener#acceptMessage(java.util.Date, com.illposed.osc.OSCMessage)
 	 */
-	public synchronized void acceptMessage(Date arg0, OSCMessage msg) {
+	public void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();		
 		if (msg.getAddress().compareTo("/live/devicelist") == 0) {
 			int trackId = ((Integer) args[0]).intValue();
@@ -80,7 +80,7 @@ public class AbletonOSCListener implements OSCListener {
 		}
 		
 		if (msg.getAddress().contains("/live/track/info")) {
-
+			
 			int trackId = ((Integer) args[0]).intValue();
 			int armed = ((Integer) args[1]).intValue();
 			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackId);
