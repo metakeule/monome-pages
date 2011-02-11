@@ -188,6 +188,8 @@ public class Configuration {
 	 * True if we should not send any 'View Track' commands to Ableton.
 	 */
 	private boolean abletonIgnoreViewTrack = false;
+	
+	private RedrawAbletonThread redrawAbletonThread;
 
 	/**
 	 * @param name The name of the configuration
@@ -777,12 +779,42 @@ public class Configuration {
 	 * Redraws all Ableton pages
 	 */
 	public void redrawAbletonPages() {
+		if (redrawAbletonThread == null) {
+			redrawAbletonThread = new RedrawAbletonThread();
+			new Thread(redrawAbletonThread).start();
+		} else {
+			redrawAbletonThread.sleepCounter = 1;
+		}
+		/*
 		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-			if (monomeConfig != null) {
+			if (monomeConfig != null && !(monomeConfig instanceof FakeMonomeConfiguration)) {
 				monomeConfig.redrawAbletonPages();
 			}
-		}		
+		}
+		*/		
+	}
+	
+	class RedrawAbletonThread implements Runnable {
+		public int sleepCounter = 1;
+		public void run() {
+			try {
+				while (sleepCounter == 1) {
+					sleepCounter = 0;
+					Thread.sleep(50);
+				}
+				for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+					if (monomeConfig != null && !(monomeConfig instanceof FakeMonomeConfiguration)) {
+						monomeConfig.redrawAbletonPages();
+					}
+				}
+				redrawAbletonThread = null;
+				return;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**

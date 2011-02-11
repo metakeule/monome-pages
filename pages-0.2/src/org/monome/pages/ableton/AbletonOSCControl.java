@@ -382,26 +382,24 @@ public class AbletonOSCControl implements AbletonControl {
 		}
 		
 		try {
-			Thread.sleep(100);
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
 		HashMap<Integer, AbletonTrack> tracks = ConfigurationFactory.getConfiguration().abletonState.getTracks();
-		synchronized (tracks) {
-			Iterator<Integer> i = tracks.keySet().iterator();
-			while (i.hasNext()) {
-				Integer trackNum = i.next();
-				Object args[] = new Object[1];
-				args[0] = trackNum;
-				msg = new OSCMessage("/live/mute", args);
-				OSCMessage msg2 = new OSCMessage("/live/solo", args);
-				try {
-					ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
-					ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg2);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+		Iterator<Integer> i = tracks.keySet().iterator();
+		while (i.hasNext()) {
+			Integer trackNum = i.next();
+			Object args[] = new Object[1];
+			args[0] = trackNum;
+			msg = new OSCMessage("/live/mute", args);
+			OSCMessage msg2 = new OSCMessage("/live/solo", args);
+			try {
+				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg2);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -438,8 +436,8 @@ public class AbletonOSCControl implements AbletonControl {
 
 	public void refreshAbleton() {
 		ConfigurationFactory.getConfiguration().abletonState.reset();
-		refreshState();
 		refreshAllTracks();
+		refreshState();
 		ConfigurationFactory.getConfiguration().redrawAbletonPages();
 	}
 
