@@ -22,7 +22,7 @@ import com.illposed.osc.*;
 
 public class OSCPacketDispatcher {
 	// use Hashtable for JDK1.1 compatability
-	private final Hashtable<String, OSCListener> addressToClassTable = new Hashtable<String, OSCListener>();
+	private final Hashtable<String, ArrayList<OSCListener>> addressToClassTable = new Hashtable<String, ArrayList<OSCListener>>();
 	
 	/**
 	 * 
@@ -32,7 +32,12 @@ public class OSCPacketDispatcher {
 	}
 
 	public void addListener(String address, OSCListener listener) {
-		addressToClassTable.put(address, listener);
+		ArrayList<OSCListener> listeners = addressToClassTable.get(address);
+		if (listeners == null) {
+			listeners = new ArrayList<OSCListener>();
+		}
+		listeners.add(listener);
+		addressToClassTable.put(address, listeners);
 	}
 	
 	/**
@@ -114,8 +119,11 @@ public class OSCPacketDispatcher {
 			//if (key.matches(message.getAddress())) {
 			//if (key.equals(message.getAddress())) {
 			if(message.getAddress().matches(key)){
-				OSCListener listener = (OSCListener) addressToClassTable.get(key);
-				listener.acceptMessage(time, message);
+				ArrayList<OSCListener> listeners = addressToClassTable.get(key);
+				for (int i = 0; i < listeners.size(); i++) {
+					OSCListener listener = (OSCListener) listeners.get(i);
+					listener.acceptMessage(time, message);
+				}
 			}
 		}
 	}

@@ -137,7 +137,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	}
 	
 	public void addListeners() {
-		if (listenersAdded.containsKey(this.prefix)) {
+		if (listenersAdded.containsKey(this.prefix + " " + index)) {
 			return;
 		}
 		this.oscIn.addListener("/sys/prefix", this);
@@ -146,7 +146,8 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.oscIn.addListener(this.prefix + "/led_row", this);
 		this.oscIn.addListener(this.prefix + "/clear", this);
 		this.oscIn.addListener(this.prefix + "/frame", this);
-		listenersAdded.put(this.prefix, 1);
+		System.out.println("added listeners");
+		listenersAdded.put(this.prefix + " " + index, 1);
 	}
 	
 	/* (non-Javadoc)
