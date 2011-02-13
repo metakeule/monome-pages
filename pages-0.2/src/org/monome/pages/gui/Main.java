@@ -116,11 +116,18 @@ public class Main extends JFrame {
 				} catch (UnsupportedLookAndFeelException e) {
 					e.printStackTrace();
 				}
-				Main theClass = new Main(args);
+				Main theClass = new Main();
 				mainFrame = theClass;
 				mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				mainFrame.setVisible(true);
-				// TODO: load filename passed as cmd line arg
+		        if (args.length > 0) {
+		            File file = new File(args[0]);
+		            System.out.println("reading configuration file " + file.getPath());
+		            if (file.canRead()) {
+		                System.out.println("file is readable");
+		                mainFrame.actionOpen(file);
+		            }
+		        }
 			}
 		});
 	}
@@ -161,17 +168,9 @@ public class Main extends JFrame {
 	    }
 	}
 	
-	public Main(String[] args) {
+	public Main() {
 		super();
 		initialize();
-        if (args.length > 0) {
-            File file = new File(args[0]);
-            System.out.println("reading configuration file " + file.getPath());
-            if (file.canRead()) {
-                System.out.println("file is readable");
-                this.actionOpen(file);
-            }
-        }
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 		    public void windowClosing(WindowEvent winEvt) {
 		    	actionExit();

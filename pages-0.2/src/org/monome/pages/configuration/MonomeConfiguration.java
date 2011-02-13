@@ -728,6 +728,9 @@ public class MonomeConfiguration {
 	 */
 	public void led_col(ArrayList<Integer> intArgs, int index) {
 		int col = intArgs.get(0);
+		if (col < 0 || col >= sizeX) {
+			return;
+		}
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
 		for (int i = 0; i < intArgs.size(); i++) {
@@ -792,6 +795,9 @@ public class MonomeConfiguration {
 	 */
 	public void led_row(ArrayList<Integer> intArgs, int index) {
 		int row = intArgs.get(0);
+		if (row < 0 || row >= sizeY) {
+			return;
+		}
 		int[] values = {0, 0, 0, 0};
 		int numValues = 0;
 		for (int i = 0; i < intArgs.size(); i++) {

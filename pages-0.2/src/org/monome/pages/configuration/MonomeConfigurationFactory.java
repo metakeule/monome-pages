@@ -130,8 +130,5 @@ public class MonomeConfigurationFactory {
 				}
 			}
 		}
-		
-		
 	}
-
 }
