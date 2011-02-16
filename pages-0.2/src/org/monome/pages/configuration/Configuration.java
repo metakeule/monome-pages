@@ -926,8 +926,8 @@ public class Configuration {
 
 			// read <midiinport> from the configuration file
 			rootNL = doc.getElementsByTagName("midiinport");
-			rootEL = (Element) rootNL.item(0);
-			if (rootEL != null) {
+			for (int i=0; i < rootNL.getLength(); i++) {
+				rootEL = (Element) rootNL.item(i);
 				rootNL2 = rootEL.getChildNodes();
 				String midiinport = ((Node) rootNL2.item(0)).getNodeValue();
 				actionAddMidiInput(midiinport);
