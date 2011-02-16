@@ -253,7 +253,7 @@ public class MonomeConfiguration {
 		this.curPage--;
 		if (curPage <= 0) {
 			curPage = 0;
-		}		
+		}
 		if (this.numPages == 0) {
 			if (this.monomeFrame != null) {
 				this.monomeFrame.enableMidiMenu(false);
@@ -264,6 +264,13 @@ public class MonomeConfiguration {
 		} else {
 			switchPage(pages.get(curPage), curPage, true);
 		}
+		String[] pageNames = new String[this.pages.size()];
+		for (int i1 = 0; i1 < this.pages.size(); i1++) {
+			Page tmpPage = this.pages.get(i1);
+			String pageName = tmpPage.getName();
+			pageNames[i1] = pageName;
+		}
+		this.monomeFrame.updateShowPageMenuItems(pageNames);
 	}
 
 	/**
@@ -743,7 +750,7 @@ public class MonomeConfiguration {
 		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
 		if (index > -1) {
 			for (int y=0; y < (intArgs.size() - 1) * 8; y++) {
-				if (y > sizeY) {
+				if (y >= sizeY) {
 					break;
 				}
 				int bit = (fullvalue >> (this.sizeY - y - 1)) & 1;
@@ -904,7 +911,6 @@ public class MonomeConfiguration {
 			Object args[] = new Object[1];
 			args[0] = new Integer(state);
 			OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
-			System.out.println("sending clear to " + this.prefix);
 			try {
 				Configuration configuration = ConfigurationFactory.getConfiguration();
 				if (configuration != null && configuration.monomeSerialOSCPortOut != null) {
