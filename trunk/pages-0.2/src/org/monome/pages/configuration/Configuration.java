@@ -526,7 +526,7 @@ public class Configuration {
 	public void toggleMidiOutDevice(MidiDevice midiOutDevice) {
 		// check if the device is already enabled, if so disable it
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
-			if (this.midiOutDevices.get(i).equals(midiOutDevice)) {
+			if (this.midiOutDevices.get(i).getDeviceInfo().getName().equals(midiOutDevice.getDeviceInfo().getName())) {
 				MidiDevice outDevice = this.midiOutDevices.get(i);
 				this.midiOutReceivers.remove(i);
 				this.midiOutDevices.remove(i);
@@ -564,7 +564,7 @@ public class Configuration {
 	public void toggleMidiInDevice(MidiDevice midiInDevice) {
 		// close the currently open device if we have one
 		for (int i=0; i < this.midiInDevices.size(); i++) {
-			if (this.midiInDevices.get(i).equals(midiInDevice)) {
+			if (this.midiInDevices.get(i).getDeviceInfo().getName().equals(midiInDevice.getDeviceInfo().getName())) {
 				MidiDevice inDevice = this.midiInDevices.get(i);
 				Transmitter transmitter = this.midiInTransmitters.get(i);
 				this.midiInTransmitters.remove(i);

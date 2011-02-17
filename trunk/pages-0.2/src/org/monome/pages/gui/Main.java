@@ -122,9 +122,7 @@ public class Main extends JFrame {
 				mainFrame.setVisible(true);
 		        if (args.length > 0) {
 		            File file = new File(args[0]);
-		            System.out.println("reading configuration file " + file.getPath());
 		            if (file.canRead()) {
-		                System.out.println("file is readable");
 		                mainFrame.actionOpen(file);
 		            }
 		        }
