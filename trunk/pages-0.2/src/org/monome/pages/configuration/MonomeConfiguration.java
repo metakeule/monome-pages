@@ -270,7 +270,9 @@ public class MonomeConfiguration {
 			String pageName = tmpPage.getName();
 			pageNames[i1] = pageName;
 		}
-		this.monomeFrame.updateShowPageMenuItems(pageNames);
+		if (this.monomeFrame != null) {
+			this.monomeFrame.updateShowPageMenuItems(pageNames);
+		}
 	}
 
 	/**
