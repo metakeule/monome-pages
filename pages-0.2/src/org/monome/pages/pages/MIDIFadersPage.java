@@ -69,7 +69,7 @@ public class MIDIFadersPage implements Page {
 	/**
 	 * Which level each fader is currently at
 	 */
-	private int[] buttonFaders = new int[16];
+	private int[] buttonFaders = new int[32];
 	
 	/**
 	 * The name of the page 

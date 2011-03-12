@@ -245,7 +245,9 @@ public class Configuration {
 			
 			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-				initMonome(monomeConfig);
+				if (monomeConfig != null) {
+					initMonome(monomeConfig);
+				}
 			}
 		
 		}
@@ -532,7 +534,10 @@ public class Configuration {
 				this.midiOutDevices.remove(i);
 				outDevice.close();
 				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
+					if (monomeConfig != null && monomeConfig.monomeFrame != null) {
+						monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+					}
 				}
 				Main.getGUI().enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), false);
 				return;
@@ -546,7 +551,8 @@ public class Configuration {
 			this.midiOutDevices.add(midiOutDevice);
 			this.midiOutReceivers.add(recv);
 			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-				if (MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame != null) {
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
+				if (monomeConfig != null && monomeConfig.monomeFrame != null) {
 					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
 				}
 			}
@@ -573,8 +579,9 @@ public class Configuration {
 				transmitter.close();
 				inDevice.close();
 				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-					if (MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame != null) {
-						MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
+					if (monomeConfig != null && monomeConfig.monomeFrame != null) {
+						monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
 					}
 				}
 				Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), false);
@@ -592,8 +599,9 @@ public class Configuration {
 			this.midiInTransmitters.add(transmitter);
 			this.midiInReceivers.add(receiver);
 			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-				if (MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame != null) {
-					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
+				if (monomeConfig != null && monomeConfig.monomeFrame != null) {
+					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
 				}
 			}
 			Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), true);
@@ -613,7 +621,10 @@ public class Configuration {
 		ShortMessage shortMessage;
 		// pass all messages along to all monomes (who pass to all pages)
 		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-			MonomeConfigurationFactory.getMonomeConfiguration(i).send(device, message, lTimeStamp);
+			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+			if (monomeConfig != null) {
+				monomeConfig.send(device, message, lTimeStamp);
+			}
 		}
 		
 		// filter for midi clock ticks or midi reset messages
@@ -623,12 +634,18 @@ public class Configuration {
 			case 0xF0:
 				if (shortMessage.getChannel() == 8) {
 					for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-						MonomeConfigurationFactory.getMonomeConfiguration(i).tick(device);
+						MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+						if (monomeConfig != null) {
+							monomeConfig.tick(device);
+						}
 					}
 				}
 				if (shortMessage.getChannel() == 0x0C) {
 					for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-						MonomeConfigurationFactory.getMonomeConfiguration(i).reset(device);
+						MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
+						if (monomeConfig != null) {
+							monomeConfig.reset(device);
+						}
 					}
 				}
 				break;
@@ -1198,7 +1215,8 @@ public class Configuration {
 
 		// monome and page configuration
 		for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
-			if (MonomeConfigurationFactory.getMonomeConfiguration(i) instanceof FakeMonomeConfiguration) {
+			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i); 
+			if (monomeConfig == null || monomeConfig instanceof FakeMonomeConfiguration) {
 				continue;
 			}
 			xml += MonomeConfigurationFactory.getMonomeConfiguration(i).toXml();

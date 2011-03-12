@@ -201,6 +201,9 @@ public class QuadrantsPage implements Page {
 
 	public void redrawMonome() {
 		boolean didRedraw = false;
+		if (quadrantConfigurations.size() == 0) {
+			return;
+		}
 		for (int j = 0; j < quadrantConfigurations.get(gui.selectedQuadConf).getNumQuads(); j++) {
 			FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(j);
 			if (monomeConfig.pages != null) {

@@ -692,7 +692,7 @@ public class MonomeConfiguration {
 				return;
 			}
 	
-			if (this.pages.get(index).getCacheDisabled() == false) {
+			if (this.pages.get(index) != null && this.pages.get(index).getCacheDisabled() == false) {
 				if (this.ledState[x][y] == value) {
 					return;
 				}	
@@ -819,6 +819,9 @@ public class MonomeConfiguration {
 		int fullvalue = (values[3] << 16) + (values[2] << 8) + values[1];
 		if (index > -1) {
 			for (int x=0; x < (intArgs.size() - 1) * 8; x++) {
+				if (x >= sizeX) {
+					break;
+				}
 				int bit = (fullvalue >> (this.sizeX - x- 1)) & 1;
 				this.pageState[index][sizeX - x - 1][row] = bit;
 			}
