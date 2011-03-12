@@ -26,6 +26,8 @@ public class QuadrantsPage implements Page {
 	 */
 	int index;
 	
+	String pageName;
+	
 	QuadrantsGUI256 gui;
 	
 	public ArrayList<QuadrantConfiguration> quadrantConfigurations;
@@ -53,6 +55,15 @@ public class QuadrantsPage implements Page {
 			quadConf.addQuad(0, 8, 0, 8);
 			quadConf.addQuad(8, 16, 0, 8);
 			quadConf.setPicture("<html>[#][#]</html>");
+			quadrantConfigurations.add(quadConf);			
+		}
+		
+		// 128 horizontal orientation possible configurations
+		if (this.monome.sizeX == 16 && this.monome.sizeY == 8) {
+			QuadrantConfiguration quadConf = new QuadrantConfiguration(index, monome);
+			quadConf.addQuad(0, 8, 0, 8);
+			quadConf.addQuad(0, 8, 8, 16);
+			quadConf.setPicture("<html>[#]<br/>[#]</html>");
 			quadrantConfigurations.add(quadConf);			
 		}
 		
@@ -89,6 +100,7 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void configure(Element pageElement) {
+		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
 		this.setSelectedQuadConf(this.monome.readConfigValue(pageElement, "selectedQuadConf"));
 		for (int pageNum = 0; pageNum < 4; pageNum++) {
 			NodeList pageNL = pageElement.getElementsByTagName("page" + pageNum);
@@ -138,7 +150,7 @@ public class QuadrantsPage implements Page {
 	}
 
 	public String getName() {
-		return "Quadrants Page";
+		return pageName;
 	}
 
 	public JPanel getPanel() {
@@ -236,13 +248,14 @@ public class QuadrantsPage implements Page {
 	}
 
 	public void setName(String name) {
-		// TODO: implement name change on GUI
+		this.pageName = name;
+		gui.setName(name);
 	}
 
 	public String toXml() {
-		// TODO: implement save
 		String xml = "";
 		xml += "      <name>Quadrants Page</name>\n";
+		xml += "      <pageName>" + this.pageName + "</pageName>";
 		xml += "      <selectedQuadConf>" + gui.selectedQuadConf + "</selectedQuadConf>\n";
 		for (int quadConfNum = 0; quadConfNum < this.quadrantConfigurations.size(); quadConfNum++) {
 			QuadrantConfiguration quadConf = this.quadrantConfigurations.get(quadConfNum);
