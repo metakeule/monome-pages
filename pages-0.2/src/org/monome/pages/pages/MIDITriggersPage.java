@@ -72,7 +72,9 @@ public class MIDITriggersPage implements Page {
 	
 	
 	public int[] mode = new int[16];
+	public int[] velocity = new int[16];
 	public boolean[] onAndOff = new boolean[16];
+	public boolean[] ccMode = new boolean[16];
 	private int tickNum = 0;
 
 	/**
@@ -101,7 +103,9 @@ public class MIDITriggersPage implements Page {
 		this.index = index;
 		gui = new MIDITriggersGUI(this);
 		for (int i = 0; i < 16; i++) {
-			onAndOff[i] = true;
+			onAndOff[i] = false;
+			ccMode[i] = false;
+			velocity[i] = 127;
 			for (int j = 0; j < 16; j++) {
 				toggleValues[i][j] = 0;
 			}
@@ -205,13 +209,26 @@ public class MIDITriggersPage implements Page {
 	public void playNote(int x, int y, int value) {
 		int note_num = x + 12;
 		int channel = y;
-		int velocity = value * 127;
+		int index = x;
+		if (getOrientation() == ORIENTATION_COLUMNS) {
+			index = y;
+		}
+		boolean ccMode = this.ccMode[index];
+		int velocity = value * this.velocity[index];
 		ShortMessage note_out = new ShortMessage();
 		try {
 			if (velocity == 0) {
-				note_out.setMessage(ShortMessage.NOTE_OFF, channel, note_num, velocity);
+				if (ccMode) {
+					note_out.setMessage(ShortMessage.CONTROL_CHANGE, channel, note_num, velocity);
+				} else {
+					note_out.setMessage(ShortMessage.NOTE_OFF, channel, note_num, velocity);
+				}
 			} else {
-				note_out.setMessage(ShortMessage.NOTE_ON, channel, note_num, velocity);
+				if (ccMode) {
+					note_out.setMessage(ShortMessage.CONTROL_CHANGE, channel, note_num, velocity);
+				} else {
+					note_out.setMessage(ShortMessage.NOTE_ON, channel, note_num, velocity);
+				}
 			}
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
@@ -243,7 +260,7 @@ public class MIDITriggersPage implements Page {
 		if (tickNum == 96) {
 			tickNum = 0;
 		}
-		int numRowsCols = this.monome.sizeY;
+		int numRowsCols = this.monome.sizeX;
 		if (getOrientation() == ORIENTATION_COLUMNS) {
 			numRowsCols = this.monome.sizeY;
 		}
@@ -481,6 +498,13 @@ public class MIDITriggersPage implements Page {
 				state = "off";
 			}
 			xml += "      <onandoff>" + state + "</onandoff>\n";
+			if (this.ccMode[i]) {
+				state = "on";
+			} else {
+				state = "off";
+			}
+			xml += "      <ccMode>" + state + "</ccMode>\n";
+			xml += "      <velocity>" + this.velocity[i] + "</velocity>\n";
 		}
 		return xml;
 
@@ -543,6 +567,13 @@ public class MIDITriggersPage implements Page {
 		this.onAndOff[l] = true;
 		if (l == 0) {
 			gui.onAndOffCB.setSelected(true);
+		}
+	}
+	
+	public void enableCcMode(int l) {
+		this.ccMode[l] = true;
+		if (l == 0) {
+			gui.ccCB.setSelected(true);
 		}
 	}
 
@@ -611,12 +642,38 @@ public class MIDITriggersPage implements Page {
 			if (el != null) {
 				NodeList nl = el.getChildNodes();
 				String mode = ((Node) nl.item(0)).getNodeValue();
-				if (mode.equals("on")) {
+				if (mode.compareTo("on") == 0) {
 					this.enableOnAndOff(l);
 				}
 			}
 		}
 
+		seqNL = pageElement.getElementsByTagName("ccMode");
+		for (int l=0; l < seqNL.getLength(); l++) {
+			Element el = (Element) seqNL.item(l);
+			if (el != null) {
+				NodeList nl = el.getChildNodes();
+				String mode = ((Node) nl.item(0)).getNodeValue();
+				if (mode.compareTo("on") == 0) {
+					this.enableCcMode(l);
+				}
+			}
+		}
+		
+		seqNL = pageElement.getElementsByTagName("velocity");
+		for (int l=0; l < seqNL.getLength(); l++) {
+			Element el = (Element) seqNL.item(l);
+			if (el != null) {
+				NodeList nl = el.getChildNodes();
+				String value = ((Node) nl.item(0)).getNodeValue();
+				try {
+					int velocity = Integer.parseInt(value);
+					this.velocity[l] = velocity;
+				} catch (NumberFormatException ex) {
+					
+				}
+			}
+		}
 		/*
 		nl = pageElement.getElementsByTagName("ccoffset");
 		el = (Element) nl.item(0);

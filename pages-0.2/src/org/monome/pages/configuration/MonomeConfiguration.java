@@ -163,6 +163,8 @@ public class MonomeConfiguration {
 	public int offsetX;
 
 	public int offsetY;
+	
+	public boolean altClear = false;
 
 	/**
 	 * @param index the index to assign to this MonomeConfiguration
@@ -913,16 +915,26 @@ public class MonomeConfiguration {
 				}
 			}
 
-			Object args[] = new Object[1];
-			args[0] = new Integer(state);
-			OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
-			try {
-				Configuration configuration = ConfigurationFactory.getConfiguration();
-				if (configuration != null && configuration.monomeSerialOSCPortOut != null) {
-					configuration.monomeSerialOSCPortOut.send(msg);
+			if (altClear) {
+				for (int y = 0; y < this.sizeY; y++) {
+					ArrayList<Integer> args = new ArrayList<Integer>();
+					args.add(y);
+					args.add(0);
+					args.add(0);
+					this.led_row(args, index);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			} else {
+				Object args[] = new Object[1];
+				args[0] = new Integer(state);
+				OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
+				try {
+					Configuration configuration = ConfigurationFactory.getConfiguration();
+					if (configuration != null && configuration.monomeSerialOSCPortOut != null) {
+						configuration.monomeSerialOSCPortOut.send(msg);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -939,6 +951,11 @@ public class MonomeConfiguration {
 		xml += "    <serial>" + this.serial + "</serial>\n";
 		xml += "    <sizeX>" + this.sizeX + "</sizeX>\n";
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
+		String state = "off";
+		if (altClear) {
+			state = "on";
+		}
+		xml += "    <altClear>" + state + "</altClear>";
 		xml += "    <usePageChangeButton>" + (this.usePageChangeButton ? "true" : "false") + "</usePageChangeButton>\n";
 		xml += "    <useMIDIPageChanging>" + (this.useMIDIPageChanging ? "true" : "false") + "</useMIDIPageChanging>\n";
 		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++ ) {

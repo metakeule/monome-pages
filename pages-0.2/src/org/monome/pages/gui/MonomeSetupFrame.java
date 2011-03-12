@@ -10,6 +10,8 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JButton;
+import java.awt.Dimension;
+import javax.swing.JCheckBox;
 
 public class MonomeSetupFrame extends JInternalFrame {
 
@@ -25,6 +27,8 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JTextField heightTF = null;
 	private JButton saveBtn = null;
 	private JButton cancelBtn = null;
+	private JCheckBox altClearCB = null;
+	private JLabel altClearLbl = null;
 	/**
 	 * This is the xxx default constructor
 	 */
@@ -40,7 +44,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(148, 207);
+		this.setSize(148, 231);
 		this.setTitle("Monome Setup");
 		this.setContentPane(getJContentPane());
 	}
@@ -52,6 +56,9 @@ public class MonomeSetupFrame extends JInternalFrame {
 	 */
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
+			altClearLbl = new JLabel();
+			altClearLbl.setBounds(new Rectangle(40, 105, 91, 21));
+			altClearLbl.setText("led_row Clear");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
 			jContentPane.add(getPrefixLBL(), null);
@@ -63,6 +70,8 @@ public class MonomeSetupFrame extends JInternalFrame {
 			jContentPane.add(getHeightTF(), null);
 			jContentPane.add(getSaveBtn(), null);
 			jContentPane.add(getCancelBtn(), null);
+			jContentPane.add(getAltClearCB(), null);
+			jContentPane.add(altClearLbl, null);
 		}
 		return jContentPane;
 	}
@@ -173,7 +182,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JButton getSaveBtn() {
 		if (saveBtn == null) {
 			saveBtn = new JButton();
-			saveBtn.setBounds(new Rectangle(25, 105, 81, 21));
+			saveBtn.setBounds(new Rectangle(25, 130, 81, 21));
 			saveBtn.setText("Save");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -186,6 +195,9 @@ public class MonomeSetupFrame extends JInternalFrame {
 						MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(newPrefix);
 						if (monomeConfig == null) {
 							monome.prefix = getPrefixTF().getText();
+						}
+						if (altClearCB.isSelected()) {
+							monome.altClear = true;
 						}
 						monome.setFrameTitle();
 						cancel();
@@ -206,7 +218,7 @@ public class MonomeSetupFrame extends JInternalFrame {
 	private JButton getCancelBtn() {
 		if (cancelBtn == null) {
 			cancelBtn = new JButton();
-			cancelBtn.setBounds(new Rectangle(25, 130, 81, 21));
+			cancelBtn.setBounds(new Rectangle(25, 155, 81, 21));
 			cancelBtn.setText("Cancel");
 			cancelBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -219,5 +231,21 @@ public class MonomeSetupFrame extends JInternalFrame {
 	
 	private void cancel() {
 		this.dispose();
+	}
+
+	/**
+	 * This method initializes altClearCB	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getAltClearCB() {
+		if (altClearCB == null) {
+			altClearCB = new JCheckBox();
+			altClearCB.setBounds(new Rectangle(15, 105, 21, 21));
+			if (this.monome.altClear == true) {
+				altClearCB.setSelected(true);
+			}
+		}
+		return altClearCB;
 	}
 }  //  @jve:decl-index=0:visual-constraint="10,10"
