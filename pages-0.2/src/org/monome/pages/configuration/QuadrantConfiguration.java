@@ -37,7 +37,7 @@ public class QuadrantConfiguration {
 		this.startY.add(numQuads, startY);
 		this.endY.add(numQuads, endY);
 		int index = MonomeConfigurationFactory.getNumMonomeConfigurations();
-		MonomeConfigurationFactory.addFakeMonomeConfiguration(index, "", "", endX - startX, endY - startY, false, false, null, null, this, pageIndex, parent, numQuads);
+		MonomeConfigurationFactory.addFakeMonomeConfiguration(index, "/fake" + index, "fake-" + index, endX - startX, endY - startY, false, false, null, null, this, pageIndex, parent, numQuads);
 		this.monomeConfigs.add(numQuads, (FakeMonomeConfiguration) MonomeConfigurationFactory.getMonomeConfiguration(index));
 		numQuads++;
 	}
@@ -61,7 +61,7 @@ public class QuadrantConfiguration {
 			int startY = this.startY.get(index);
 			int endY = this.endY.get(index);
 			
-			MonomeConfigurationFactory.addFakeMonomeConfiguration(monomeIndex, "", "", endX - startX, endY - startY, false, false, null, null, this, pageIndex, parent, index);
+			MonomeConfigurationFactory.addFakeMonomeConfiguration(monomeIndex, "/fake" + monomeIndex, "fake-" + monomeIndex, endX - startX, endY - startY, false, false, null, null, this, pageIndex, parent, index);
 			this.monomeConfigs.set(index, (FakeMonomeConfiguration) MonomeConfigurationFactory.getMonomeConfiguration(monomeIndex));
 			MonomeConfigurationFactory.getMonomeConfiguration(monomeIndex).clearMonome();
 		}
