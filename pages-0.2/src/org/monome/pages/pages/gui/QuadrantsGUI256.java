@@ -78,7 +78,7 @@ public class QuadrantsGUI256 extends JPanel {
 		page1LBL = new JLabel();
 		page1LBL.setBounds(new Rectangle(15, 85, 71, 21));
 		page1LBL.setText("Page 1");
-		if (this.page.monome.sizeY == 16) {
+		if (this.page.monome.sizeX == 16 && this.page.monome.sizeY == 16) {
 			quad4LBL = new JLabel();
 			quad4LBL.setBounds(new Rectangle(280, 30, 36, 46));
 			quad4LBL.setText("<html>[#][#]<br/>[#][#]</html>");
@@ -91,17 +91,21 @@ public class QuadrantsGUI256 extends JPanel {
 			quad1LBL = new JLabel();
 			quad1LBL.setBounds(new Rectangle(40, 30, 36, 46));
 			quad1LBL.setText("<html>[###]<br/>[###]</html>");
-		} else {
+		} else if (this.page.monome.sizeX == 16) {
 			quad1LBL = new JLabel();
 			quad1LBL.setBounds(new Rectangle(40, 30, 36, 46));
 			quad1LBL.setText("<html>[#][#]</html>");
+		} else if (this.page.monome.sizeY == 16) {
+			quad1LBL = new JLabel();
+			quad1LBL.setBounds(new Rectangle(40, 30, 36, 46));
+			quad1LBL.setText("<html>[#]<br/>[#]</html>");
 		}
 		this.setSize(343, 174);
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		this.add(getQuad1RB(), null);
 		this.add(quad1LBL, null);
-		if (this.page.monome.sizeY == 16) {
+		if (this.page.monome.sizeX == 16 && this.page.monome.sizeY == 16) {
 			this.add(getQuad2RB(), null);
 			this.add(quad2LBL, null);
 			this.add(getQuad3RB(), null);
@@ -115,7 +119,7 @@ public class QuadrantsGUI256 extends JPanel {
 		this.add(page2LBL, null);
 		this.add(getNewPage2Btn(), null);
 		this.add(getOpenPage2Btn(), null);
-		if (this.page.monome.sizeY == 16) {
+		if (this.page.monome.sizeX == 16 && this.page.monome.sizeY == 16) {
 			this.add(page3LBL, null);
 			this.add(getNewPage3BTN(), null);
 			this.add(getOpenPage3BTN(), null);
@@ -125,7 +129,7 @@ public class QuadrantsGUI256 extends JPanel {
 		}
 		ButtonGroup quadrantBG = new ButtonGroup();
 		quadrantBG.add(getQuad1RB());
-		if (this.page.monome.sizeY == 16) {
+		if (this.page.monome.sizeX == 16 && this.page.monome.sizeY == 16) {
 			quadrantBG.add(getQuad2RB());
 			quadrantBG.add(getQuad3RB());
 			quadrantBG.add(getQuad4RB());
