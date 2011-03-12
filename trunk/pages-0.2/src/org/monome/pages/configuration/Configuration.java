@@ -998,6 +998,12 @@ public class Configuration {
 					nl = el.getChildNodes();
 					String sizeY = ((Node) nl.item(0)).getNodeValue();
 					
+					// set the height of the monome
+					nl = monomeElement.getElementsByTagName("altClear");
+					el = (Element) nl.item(0);
+					nl = el.getChildNodes();
+					String altClear = ((Node) nl.item(0)).getNodeValue();
+					
 					boolean boolUsePageChangeButton = true;
 					nl = monomeElement.getElementsByTagName("usePageChangeButton");
 					el = (Element) nl.item(0);
@@ -1050,6 +1056,9 @@ public class Configuration {
 					// create the new monome configuration and display its window
 					MonomeConfiguration monomeConfig = addMonomeConfiguration(i, prefix, serial, Integer.valueOf(sizeX).intValue(), 
 							Integer.valueOf(sizeY).intValue(), boolUsePageChangeButton, boolUseMIDIPageChanging, midiPageChangeRules);
+					if (altClear.compareTo("on") == 0) {
+						monomeConfig.altClear = true;
+					}
 					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
 					monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
 										

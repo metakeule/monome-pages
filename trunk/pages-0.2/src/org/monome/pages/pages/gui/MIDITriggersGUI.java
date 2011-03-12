@@ -11,6 +11,7 @@ import org.monome.pages.pages.MIDITriggersPage;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
 import java.awt.Dimension;
+import javax.swing.JTextField;
 
 public class MIDITriggersGUI extends JPanel {
 
@@ -34,6 +35,10 @@ public class MIDITriggersGUI extends JPanel {
 	private JComboBox modeCB = null;
 	private JLabel modeLBL = null;
 	private boolean ignoreModeCB = false;
+	public JCheckBox ccCB = null;
+	private JLabel ccLbl = null;
+	private JTextField velocityTF = null;
+	private JLabel velocityLBL = null;
 	/**
 	 * This is the default constructor
 	 */
@@ -49,12 +54,18 @@ public class MIDITriggersGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
+		velocityLBL = new JLabel();
+		velocityLBL.setBounds(new Rectangle(95, 185, 96, 21));
+		velocityLBL.setText("Velocity");
+		ccLbl = new JLabel();
+		ccLbl.setBounds(new Rectangle(60, 160, 131, 21));
+		ccLbl.setText("MIDI CC Mode");
 		modeLBL = new JLabel();
 		modeLBL.setBounds(new Rectangle(10, 105, 33, 26));
 		modeLBL.setText("Mode");
 		pageLabel = new JLabel();
 		pageLabel.setBounds(new Rectangle(5, 5, 186, 21));
-		this.setSize(210, 175);
+		this.setSize(213, 222);
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		setName("MIDI Triggers Page");
@@ -68,6 +79,10 @@ public class MIDITriggersGUI extends JPanel {
 		this.add(getOnAndOffLBL(), null);
 		this.add(getModeCB(), null);
 		this.add(modeLBL, null);
+		this.add(getCcCB(), null);
+		this.add(ccLbl, null);
+		this.add(getVelocityTF(), null);
+		this.add(velocityLBL, null);
 		ButtonGroup colRowBG = new ButtonGroup();
 		colRowBG.add(getRowRB());
 		colRowBG.add(getColRB());
@@ -119,8 +134,10 @@ public class MIDITriggersGUI extends JPanel {
 					}
 					int index = Integer.parseInt(pieces[1]) - 1;
 					onAndOffCB.setSelected(page.onAndOff[index]);
+					ccCB.setSelected(page.ccMode[index]);
 					ignoreModeCB = true;
 					modeCB.setSelectedIndex(page.mode[index]);
+					velocityTF.setText("" + page.velocity[index]);
 				}
 			});
 		}
@@ -303,6 +320,72 @@ public class MIDITriggersGUI extends JPanel {
 		}
 		index = Integer.parseInt(pieces[1]) - 1;
 		return index;
+	}
+
+	/**
+	 * This method initializes ccCB	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getCcCB() {
+		if (ccCB == null) {
+			ccCB = new JCheckBox();
+			ccCB.setBounds(new Rectangle(35, 160, 21, 21));
+			ccCB.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					String label = (String) rowColCB.getSelectedItem();
+					if (label == null) {
+						return;
+					}
+					String[] pieces;
+					if (rowRB.isSelected()) {
+						pieces = label.split("Row ");
+					} else {
+						pieces = label.split("Col ");
+					}
+					int index = Integer.parseInt(pieces[1]) - 1;
+					page.ccMode[index] = ccCB.isSelected();
+				}
+			});
+		}
+		return ccCB;
+	}
+
+	/**
+	 * This method initializes velocityTF	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getVelocityTF() {
+		if (velocityTF == null) {
+			velocityTF = new JTextField();
+			velocityTF.setBounds(new Rectangle(40, 185, 46, 21));
+			velocityTF.addCaretListener(new javax.swing.event.CaretListener() {
+				public void caretUpdate(javax.swing.event.CaretEvent e) {
+					String value = velocityTF.getText();
+					try {
+						int velocity = Integer.parseInt(value);
+						if (velocity >= 0 && velocity <= 127) {
+							String label = (String) rowColCB.getSelectedItem();
+							if (label == null) {
+								return;
+							}
+							String[] pieces;
+							if (rowRB.isSelected()) {
+								pieces = label.split("Row ");
+							} else {
+								pieces = label.split("Col ");
+							}
+							int index = Integer.parseInt(pieces[1]) - 1;
+							page.velocity[index] = velocity;
+						}
+					} catch (NumberFormatException ex) {
+						
+					}
+				}
+			});
+		}
+		return velocityTF;
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
