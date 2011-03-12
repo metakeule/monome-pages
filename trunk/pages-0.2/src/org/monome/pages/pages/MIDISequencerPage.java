@@ -530,6 +530,9 @@ public class MIDISequencerPage implements Page {
 					velocity = 0;
 				}
 				note_num = this.getNoteNumber(y);
+				if (note_num < 0) {
+					continue;
+				}
 				try {
 					if (velocity == 0 && this.heldNotes[y] == 1) {
 						this.heldNotes[y] = 0;
@@ -570,6 +573,9 @@ public class MIDISequencerPage implements Page {
 						velocity = 0;
 					}
 					note_num = this.getNoteNumber(y);
+					if (note_num < 0) {
+						continue;
+					}
 					try {
 						if (velocity == 0) {
 							note_out.setMessage(ShortMessage.NOTE_OFF, midiChannel, note_num, velocity);

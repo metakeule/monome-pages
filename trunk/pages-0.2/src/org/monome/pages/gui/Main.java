@@ -101,7 +101,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.1a32 starting up");
+		logger.error("Pages 0.2.1a35 starting up");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -341,7 +341,7 @@ public class Main extends JFrame {
 		getFrame().setTitle("Pages : " + configuration.name);
 		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-			if (monomeConfig.pages.size() > 0) {
+			if (monomeConfig != null && monomeConfig.pages != null && monomeConfig.pages.size() > 0) {
 				monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
 			}
 		}
