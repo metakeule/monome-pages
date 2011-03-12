@@ -59,7 +59,7 @@ public class QuadrantsPage implements Page {
 		}
 		
 		// 128 horizontal orientation possible configurations
-		if (this.monome.sizeX == 16 && this.monome.sizeY == 8) {
+		if (this.monome.sizeX == 8 && this.monome.sizeY == 16) {
 			QuadrantConfiguration quadConf = new QuadrantConfiguration(index, monome);
 			quadConf.addQuad(0, 8, 0, 8);
 			quadConf.addQuad(0, 8, 8, 16);
