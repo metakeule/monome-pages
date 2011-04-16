@@ -1,0 +1,84 @@
+package org.monome.pages.configuration;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+
+import org.monome.pages.gui.Main;
+import org.monome.pages.pages.Page;
+
+import com.illposed.osc.OSCListener;
+import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCPortOut;
+
+public class SerialOSCMonome implements OSCListener {
+	
+	public int port;
+	public String serial;
+	public int sizeX;
+	public int sizeY;
+
+	public void acceptMessage(Date time, OSCMessage message) {
+		Object args[] = message.getArguments();
+		/*
+		System.out.println("received " + message.getAddress() + " msg for serial " + serial);
+		for (int i = 0; i < args.length; i++) {
+			if (args[i] instanceof Integer) {
+				int val = ((Integer) args[i]).intValue();
+				System.out.println("val=" + val);
+			}
+			if (args[i] instanceof String) {
+				String val = (String) args[i];
+				System.out.println("val=" + val);
+			}
+		}
+		*/
+		
+		if (message.getAddress().compareTo("/sys/size") == 0) {
+			if (args.length == 2) {
+				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
+				if (monomeConfig != null) {
+					if (monomeConfig.serialOSCPort == 0) {
+						monomeConfig.serialOSCPort = port;
+						ConfigurationFactory.getConfiguration().initMonomeSerialOSC(monomeConfig);
+						Page page = monomeConfig.pages.get(monomeConfig.curPage);
+						if (page != null) {
+							page.redrawMonome();
+						}
+					}
+					return;
+				}
+				int x = ((Integer) args[0]).intValue();
+				int y = ((Integer) args[1]).intValue();
+				OSCMessage prefixMsg = new OSCMessage();
+				prefixMsg.setAddress("/sys/prefix");
+				prefixMsg.addArgument("/" + serial);
+				try {
+					OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut("localhost", port);
+					outPort.send(prefixMsg);
+					if ((x == 8 && y == 16) || (x == 16 && y == 8)) {
+						OSCMessage rotationMsg = new OSCMessage("/sys/rotation");
+						rotationMsg.addArgument(new Integer(0));
+						outPort.send(rotationMsg);
+						x = 16;
+						y = 8;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				Configuration config = ConfigurationFactory.getConfiguration();
+				if (config == null) {
+					Main.mainFrame.getConfigurationMenu().setEnabled(true);
+					Main.mainFrame.getMidiMenu().setEnabled(true);
+					Main.mainFrame.getFrame().setTitle("Pages");
+					ConfigurationFactory.setConfiguration(new Configuration(""));
+					ConfigurationFactory.getConfiguration().initAbleton();
+					config = ConfigurationFactory.getConfiguration();
+				}
+				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+				config.addMonomeConfigurationSerialOSC(MonomeConfigurationFactory.getNumMonomeConfigurations(), "/" + serial, serial, x, y, true, false, midiPageChangeRules, port);
+			}
+		}
+	}
+}

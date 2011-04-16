@@ -41,6 +41,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCPortIn;
+import com.illposed.osc.OSCPortOut;
 
 /**
  * @author Administrator
@@ -165,6 +167,10 @@ public class MonomeConfiguration {
 	public int offsetY;
 	
 	public boolean altClear = false;
+
+	public int serialOSCPort;
+
+	public OSCPortOut serialOSCPortOut;
 
 	/**
 	 * @param index the index to assign to this MonomeConfiguration
@@ -714,9 +720,15 @@ public class MonomeConfiguration {
 		args[0] = new Integer(x);
 		args[1] = new Integer(y);
 		args[2] = new Integer(value);
-		OSCMessage msg = new OSCMessage(this.prefix + "/led", args);
+		OSCMessage msg;
 		try {
-			ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+			if (this.serialOSCPort == 0) {
+				msg = new OSCMessage(this.prefix + "/led", args);
+				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+			} else {
+				msg = new OSCMessage(this.prefix + "/grid/led/set", args);
+				serialOSCPortOut.send(msg);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -787,10 +799,15 @@ public class MonomeConfiguration {
 		for (int i = 1; i < numValues; i++) {
 			args[i] = (Integer) intArgs.get(i);
 		}
-		OSCMessage msg = new OSCMessage(this.prefix + "/led_col", args);
-
+		OSCMessage msg;
 		try {
-			ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+			if (this.serialOSCPort == 0) {
+				 msg = new OSCMessage(this.prefix + "/led_col", args);
+				 ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+			} else {
+				 msg = new OSCMessage(this.prefix + "/grid/led/col", args);
+				 serialOSCPortOut.send(msg);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -854,10 +871,15 @@ public class MonomeConfiguration {
 		for (int i = 0; i < numValues; i++) {
 			args[i] = (Integer) intArgs.get(i);
 		}
-		OSCMessage msg = new OSCMessage(this.prefix + "/led_row", args);
-
+		OSCMessage msg;
 		try {
-			ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+			if (this.serialOSCPort == 0) {
+				msg = new OSCMessage(this.prefix + "/led_row", args);
+				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+			} else {
+				msg = new OSCMessage(this.prefix + "/grid/led/row", args);
+				serialOSCPortOut.send(msg);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -915,26 +937,34 @@ public class MonomeConfiguration {
 				}
 			}
 
-			if (altClear) {
-				for (int y = 0; y < this.sizeY; y++) {
-					ArrayList<Integer> args = new ArrayList<Integer>();
-					args.add(y);
-					args.add(0);
-					args.add(0);
-					this.led_row(args, index);
-				}
-			} else {
-				Object args[] = new Object[1];
-				args[0] = new Integer(state);
-				OSCMessage msg = new OSCMessage(this.prefix + "/clear", args);
-				try {
-					Configuration configuration = ConfigurationFactory.getConfiguration();
-					if (configuration != null && configuration.monomeSerialOSCPortOut != null) {
-						configuration.monomeSerialOSCPortOut.send(msg);
+			Object args[] = new Object[1];
+			args[0] = new Integer(state);
+			OSCMessage msg;
+			try {
+				if (this.serialOSCPort == 0) {
+					if (altClear) {
+						for (int y = 0; y < this.sizeY; y++) {
+							ArrayList<Integer> argz = new ArrayList<Integer>();
+							argz.add(y);
+							argz.add(0);
+							argz.add(0);
+							this.led_row(argz, index);
+						}
+					} else {
+						msg = new OSCMessage(this.prefix + "/clear", args);
+						Configuration configuration = ConfigurationFactory.getConfiguration();
+						if (configuration != null && configuration.monomeSerialOSCPortOut != null) {
+							configuration.monomeSerialOSCPortOut.send(msg);
+						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				} else {
+					msg = new OSCMessage(this.prefix + "/grid/led/all", args);
+					if (serialOSCPortOut != null) {
+						serialOSCPortOut.send(msg);
+					}
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}

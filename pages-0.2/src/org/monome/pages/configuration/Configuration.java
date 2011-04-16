@@ -191,6 +191,8 @@ public class Configuration {
 	
 	private RedrawAbletonThread redrawAbletonThread;
 
+	private OSCPortIn serialOSCPortIn;
+
 	/**
 	 * @param name The name of the configuration
 	 */
@@ -222,6 +224,20 @@ public class Configuration {
 		}
 		MonomeConfiguration monome = MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
 		this.initMonome(monome);
+		return monome;
+	}
+	
+	public MonomeConfiguration addMonomeConfigurationSerialOSC(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, int port) {
+		MonomeFrame monomeFrame = new MonomeFrame(index);
+		Main.getDesktopPane().add(monomeFrame);
+		try {
+			monomeFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		MonomeConfiguration monome = MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
+		monome.serialOSCPort = port;
+		this.initMonomeSerialOSC(monome);
 		return monome;
 	}
 	
@@ -383,6 +399,24 @@ public class Configuration {
 			e.printStackTrace();
 		}
 
+		monome.clearMonome();
+	}
+	
+	public void initMonomeSerialOSC(MonomeConfiguration monome) {
+		monome.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut("localhost", monome.serialOSCPort);
+
+		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
+		this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
+		this.serialOSCPortIn.addListener(monome.prefix + "/grid/key", oscListener);
+		
+		OSCMessage portMsg = new OSCMessage();
+		portMsg.setAddress("/sys/port");
+		portMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
+		try {
+			monome.serialOSCPortOut.send(portMsg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		monome.clearMonome();
 	}
 	

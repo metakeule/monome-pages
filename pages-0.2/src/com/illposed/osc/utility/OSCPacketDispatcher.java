@@ -110,7 +110,6 @@ public class OSCPacketDispatcher {
 	}
 	
 	private void dispatchMessage(OSCMessage message, Date time) {
-		//System.out.println("OSC dispatch: "+message.getAddress());
 		Enumeration<String> keys = addressToClassTable.keys();
 		while (keys.hasMoreElements()) {
 			String key = (String) keys.nextElement();

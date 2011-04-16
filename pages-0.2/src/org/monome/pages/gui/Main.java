@@ -52,6 +52,14 @@ import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
+import org.monome.pages.configuration.OSCPortFactory;
+import org.monome.pages.configuration.SerialOSCMonome;
+
+import com.apple.dnssd.DNSSD;
+import com.apple.dnssd.DNSSDException;
+import com.illposed.osc.OSCMessage;
+import com.illposed.osc.OSCPortIn;
+import com.illposed.osc.OSCPortOut;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -61,9 +69,10 @@ import java.io.PrintStream;
 public class Main extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private static Main mainFrame = null;
+	public static Main mainFrame = null;
 	private static JDesktopPane jDesktopPane = null;
 	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
+	public SerialOSCSetupFrame serialOscSetupFrame = null;
 	private AbletonSetupFrame abletonSetupFrame = null;
 	private static NewMonomeConfigurationFrame showNewMonomeFrame = null;
 	
@@ -79,6 +88,7 @@ public class Main extends JFrame {
 	
 	private JMenu configurationMenu = null;
 	private JMenuItem monomeSerialSetupItem = null;
+	private JMenuItem serialOscSetupItem = null;
 	private JMenuItem abletonSetupItem = null;
 	private static JMenuItem newMonomeItem = null;
 	
@@ -89,6 +99,12 @@ public class Main extends JFrame {
 	private File configurationFile = null;
 	
 	public static Logger logger = Logger.getLogger("socketLogger");
+	
+	private static SerialOSCListener serialOSCListener = new SerialOSCListener();
+	private static OSCPortIn pagesOSCIn;
+	public static final int PAGES_OSC_PORT = 12345;
+	
+	public static boolean sentSerialOSCInfoMsg;
 			
 	/**
 	 * And away we go!
@@ -101,7 +117,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.1a35 starting up");
+		logger.error("Pages 0.2.1a37 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -130,6 +146,15 @@ public class Main extends JFrame {
 		});
 	}
 	
+	public void serialOSCDiscovery() {
+		try {
+			DNSSD.browse("_monome-osc._udp", serialOSCListener);
+		} catch (DNSSDException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	public static class StdOutErrLog {
 
 	    public static void tieSystemOutAndErrToLog() {
@@ -219,7 +244,7 @@ public class Main extends JFrame {
 	 * 
 	 * @return this
 	 */
-	private JFrame getFrame() {
+	public JFrame getFrame() {
 		return this;
 	}
 	
@@ -345,7 +370,27 @@ public class Main extends JFrame {
 				monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
 			}
 		}
+		serialOSCDiscovery();
 	}
+	
+	public void startMonome(SerialOSCMonome monome) {
+		OSCPortIn inPort = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
+		inPort.addListener("/sys/size", monome);
+		inPort.addListener("/sys/port", monome);
+		inPort.addListener("/sys/id", monome);
+		inPort.addListener("/sys/prefix", monome);
+		inPort.addListener("/sys/host", monome);
+		OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut("localhost", monome.port);
+		OSCMessage infoMsg = new OSCMessage();
+		infoMsg.setAddress("/sys/info");
+		infoMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
+		try {
+			outPort.send(infoMsg);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	
 	/**
 	 * This method initializes closeItem	
@@ -551,12 +596,13 @@ public class Main extends JFrame {
 	 * 	
 	 * @return javax.swing.JMenu	
 	 */
-	private JMenu getConfigurationMenu() {
+	public JMenu getConfigurationMenu() {
 		if (configurationMenu == null) {
 			configurationMenu = new JMenu();
 			configurationMenu.setMnemonic(KeyEvent.VK_C);
 			configurationMenu.getAccessibleContext().setAccessibleDescription("Configuration Menu");
 			configurationMenu.setText("Configuration");
+			configurationMenu.add(getSerialOscSetupItem());
 			configurationMenu.add(getMonomeSerialSetupItem());
 			configurationMenu.add(getAbletonSetupItem());
 			configurationMenu.addSeparator();
@@ -565,6 +611,48 @@ public class Main extends JFrame {
 		}
 		return configurationMenu;
 	}
+
+	/**
+	 * This method initializes monomeSerialSetupItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getSerialOscSetupItem() {
+		if (serialOscSetupItem == null) {
+			serialOscSetupItem = new JMenuItem();
+			serialOscSetupItem.setText("SerialOSC Setup...");
+			serialOscSetupItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					showSerialOscSetup();
+				}
+			});
+		}
+		return serialOscSetupItem;
+	}
+	
+	private void showSerialOscSetup() {
+		if (serialOscSetupFrame != null && serialOscSetupFrame.isShowing()) {
+			try {
+				serialOscSetupFrame.setSelected(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		serialOscSetupFrame = new SerialOSCSetupFrame();
+		serialOscSetupFrame.setSize(new Dimension(271, 202));
+		serialOscSetupFrame.setVisible(true);
+		jDesktopPane.add(serialOscSetupFrame);
+		try {
+			serialOscSetupFrame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			e.printStackTrace();
+		}
+		
+		jDesktopPane.validate();
+	}
+
 	
 	/**
 	 * This method initializes monomeSerialSetupItem	
@@ -700,7 +788,7 @@ public class Main extends JFrame {
 	 * 	
 	 * @return javax.swing.JMenu	
 	 */
-	private JMenu getMidiMenu() {
+	public JMenu getMidiMenu() {
 		if (midiMenu == null) {
 			midiMenu = new JMenu();
 			midiMenu.setText("MIDI");

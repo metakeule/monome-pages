@@ -36,8 +36,17 @@ public class MonomeOSCListener implements OSCListener {
 			return;
 		}
 		// only act if the message has our monome prefix
+		System.out.println("MonomeOSCListener: " + message.getAddress());
 		if (!message.getAddress().contains(monome.prefix)) {
 			return;
+		}
+		if (message.getAddress().contains("/grid/key")) {
+			if (args.length == 3) {
+				int x = ((Integer) args[0]).intValue();
+				int y = ((Integer) args[1]).intValue();
+				int value = ((Integer) args[2]).intValue();
+				monome.handlePress(x, y, value);
+			}
 		}
 		if (message.getAddress().contains("press")) {
 			if (args.length == 3) {
