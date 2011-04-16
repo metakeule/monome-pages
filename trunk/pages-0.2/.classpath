@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
 	<classpathentry kind="lib" path="lib/junit.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="lib/dns_sd.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
