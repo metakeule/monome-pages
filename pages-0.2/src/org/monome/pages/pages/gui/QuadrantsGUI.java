@@ -66,8 +66,6 @@ public class QuadrantsGUI extends JPanel implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		System.out.println(e.getActionCommand());
-		System.out.println(e.getID());
 		if (e.getActionCommand().equals("New Page")) {
 			String options[] = PagesRepository.getPageNames();
 			

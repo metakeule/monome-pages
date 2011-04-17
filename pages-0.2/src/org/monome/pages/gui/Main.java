@@ -97,6 +97,7 @@ public class Main extends JFrame {
 	private JMenu midiOutMenu = null;
 	
 	private File configurationFile = null;
+	public boolean openingConfig = false;
 	
 	public static Logger logger = Logger.getLogger("socketLogger");
 	
@@ -117,7 +118,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.1a37 starting up\n");
+		logger.error("Pages 0.2.1a38 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -370,6 +371,7 @@ public class Main extends JFrame {
 				monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
 			}
 		}
+		this.openingConfig = true;
 		serialOSCDiscovery();
 	}
 	
@@ -380,7 +382,7 @@ public class Main extends JFrame {
 		inPort.addListener("/sys/id", monome);
 		inPort.addListener("/sys/prefix", monome);
 		inPort.addListener("/sys/host", monome);
-		OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut("localhost", monome.port);
+		OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(monome.hostName, monome.port);
 		OSCMessage infoMsg = new OSCMessage();
 		infoMsg.setAddress("/sys/info");
 		infoMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
@@ -631,6 +633,7 @@ public class Main extends JFrame {
 	}
 	
 	private void showSerialOscSetup() {
+		this.openingConfig = false;
 		if (serialOscSetupFrame != null && serialOscSetupFrame.isShowing()) {
 			try {
 				serialOscSetupFrame.setSelected(true);

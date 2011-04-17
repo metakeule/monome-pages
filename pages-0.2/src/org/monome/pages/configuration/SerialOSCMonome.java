@@ -17,6 +17,7 @@ public class SerialOSCMonome implements OSCListener {
 	public String serial;
 	public int sizeX;
 	public int sizeY;
+	public String hostName;
 
 	public void acceptMessage(Date time, OSCMessage message) {
 		Object args[] = message.getArguments();
@@ -36,6 +37,9 @@ public class SerialOSCMonome implements OSCListener {
 		
 		if (message.getAddress().compareTo("/sys/size") == 0) {
 			if (args.length == 2) {
+				int x = ((Integer) args[0]).intValue();
+				int y = ((Integer) args[1]).intValue();
+								
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
 				if (monomeConfig != null) {
 					if (monomeConfig.serialOSCPort == 0) {
@@ -46,15 +50,32 @@ public class SerialOSCMonome implements OSCListener {
 							page.redrawMonome();
 						}
 					}
+					OSCMessage prefixMsg = new OSCMessage();
+					prefixMsg.setAddress("/sys/prefix");
+					prefixMsg.addArgument("/" + serial);
+					try {
+						OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(hostName, port);
+						outPort.send(prefixMsg);
+						if ((x == 8 && y == 16) || (x == 16 && y == 8)) {
+							OSCMessage rotationMsg = new OSCMessage("/sys/rotation");
+							rotationMsg.addArgument(new Integer(0));
+							outPort.send(rotationMsg);
+							x = 16;
+							y = 8;
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					return;
+				} else if (Main.mainFrame.openingConfig == true) {
 					return;
 				}
-				int x = ((Integer) args[0]).intValue();
-				int y = ((Integer) args[1]).intValue();
+				
 				OSCMessage prefixMsg = new OSCMessage();
 				prefixMsg.setAddress("/sys/prefix");
 				prefixMsg.addArgument("/" + serial);
 				try {
-					OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut("localhost", port);
+					OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(hostName, port);
 					outPort.send(prefixMsg);
 					if ((x == 8 && y == 16) || (x == 16 && y == 8)) {
 						OSCMessage rotationMsg = new OSCMessage("/sys/rotation");
@@ -66,7 +87,6 @@ public class SerialOSCMonome implements OSCListener {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				
 				Configuration config = ConfigurationFactory.getConfiguration();
 				if (config == null) {
 					Main.mainFrame.getConfigurationMenu().setEnabled(true);
@@ -77,7 +97,7 @@ public class SerialOSCMonome implements OSCListener {
 					config = ConfigurationFactory.getConfiguration();
 				}
 				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-				config.addMonomeConfigurationSerialOSC(MonomeConfigurationFactory.getNumMonomeConfigurations(), "/" + serial, serial, x, y, true, false, midiPageChangeRules, port);
+				config.addMonomeConfigurationSerialOSC(MonomeConfigurationFactory.getNumMonomeConfigurations(), "/" + serial, serial, x, y, true, false, midiPageChangeRules, port, hostName);
 			}
 		}
 	}

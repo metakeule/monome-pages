@@ -48,11 +48,14 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 		SerialOSCMonome monome = new SerialOSCMonome();
 		monome.port = port;
 		monome.serial = serial;
+		monome.hostName = hostName;
 		
 		if (Main.mainFrame.serialOscSetupFrame != null) {
 			Main.mainFrame.serialOscSetupFrame.addDevice(monome);
 		} else {
-			Main.mainFrame.startMonome(monome);
+			if (MonomeConfigurationFactory.getMonomeConfiguration("/" + serial) != null) {
+				Main.mainFrame.startMonome(monome);
+			}
 		}
 		
 		/*

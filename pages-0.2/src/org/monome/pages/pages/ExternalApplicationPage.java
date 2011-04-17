@@ -146,7 +146,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.oscIn.addListener(this.prefix + "/led_row", this);
 		this.oscIn.addListener(this.prefix + "/clear", this);
 		this.oscIn.addListener(this.prefix + "/frame", this);
-		System.out.println("added listeners");
 		listenersAdded.put(this.prefix + " " + index, 1);
 	}
 	

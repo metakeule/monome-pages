@@ -227,7 +227,7 @@ public class Configuration {
 		return monome;
 	}
 	
-	public MonomeConfiguration addMonomeConfigurationSerialOSC(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, int port) {
+	public MonomeConfiguration addMonomeConfigurationSerialOSC(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, int port, String hostName) {
 		MonomeFrame monomeFrame = new MonomeFrame(index);
 		Main.getDesktopPane().add(monomeFrame);
 		try {
@@ -237,6 +237,7 @@ public class Configuration {
 		}
 		MonomeConfiguration monome = MonomeConfigurationFactory.addMonomeConfiguration(index, prefix, serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules, monomeFrame);
 		monome.serialOSCPort = port;
+		monome.serialOSCHostname = hostName;
 		this.initMonomeSerialOSC(monome);
 		return monome;
 	}
@@ -403,7 +404,7 @@ public class Configuration {
 	}
 	
 	public void initMonomeSerialOSC(MonomeConfiguration monome) {
-		monome.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut("localhost", monome.serialOSCPort);
+		monome.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(monome.serialOSCHostname, monome.serialOSCPort);
 
 		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
 		this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
