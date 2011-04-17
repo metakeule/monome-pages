@@ -172,6 +172,8 @@ public class MonomeConfiguration {
 
 	public OSCPortOut serialOSCPortOut;
 
+	public String serialOSCHostname;
+
 	/**
 	 * @param index the index to assign to this MonomeConfiguration
 	 * @param prefix the prefix of the monome (/40h)
@@ -985,7 +987,7 @@ public class MonomeConfiguration {
 		if (altClear) {
 			state = "on";
 		}
-		xml += "    <altClear>" + state + "</altClear>";
+		xml += "    <altClear>" + state + "</altClear>\n";
 		xml += "    <usePageChangeButton>" + (this.usePageChangeButton ? "true" : "false") + "</usePageChangeButton>\n";
 		xml += "    <useMIDIPageChanging>" + (this.useMIDIPageChanging ? "true" : "false") + "</useMIDIPageChanging>\n";
 		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++ ) {

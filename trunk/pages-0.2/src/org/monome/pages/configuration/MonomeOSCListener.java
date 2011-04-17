@@ -36,7 +36,6 @@ public class MonomeOSCListener implements OSCListener {
 			return;
 		}
 		// only act if the message has our monome prefix
-		System.out.println("MonomeOSCListener: " + message.getAddress());
 		if (!message.getAddress().contains(monome.prefix)) {
 			return;
 		}
