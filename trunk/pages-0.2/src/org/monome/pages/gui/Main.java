@@ -644,7 +644,7 @@ public class Main extends JFrame {
 		}
 		
 		serialOscSetupFrame = new SerialOSCSetupFrame();
-		serialOscSetupFrame.setSize(new Dimension(271, 202));
+		serialOscSetupFrame.setSize(new Dimension(400, 250));
 		serialOscSetupFrame.setVisible(true);
 		jDesktopPane.add(serialOscSetupFrame);
 		try {

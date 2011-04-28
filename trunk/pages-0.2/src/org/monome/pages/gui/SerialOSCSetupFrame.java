@@ -36,7 +36,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	}
 	
 	private void initialize() {
-		this.setSize(271, 202);
+		this.setSize(400, 250);
 		this.setTitle("SerialOSC Setup");
 		this.setContentPane(getJContentPane());
 		this.setResizable(true);
@@ -106,14 +106,14 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 
 	public void addDevice(final SerialOSCMonome monome) {
 		JLabel deviceLabel = new JLabel();
-		deviceLabel.setText(monome.serial + " [port: " + monome.port + "]");
-		deviceLabel.setBounds(new Rectangle(10, nextDeviceHeight, 151, 20));
+		deviceLabel.setText(monome.serial + " [" + monome.hostName + ":" + monome.port + "]");
+		deviceLabel.setBounds(new Rectangle(10, nextDeviceHeight, 300, 20));
 		jContentPane.add(deviceLabel);
 		
 		MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + monome.serial);
-		if (monomeConfig == null) {
+		if (monomeConfig == null || !monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName)) {
 			final JButton addButton = new JButton();
-			addButton.setBounds(new Rectangle(170, nextDeviceHeight, 76, 20));
+			addButton.setBounds(new Rectangle(300, nextDeviceHeight, 76, 20));
 			addButton.setText("Add");
 			addButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {

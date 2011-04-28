@@ -45,9 +45,11 @@ public class SerialOSCMonome implements OSCListener {
 					if (monomeConfig.serialOSCPort == 0) {
 						monomeConfig.serialOSCPort = port;
 						ConfigurationFactory.getConfiguration().initMonomeSerialOSC(monomeConfig);
-						Page page = monomeConfig.pages.get(monomeConfig.curPage);
-						if (page != null) {
-							page.redrawMonome();
+						if (monomeConfig.curPage > -1) {
+							Page page = monomeConfig.pages.get(monomeConfig.curPage);
+							if (page != null) {
+								page.redrawMonome();
+							}
 						}
 					}
 					OSCMessage prefixMsg = new OSCMessage();

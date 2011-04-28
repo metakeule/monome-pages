@@ -983,6 +983,9 @@ public class MonomeConfiguration {
 		xml += "    <serial>" + this.serial + "</serial>\n";
 		xml += "    <sizeX>" + this.sizeX + "</sizeX>\n";
 		xml += "    <sizeY>" + this.sizeY + "</sizeY>\n";
+		if (this.serialOSCHostname != null) {
+			xml += "    <serialOSCHostname>" + this.serialOSCHostname + "</serialOSCHostname>\n";
+		}
 		String state = "off";
 		if (altClear) {
 			state = "on";
