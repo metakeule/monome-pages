@@ -799,16 +799,22 @@ public class MonomeConfiguration {
 		Object args[] = new Object[numValues];
 		args[0] = new Integer(col);
 		for (int i = 1; i < numValues; i++) {
+			System.out.println("arg " + i + " is " + intArgs.get(i));
 			args[i] = (Integer) intArgs.get(i);
 		}
 		OSCMessage msg;
 		try {
 			if (this.serialOSCPort == 0) {
-				 msg = new OSCMessage(this.prefix + "/led_col", args);
-				 ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				msg = new OSCMessage(this.prefix + "/led_col", args);
+				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
 			} else {
-				 msg = new OSCMessage(this.prefix + "/grid/led/col", args);
-				 serialOSCPortOut.send(msg);
+				Object newArgs[] = new Object[numValues + 1];
+				newArgs[0] = intArgs.get(0);
+				newArgs[1] = new Integer(0);
+				newArgs[2] = intArgs.get(1);
+				newArgs[3] = intArgs.get(2);
+				msg = new OSCMessage(this.prefix + "/grid/led/col", newArgs);
+				serialOSCPortOut.send(msg);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -879,7 +885,12 @@ public class MonomeConfiguration {
 				msg = new OSCMessage(this.prefix + "/led_row", args);
 				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
 			} else {
-				msg = new OSCMessage(this.prefix + "/grid/led/row", args);
+				Object newArgs[] = new Object[numValues + 1];
+				newArgs[0] = new Integer(0);
+				newArgs[1] = intArgs.get(0);
+				newArgs[2] = intArgs.get(1);
+				newArgs[3] = intArgs.get(2);
+				msg = new OSCMessage(this.prefix + "/grid/led/row", newArgs);
 				serialOSCPortOut.send(msg);
 			}
 		} catch (Exception e) {
