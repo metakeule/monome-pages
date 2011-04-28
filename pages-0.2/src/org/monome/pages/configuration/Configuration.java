@@ -1020,6 +1020,19 @@ public class Configuration {
 							serial = ((Node) nl.item(0)).getNodeValue();
 						}
 					}
+					
+					// set the monome serialosc hostname if present
+					String serialOSCHostName = null;
+					nl = monomeElement.getElementsByTagName("serialOSCHostName");
+					if (nl != null) {
+						el = (Element) nl.item(0);
+						if (el != null) {
+							nl = el.getChildNodes();
+							if (nl.item(0) != null) {
+								serialOSCHostName = ((Node) nl.item(0)).getNodeValue();
+							}
+						}
+					}
 
 					// set the width of the monome
 					nl = monomeElement.getElementsByTagName("sizeX");
@@ -1094,6 +1107,7 @@ public class Configuration {
 					if (altClear.compareTo("on") == 0) {
 						monomeConfig.altClear = true;
 					}
+					monomeConfig.serialOSCHostname = serialOSCHostName;
 					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
 					monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
 										

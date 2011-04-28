@@ -7,6 +7,7 @@ import java.util.Hashtable;
 
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.SerialOSCMonome;
@@ -53,7 +54,8 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 		if (Main.mainFrame.serialOscSetupFrame != null) {
 			Main.mainFrame.serialOscSetupFrame.addDevice(monome);
 		} else {
-			if (MonomeConfigurationFactory.getMonomeConfiguration("/" + serial) != null) {
+			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
+			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
 				Main.mainFrame.startMonome(monome);
 			}
 		}
