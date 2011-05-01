@@ -111,7 +111,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 		jContentPane.add(deviceLabel);
 		
 		MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + monome.serial);
-		if (monomeConfig == null || !monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName)) {
+		if (monomeConfig == null || (monomeConfig != null && monomeConfig.serialOSCHostname != null && !monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
 			final JButton addButton = new JButton();
 			addButton.setBounds(new Rectangle(300, nextDeviceHeight, 76, 20));
 			addButton.setText("Add");

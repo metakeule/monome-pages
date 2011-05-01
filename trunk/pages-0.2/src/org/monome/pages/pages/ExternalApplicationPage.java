@@ -17,6 +17,11 @@ import org.monome.pages.gui.Main;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.w3c.dom.Element;
 
+import com.apple.dnssd.DNSSD;
+import com.apple.dnssd.DNSSDException;
+import com.apple.dnssd.DNSSDRegistration;
+import com.apple.dnssd.DNSSDService;
+import com.apple.dnssd.RegisterListener;
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
@@ -30,7 +35,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak, Stephen McLeod
  *
  */
-public class ExternalApplicationPage implements Page, OSCListener {
+public class ExternalApplicationPage implements Page, OSCListener, RegisterListener {
 
 	/**
 	 * The MonomeConfiguration this page belongs to
@@ -90,7 +95,6 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.index = index;
 		listenersAdded = new HashMap<String, Integer>();
 		gui = new ExternalApplicationGUI(this);
-		initOSC();
 	}
 
 	/**
@@ -130,6 +134,11 @@ public class ExternalApplicationPage implements Page, OSCListener {
 			}
 			
 			addListeners();
+			try {
+				DNSSD.register("extapp-" + this.inPort + "-" + monome.serial, "_monome-osc._udp", this.inPort, this);
+			} catch (DNSSDException e) {
+				e.printStackTrace();
+			}
 			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
 
 		}
@@ -146,6 +155,11 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		this.oscIn.addListener(this.prefix + "/led_row", this);
 		this.oscIn.addListener(this.prefix + "/clear", this);
 		this.oscIn.addListener(this.prefix + "/frame", this);
+		this.oscIn.addListener("/sys/port", this);
+		this.oscIn.addListener("/sys/info", this);
+		
+		this.oscIn.addListener(this.prefix + "/grid/led/set", this);
+		
 		listenersAdded.put(this.prefix + " " + index, 1);
 	}
 	
@@ -178,6 +192,8 @@ public class ExternalApplicationPage implements Page, OSCListener {
 		args[2] = new Integer(value);
 		OSCMessage msg = new OSCMessage(this.prefix + "/press", args);
 		try {
+			this.oscOut.send(msg);
+			msg = new OSCMessage(this.prefix + "/grid/key", args);
 			this.oscOut.send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -250,6 +266,33 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();
+		
+		if (msg.getAddress().compareTo("/sys/info") == 0) {
+			try {
+				OSCMessage outmsg = new OSCMessage();
+				outmsg.setAddress("/sys/port");
+				outmsg.addArgument(outPort);
+				oscOut.send(outmsg);
+				outmsg = new OSCMessage();
+				outmsg.setAddress("/sys/prefix");
+				outmsg.addArgument(this.prefix);
+				oscOut.send(outmsg);
+				outmsg = new OSCMessage();
+				outmsg.setAddress("/sys/id");
+				outmsg.addArgument("extpp");
+				oscOut.send(outmsg);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		if (msg.getAddress().compareTo("/sys/port") == 0) {
+			int port = ((Integer) args[0]).intValue();
+			setOutPort("" + port);
+			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
+		}
+		
 		if (msg.getAddress().compareTo("/sys/prefix") == 0) {
 			if (args.length == 1) {
 				this.setPrefix((String) args[0]);
@@ -286,6 +329,20 @@ public class ExternalApplicationPage implements Page, OSCListener {
 			}
 			this.monome.led_col(intArgs, this.index);
 		}
+		
+		if (msg.getAddress().contains("/grid/led/col")) {
+			ArrayList<Integer> intArgs = new ArrayList<Integer>();
+			for (int i=0; i < args.length; i++) {
+				if (i == 1) {
+					continue;
+				}
+				if (!(args[i] instanceof Integer)) {
+					continue;
+				}
+				intArgs.add((Integer) args[i]);
+			}
+			this.monome.led_col(intArgs, this.index);
+		}
 
 		// handle a monome led_row request from the external application
 		if (msg.getAddress().contains("led_row")) {
@@ -298,9 +355,20 @@ public class ExternalApplicationPage implements Page, OSCListener {
 			}
 			this.monome.led_row(intArgs, this.index);
 		}
+		
+		if (msg.getAddress().contains("/grid/led/row")) {
+			ArrayList<Integer> intArgs = new ArrayList<Integer>();
+			for (int i=1; i < args.length; i++) {
+				if (!(args[i] instanceof Integer)) {
+					continue;
+				}
+				intArgs.add((Integer) args[i]);
+			}
+			this.monome.led_row(intArgs, this.index);
+		}
 
 		// handle a monome led request from the external application
-		else if (msg.getAddress().contains("led")) {
+		else if (msg.getAddress().contains("led") || msg.getAddress().contains("/grid/led/set")) {
 			int[] int_args = {0, 0, 0};
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {
@@ -314,7 +382,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 			this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
 		}
 		
-		else if (msg.getAddress().contains("clear")) {
+		else if (msg.getAddress().contains("clear") || msg.getAddress().contains("/grid/led/all")) {
 			int[] int_args = {0};
 			for (int i=0; i < args.length; i++) {
 				if (!(args[i] instanceof Integer)) {
@@ -324,6 +392,7 @@ public class ExternalApplicationPage implements Page, OSCListener {
 			}
 			this.monome.clear(int_args[0], this.index);
 		}
+		
 	}
 
 	/**
@@ -405,5 +474,15 @@ public class ExternalApplicationPage implements Page, OSCListener {
 	
 	public boolean redrawOnAbletonEvent() {
 		return false;
+	}
+
+	public void operationFailed(DNSSDService arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void serviceRegistered(DNSSDRegistration registration, int flags,
+			String serviceName, String regType, String domain) {
+		System.out.println("Service registered: " + serviceName + " / " + regType + " / " + domain);
 	}
 }

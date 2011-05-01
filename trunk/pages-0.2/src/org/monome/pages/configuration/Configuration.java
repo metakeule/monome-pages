@@ -1047,10 +1047,15 @@ public class Configuration {
 					String sizeY = ((Node) nl.item(0)).getNodeValue();
 					
 					// set the height of the monome
+					String altClear = "";
 					nl = monomeElement.getElementsByTagName("altClear");
-					el = (Element) nl.item(0);
-					nl = el.getChildNodes();
-					String altClear = ((Node) nl.item(0)).getNodeValue();
+					if (nl != null) {
+						el = (Element) nl.item(0);
+						if (el != null) {
+							nl = el.getChildNodes();
+							altClear = ((Node) nl.item(0)).getNodeValue();
+						}
+					}
 					
 					boolean boolUsePageChangeButton = true;
 					nl = monomeElement.getElementsByTagName("usePageChangeButton");
