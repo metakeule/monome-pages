@@ -200,6 +200,11 @@ public class MonomeConfiguration {
 		this.usePageChangeButton = usePageChangeButton;
 		this.useMIDIPageChanging = useMIDIPageChanging;
 		this.monomeFrame = monomeFrame;
+		
+		if (monomeFrame != null) {
+			monomeFrame.updateMidiInMenuOptions(ConfigurationFactory.getConfiguration().getMidiInOptions());
+			monomeFrame.updateMidiOutMenuOptions(ConfigurationFactory.getConfiguration().getMidiOutOptions());
+		}
 
 		this.clearMonome();
 	}
@@ -799,7 +804,6 @@ public class MonomeConfiguration {
 		Object args[] = new Object[numValues];
 		args[0] = new Integer(col);
 		for (int i = 1; i < numValues; i++) {
-			System.out.println("arg " + i + " is " + intArgs.get(i));
 			args[i] = (Integer) intArgs.get(i);
 		}
 		OSCMessage msg;
@@ -812,7 +816,9 @@ public class MonomeConfiguration {
 				newArgs[0] = intArgs.get(0);
 				newArgs[1] = new Integer(0);
 				newArgs[2] = intArgs.get(1);
-				newArgs[3] = intArgs.get(2);
+				if (intArgs.size() > 2) {
+					newArgs[3] = intArgs.get(2);
+				}
 				msg = new OSCMessage(this.prefix + "/grid/led/col", newArgs);
 				serialOSCPortOut.send(msg);
 			}
@@ -889,7 +895,9 @@ public class MonomeConfiguration {
 				newArgs[0] = new Integer(0);
 				newArgs[1] = intArgs.get(0);
 				newArgs[2] = intArgs.get(1);
-				newArgs[3] = intArgs.get(2);
+				if (intArgs.size() > 2) {
+					newArgs[3] = intArgs.get(2);
+				}
 				msg = new OSCMessage(this.prefix + "/grid/led/row", newArgs);
 				serialOSCPortOut.send(msg);
 			}

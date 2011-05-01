@@ -255,7 +255,7 @@ public class QuadrantsPage implements Page {
 	public String toXml() {
 		String xml = "";
 		xml += "      <name>Quadrants Page</name>\n";
-		xml += "      <pageName>" + this.pageName + "</pageName>";
+		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <selectedQuadConf>" + gui.selectedQuadConf + "</selectedQuadConf>\n";
 		for (int quadConfNum = 0; quadConfNum < this.quadrantConfigurations.size(); quadConfNum++) {
 			QuadrantConfiguration quadConf = this.quadrantConfigurations.get(quadConfNum);
