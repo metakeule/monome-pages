@@ -118,7 +118,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.1a42 starting up\n");
+		logger.error("Pages 0.2.1a43 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -385,6 +385,7 @@ public class Main extends JFrame {
 		OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(monome.hostName, monome.port);
 		OSCMessage infoMsg = new OSCMessage();
 		infoMsg.setAddress("/sys/info");
+		infoMsg.addArgument("127.0.0.1");
 		infoMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
 		try {
 			outPort.send(infoMsg);

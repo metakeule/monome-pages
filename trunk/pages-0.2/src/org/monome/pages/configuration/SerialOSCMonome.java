@@ -21,6 +21,7 @@ public class SerialOSCMonome implements OSCListener {
 
 	public void acceptMessage(Date time, OSCMessage message) {
 		Object args[] = message.getArguments();
+		
 		/*
 		System.out.println("received " + message.getAddress() + " msg for serial " + serial);
 		for (int i = 0; i < args.length; i++) {
