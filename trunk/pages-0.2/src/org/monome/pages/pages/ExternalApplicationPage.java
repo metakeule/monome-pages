@@ -112,6 +112,13 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 				this.oscIn.removeListener(prefix + "/led_row");
 				this.oscIn.removeListener(prefix + "/clear");
 				this.oscIn.removeListener(prefix + "/frame");
+				this.oscIn.removeListener(prefix + "/grid/led/set");
+				this.oscIn.removeListener(prefix + "/grid/led/row");
+				this.oscIn.removeListener(prefix + "/grid/led/col");
+				this.oscIn.removeListener("/grid/led/set");
+				this.oscIn.removeListener("/grid/led/row");
+				this.oscIn.removeListener("/grid/led/col");
+
 				listenersAdded.remove(prefix);
 			}
 			OSCPortFactory.getInstance().destroyOSCPortIn(this.inPort);
@@ -159,6 +166,13 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		this.oscIn.addListener("/sys/info", this);
 		
 		this.oscIn.addListener(this.prefix + "/grid/led/set", this);
+		this.oscIn.addListener(this.prefix + "/grid/led/row", this);
+		this.oscIn.addListener(this.prefix + "/grid/led/col", this);
+		
+		this.oscIn.addListener("/grid/led/set", this);
+		this.oscIn.addListener("/grid/led/row", this);
+		this.oscIn.addListener("/grid/led/col", this);
+
 		
 		listenersAdded.put(this.prefix + " " + index, 1);
 	}
