@@ -13,6 +13,7 @@ public class LEDBlink implements Runnable {
 	int x, y;
 	int pageIndex;
 	int delay;
+	boolean cancel;
 		
 	/**
 	 * The MonomeConfiguration that the fader page this thread belongs to is on
@@ -31,6 +32,7 @@ public class LEDBlink implements Runnable {
         this.y = y;
         this.delay = delay;
         this.pageIndex = pageIndex;
+        this.cancel = false;
         }
 
 	/* (non-Javadoc)
@@ -43,7 +45,14 @@ public class LEDBlink implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		if (cancel) {
+			return;
+		}
 		this.monome.led(this.x, this.y, 0, this.pageIndex);
+	}
+	
+	public void cancel() {
+		this.cancel = true;
 	}
 
 }

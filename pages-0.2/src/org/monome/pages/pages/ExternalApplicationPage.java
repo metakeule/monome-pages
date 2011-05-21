@@ -280,7 +280,6 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	 */
 	public void acceptMessage(Date arg0, OSCMessage msg) {
 		Object[] args = msg.getArguments();
-		
 		if (msg.getAddress().compareTo("/sys/info") == 0) {
 			try {
 				OSCMessage outmsg = new OSCMessage();
@@ -324,10 +323,12 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("clear")) {
 			int int_arg = 0;
 			if (args.length > 0) {
-				if (!(args[0] instanceof Integer)) {
-					return;
+				if (args[0] instanceof Integer) {
+					int_arg = ((Integer) args[0]).intValue();
 				}
-				int_arg = ((Integer) args[0]).intValue();
+				if (args[0] instanceof Float) {
+					int_arg = ((Float) args[0]).intValue();
+				}
 			}
 			this.monome.clear(int_arg, this.index);
 		}
@@ -336,10 +337,12 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("led_col")) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
-				if (!(args[i] instanceof Integer)) {
-					continue;
+				if (args[i] instanceof Integer) {
+					intArgs.add((Integer) args[i]);
 				}
-				intArgs.add((Integer) args[i]);
+				if (args[i] instanceof Float) {
+					intArgs.add(((Float) args[i]).intValue());
+				}
 			}
 			this.monome.led_col(intArgs, this.index);
 		}
@@ -350,10 +353,12 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 				if (i == 1) {
 					continue;
 				}
-				if (!(args[i] instanceof Integer)) {
-					continue;
+				if (args[i] instanceof Integer) {
+					intArgs.add((Integer) args[i]);
 				}
-				intArgs.add((Integer) args[i]);
+				if (args[i] instanceof Float) {
+					intArgs.add(((Float) args[i]).intValue());
+				}
 			}
 			this.monome.led_col(intArgs, this.index);
 		}
@@ -362,10 +367,12 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("led_row")) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
-				if (!(args[i] instanceof Integer)) {
-					continue;
+				if (args[i] instanceof Integer) {
+					intArgs.add((Integer) args[i]);
 				}
-				intArgs.add((Integer) args[i]);
+				if (args[i] instanceof Float) {
+					intArgs.add(((Float) args[i]).intValue());
+				}
 			}
 			this.monome.led_row(intArgs, this.index);
 		}
@@ -373,10 +380,12 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("/grid/led/row")) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=1; i < args.length; i++) {
-				if (!(args[i] instanceof Integer)) {
-					continue;
+				if (args[i] instanceof Integer) {
+					intArgs.add((Integer) args[i]);
 				}
-				intArgs.add((Integer) args[i]);
+				if (args[i] instanceof Float) {
+					intArgs.add(((Float) args[i]).intValue());
+				}
 			}
 			this.monome.led_row(intArgs, this.index);
 		}
@@ -385,13 +394,18 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		else if (msg.getAddress().contains("led") || msg.getAddress().contains("/grid/led/set")) {
 			int[] int_args = {0, 0, 0};
 			for (int i=0; i < args.length; i++) {
-				if (!(args[i] instanceof Integer)) {
-					return;
-				}
 				if (i > 2) {
 					continue;
 				}
-				int_args[i] = ((Integer) args[i]).intValue();
+				if (args[i] instanceof Integer) {
+					int_args[i] = ((Integer) args[i]).intValue();					
+				}
+				if (args[i] instanceof Float) {
+					int_args[i] = ((Float) args[i]).intValue();
+				}
+				if (!(args[i] instanceof Integer) && !(args[i] instanceof Float)) {
+					return;
+				}
 			}
 			this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
 		}
@@ -399,10 +413,12 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		else if (msg.getAddress().contains("clear") || msg.getAddress().contains("/grid/led/all")) {
 			int[] int_args = {0};
 			for (int i=0; i < args.length; i++) {
-				if (!(args[i] instanceof Integer)) {
-					return;
+				if (args[i] instanceof Integer) {
+					int_args[i] = ((Integer) args[i]).intValue();
 				}
-				int_args[i] = ((Integer) args[i]).intValue();
+				if (args[i] instanceof Float) {
+					int_args[i] = ((Float) args[i]).intValue();
+				}
 			}
 			this.monome.clear(int_args[0], this.index);
 		}

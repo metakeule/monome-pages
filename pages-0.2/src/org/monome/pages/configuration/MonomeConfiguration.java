@@ -731,7 +731,9 @@ public class MonomeConfiguration {
 		try {
 			if (this.serialOSCPort == 0) {
 				msg = new OSCMessage(this.prefix + "/led", args);
-				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				if (ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut != null) {
+					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				}
 			} else {
 				msg = new OSCMessage(this.prefix + "/grid/led/set", args);
 				serialOSCPortOut.send(msg);
@@ -810,7 +812,9 @@ public class MonomeConfiguration {
 		try {
 			if (this.serialOSCPort == 0) {
 				msg = new OSCMessage(this.prefix + "/led_col", args);
-				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				if (ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut != null) {
+					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				}
 			} else {
 				Object newArgs[] = new Object[numValues + 1];
 				newArgs[0] = intArgs.get(0);
@@ -889,7 +893,9 @@ public class MonomeConfiguration {
 		try {
 			if (this.serialOSCPort == 0) {
 				msg = new OSCMessage(this.prefix + "/led_row", args);
-				ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				if (ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut != null) {
+					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				}
 			} else {
 				Object newArgs[] = new Object[numValues + 1];
 				newArgs[0] = new Integer(0);

@@ -141,7 +141,7 @@ public class Configuration {
 	/**
 	 * The port number to receive OSC messages from Ableton.
 	 */
-	private int abletonOSCInPortNumber = 9001;
+	private int abletonOSCInPortNumber = 9006;
 
 	/**
 	 * The OSCPortIn object to receive OSC messages from Ableton. 
@@ -151,7 +151,7 @@ public class Configuration {
 	/**
 	 * The port number to send OSC messages to Ableton. 
 	 */
-	private int abletonOSCOutPortNumber = 9000;
+	private int abletonOSCOutPortNumber = 9005;
 	
 	/**
 	 * The OSCPortOut object to send OSC messages to Ableton.
@@ -187,7 +187,7 @@ public class Configuration {
 	/**
 	 * True if we should not send any 'View Track' commands to Ableton.
 	 */
-	private boolean abletonIgnoreViewTrack = false;
+	private boolean abletonIgnoreViewTrack = true;
 	
 	private RedrawAbletonThread redrawAbletonThread;
 
@@ -246,6 +246,7 @@ public class Configuration {
 	 * Binds to MonomeSerial input/output ports
 	 */
 	public void startMonomeSerialOSC() {
+		System.out.println("startMonomeSerialOSC();");
 		if (this.monomeSerialOSCPortIn == null) {
 			this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
 			if (this.monomeSerialOSCPortIn == null) {
@@ -263,6 +264,21 @@ public class Configuration {
 			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
 				if (monomeConfig != null) {
+					MonomeOSCListener oscListener = new MonomeOSCListener(monomeConfig);
+					this.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/press", oscListener);
+					this.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/adc", oscListener);
+					this.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/tilt", oscListener);
+			
+					Object args[] = new Object[1];
+					args[0] = new Integer(1);
+					OSCMessage msg = new OSCMessage(monomeConfig.prefix + "/tiltmode", args);
+			
+					try {
+						this.monomeSerialOSCPortOut.send(msg);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
 					initMonome(monomeConfig);
 				}
 			}
@@ -377,29 +393,13 @@ public class Configuration {
 			e1.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Initializes a new monome configuration.  Starts OSC communication with MonomeSerial if needed.
 	 * 
 	 * @param monome The MonomeConfiguration object to initialize
 	 */
 	private void initMonome(MonomeConfiguration monome) {
-		startMonomeSerialOSC();
-		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
-		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/press", oscListener);
-		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/adc", oscListener);
-		this.monomeSerialOSCPortIn.addListener(monome.prefix + "/tilt", oscListener);
-
-		Object args[] = new Object[1];
-		args[0] = new Integer(1);
-		OSCMessage msg = new OSCMessage(monome.prefix + "/tiltmode", args);
-
-		try {
-			this.monomeSerialOSCPortOut.send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		monome.clearMonome();
 	}
 	
@@ -929,7 +929,6 @@ public class Configuration {
 			String oscoutport = ((Node) rootNL2.item(0)).getNodeValue();
 
 			setMonomeSerialOSCOutPortNumber(Integer.valueOf(oscoutport).intValue());
-			startMonomeSerialOSC();
 
 			// read <abletonhostname> from the configuration file
 			rootNL = doc.getElementsByTagName("abletonhostname");
@@ -1023,7 +1022,7 @@ public class Configuration {
 					
 					// set the monome serialosc hostname if present
 					String serialOSCHostName = null;
-					nl = monomeElement.getElementsByTagName("serialOSCHostName");
+					nl = monomeElement.getElementsByTagName("serialOSCHostname");
 					if (nl != null) {
 						el = (Element) nl.item(0);
 						if (el != null) {
@@ -1032,6 +1031,11 @@ public class Configuration {
 								serialOSCHostName = ((Node) nl.item(0)).getNodeValue();
 							}
 						}
+					}
+					
+					if (serialOSCHostName == null) {
+						System.out.println("starting monome serial");
+						startMonomeSerialOSC();
 					}
 
 					// set the width of the monome

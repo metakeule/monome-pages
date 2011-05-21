@@ -118,7 +118,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.1a43 starting up\n");
+		logger.error("Pages 0.2.1a45 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -308,6 +308,7 @@ public class Main extends JFrame {
 							JOptionPane.PLAIN_MESSAGE,
 							null,
 							null,
+							
 							"");
 					
 					if (name == null || name.compareTo("") == 0) {
@@ -377,6 +378,10 @@ public class Main extends JFrame {
 	
 	public void startMonome(SerialOSCMonome monome) {
 		OSCPortIn inPort = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
+		if (inPort == null) {
+			JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + Main.PAGES_OSC_PORT + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		inPort.addListener("/sys/size", monome);
 		inPort.addListener("/sys/port", monome);
 		inPort.addListener("/sys/id", monome);
