@@ -10,6 +10,7 @@ import javax.sound.midi.ShortMessage;
 
 import javax.swing.JPanel;
 
+import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDISequencerGUI;
 import org.w3c.dom.Element;
@@ -139,6 +140,12 @@ public class MIDISequencerPage implements Page {
 	 */
 	private String pageName = "MIDI Sequencer";
 
+	private LEDBlink blinkThread;
+
+	private int muteMode;
+
+	private int velocityMode;
+
 	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
 	 * @param index The index of this page (the page number)
@@ -179,6 +186,9 @@ public class MIDISequencerPage implements Page {
 		if (value == 1) {
 			// bottom row - bank mode functions
 			if (this.bankMode == 1) {
+				if (this.blinkThread != null) {
+					this.blinkThread.cancel();
+				}
 				if (y == (this.monome.sizeY - 1)) {
 					if (x < 2) {
 						if (this.monome.sizeY == 8) {
@@ -216,22 +226,59 @@ public class MIDISequencerPage implements Page {
 						bankMode = 0;
 						this.redrawMonome();
 					}
+					
+					if (x == 8 && this.copyMode == 0 && this.clearMode == 0) {
+						if (bank > 0) {
+							bank--;
+							redrawMonome();
+						}
+					}
+					
+					if (x == 9 && this.copyMode == 0 && this.clearMode == 0) {
+						if (bank < 239) {
+							bank++;
+							redrawMonome();
+						}
+					}
+					
+					if (x == 10 && this.copyMode == 0 && this.clearMode == 0) {
+						if (bank < 238) {
+							this.sequencerCopyBank(bank, bank+1);
+							bank++;
+							redrawMonome();
+						}
+					}
+					
+					if (x == 11 && this.copyMode == 0 && this.clearMode == 0) {
+						if (this.muteMode == 0) {
+							this.muteMode = 1;
+						} else {
+							this.muteMode = 0;
+						}
+						this.redrawMonome();
+					}
+					
+					if (x == 12 && this.copyMode == 0 && this.clearMode == 0) {
+						this.sequencerClearBank(bank);
+						this.redrawMonome();
+					}
+
 
 					// bank button pressed
 				} else {
 					if (this.bankCopyMode == 1) {
 						this.bankCopyMode = 0;
-						this.sequencerCopyBank(this.bank, (y * (this.monome.sizeY)) + x);
+						this.sequencerCopyBank(this.bank, (y * (this.monome.sizeX)) + x);
 						this.redrawMonome();
 					} else if (bankClearMode == 1) {
 						this.bankClearMode = 0;
-						this.sequencerClearBank((y * (this.monome.sizeY)) + x);
-						if (this.bank == (y * (this.monome.sizeY)) + x) {
+						this.sequencerClearBank((y * (this.monome.sizeX)) + x);
+						if (this.bank == (y * (this.monome.sizeX)) + x) {
 							this.stopNotes();
 						}
 						this.redrawMonome();
 					} else {
-						this.bank = (y * (this.monome.sizeY)) + x;
+						this.bank = (y * (this.monome.sizeX)) + x;
 						this.stopNotes();
 						this.redrawMonome();
 					}
@@ -280,13 +327,64 @@ public class MIDISequencerPage implements Page {
 						this.bankMode = 1;
 						this.redrawMonome();
 					}
+					
+					if (x == 8 && this.copyMode == 0 && this.clearMode == 0) {
+						if (bank > 0) {
+							bank--;
+							redrawMonome();
+						}
+					}
+					
+					if (x == 9 && this.copyMode == 0 && this.clearMode == 0) {
+						if (bank < 239) {
+							bank++;
+							redrawMonome();
+						}
+					}
+					
+					if (x == 10 && this.copyMode == 0 && this.clearMode == 0) {
+						if (bank < 238) {
+							this.sequencerCopyBank(bank, bank+1);
+							bank++;
+							redrawMonome();
+						}
+					}
+					
+					if (x == 11 && this.copyMode == 0 && this.clearMode == 0) {
+						this.sequencerClearBank(bank);
+						this.redrawMonome();
+					}
+					
+					if (x == 12) {
+						if (this.muteMode == 0) {
+							this.muteMode = 1;
+						} else {
+							this.muteMode = 0;
+						}
+						this.redrawMonome();
+					}
+					
+					
+					if (x == 13) {
+						if (this.velocityMode == 0) {
+							this.velocityMode = 1;
+						} else {
+							this.velocityMode = 0;
+						}
+						this.redrawMonome();
+					}
+
 
 					// record button press to sequence
 				} else {
 					x_seq = (pattern * (this.monome.sizeX)) + x;
 					y_seq = (depth * (this.monome.sizeY - 1)) + y;
 					if (this.sequence[this.bank][x_seq][y_seq] == 0) {
-						this.sequence[this.bank][x_seq][y_seq] = 1;
+						if (this.velocityMode == 1) {
+							this.sequence[this.bank][x_seq][y_seq] = 1;
+						} else {
+							this.sequence[this.bank][x_seq][y_seq] = 2;
+						}
 						this.monome.led(x, y, 1, this.index);
 					} else if (this.sequence[this.bank][x_seq][y_seq] == 1) {
 						this.sequence[bank][x_seq][y_seq] = 2;
@@ -434,6 +532,16 @@ public class MIDISequencerPage implements Page {
 			this.sequencePosition++;
 		}
 
+		if (this.bankMode == 1 && this.tickNum % quantization == 0) {
+			int x = bank % this.monome.sizeX;
+			int y = bank / this.monome.sizeX;
+			if (this.blinkThread != null) {
+				this.blinkThread.cancel();
+			}
+			this.blinkThread = new LEDBlink(monome, x, y, 20, this.index);
+			new Thread(this.blinkThread).start();
+		}
+		
 		this.tickNum++;
 	}
 
@@ -474,7 +582,13 @@ public class MIDISequencerPage implements Page {
 				this.monome.led(col, (this.monome.sizeY - 1), 1, this.index);
 			}
 			if (col > 6 && col < (this.monome.sizeX - 1)) {
-				this.monome.led(col, (this.monome.sizeY - 1), 0, this.index);
+				if (col == 12) {
+					this.monome.led(col, (this.monome.sizeY - 1), this.muteMode, this.index);
+				} else if (col == 13) {
+					this.monome.led(col, (this.monome.sizeY - 1), this.velocityMode, this.index);
+				} else {
+					this.monome.led(col, (this.monome.sizeY - 1), 0, this.index);
+				}
 			}
 			if (col == (this.monome.sizeX - 1)) {
 				this.monome.led(col, (this.monome.sizeY - 1), 0, this.index);
@@ -514,6 +628,9 @@ public class MIDISequencerPage implements Page {
 	 * @param on Whether to turn notes on or off, a value of 1 means play notes
 	 */
 	public void playNotes(int seq_pos, int on) {
+		if (muteMode == 1) {
+			return;
+		}
 		ShortMessage note_out = new ShortMessage();
 		int note_num;
 		int velocity;
@@ -726,9 +843,21 @@ public class MIDISequencerPage implements Page {
 		if (this.bankMode == 1) {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				for (int y = 0; y < (this.monome.sizeY - 1); y++) {
-					if (bank == ((y * (this.monome.sizeY)) + x)) {
+					int curBank = (y * this.monome.sizeX) + x;
+					boolean bankData = false;
+					
+					search:
+					for (int seqX = 0; seqX < 64; seqX++) {
+						for (int seqY = 0; seqY < 16; seqY++) {
+							if (this.sequence[curBank][seqX][seqY] > 0) {
+								bankData = true;
+								break search;
+							} 
+						}
+					}
+					if (bankData) {
 						this.monome.led(x, y, 1, this.index);
-					} else {
+					} else if (curBank != this.bank) {
 						this.monome.led(x, y, 0, this.index);
 					}
 				}
@@ -774,6 +903,15 @@ public class MIDISequencerPage implements Page {
 				if (x == 6) {
 					this.monome.led(x, (this.monome.sizeY - 1), this.bankMode, this.index);
 				}
+				if (x == 12) {
+					this.monome.led(x, (this.monome.sizeY - 1), this.muteMode, this.index);
+				}
+				if (x == 13) {
+					this.monome.led(x, (this.monome.sizeY - 1), this.velocityMode, this.index);
+				}
+				if (x == 7 || x == 8 || x == 9 || x == 10 || x == 11 || x > 13) {
+					this.monome.led(x, (this.monome.sizeY - 1), 0, this.index);
+				}
 			}
 			// redraw this way if we're in sequence edit mode
 		} else {
@@ -806,7 +944,13 @@ public class MIDISequencerPage implements Page {
 						this.monome.led(x, (this.monome.sizeY - 1), 0, this.index);
 					}
 				}
-				if (x > 6) {
+				if (x == 12) {
+					this.monome.led(x, (this.monome.sizeY - 1), this.muteMode, this.index);
+				}
+				if (x == 13) {
+					this.monome.led(x, (this.monome.sizeY - 1), this.velocityMode, this.index);
+				}
+				if (x == 7 || x == 8 || x == 9 || x == 10 || x == 11 || x > 13) {
 					this.monome.led(x, (this.monome.sizeY - 1), 0, this.index);
 				}
 			}
@@ -918,6 +1062,8 @@ public class MIDISequencerPage implements Page {
 		xml.append("      <banksize>" + this.bankSize + "</banksize>\n");
 		xml.append("      <midichannel>" + this.midiChannel + "</midichannel>\n");
 		xml.append("      <quantization>" + this.quantization + "</quantization>\n");
+		xml.append("      <muteMode>" + this.muteMode + "</muteMode>\n");
+		xml.append("      <velocityMode>" + this.velocityMode + "</velocityMode>\n");
 		for (int i=0; i < 16; i++) {
 			xml.append("      <row>" + String.valueOf(this.noteNumbers[i]) + "</row>\n");
 		}
@@ -1069,6 +1215,15 @@ public class MIDISequencerPage implements Page {
 		this.setBankSize(Integer.parseInt(this.monome.readConfigValue(pageElement, "banksize")));
 		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
 		this.setQuantization(this.monome.readConfigValue(pageElement, "quantization"));
+		String sMuteMode = this.monome.readConfigValue(pageElement, "muteMode");
+		if (sMuteMode != null) {
+			this.muteMode = Integer.parseInt(sMuteMode);
+		}
+		String sVelocityMode = this.monome.readConfigValue(pageElement, "velocityMode");
+		if (sVelocityMode != null) {
+			this.velocityMode = Integer.parseInt(sVelocityMode);
+		}
+		
 		NodeList rowNL = pageElement.getElementsByTagName("row");		
 		for (int l=0; l < rowNL.getLength(); l++) {		
 			Element el = (Element) rowNL.item(l);		

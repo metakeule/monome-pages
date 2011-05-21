@@ -209,9 +209,9 @@ public class MIDITriggersPage implements Page {
 	public void playNote(int x, int y, int value) {
 		int note_num = x + 12;
 		int channel = y;
-		int index = x;
+		int index = y;
 		if (getOrientation() == ORIENTATION_COLUMNS) {
-			index = y;
+			index = x;
 		}
 		boolean ccMode = this.ccMode[index];
 		int velocity = value * this.velocity[index];
@@ -305,7 +305,7 @@ public class MIDITriggersPage implements Page {
 						this.monome.led(x, y, 0, this.index);
 					}
 				} else if (this.getMode(b) == MODE_TRIGGERS) {
-					this.monome.led(x, y, 0, this.index);
+					//this.monome.led(x, y, 0, this.index);
 				} else if (this.getMode(b) == MODE_LOOPER_OVERLAY) {
 					handleLooperRedraw(b);
 				} else if (this.getMode(b) == MODE_CLIP_OVERLAY) {
