@@ -819,7 +819,9 @@ public class MonomeConfiguration {
 				Object newArgs[] = new Object[numValues + 1];
 				newArgs[0] = intArgs.get(0);
 				newArgs[1] = new Integer(0);
-				newArgs[2] = intArgs.get(1);
+				if (intArgs.size() > 1) {
+					newArgs[2] = intArgs.get(1);
+				}
 				if (intArgs.size() > 2) {
 					newArgs[3] = intArgs.get(2);
 				}
@@ -900,7 +902,9 @@ public class MonomeConfiguration {
 				Object newArgs[] = new Object[numValues + 1];
 				newArgs[0] = new Integer(0);
 				newArgs[1] = intArgs.get(0);
-				newArgs[2] = intArgs.get(1);
+				if (intArgs.size() > 1) {
+					newArgs[2] = intArgs.get(1);
+				}
 				if (intArgs.size() > 2) {
 					newArgs[3] = intArgs.get(2);
 				}

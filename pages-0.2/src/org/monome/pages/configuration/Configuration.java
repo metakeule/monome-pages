@@ -543,14 +543,17 @@ public class Configuration {
 	 */
 	public void closeMidiDevices() {
 		for (int i=0; i < this.midiInTransmitters.size(); i++) {
+			System.out.println("Closing MIDI transmitter: " + midiInTransmitters.get(i).toString());
 			this.midiInTransmitters.get(i).close();
 		}
 		
 		for (int i=0; i < this.midiInDevices.size(); i++) {
+			System.out.println("Closing MIDI in device: " + midiInDevices.get(i).getDeviceInfo().getName());
 			this.midiInDevices.get(i).close();
 		}
 
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
+			System.out.println("Closing MIDI out device: " + midiOutDevices.get(i).getDeviceInfo().getName());
 			this.midiOutDevices.get(i).close();
 		}
 	}

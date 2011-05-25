@@ -169,11 +169,6 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		this.oscIn.addListener(this.prefix + "/grid/led/row", this);
 		this.oscIn.addListener(this.prefix + "/grid/led/col", this);
 		
-		this.oscIn.addListener("/grid/led/set", this);
-		this.oscIn.addListener("/grid/led/row", this);
-		this.oscIn.addListener("/grid/led/col", this);
-
-		
 		listenersAdded.put(this.prefix + " " + index, 1);
 	}
 	
@@ -258,10 +253,14 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	public String toXml() {
 
 		String disableCache = "false";
-
 		if (gui.getDisableLedCacheCB().isSelected()) {
 			disableCache = "true";
 		}
+		String ignorePrefix = "false";
+		if (gui.getIgnorePrefixCB().isSelected()) {
+			ignorePrefix = "true";
+		}
+
 
 		String xml = "";
 		xml += "      <name>External Application</name>\n";
@@ -271,6 +270,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		xml += "      <oscoutport>" + this.outPort + "</oscoutport>\n";
 		xml += "      <hostname>" + this.hostname + "</hostname>\n";
 		xml += "      <disablecache>" + disableCache + "</disablecache>\n";
+		xml += "      <ignoreprefix>" + ignorePrefix + "</ignoreprefix>\n";
 
 		return xml;
 	}
@@ -307,6 +307,9 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		}
 		
 		if (msg.getAddress().compareTo("/sys/prefix") == 0) {
+			if (gui.getIgnorePrefixCB().isSelected()) {
+				return;
+			}
 			if (args.length == 1) {
 				this.setPrefix((String) args[0]);
 			} else if (args.length == 2) {
@@ -476,6 +479,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		this.setOutPort(this.monome.readConfigValue(pageElement, "oscoutport"));
 		this.setHostname(this.monome.readConfigValue(pageElement, "hostname"));
 		gui.setCacheDisabled(this.monome.readConfigValue(pageElement, "disablecache"));
+		gui.setIgnorePrefix(this.monome.readConfigValue(pageElement, "ignoreprefix"));
 		this.stopOSC();
 		this.initOSC();		
 	}
