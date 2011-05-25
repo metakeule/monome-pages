@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
+import java.awt.Dimension;
 
 public class ExternalApplicationGUI extends JPanel {
 
@@ -26,6 +27,8 @@ public class ExternalApplicationGUI extends JPanel {
 	private JCheckBox disableLedCacheCB = null;
 	private JLabel disableLedCacheLabel = null;
 	private JButton updatePreferencesButton = null;
+	private JCheckBox ignorePrefixCB = null;
+	private JLabel ignorePrefixLbl = null;
 
 	/**
 	 * This is the default constructor
@@ -60,7 +63,7 @@ public class ExternalApplicationGUI extends JPanel {
 		pageLabel = new JLabel();
 		setName("External Application");
 		pageLabel.setBounds(new Rectangle(5, 5, 291, 21));
-		this.setSize(280, 240);
+		this.setSize(289, 283);
 		this.setLayout(null);
 		this.add(pageLabel, null);
 		this.add(oscInLabel, null);
@@ -74,6 +77,8 @@ public class ExternalApplicationGUI extends JPanel {
 		this.add(getDisableLedCacheCB(), null);
 		this.add(disableLedCacheLabel, null);
 		this.add(getUpdatePreferencesButton(), null);
+		this.add(getIgnorePrefixCB(), null);
+		this.add(getIgnorePrefixLbl(), null);
 	}
 	
 	public void setName(String name) {
@@ -157,7 +162,7 @@ public class ExternalApplicationGUI extends JPanel {
 	private JButton getUpdatePreferencesButton() {
 		if (updatePreferencesButton == null) {
 			updatePreferencesButton = new JButton();
-			updatePreferencesButton.setBounds(new Rectangle(30, 185, 166, 25));
+			updatePreferencesButton.setBounds(new Rectangle(30, 205, 166, 25));
 			updatePreferencesButton.setText("Update Preferences");
 			updatePreferencesButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -179,7 +184,44 @@ public class ExternalApplicationGUI extends JPanel {
 		} else {
 			disableLedCacheCB.setSelected(false);
 		}
-		
+	}
+	
+	public void setIgnorePrefix(String ignorePrefix) {
+		if (ignorePrefix == null) {
+			return;
+		}
+		if (ignorePrefix.compareTo("true") == 0) {
+			ignorePrefixCB.setSelected(true);
+		} else {
+			ignorePrefixCB.setSelected(false);
+		}
 	}
 
-}
+	/**
+	 * This method initializes ignorePrefixCB	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	public JCheckBox getIgnorePrefixCB() {
+		if (ignorePrefixCB == null) {
+			ignorePrefixCB = new JCheckBox();
+			ignorePrefixCB.setBounds(new Rectangle(50, 175, 21, 21));
+		}
+		return ignorePrefixCB;
+	}
+
+	/**
+	 * This method initializes ignorePrefixLbl	
+	 * 	
+	 * @return javax.swing.JLabel	
+	 */
+	private JLabel getIgnorePrefixLbl() {
+		if (ignorePrefixLbl == null) {
+			ignorePrefixLbl = new JLabel();
+			ignorePrefixLbl.setText("Ignore /sys/prefix");
+			ignorePrefixLbl.setBounds(new Rectangle(75, 175, 121, 21));
+		}
+		return ignorePrefixLbl;
+	}
+
+}  //  @jve:decl-index=0:visual-constraint="10,10"
