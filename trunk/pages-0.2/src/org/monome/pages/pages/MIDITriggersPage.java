@@ -398,7 +398,7 @@ public class MIDITriggersPage implements Page {
 					continue;
 				}
 				AbletonLooper looper = loopers.get(deviceId);
-				if (looper.getState() == 0.0f) {
+				if (looper.getState() == 0) {
 					if (getOrientation() == ORIENTATION_COLUMNS) {
 						this.monome.led(b, 0, 0, this.index);
 						this.monome.led(b, 1, 0, this.index);
@@ -406,7 +406,7 @@ public class MIDITriggersPage implements Page {
 						this.monome.led(0, b, 0, this.index);
 						this.monome.led(1, b, 0, this.index);
 					}
-				} else if (looper.getState() == 1.0f) {
+				} else if (looper.getState() == 1) {
 					if (getOrientation() == ORIENTATION_COLUMNS) {
 						this.monome.led(b, 0, 0, this.index);
 						this.monome.led(b, 1, 1, this.index);
@@ -414,7 +414,7 @@ public class MIDITriggersPage implements Page {
 						this.monome.led(0, b, 0, this.index);
 						this.monome.led(1, b, 1, this.index);
 					}
-				} else if (looper.getState() == 2.0f) {
+				} else if (looper.getState() == 2) {
 					if (getOrientation() == ORIENTATION_COLUMNS) {
 						this.monome.led(b, 0, 1, this.index);
 						this.monome.led(b, 1, 0, this.index);
@@ -422,7 +422,7 @@ public class MIDITriggersPage implements Page {
 						this.monome.led(0, b, 1, this.index);
 						this.monome.led(1, b, 0, this.index);
 					}
-				} else if (looper.getState() == 3.0f) {
+				} else if (looper.getState() == 3) {
 					if (getOrientation() == ORIENTATION_COLUMNS) {
 						this.monome.led(b, 0, 1, this.index);
 						this.monome.led(b, 1, 1, this.index);

@@ -55,8 +55,8 @@ public class AbletonOSCListener implements OSCListener {
 			if (looper != null) {
 				for (int i = 2; i < args.length; i += 3) {
 					if (((String) args[i+2]).compareTo("State") == 0) {
-						if (((Float)args[i+1]).floatValue() != looper.getState()) {
-							looper.setState(((Float)args[i+1]).floatValue());
+						if (((Integer)args[i+1]).intValue() != looper.getState()) {
+							looper.setState(((Integer)args[i+1]).intValue());
 							ConfigurationFactory.getConfiguration().redrawAbletonPages();
 						}
 					}
