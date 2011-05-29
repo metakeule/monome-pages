@@ -119,4 +119,205 @@ Object[] args = [0, 0, 1];
 sendOSC("/grid/led/set", args, "localhost", 8000);
 }}}
 
-Ableton and the rest is possible to access but isn't properly exposed yet.
+=Ableton=
+
+Here's an example of a basic clip launcher page:
+
+{{{
+import org.monome.pages.configuration.GroovyAPI;
+import org.monome.pages.ableton.AbletonTrack;
+import org.monome.pages.ableton.AbletonClip;
+
+class ClipLauncherPage extends GroovyAPI {
+
+    void init() {
+        println "ClipLauncherPage initialized";
+    }
+
+    void press(int x, int y, int val) {
+        println "press received";
+        if (val == 1) {
+            abletonOut().playClip(x, y);
+        }
+    }
+
+    void redraw() {
+        for (int x = 0; x < sizeX(); x++) {
+            AbletonTrack track = ableton().getTrack(x);
+            if (track != null) {
+                for (int y = 0; y < sizeY(); y++) {
+                    AbletonClip clip = track.getClip(y);
+                    if (clip != null) {
+                        int state = clip.getState();
+                        if (state > 0) {
+                            led(x, y, 1);
+                        } else {
+                            led(x, y, 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void note(int num, int velo, int chan, int on) {
+    }
+
+    void cc(int num, int val, int chan) {
+    }
+
+    void clock() {
+    }
+
+    void clockReset() {
+    }
+
+    public boolean redrawOnAbletonEvent() {
+        return true;
+    }
+}
+}}}
+
+A few things to note:
+
+{{{
+import org.monome.pages.ableton.AbletonTrack;
+import org.monome.pages.ableton.AbletonClip;
+}}}
+
+These imports will pull in Ableton objects from Pages and make them available to the script.  A full list of Ableton objects and their functionality is included below.
+
+{{{
+abletonOut().playClip(x, y);
+}}}
+
+There are two exposed Ableton objects, ableton() and abletonOut().  abletonOut() is used to send commands to Ableton Live.  In this case we're instructing it to play clip number y on track x.
+
+{{{
+AbletonTrack track = ableton().getTrack(x);
+}}}
+
+The ableton() object is used to query information about Ableton's state.  This pulls out an AbletonTrack object which contains AbletonClip objects and track information.
+
+{{{
+    public boolean redrawOnAbletonEvent() {
+        return true;
+    }
+}}}
+
+The redrawOnAbletonEvent() method is an interface method you can define to control when the redraw() method is called.  By default the page will not be redrawn when a new Ableton event comes in (for example, a new clip is created), but if this method is declared to return true as it is above, the page will be redrawn on an Ableton event.
+
+Here's a full list of the Ableton objects and methods available:
+
+==ableton()==
+
+ableton() will return an AbletonState object that can be used to check the current state of Ableton.  It has the following methods:
+
+{{{
+AbletonTrack getTrack(int x)
+-- returns an AbletonTrack object
+
+HashMap<Integer, AbletonTrack> getTracks()
+-- returns a the current AbletonTracks in a HashMap
+
+int getOverdub()
+-- returns the state of the overdub button
+
+float getTempo()
+-- returns the current project tempo
+
+int getSelectedScene()
+-- returns the currently selected scene number
+}}}
+
+==abletonOut()==
+
+abletonOut() returns an AbletonControl object that can be used to send commands to Ableton.  It has the following methods:
+
+{{{
+void playClip(int track, int clip)
+-- plays the clip on the given track number, clip/track numbers start at 0
+
+void stopClip(int track, int clip)
+-- stops the clip on the given track number
+
+void armTrack(int track)
+-- arms track
+
+void disarmTrack(int track)
+-- disarms track
+
+void muteTrack(int track)
+-- 'mutes' a track (disables it)
+
+void unmuteTrack(int track)
+-- 'unmutes' a track (enables it)
+
+void stopTrack(int track)
+-- stops the currently playing clip on track
+
+void viewTrack(int track)
+-- forces the view to select track
+
+void trackJump(int track, float amount)
+-- makes the currently playing clip in track jump by amount bars
+
+void undo()
+-- forces an undo in Ableton (ctrl-Z)
+
+void redo()
+-- forces a redo in Ableton (ctrl-Y)
+
+void setOverdub(int state)
+-- sets overdub mode off/on (0/1)
+
+void setTempo(float tempo)
+-- sets Ableton's project tempo
+
+void launchScene(int scene)
+-- launches a scene
+
+void soloTrack(int track)
+-- solos a track
+
+void unsoloTrack(int track)
+-- unsolos a track
+
+void setSelection(int offsetX, int offsetY, int width, int height)
+-- sets the red ring
+}}}
+
+=AbletonTrack=
+
+An AbletonTrack object is returned from the ableton().getTrack() method.  These objects contain information about the track and clips contained within the track.
+
+You will need to import AbletonTrack to use it:
+
+{{{
+import org.monome.pages.ableton.AbletonTrack;
+}}}
+
+The methods of an AbletonTrack object are:
+
+{{{
+AbletonClip getClip(int clip)
+-- returns the AbletonClip in slot clip
+
+HashMap<Integer, AbletonClip> getClips()
+-- returns a HashMap of AbletonClips in this track
+
+AbletonLooper getLooper(int looper)
+-- returns the AbletonLooper device number looper on the track
+
+HashMap<Integer, AbletonLooper> getLoopers()
+-- returns a HashMap of AbletonLooper devices on the track
+
+int getSolo()
+-- gets the solo state of the track (0=off, 1=on)
+
+int getArm()
+-- gets the arm state of the track (0=off, 1=on)
+
+int getMute()
+-- gets the mute state of the track (0=off, 1=on)
+}}}
