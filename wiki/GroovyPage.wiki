@@ -128,14 +128,13 @@ import org.monome.pages.configuration.GroovyAPI;
 import org.monome.pages.ableton.AbletonTrack;
 import org.monome.pages.ableton.AbletonClip;
 
-class ClipLauncherPage extends GroovyAPI {
+class SimpleClipLauncherPage extends GroovyAPI {
 
     void init() {
-        println "ClipLauncherPage initialized";
+        println "SimpleClipLauncherPage initialized";
     }
 
     void press(int x, int y, int val) {
-        println "press received";
         if (val == 1) {
             abletonOut().playClip(x, y);
         }
