@@ -187,7 +187,14 @@ public class GroovyPage implements Page {
 	}
 
 	public boolean redrawOnAbletonEvent() {
-		// TODO Auto-generated method stub
+		if (theApp != null) {
+			try {
+				return theApp.redrawOnAbletonEvent();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+			}
+		}
 		return false;
 	}
 	
@@ -195,10 +202,10 @@ public class GroovyPage implements Page {
 		gui.codePane.setText(
 				"import org.monome.pages.configuration.GroovyAPI;\n" +
 				"\n" +
-				"class GroovyPage extends GroovyAPI {\n" +
+				"class GroovyTemplatePage extends GroovyAPI {\n" +
 				"\n" +
 				"    void init() {\n" +
-				"        println \"GroovyPage starting up\";\n" +
+				"        println \"GroovyTemplatePage starting up\";\n" +
 				"    }\n" +
 				"\n" +
 				"    void press(int x, int y, int val) {\n" +

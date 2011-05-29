@@ -1,5 +1,7 @@
 package org.monome.pages.configuration;
 
+import org.monome.pages.ableton.AbletonControl;
+import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import com.illposed.osc.OSCMessage;
@@ -144,5 +146,14 @@ public class GroovyAPI implements GroovyPageInterface {
 	public int sizeY() {
 		// TODO Auto-generated method stub
 		return monome.sizeY;
+	}
+	public AbletonState ableton() {
+		return ConfigurationFactory.getConfiguration().getAbletonState();
+	}
+	public AbletonControl abletonOut() {
+		return ConfigurationFactory.getConfiguration().getAbletonControl();
+	}
+	public boolean redrawOnAbletonEvent() {
+		return false;
 	}
 }
