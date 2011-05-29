@@ -1,0 +1,123 @@
+#summary A page type that allows for custom Groovy scripting.
+
+= Introduction =
+
+This page allows you to create your own custom page types that interact with the Pages subsystem.  You get the benefits of pages' built-in MIDI/OSC routing, monomeserial and serialosc protocol implementation, pattern recorders, Ableton LiveOSC integration, page changing mechanisms and multiple monome support without the hassle of coding all that junk yourself.
+
+= Details =
+
+There are 4 buttons on the page:
+
+*Save* -- this saves the current script to a file on your hard drive.
+*Load* -- this loads a script into the text box, the script is not started automatically.
+*Run* -- this starts the script running.
+*Stop* -- this stops the running script.
+
+A pop-up dialog containing error messages will be shown in the case of a scripting error.  Syntax errors will cause the script not to start but the script will continue to execute if runtime errors occur.
+
+Here is the example program:
+
+{{{
+import org.monome.pages.configuration.GroovyAPI;
+
+class GroovyPage extends GroovyAPI {
+
+    void init() {
+        println "GroovyPage starting up";
+    }
+
+    void press(int x, int y, int val) {
+        Object[] args = [x, y, val];
+        led(x, y, val);
+    }
+
+    void redraw() {
+        clear(0);
+        led(0, 0, 1);
+        row(1, 255, 255);
+        col(2, 255, 255);
+    }
+
+    void note(int num, int velo, int chan, int on) {
+        noteOut(num, velo, chan, on);
+    }
+
+    void cc(int num, int val, int chan) {
+        ccOut(num, val, chan);
+    }
+
+    void clock() {
+        clockOut();
+    }
+
+    void clockReset() {
+        clockResetOut();
+    }
+}
+}}}
+
+This example script basically echoes back all events it receives.  Let's dissect the script line by line:
+
+{{{
+import org.monome.pages.configuration.GroovyAPI;
+
+class GroovyPage extends GroovyAPI {
+}}}
+
+This is basic initialization code.  It's saying we want to use the GroovyAPI class and we want to create a new class named "GroovyPage" that extends it.  This API hooks in to the Pages event system and provides a number of utility functions.
+
+{{{
+    void init() {
+        println "GroovyPage starting up";
+    }
+}}}
+
+The init() method is called when the script is loaded.  This init method will print a message to the console window.  You will only see the console if running Pages via command line.
+
+{{{
+    void press(int x, int y, int val) {
+        led(x, y, val);
+    }
+}}}
+
+This is the press event method.  Whenever this page receives a press, this method will be called.  In this case we're lighting up the led that is pressed.
+
+{{{
+    void redraw() {
+        clear(0);
+        led(0, 0, 1);
+        row(1, 255, 255);
+        col(2, 255, 255);
+    }
+}}}
+
+The redraw() method is called whenever Pages needs to redraw the entire monome (ie. when a page is changed).  In this case we are clearing the monome, turning on a led at 0,0, drawing a row at y=1, and drawing a column at y=2.  Pages' LED-caching layer will optimize your LED messages, so keep your code simple.
+
+{{{
+    void note(int num, int velo, int chan, int on) {
+        noteOut(num, velo, chan, on);
+    }
+
+    void cc(int num, int val, int chan) {
+        ccOut(num, val, chan);
+    }
+
+    void clock() {
+        clockOut();
+    }
+
+    void clockReset() {
+        clockResetOut();
+    }
+}}}
+
+These are MIDI event methods.  They will be called when an enabled MIDI input receives an event of the appropriate type.  They each echo the received messaged back to any enabled MIDI outputs.
+
+You can also send OSC messages:
+
+{{{
+Object[] args = [0, 0, 1];
+sendOSC("/grid/led/set", args, "localhost", 8000);
+}}}
+
+Ableton and the rest is possible to access but isn't properly exposed yet.
