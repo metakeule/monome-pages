@@ -3,6 +3,7 @@ org.monome.pages.pages.AbletonClipSkipperPage
 org.monome.pages.pages.AbletonLiveLooperPage
 org.monome.pages.pages.AbletonSceneLauncherPage
 org.monome.pages.pages.ExternalApplicationPage
+org.monome.pages.pages.GroovyPage
 org.monome.pages.pages.MachineDrumInterfacePage
 org.monome.pages.pages.MIDIKeyboardPage
 org.monome.pages.pages.MIDIFadersPage
