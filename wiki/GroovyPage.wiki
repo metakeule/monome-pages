@@ -358,6 +358,6 @@ import org.monome.pages.ableton.AbletonLooper;
 The methods of an AbletonLooper object are:
 
 {{{
-float getState()
--- gets the state of the Looper: 0.0=stopped, 1.0=recording, 2.0=playing, 3.0=overdub (sorry this is a float, i need to change it to an int)
+int getState()
+-- gets the state of the Looper: 0=stopped, 1=recording, 2=playing, 3=overdub
 }}}
