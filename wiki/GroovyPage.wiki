@@ -27,7 +27,6 @@ class GroovyPage extends GroovyAPI {
     }
 
     void press(int x, int y, int val) {
-        Object[] args = [x, y, val];
         led(x, y, val);
     }
 
