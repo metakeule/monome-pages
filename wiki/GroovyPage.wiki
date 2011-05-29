@@ -321,3 +321,43 @@ int getArm()
 int getMute()
 -- gets the mute state of the track (0=off, 1=on)
 }}}
+
+=AbletonClip=
+
+An AbletonClip object is returned from the AbletonTrack getClip() method.  These objects contain information about a particular clip.
+
+You will need to import AbletonClip to use it:
+
+{{{
+import org.monome.pages.ableton.AbletonClip;
+}}}
+
+The methods of an AbletonClip object are:
+
+{{{
+int getState()
+-- gets the state of the clipslot: 0=empty, 1=stopped, 2=playing, 3=triggered
+
+float getLength()
+-- gets the length of the clip in bars
+
+float getPosition()
+-- gets the current playhead position of the clip (UNRELIABLE)
+}}}
+
+=AbletonLooper=
+
+An AbletonLooper object is returned from the AbletonTrack getLooper() method.  These objects contain information about a particular Looper device.
+
+You will need to import AbletonLooper to use it:
+
+{{{
+import org.monome.pages.ableton.AbletonLooper;
+}}}
+
+The methods of an AbletonLooper object are:
+
+{{{
+float getState()
+-- gets the state of the Looper: 0.0=stopped, 1.0=recording, 2.0=playing, 3.0=overdub (sorry this is a float, i need to change it to an int)
+}}}
