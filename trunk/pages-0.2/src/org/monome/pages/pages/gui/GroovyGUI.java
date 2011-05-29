@@ -7,8 +7,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.gui.Main;
 import org.monome.pages.pages.GroovyPage;
 import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
 import javax.swing.JTextPane;
@@ -24,6 +36,8 @@ public class GroovyGUI extends JPanel {
 	public JTextPane codePane = null;
 	private JScrollPane scrollPane;
 	private JButton stopButton = null;
+	private JButton saveButton = null;
+	private JButton loadButton = null;
 	/**
 	 * This is the default constructor
 	 */
@@ -48,6 +62,8 @@ public class GroovyGUI extends JPanel {
 		this.add(getRunBtn(), null);
 		this.add(getCodePane(), null);
 		this.add(getStopButton(), null);
+		this.add(getSaveButton(), null);
+		this.add(getLoadButton(), null);
 		this.setLayout(null);
 	}
 	
@@ -106,6 +122,87 @@ public class GroovyGUI extends JPanel {
 			});
 		}
 		return stopButton;
+	}
+
+	/**
+	 * This method initializes saveButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getSaveButton() {
+		if (saveButton == null) {
+			saveButton = new JButton();
+			saveButton.setBounds(new Rectangle(10, 495, 76, 31));
+			saveButton.setText("Save");
+			saveButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					saveScript();
+				}
+			});
+		}
+		return saveButton;
+	}
+	
+	public void saveScript() {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showSaveDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			try {
+				if (ConfigurationFactory.getConfiguration() != null) {
+					FileWriter fw = new FileWriter(file);
+					fw.write(codePane.getText());
+					fw.close();
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * This method initializes loadButton	
+	 * 	
+	 * @return javax.swing.JButton	
+	 */
+	private JButton getLoadButton() {
+		if (loadButton == null) {
+			loadButton = new JButton();
+			loadButton.setBounds(new Rectangle(110, 495, 71, 31));
+			loadButton.setText("Load");
+			loadButton.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					loadScript();
+				}
+			});
+		}
+		return loadButton;
+	}
+	
+	private void loadScript() {
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			FileInputStream fis = null;
+			try {
+				fis = new FileInputStream(file);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			BufferedReader in = new BufferedReader(new InputStreamReader(fis));
+			String code = "";
+			try {
+				while (in.ready()) {
+					code += in.readLine() + "\n";
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			this.codePane.setText(code);
+		}
 	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
