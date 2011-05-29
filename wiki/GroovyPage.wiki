@@ -275,7 +275,7 @@ void setOverdub(int state)
 -- sets overdub mode off/on (0/1)
 
 void setTempo(float tempo)
--- sets Ableton's project tempo
+-- sets the Ableton project tempo
 
 void launchScene(int scene)
 -- launches a scene
