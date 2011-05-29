@@ -118,7 +118,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.1a47 starting up\n");
+		logger.error("Pages 0.2.2a1 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -217,7 +217,7 @@ public class Main extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-	    this.setSize(600, 400);
+	    this.setSize(800, 700);
 		this.setContentPane(getDesktopPane());
 		this.setJMenuBar(getMainMenuBar());
 		this.setTitle("Pages");
