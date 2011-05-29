@@ -1,8 +1,7 @@
-package org.monome.pages.pages;
+package org.monome.pages.configuration;
 
-import org.monome.pages.configuration.MonomeConfiguration;
 
-public interface GroovyApp {
+public interface GroovyPageInterface {
 	public void init();
 	public void press(int x, int y, int val);
 	public void redraw();
@@ -12,4 +11,7 @@ public interface GroovyApp {
 	public void clockReset();
 	public void setMonome(MonomeConfiguration monome);
 	public void setPageIndex(int pageIndex);
+	public MonomeConfiguration monome();
+	public int sizeX();
+	public int sizeY();
 }

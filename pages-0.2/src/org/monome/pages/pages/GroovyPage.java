@@ -7,8 +7,12 @@ import java.util.HashMap;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
+import org.monome.pages.configuration.GroovyPageInterface;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.monome.pages.pages.gui.GroovyGUI;
@@ -42,7 +46,7 @@ public class GroovyPage implements Page {
 
 	private Object theScript;
 	
-	private GroovyApp theApp;
+	private GroovyPageInterface theApp;
 	
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
@@ -58,7 +62,12 @@ public class GroovyPage implements Page {
 
 	public void handlePress(int x, int y, int value) {
 		if (theApp != null) {
-			theApp.press(x, y, value);
+			try {
+				theApp.press(x, y, value);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}
 
@@ -78,13 +87,24 @@ public class GroovyPage implements Page {
 	}
 
 	public void redrawMonome() {
-		// TODO Auto-generated method stub
-
+		if (theApp != null) {
+			try {
+				theApp.redraw();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+			}
+		}
 	}
 
 	public void handleTick() {
 		if (theApp != null) {
-			theApp.clock();
+			try {
+				theApp.clock();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}
 
@@ -105,20 +125,30 @@ public class GroovyPage implements Page {
 
 	public void send(MidiMessage message, long timeStamp) {
 		if (theApp != null) {
-			ShortMessage msg = (ShortMessage) message;
-			if (msg.getCommand() == ShortMessage.NOTE_ON) {
-				theApp.note(msg.getData1(), msg.getData2(), msg.getChannel(), 1);
-			} else if (msg.getCommand() == ShortMessage.NOTE_OFF) {
-				theApp.note(msg.getData1(), msg.getData2(), msg.getChannel(), 0);
-			} else if (msg.getCommand() == ShortMessage.CONTROL_CHANGE) {
-				theApp.cc(msg.getData1(), msg.getData2(), msg.getChannel());
+			try {
+				ShortMessage msg = (ShortMessage) message;
+				if (msg.getCommand() == ShortMessage.NOTE_ON) {
+					theApp.note(msg.getData1(), msg.getData2(), msg.getChannel(), 1);
+				} else if (msg.getCommand() == ShortMessage.NOTE_OFF) {
+					theApp.note(msg.getData1(), msg.getData2(), msg.getChannel(), 0);
+				} else if (msg.getCommand() == ShortMessage.CONTROL_CHANGE) {
+					theApp.cc(msg.getData1(), msg.getData2(), msg.getChannel());
+				}
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
 
 	public void handleReset() {
 		if (theApp != null) {
-			theApp.clockReset();
+			try {
+				theApp.clockReset();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}
 
@@ -126,7 +156,7 @@ public class GroovyPage implements Page {
 		String xml = "";
 		xml += "      <name>Groovy</name>\n";
 		xml += "      <pageName>" + this.pageName + "</pageName>\n";
-		xml += "      <pageCode>\n" + this.gui.codePane.getText() + "      </pageCode>\n";
+		xml += "      <pageCode>" + StringEscapeUtils.escapeXml(this.gui.codePane.getText()) + "</pageCode>\n";
 		return xml;
 	}
 
@@ -163,137 +193,66 @@ public class GroovyPage implements Page {
 	
 	public void defaultText() {
 		gui.codePane.setText(
-				"void init() {\n" +
-				"    println \"Groovy starting up\";\n" +
-				"}\n" +
+				"import org.monome.pages.configuration.GroovyAPI;\n" +
 				"\n" +
-				"void press(int x, int y, int val) {\n" +
-				"    println \"received press: \" + x + \", \" + y + \", \" + val;\n" +
-				"    Object[] args = [x, y, val];\n" +
-				"    sendOSC(\"/press\", args, \"localhost\", 9000);\n" +
-				"}\n" +
+				"class GroovyPage extends GroovyAPI {\n" +
 				"\n" +
-				"void redraw() {\n" +
-				"    clear(0);\n" +
-				"    led(0,0,1);\n" +
-				"    row(1,255,255);\n" +
-				"    col(2,255,255);\n" +
-				"}\n" +
+				"    void init() {\n" +
+				"        println \"GroovyPage starting up\";\n" +
+				"    }\n" +
 				"\n" +
-				"void note(int num, int velo, int chan, int on) {\n" +
-				"    println \"received note: \" + num + \", \" + velo + \", \" + on;\n" +
-				"    noteOut(num, velo, chan, on);\n" +
-				"}\n" +
+				"    void press(int x, int y, int val) {\n" +
+				"        led(x, y, val);\n" +
+				"    }\n" +
 				"\n" +
-				"void cc(int num, int val, int chan) {\n" +
-				"    println \"received cc: \" + cc + \", \" + val;\n" +
-				"    ccOut(num, val, chan);\n" +
-				"}\n" +
+				"    void redraw() {\n" +
+				"        clear(0);\n" +
+				"        led(0, 0, 1);\n" +
+				"        row(1, 255, 255);\n" +
+				"        col(2, 255, 255);\n" +
+				"    }\n" +
 				"\n" +
-				"void clock() {\n" +
-				"    println \"received clock\";\n" +
-				"    clockOut();\n" +
-				"}\n" +
+				"    void note(int num, int velo, int chan, int on) {\n" +
+				"        noteOut(num, velo, chan, on);\n" +
+				"    }\n" +
 				"\n" +
-				"void clockReset() {\n" +
-				"    println \"received clockReset\";\n" +
-				"    clockResetOut();\n" +
-				"}\n"
+				"    void cc(int num, int val, int chan) {\n" +
+				"        ccOut(num, val, chan);\n" +
+				"    }\n" +
+				"\n" +
+				"    void clock() {\n" +
+				"        clockOut();\n" +
+				"    }\n" +
+				"\n" +
+				"    void clockReset() {\n" +
+				"        clockResetOut();\n" +
+				"    }\n" +
+				"}"
 				);
 	}
 
 	public void runCode() {
-		String script = 
-			"import org.monome.pages.pages.GroovyApp;\n" +
-			"import org.monome.pages.configuration.MonomeConfiguration;\n" +
-			"import org.monome.pages.configuration.OSCPortFactory;\n" +
-			"import com.illposed.osc.OSCMessage;\n" +
-			"import com.illposed.osc.OSCPortOut;\n" +
-			"import java.util.ArrayList;\n" +
-			"import javax.sound.midi.MidiMessage;\n" +
-            "import javax.sound.midi.ShortMessage;\n" +	
-			"public class GroovyPage implements GroovyApp {\n" +
-			"    MonomeConfiguration monome;\n" +
-			"    int pageIndex;\n" +
-			"    public void setMonome(MonomeConfiguration monome) {\n" +
-			"        this.monome = monome;\n" +
-		    "    }\n" +
-			"    public void setPageIndex(int pageIndex) {\n" +
-			"        this.pageIndex = pageIndex;\n" +
-		    "    }\n" +
-		    "    public void led(int x, int y, int val) {" +
-		    "        monome.led(x, y, val, pageIndex);\n" +
-		    "    }\n" +
-		    "    public void row(int row, int val1, int val2) {\n" +
-		    "        ArrayList<Integer> args = new ArrayList<Integer>();\n" +
-		    "        args.add(row);\n" +
-		    "        args.add(val1);\n" +
-		    "        args.add(val2);\n" +
-		    "        monome.led_row(args, pageIndex);\n" +
-		    "    }\n" +
-		    "    public void col(int col, int val1, int val2) {\n" +
-		    "        ArrayList<Integer> args = new ArrayList<Integer>();\n" +
-		    "        args.add(col);\n" +
-		    "        args.add(val1);\n" +
-		    "        args.add(val2);\n" +
-		    "        monome.led_col(args, pageIndex);\n" +
-		    "    }\n" +
-		    "    public void clear(int state) {" +
-		    "        monome.clear(state, pageIndex);\n" +
-		    "    }\n" +
-		    "    public void sendOSC(String addr, Object[] args, String host, int port) {" +
-		    "        OSCMessage msg = new OSCMessage();\n" +
-		    "        msg.setAddress(addr);\n" + 
-		    "        if (args != null) {\n" +
-		    "            for (int i = 0; i < args.length; i++) {" +
-		    "                msg.addArgument(args[i]);\n" +
-		    "            }\n" +
-		    "        }\n" +
-		    "        OSCPortOut portOut = OSCPortFactory.getInstance().getOSCPortOut(host, port);\n" + 
-		    "        if (portOut != null) {\n" +
-		    "            portOut.send(msg);\n" +
-		    "        }\n" +
-		    "    }\n" +
-		    "    public void noteOut(int num, int velo, int chan, int on) {" +
-		    "        ShortMessage msg = new ShortMessage();\n" +
-		    "        cmd = ShortMessage.NOTE_OFF;\n" +
-		    "        if (on == 1) {\n" +
-		    "            cmd = ShortMessage.NOTE_ON;\n" +
-		    "        }\n" +
-		    "        msg.setMessage(cmd, chan, num, velo);\n" +
-		    "        monome.sendMidi(msg, pageIndex);\n" +
-		    "    }\n" +
-		    "    public void ccOut(int num, int val, int chan) {" +
-		    "        ShortMessage msg = new ShortMessage();\n" +
-		    "        msg.setMessage(ShortMessage.CONTROL_CHANGE, chan, num, val);\n" +
-		    "        monome.sendMidi(msg, pageIndex);\n" +
-		    "    }\n" +
-		    "    public void clockOut() {" +
-		    "        ShortMessage msg = new ShortMessage();\n" +
-		    "        msg.setMessage(0xF0, 0, 0, 0);\n" +
-		    "        monome.sendMidi(msg, pageIndex);\n" +
-		    "    }\n" +
-		    "    public void clockResetOut() {" +
-		    "        ShortMessage msg = new ShortMessage();\n" +
-		    "        msg.setMessage(0x0C, 0, 0, 0);\n" +
-		    "        monome.sendMidi(msg, pageIndex);\n" +
-		    "    }\n" +
-			gui.codePane.getText() +
-			"}\n";
-		theClass = gcl.parseClass(script, "GroovyPage.groovy");
 		try {
+			theClass = gcl.parseClass(gui.codePane.getText(), "GroovyPage.groovy");
 			theScript = theClass.newInstance();
-			theApp = (GroovyApp) theScript;
+			theApp = (GroovyPageInterface) theScript;
 			theApp.setMonome(monome);
 			theApp.setPageIndex(index);
 			theApp.init();
 			theApp.redraw();
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
+                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+			monome.clear(0, index);
+			theClass = null;
+			theApp = null;
+			theScript = null;
 		}
 		
 	}
