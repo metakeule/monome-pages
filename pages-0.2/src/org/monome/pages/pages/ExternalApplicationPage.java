@@ -103,6 +103,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	public void stopOSC() {
 		if (this.oscIn != null) {
 			this.oscIn.removeListener("/sys/prefix");
+			this.oscIn.removeListener("/sys/info");
 			Set<String> keys = listenersAdded.keySet();
 			Object[] keysArray = keys.toArray();
 			for (int i = 0; i < keysArray.length; i++) {
@@ -293,6 +294,11 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 				outmsg = new OSCMessage();
 				outmsg.setAddress("/sys/id");
 				outmsg.addArgument("extpp");
+				oscOut.send(outmsg);
+				outmsg = new OSCMessage();
+				outmsg.setAddress("/sys/size");
+				outmsg.addArgument(monome.sizeX);
+				outmsg.addArgument(monome.sizeY);
 				oscOut.send(outmsg);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
