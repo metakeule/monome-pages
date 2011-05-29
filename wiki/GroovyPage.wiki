@@ -141,19 +141,23 @@ class SimpleClipLauncherPage extends GroovyAPI {
     }
 
     void redraw() {
+        boolean drewLed;
         for (int x = 0; x < sizeX(); x++) {
-            AbletonTrack track = ableton().getTrack(x);
-            if (track != null) {
-                for (int y = 0; y < sizeY(); y++) {
+            for (int y = 0; y < sizeY(); y++) {
+                drewLed = false;
+                AbletonTrack track = ableton().getTrack(x);
+                if (track != null) {
                     AbletonClip clip = track.getClip(y);
                     if (clip != null) {
                         int state = clip.getState();
                         if (state > 0) {
                             led(x, y, 1);
-                        } else {
-                            led(x, y, 0);
+                            drewLed = true;
                         }
                     }
+                }
+                if (!drewLed) {
+                    led(x, y, 0);
                 }
             }
         }
