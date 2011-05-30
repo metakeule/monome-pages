@@ -2,25 +2,25 @@
 
 = Introduction =
 
-This page allows you to create your own custom page types that interact with the Pages subsystem.  You get the benefits of pages' built-in MIDI/OSC routing, monomeserial and serialosc protocol implementation, pattern recorders, Ableton LiveOSC integration, page changing mechanisms and multiple monome support without the hassle of coding all that junk yourself.
+This page allows you to create your own custom page types that interact with the Pages subsystem.  You get the benefits of Pages' built-in MIDI/OSC routing, monomeserial and serialosc protocol implementation, pattern recorders, Ableton LiveOSC integration, page changing mechanisms and multiple monome support without the hassle of coding all that junk yourself.
 
 = Details =
 
 There are 4 buttons on the page:
 
-*Save* -- this saves the current script to a file on your hard drive.
-*Load* -- this loads a script into the text box, the script is not started automatically.
-*Run* -- this starts the script running.
-*Stop* -- this stops the running script.
+||*Save*||saves the current script to a file on your hard drive||
+||*Load*||loads a script into the text box, the script is not started automatically||
+||*Run*||starts the script running||
+||*Stop*||stops the running script||
 
-A pop-up dialog containing error messages will be shown in the case of a scripting error.  Syntax errors will cause the script not to start but the script will continue to execute if runtime errors occur.
+A pop-up dialog containing error messages will be shown in the case of a cripting error.  Syntax errors will prevent the script from running.  If an error occurs while the application is running however, the application will continue to run.
 
-Here is the example program:
+Here is the template script that loads when you create a new Groovy Page:
 
 {{{
 import org.monome.pages.configuration.GroovyAPI;
 
-class GroovyPage extends GroovyAPI {
+class GroovyTemplatePage extends GroovyAPI {
 
     void init() {
         println "GroovyPage starting up";
@@ -55,23 +55,23 @@ class GroovyPage extends GroovyAPI {
 }
 }}}
 
-This example script basically echoes back all events it receives.  Let's dissect the script line by line:
+This example script basically echoes back all events it receives.  This is how the script works:
 
 {{{
 import org.monome.pages.configuration.GroovyAPI;
 
-class GroovyPage extends GroovyAPI {
+class GroovyTemplatePage extends GroovyAPI {
 }}}
 
-This is basic initialization code.  It's saying we want to use the GroovyAPI class and we want to create a new class named "GroovyPage" that extends it.  This API hooks in to the Pages event system and provides a number of utility functions.
+This is basic initialization code.  It's saying we want to use the GroovyAPI class and we want to create a new class named "GroovyTemplatePage" that extends it.  This API hooks in to the Pages event system and provides a number of utility functions.  You will want to change GroovyTemplatePage to a name of your choosing.
 
 {{{
     void init() {
-        println "GroovyPage starting up";
+        println "GroovyTemplatePage starting up";
     }
 }}}
 
-The init() method is called when the script is loaded.  This init method will print a message to the console window.  You will only see the console if running Pages via command line.
+The init() method is called when the script is first started.  This init method will print a message to the console window.  You will only see the console if running Pages via command line.
 
 {{{
     void press(int x, int y, int val) {
