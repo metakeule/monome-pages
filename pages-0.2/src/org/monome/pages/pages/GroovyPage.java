@@ -1,5 +1,8 @@
 package org.monome.pages.pages;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import groovy.lang.GroovyClassLoader;
 
 import javax.sound.midi.MidiMessage;
@@ -63,7 +66,10 @@ public class GroovyPage implements Page {
 			try {
 				theApp.press(x, y, value);
 			} catch (Exception e) {
-			    errorLog.addError(e.getMessage());
+                StringWriter sw = new StringWriter();
+			    final PrintWriter pw = new PrintWriter(sw);
+			    e.printStackTrace(pw);
+			    errorLog.addError(sw.toString());
 			}
 		}
 	}
@@ -88,7 +94,10 @@ public class GroovyPage implements Page {
 			try {
 				theApp.redraw();
 			} catch (Exception e) {
-                errorLog.addError(e.getMessage());
+                StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                errorLog.addError(sw.toString());
 			}
 		}
 	}
@@ -98,7 +107,10 @@ public class GroovyPage implements Page {
 			try {
 				theApp.clock();
 			} catch (Exception e) {
-                errorLog.addError(e.getMessage());
+                StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                errorLog.addError(sw.toString());
 			}
 		}
 	}
@@ -130,7 +142,10 @@ public class GroovyPage implements Page {
 					theApp.cc(msg.getData1(), msg.getData2(), msg.getChannel());
 				}
 			} catch (Exception e) {
-                errorLog.addError(e.getMessage());
+                StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                errorLog.addError(sw.toString());
 			}
 		}
 	}
@@ -140,7 +155,10 @@ public class GroovyPage implements Page {
 			try {
 				theApp.clockReset();
 			} catch (Exception e) {
-                errorLog.addError(e.getMessage());
+                StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                errorLog.addError(sw.toString());
 			}
 		}
 	}
@@ -240,11 +258,20 @@ public class GroovyPage implements Page {
 			theApp.init();
 			theApp.redraw();
 		} catch (InstantiationException e) {
-            errorLog.addError(e.getMessage());
+            StringWriter sw = new StringWriter();
+            final PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            errorLog.addError(sw.toString());
 		} catch (IllegalAccessException e) {
-            errorLog.addError(e.getMessage());
+            StringWriter sw = new StringWriter();
+            final PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            errorLog.addError(sw.toString());
 		} catch (Exception e) {
-            errorLog.addError(e.getMessage());
+            StringWriter sw = new StringWriter();
+            final PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            errorLog.addError(sw.toString());
 			monome.clear(0, index);
 			theClass = null;
 			theApp = null;

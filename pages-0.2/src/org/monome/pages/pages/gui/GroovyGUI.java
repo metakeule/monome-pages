@@ -151,6 +151,13 @@ public class GroovyGUI extends JPanel {
 	
 	public void saveScript() {
 		JFileChooser fc = new JFileChooser();
+        try {
+            File f = new File(new File("./scripts").getCanonicalPath());
+            fc.setCurrentDirectory(f);
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 		int returnVal = fc.showSaveDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
@@ -187,6 +194,13 @@ public class GroovyGUI extends JPanel {
 	
 	private void loadScript() {
 		JFileChooser fc = new JFileChooser();
+		try {
+            File f = new File(new File("./scripts").getCanonicalPath());
+            fc.setCurrentDirectory(f);
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
 		int returnVal = fc.showOpenDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
