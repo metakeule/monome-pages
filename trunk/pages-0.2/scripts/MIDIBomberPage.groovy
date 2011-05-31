@@ -2,9 +2,10 @@ import org.monome.pages.api.GroovyAPI;
 
 class MIDIBomberPage extends GroovyAPI {
 
-    def scale = [2,1,2,2,1,2,2];
-    def key = "C"; // ascii 67, midi note 36 
-    int speed = 24;
+    def scale = [2,1,2,2,1,2,2]; // minor scale
+    def key = "C"; 
+    int speed = 24; // in 1/96th notes
+    int frequency = 4; // 1 in (frequency * sizeY) chance of generating a note
     
     int[][] world;
     int ticks;
@@ -32,9 +33,15 @@ class MIDIBomberPage extends GroovyAPI {
    
     void redrawWorld() {
         for (int x = 0; x < sizeX(); x++) {
-            for (int y = 0; y < sizeY(); y++) {
-                led(x, y, world[x][y]);
+            def cols = []
+            for (int quad = 0; quad < sizeY(); quad += 8) {
+                int val = 0
+                for (int y = 0; y < quad + 8; y++) {
+                    val += (2 ** (y - quad)) * world[x][y];
+                }
+                cols.add(val);
             }
+            col(x, cols);
         }
     }
 
@@ -89,7 +96,6 @@ class MIDIBomberPage extends GroovyAPI {
                     note += scale[i-1];
                 }
             }
-            println "play note: " + note;
             noteOut(note, velocity, 0, 1);
             notes.add(note);
         }
@@ -120,7 +126,7 @@ class MIDIBomberPage extends GroovyAPI {
             }
             if (x == 7) {
                 for (int y = 0; y < sizeY(); y++) {
-                    if (rand.nextInt(sizeY()) == 0) {
+                    if (rand.nextInt(sizeY()) < 1 * frequency) {
                         world[x][y] = 1;
                     } else {
                         world[x][y] = 0;
