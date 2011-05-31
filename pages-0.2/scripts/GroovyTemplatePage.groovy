@@ -1,4 +1,4 @@
-import org.monome.pages.configuration.GroovyAPI;
+import org.monome.pages.api.GroovyAPI;
 
 class GroovyTemplatePage extends GroovyAPI {
 

@@ -1,4 +1,4 @@
-import org.monome.pages.configuration.GroovyAPI;
+import org.monome.pages.api.GroovyAPI;
 import org.monome.pages.ableton.AbletonTrack;
 import org.monome.pages.ableton.AbletonClip;
 

@@ -1,7 +1,8 @@
-package org.monome.pages.configuration;
+package org.monome.pages.api;
 
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.ableton.AbletonState;
+import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import com.illposed.osc.OSCMessage;
@@ -90,7 +91,7 @@ public class GroovyAPI implements GroovyPageInterface {
     public void clockOut() {
         ShortMessage msg = new ShortMessage();
         try {
-			msg.setMessage(0xF0, 0, 0, 0);
+			msg.setMessage(0XF8);
 		} catch (InvalidMidiDataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,7 +101,7 @@ public class GroovyAPI implements GroovyPageInterface {
     public void clockResetOut() {
         ShortMessage msg = new ShortMessage();
         try {
-			msg.setMessage(0x0C, 0, 0, 0);
+			msg.setMessage(0xFC);
 		} catch (InvalidMidiDataException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

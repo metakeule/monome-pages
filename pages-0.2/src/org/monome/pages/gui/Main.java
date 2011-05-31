@@ -21,6 +21,8 @@
  */
 package org.monome.pages.gui;
 
+import javax.jmdns.JmDNS;
+import javax.jmdns.ServiceInfo;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -55,8 +57,6 @@ import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.SerialOSCMonome;
 
-import com.apple.dnssd.DNSSD;
-import com.apple.dnssd.DNSSDException;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
@@ -65,6 +65,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.InetAddress;
+import java.util.HashMap;
 
 public class Main extends JFrame {
 
@@ -106,6 +108,7 @@ public class Main extends JFrame {
 	public static final int PAGES_OSC_PORT = 12345;
 	
 	public static boolean sentSerialOSCInfoMsg;
+	public static JmDNS jmdns;
 			
 	/**
 	 * And away we go!
@@ -118,7 +121,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.2a2 starting up\n");
+		logger.error("Pages 0.2.2a3 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -148,12 +151,64 @@ public class Main extends JFrame {
 	}
 	
 	public void serialOSCDiscovery() {
+	    HashMap<String, String> serials = new HashMap<String, String>();
+	    try {
+            jmdns = JmDNS.create();
+            final ServiceInfo[] svcInfos = jmdns.list("_monome-osc._udp.local.");
+            for (int i = 0; i < svcInfos.length; i++) {
+                String serial = svcInfos[i].getName();
+                if (serial.indexOf("(") != -1) {
+                    serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
+                }
+                int port = svcInfos[i].getPort();
+                SerialOSCMonome monome = new SerialOSCMonome();
+                monome.port = port;
+                monome.serial = serial;
+                monome.hostName = "127.0.0.1";
+                if (serials.containsKey(serial)) {
+                    continue;
+                }
+                serials.put(monome.serial, monome.hostName);
+                if (Main.mainFrame.serialOscSetupFrame != null) {
+                    Main.mainFrame.serialOscSetupFrame.addDevice(monome);
+                } else {
+                    MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
+                    if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
+                        Main.mainFrame.startMonome(monome);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+            /*
+            
+            if (serial.indexOf("(") != -1) {
+                serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
+            }
+            SerialOSCMonome monome = new SerialOSCMonome();
+            monome.port = port;
+            monome.serial = serial;
+            monome.hostName = hostName;
+            
+            if (Main.mainFrame.serialOscSetupFrame != null) {
+                Main.mainFrame.serialOscSetupFrame.addDevice(monome);
+            } else {
+                MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
+                if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
+                    Main.mainFrame.startMonome(monome);
+                }
+            }            
+            */
+	    /*
 		try {
 			DNSSD.browse("_monome-osc._udp", serialOSCListener);
 		} catch (DNSSDException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 	}
 
 	public static class StdOutErrLog {

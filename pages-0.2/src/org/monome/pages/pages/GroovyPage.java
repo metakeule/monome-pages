@@ -2,19 +2,14 @@ package org.monome.pages.pages;
 
 import groovy.lang.GroovyClassLoader;
 
-import java.util.HashMap;
-
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.codehaus.groovy.control.MultipleCompilationErrorsException;
-import org.monome.pages.configuration.GroovyPageInterface;
+import org.monome.pages.api.GroovyErrorLog;
+import org.monome.pages.api.GroovyPageInterface;
 import org.monome.pages.configuration.MonomeConfiguration;
-import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.monome.pages.pages.gui.GroovyGUI;
 import org.w3c.dom.Element;
 
@@ -48,6 +43,8 @@ public class GroovyPage implements Page {
 	
 	private GroovyPageInterface theApp;
 	
+	public GroovyErrorLog errorLog;
+	
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
 	 * @param index The index of this page (page number)
@@ -58,6 +55,7 @@ public class GroovyPage implements Page {
 		gui = new GroovyGUI(this);
 		gcl = new GroovyClassLoader();
 		defaultText();
+		errorLog = new GroovyErrorLog();
 	}
 
 	public void handlePress(int x, int y, int value) {
@@ -65,8 +63,7 @@ public class GroovyPage implements Page {
 			try {
 				theApp.press(x, y, value);
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+			    errorLog.addError(e.getMessage());
 			}
 		}
 	}
@@ -91,8 +88,7 @@ public class GroovyPage implements Page {
 			try {
 				theApp.redraw();
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+                errorLog.addError(e.getMessage());
 			}
 		}
 	}
@@ -102,8 +98,7 @@ public class GroovyPage implements Page {
 			try {
 				theApp.clock();
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+                errorLog.addError(e.getMessage());
 			}
 		}
 	}
@@ -135,8 +130,7 @@ public class GroovyPage implements Page {
 					theApp.cc(msg.getData1(), msg.getData2(), msg.getChannel());
 				}
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+                errorLog.addError(e.getMessage());
 			}
 		}
 	}
@@ -146,8 +140,7 @@ public class GroovyPage implements Page {
 			try {
 				theApp.clockReset();
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+                errorLog.addError(e.getMessage());
 			}
 		}
 	}
@@ -191,8 +184,7 @@ public class GroovyPage implements Page {
 			try {
 				return theApp.redrawOnAbletonEvent();
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-	                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+                errorLog.addError(e.getMessage());
 			}
 		}
 		return false;
@@ -200,7 +192,7 @@ public class GroovyPage implements Page {
 	
 	public void defaultText() {
 		gui.codePane.setText(
-				"import org.monome.pages.configuration.GroovyAPI;\n" +
+				"import org.monome.pages.api.GroovyAPI;\n" +
 				"\n" +
 				"class GroovyTemplatePage extends GroovyAPI {\n" +
 				"\n" +
@@ -248,14 +240,11 @@ public class GroovyPage implements Page {
 			theApp.init();
 			theApp.redraw();
 		} catch (InstantiationException e) {
-			JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+            errorLog.addError(e.getMessage());
 		} catch (IllegalAccessException e) {
-			JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+            errorLog.addError(e.getMessage());
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(gui, "Error running script: " + e.getMessage(),
-                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+            errorLog.addError(e.getMessage());
 			monome.clear(0, index);
 			theClass = null;
 			theApp = null;
