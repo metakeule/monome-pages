@@ -8,9 +8,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.gui.GroovyErrorConsole;
 import org.monome.pages.gui.Main;
+import org.monome.pages.gui.SerialOSCSetupFrame;
 import org.monome.pages.pages.GroovyPage;
 import java.awt.Dimension;
+import java.beans.PropertyVetoException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +41,8 @@ public class GroovyGUI extends JPanel {
 	private JButton stopButton = null;
 	private JButton saveButton = null;
 	private JButton loadButton = null;
+    private JButton logButton = null;
+    private GroovyErrorConsole errorWindow;
 	/**
 	 * This is the default constructor
 	 */
@@ -64,6 +69,7 @@ public class GroovyGUI extends JPanel {
 		this.add(getStopButton(), null);
 		this.add(getSaveButton(), null);
 		this.add(getLoadButton(), null);
+		this.add(getLogButton(), null);
 		this.setLayout(null);
 	}
 	
@@ -204,5 +210,46 @@ public class GroovyGUI extends JPanel {
 			this.codePane.setText(code);
 		}
 	}
+
+    /**
+     * This method initializes logButton	
+     * 	
+     * @return javax.swing.JButton	
+     */
+    private JButton getLogButton() {
+        if (logButton == null) {
+            logButton = new JButton();
+            logButton.setBounds(new Rectangle(275, 495, 126, 31));
+            logButton.setText("Log Window");
+            logButton.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    if (errorWindow != null && errorWindow.isShowing()) {
+                        try {
+                            errorWindow.setSelected(true);
+                        } catch (PropertyVetoException ex) {
+                            ex.printStackTrace();
+                        }
+                        return;
+                    }
+                    
+                    errorWindow = new GroovyErrorConsole();
+                    errorWindow.setSize(new Dimension(623, 404));
+                    errorWindow.setVisible(true);
+                    errorWindow.setClosable(true);
+                    errorWindow.setResizable(true);
+                    errorWindow.setErrorText(page.errorLog.getErrors());
+                    Main.mainFrame.add(errorWindow);
+                    try {
+                        errorWindow.setSelected(true);
+                    } catch (PropertyVetoException ex) {
+                        ex.printStackTrace();
+                    }
+                    
+                    Main.mainFrame.validate();
+                }
+            });
+        }
+        return logButton;
+    }
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"

@@ -410,11 +410,15 @@ public class Configuration {
 		this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
 		this.serialOSCPortIn.addListener(monome.prefix + "/grid/key", oscListener);
 		
-		OSCMessage portMsg = new OSCMessage();
-		portMsg.setAddress("/sys/port");
-		portMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
 		try {
+	        OSCMessage portMsg = new OSCMessage();
+	        portMsg.setAddress("/sys/port");
+	        portMsg.addArgument(Main.PAGES_OSC_PORT);
 			monome.serialOSCPortOut.send(portMsg);
+			portMsg = new OSCMessage();
+            portMsg.setAddress("/sys/host");
+            portMsg.addArgument("127.0.0.1");
+            monome.serialOSCPortOut.send(portMsg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

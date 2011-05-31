@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
+import javax.jmdns.ServiceInfo;
 import javax.sound.midi.MidiMessage;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -17,11 +18,13 @@ import org.monome.pages.gui.Main;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.w3c.dom.Element;
 
+/*
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
 import com.apple.dnssd.DNSSDRegistration;
 import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.RegisterListener;
+*/
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
@@ -35,7 +38,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak, Stephen McLeod
  *
  */
-public class ExternalApplicationPage implements Page, OSCListener, RegisterListener {
+public class ExternalApplicationPage implements Page, OSCListener { //, RegisterListener {
 
 	/**
 	 * The MonomeConfiguration this page belongs to
@@ -142,11 +145,21 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			}
 			
 			addListeners();
+			/*
 			try {
 				DNSSD.register("extapp-" + this.inPort + "-" + monome.serial, "_monome-osc._udp", this.inPort, this);
 			} catch (DNSSDException e) {
 				e.printStackTrace();
 			}
+			*/
+			ServiceInfo info = ServiceInfo.create("_monome-osc._udp.local.", "extapp-" + this.inPort + "-" + monome.serial, this.inPort, "extapp-" + this.inPort + "-" + monome.serial);
+			
+			try {
+                Main.jmdns.registerService(info);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
 
 		}
@@ -305,7 +318,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 				e.printStackTrace();
 			}
 		}
-		
+        
 		if (msg.getAddress().compareTo("/sys/port") == 0) {
 			int port = ((Integer) args[0]).intValue();
 			setOutPort("" + port);
@@ -516,6 +529,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		return false;
 	}
 
+	/*
 	public void operationFailed(DNSSDService arg0, int arg1) {
 		// TODO Auto-generated method stub
 		
@@ -525,4 +539,5 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			String serviceName, String regType, String domain) {
 		System.out.println("Service registered: " + serviceName + " / " + regType + " / " + domain);
 	}
+	*/
 }

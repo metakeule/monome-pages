@@ -5,6 +5,10 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 
+import javax.swing.JOptionPane;
+
+import org.monome.pages.gui.Main;
+
 import com.illposed.osc.utility.OSCByteArrayToJavaConverter;
 import com.illposed.osc.utility.OSCPacketDispatcher;
 
@@ -21,8 +25,13 @@ public class OSCPortIn extends OSCPort implements Runnable {
 	 * @throws SocketException
 	 */
 	public OSCPortIn(int port) throws SocketException {
-		socket = new DatagramSocket(port);
-		this.port = port;
+	    try {
+    		socket = new DatagramSocket(port);
+    		this.port = port;
+	    } catch (Exception e) {
+            JOptionPane.showMessageDialog(Main.mainFrame, "Error binding to port " + port + ": " + e.getMessage(),
+                    "Groovy-error", JOptionPane.WARNING_MESSAGE);
+	    }
 	}
 
 	/**
@@ -100,7 +109,8 @@ public class OSCPortIn extends OSCPort implements Runnable {
 	 * this when they are done with the port.
 	 */
 	public void close() {
-		socket.close();
+	    if (socket != null) {
+	        socket.close();
+	    }
 	}
-
 }

@@ -12,21 +12,23 @@ import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.SerialOSCMonome;
 
+/*
 import com.apple.dnssd.BrowseListener;
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
 import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.ResolveListener;
 import com.apple.dnssd.TXTRecord;
+*/
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
-public class SerialOSCListener implements BrowseListener, ResolveListener {
+public class SerialOSCListener { //implements BrowseListener, ResolveListener {
 	
 	ArrayList<SerialOSCMonome> monomes;
-
+/*
 	public void operationFailed(DNSSDService arg0, int arg1) {
 		System.out.println("Operation failed: " + arg0 + " [" + arg1 + "]");
 	}
@@ -62,41 +64,7 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
 				Main.mainFrame.startMonome(monome);
 			}
-		}
-		
-		/*
-		OSCPortIn inPort = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
-		inPort.addListener("/sys/size", monome);
-		inPort.addListener("/sys/port", monome);
-		inPort.addListener("/sys/id", monome);
-		inPort.addListener("/sys/prefix", monome);
-		inPort.addListener("/sys/host", monome);
-		if (!Main.sentSerialOSCInfoMsg) {
-			Main.sentSerialOSCInfoMsg = true;
-			OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut("localhost", port);
-			OSCMessage infoMsg = new OSCMessage();
-			infoMsg.setAddress("/sys/info");
-			infoMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
-			try {
-				outPort.send(infoMsg);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		*/
-		
-		/*
-		Configuration configuration = ConfigurationFactory.getConfiguration();
-		if (configuration == null) {
-			configuration = new Configuration("serialosc");
-			ConfigurationFactory.setConfiguration(configuration);
-		}
-		*/
-		
-		
-		//int index = MonomeConfigurationFactory.getNumMonomeConfigurations();
-		//configuration.addMonomeConfiguration(index, "/grid", serial, sizeX, sizeY, usePageChangeButton, useMIDIPageChanging, midiPageChangeRules)
-		
+		}		
 	}
+	*/
 }
