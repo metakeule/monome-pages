@@ -10,6 +10,7 @@ import com.illposed.osc.OSCPortOut;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;	
@@ -26,8 +27,20 @@ public class GroovyAPI implements GroovyPageInterface {
     public void setPageIndex(int pageIndex) {
         this.pageIndex = pageIndex;
     }
+    public void led(ArrayList<Integer> args) {
+        if (args.size() != 3) return;
+        monome.led(args.get(0), args.get(1), args.get(2), pageIndex);
+    }
     public void led(int x, int y, int val) {
         monome.led(x, y, val, pageIndex);
+    }
+    public void row(int row, ArrayList<Integer> rows) {
+        ArrayList<Integer> args = new ArrayList<Integer>();
+        args.add(row);
+        for (int i = 0; i < rows.size(); i++) {
+            args.add(rows.get(i));
+        }
+        monome.led_row(args, pageIndex);
     }
     public void row(int row, int val1, int val2) {
         ArrayList<Integer> args = new ArrayList<Integer>();
@@ -35,6 +48,14 @@ public class GroovyAPI implements GroovyPageInterface {
         args.add(val1);
         args.add(val2);
         monome.led_row(args, pageIndex);
+    }
+    public void col(int col, ArrayList<Integer> cols) {
+        ArrayList<Integer> args = new ArrayList<Integer>();
+        args.add(col);
+        for (int i = 0; i < cols.size(); i++) {
+            args.add(cols.get(i));
+        }
+        monome.led_col(args, pageIndex);
     }
     public void col(int col, int val1, int val2) {
         ArrayList<Integer> args = new ArrayList<Integer>();
