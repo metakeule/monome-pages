@@ -218,6 +218,10 @@ public class GroovyPage implements Page {
 				"        println \"GroovyTemplatePage starting up\";\n" +
 				"    }\n" +
 				"\n" +
+                "    void stop() {\n" +
+                "        println \"GroovyTemplatePage shutting down\";\n" +
+                "    }\n" +
+                "\n" +
 				"    void press(int x, int y, int val) {\n" +
 				"        led(x, y, val);\n" +
 				"    }\n" +
@@ -271,6 +275,9 @@ public class GroovyPage implements Page {
             StringWriter sw = new StringWriter();
             final PrintWriter pw = new PrintWriter(sw);
             e.printStackTrace(pw);
+            if (theApp != null) {
+                theApp.stop();
+            }
             errorLog.addError(sw.toString());
 			monome.clear(0, index);
 			theClass = null;
@@ -281,6 +288,16 @@ public class GroovyPage implements Page {
 	}
 	
 	public void stopCode() {
+        if (theApp != null) {
+            try {
+                theApp.stop();
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                errorLog.addError(sw.toString());
+            }
+        }
 		theClass = null;
 		theScript = null;
 		theApp = null;

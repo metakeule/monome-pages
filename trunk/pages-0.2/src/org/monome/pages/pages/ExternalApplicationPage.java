@@ -25,6 +25,11 @@ import com.apple.dnssd.DNSSDRegistration;
 import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.RegisterListener;
 */
+import com.apple.dnssd.DNSSD;
+import com.apple.dnssd.DNSSDException;
+import com.apple.dnssd.DNSSDRegistration;
+import com.apple.dnssd.DNSSDService;
+import com.apple.dnssd.RegisterListener;
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
@@ -38,7 +43,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak, Stephen McLeod
  *
  */
-public class ExternalApplicationPage implements Page, OSCListener { //, RegisterListener {
+public class ExternalApplicationPage implements Page, OSCListener, RegisterListener {
 
 	/**
 	 * The MonomeConfiguration this page belongs to
@@ -145,21 +150,22 @@ public class ExternalApplicationPage implements Page, OSCListener { //, Register
 			}
 			
 			addListeners();
-			/*
-			try {
-				DNSSD.register("extapp-" + this.inPort + "-" + monome.serial, "_monome-osc._udp", this.inPort, this);
-			} catch (DNSSDException e) {
-				e.printStackTrace();
+			if (Main.zeroconfLibrary == Main.LIBRARY_APPLE) {			
+    			try {
+    				DNSSD.register("extapp-" + this.inPort + "-" + monome.serial, "_monome-osc._udp", this.inPort, this);
+    			} catch (DNSSDException e) {
+    				e.printStackTrace();
+    			}
+			} else if (Main.zeroconfLibrary == Main.LIBRARY_JMDNS) {
+    			ServiceInfo info = ServiceInfo.create("_monome-osc._udp.local.", "extapp-" + this.inPort + "-" + monome.serial, this.inPort, "extapp-" + this.inPort + "-" + monome.serial);
+    			
+    			try {
+                    Main.jmdns.registerService(info);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
 			}
-			*/
-			ServiceInfo info = ServiceInfo.create("_monome-osc._udp.local.", "extapp-" + this.inPort + "-" + monome.serial, this.inPort, "extapp-" + this.inPort + "-" + monome.serial);
-			
-			try {
-                Main.jmdns.registerService(info);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
 			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
 
 		}
@@ -529,7 +535,7 @@ public class ExternalApplicationPage implements Page, OSCListener { //, Register
 		return false;
 	}
 
-	/*
+	
 	public void operationFailed(DNSSDService arg0, int arg1) {
 		// TODO Auto-generated method stub
 		
@@ -539,5 +545,4 @@ public class ExternalApplicationPage implements Page, OSCListener { //, Register
 			String serviceName, String regType, String domain) {
 		System.out.println("Service registered: " + serviceName + " / " + regType + " / " + domain);
 	}
-	*/
 }

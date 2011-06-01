@@ -918,8 +918,20 @@ public class Configuration {
 			rootEL = (Element) rootNL.item(0);
 			rootNL2 = rootEL.getChildNodes();
 			String hostname = ((Node) rootNL2.item(0)).getNodeValue();
-
-			setMonomeHostname(hostname);
+            setMonomeHostname(hostname);
+			
+            // read <zeroconfLibrary> from the configuration file
+            rootNL = doc.getElementsByTagName("zeroconfLibrary");
+            rootEL = (Element) rootNL.item(0);
+            if (rootEL != null) {
+                rootNL2 = rootEL.getChildNodes();
+                String zeroconfLibrary = ((Node) rootNL2.item(0)).getNodeValue();
+                try {
+                    Main.zeroconfLibrary = Integer.parseInt(zeroconfLibrary);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            }
 
 			// read <oscinport> from the configuration file
 			rootNL = doc.getElementsByTagName("oscinport");
@@ -1270,6 +1282,7 @@ public class Configuration {
 		xml  = "<configuration>\n";
 		xml += "  <name>" + this.name + "</name>\n";
 		xml += "  <hostname>" + this.monomeHostname + "</hostname>\n";
+        xml += "  <zeroconfLibrary>" + Main.zeroconfLibrary + "</zeroconfLibrary>\n";
 		xml += "  <oscinport>" + this.monomeSerialOSCInPortNumber + "</oscinport>\n";
 		xml += "  <oscoutport>" + this.monomeSerialOSCOutPortNumber + "</oscoutport>\n";
 		xml += "  <abletonhostname>" + this.abletonHostname + "</abletonhostname>\n";

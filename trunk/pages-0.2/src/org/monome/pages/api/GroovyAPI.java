@@ -178,4 +178,8 @@ public class GroovyAPI implements GroovyPageInterface {
 	public boolean redrawOnAbletonEvent() {
 		return false;
 	}
+    public void stop() {
+        // TODO Auto-generated method stub
+        
+    }
 }

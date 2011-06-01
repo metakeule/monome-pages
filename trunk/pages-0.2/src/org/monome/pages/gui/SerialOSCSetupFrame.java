@@ -20,6 +20,7 @@ import com.illposed.osc.OSCPortOut;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import javax.swing.JComboBox;
 
 public class SerialOSCSetupFrame extends JInternalFrame {
 
@@ -28,6 +29,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	private JButton discoverBtn = null;
 	private JButton closeButton = null;
 	private int nextDeviceHeight = 40;
+    private JComboBox libSelect = null;
 	
 	public SerialOSCSetupFrame() {
 		super();
@@ -48,6 +50,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 			jContentPane.setLayout(null);
 			jContentPane.add(getDiscoverBtn(), null);
 			jContentPane.add(getCloseButton(), null);
+			jContentPane.add(getLibSelect(), null);
 		}
 		return jContentPane;
 	}
@@ -60,7 +63,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	private JButton getDiscoverBtn() {
 		if (discoverBtn == null) {
 			discoverBtn = new JButton();
-			discoverBtn.setBounds(new Rectangle(10, 10, 151, 20));
+			discoverBtn.setBounds(new Rectangle(135, 5, 151, 26));
 			discoverBtn.setText("Discover Devices");
 			discoverBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -78,7 +81,11 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 		this.validate();
 		this.repaint();
 		this.nextDeviceHeight = 40;
-		Main.mainFrame.serialOSCDiscovery();
+		if (Main.zeroconfLibrary == Main.LIBRARY_APPLE) {
+		    Main.mainFrame.appleSerialOSCDiscovery();
+		} else if (Main.zeroconfLibrary == Main.LIBRARY_JMDNS){
+            Main.mainFrame.jmdnsSerialOSCDiscovery();	    
+		}
 	}
 
 	/**
@@ -89,7 +96,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	private JButton getCloseButton() {
 		if (closeButton == null) {
 			closeButton = new JButton();
-			closeButton.setBounds(new Rectangle(170, 10, 76, 20));
+			closeButton.setBounds(new Rectangle(300, 5, 76, 26));
 			closeButton.setText("Close");
 			closeButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -134,4 +141,30 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 		this.validate();
 		this.repaint();
 	}
+
+    /**
+     * This method initializes libSelect	
+     * 	
+     * @return javax.swing.JComboBox	
+     */
+    private JComboBox getLibSelect() {
+        if (libSelect == null) {
+            libSelect = new JComboBox();
+            libSelect.setBounds(new Rectangle(5, 5, 116, 25));
+            libSelect.addItem("Apple");
+            libSelect.addItem("JmDNS");
+            libSelect.setSelectedIndex(Main.zeroconfLibrary);
+            libSelect.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    String mode = (String) libSelect.getSelectedItem();
+                    if (mode.compareTo("Apple") == 0) {
+                        Main.zeroconfLibrary = Main.LIBRARY_APPLE;
+                    } else if (mode.compareTo("JmDNS") == 0) {
+                        Main.zeroconfLibrary = Main.LIBRARY_JMDNS;
+                    }
+                }
+            });
+        }
+        return libSelect;
+    }
 }  //  @jve:decl-index=0:visual-constraint="10,10"
