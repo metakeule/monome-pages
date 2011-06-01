@@ -57,6 +57,8 @@ import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.SerialOSCMonome;
 
+import com.apple.dnssd.DNSSD;
+import com.apple.dnssd.DNSSDException;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
@@ -109,6 +111,10 @@ public class Main extends JFrame {
 	
 	public static boolean sentSerialOSCInfoMsg;
 	public static JmDNS jmdns;
+	
+	public static final int LIBRARY_APPLE = 0;
+	public static final int LIBRARY_JMDNS = 1;
+	public static int zeroconfLibrary = LIBRARY_APPLE; 
 			
 	/**
 	 * And away we go!
@@ -150,7 +156,7 @@ public class Main extends JFrame {
 		});
 	}
 	
-	public void serialOSCDiscovery() {
+	public void jmdnsSerialOSCDiscovery() {
 	    HashMap<String, String> serials = new HashMap<String, String>();
 	    try {
             jmdns = JmDNS.create();
@@ -182,8 +188,10 @@ public class Main extends JFrame {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-            /*
-            
+	}
+	
+	public void appleSerialOSCDiscovery() {
+	    /*
             if (serial.indexOf("(") != -1) {
                 serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
             }
@@ -201,14 +209,13 @@ public class Main extends JFrame {
                 }
             }            
             */
-	    /*
+	    
 		try {
 			DNSSD.browse("_monome-osc._udp", serialOSCListener);
 		} catch (DNSSDException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		*/
 	}
 
 	public static class StdOutErrLog {
@@ -428,7 +435,11 @@ public class Main extends JFrame {
 			}
 		}
 		this.openingConfig = true;
-		serialOSCDiscovery();
+		if (zeroconfLibrary == LIBRARY_APPLE) {
+		    appleSerialOSCDiscovery();
+		} else if (zeroconfLibrary == LIBRARY_JMDNS) {
+		    jmdnsSerialOSCDiscovery();
+		}
 	}
 	
 	public void startMonome(SerialOSCMonome monome) {

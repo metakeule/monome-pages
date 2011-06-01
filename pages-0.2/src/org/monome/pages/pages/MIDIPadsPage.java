@@ -130,6 +130,9 @@ public class MIDIPadsPage implements Page {
 			if (velocities[velX][velY] == 0) {
 				try {
 					ShortMessage midiMsg = new ShortMessage();
+					if (midiNote > 127) {
+					    midiNote = 127;
+					}
 					midiMsg.setMessage(ShortMessage.NOTE_OFF, midiChannel, midiNote, 0);
 					monome.sendMidi(midiMsg, index);
 				} catch (InvalidMidiDataException e) {

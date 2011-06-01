@@ -20,15 +20,21 @@ import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.ResolveListener;
 import com.apple.dnssd.TXTRecord;
 */
+import com.apple.dnssd.BrowseListener;
+import com.apple.dnssd.DNSSD;
+import com.apple.dnssd.DNSSDException;
+import com.apple.dnssd.DNSSDService;
+import com.apple.dnssd.ResolveListener;
+import com.apple.dnssd.TXTRecord;
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
-public class SerialOSCListener { //implements BrowseListener, ResolveListener {
+public class SerialOSCListener implements BrowseListener, ResolveListener {
 	
 	ArrayList<SerialOSCMonome> monomes;
-/*
+
 	public void operationFailed(DNSSDService arg0, int arg1) {
 		System.out.println("Operation failed: " + arg0 + " [" + arg1 + "]");
 	}
@@ -66,5 +72,4 @@ public class SerialOSCListener { //implements BrowseListener, ResolveListener {
 			}
 		}		
 	}
-	*/
 }
