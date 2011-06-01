@@ -15,6 +15,7 @@ class MIDIXYPage extends GroovyAPI {
     }
     
     void stop() {
+        println "MIDIXYPage shutting down";
         if (thread != null) {
             thread.stop();
         }
