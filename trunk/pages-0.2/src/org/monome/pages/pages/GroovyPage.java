@@ -254,6 +254,9 @@ public class GroovyPage implements Page {
 
 	public void runCode() {
 		try {
+		    if (theApp != null) {
+		        theApp.stop();
+		    }
 			theClass = gcl.parseClass(gui.codePane.getText(), "GroovyPage.groovy");
 			theScript = theClass.newInstance();
 			theApp = (GroovyPageInterface) theScript;
