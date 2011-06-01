@@ -10,10 +10,11 @@ There are 4 buttons on the page:
 
 ||*Save*||saves the current script to a file on your hard drive||
 ||*Load*||loads a script into the text box, the script is not started automatically||
+||*Log Window*||shows a log window with any script errors||
 ||*Run*||starts the script running||
 ||*Stop*||stops the running script||
 
-A pop-up dialog containing error messages will be shown in the case of a cripting error.  Syntax errors will prevent the script from running.  If an error occurs while the application is running however, the application will continue to run.
+Syntax errors will prevent the script from running.  Check the log window if nothing is happening.  If an error occurs while the application is running however, the application will continue to run.
 
 Here is the template script that loads when you create a new Groovy Page:
 
@@ -24,6 +25,10 @@ class GroovyTemplatePage extends GroovyAPI {
 
     void init() {
         println "GroovyPage starting up";
+    }
+
+    void stop() {
+        println "GroovyPage shutting down";
     }
 
     void press(int x, int y, int val) {
@@ -72,6 +77,14 @@ This is basic initialization code.  It's saying we want to use the GroovyAPI cla
 }}}
 
 The init() method is called when the script is first started.  This init method will print a message to the console window.  You will only see the console if running Pages via command line.
+
+{{{
+    void stop() {
+        println "GroovyTemplatePage shutting down";
+    }
+}}}
+
+The stop() method is called when the script is stopped with the stop button.  It's important to terminate any threads you may have spawned in the stop method -- see the MIDIXYPage.groovy file for an example.
 
 {{{
     void press(int x, int y, int val) {
