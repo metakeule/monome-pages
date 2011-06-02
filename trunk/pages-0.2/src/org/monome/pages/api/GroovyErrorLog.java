@@ -1,16 +1,24 @@
 package org.monome.pages.api;
 
+import java.awt.Rectangle;
+
+import org.monome.pages.pages.gui.GroovyGUI;
+
 public class GroovyErrorLog {
     
     StringBuffer errors;
+    GroovyGUI gui;
     
-    public GroovyErrorLog() {
+    public GroovyErrorLog(GroovyGUI gui) {
         errors = new StringBuffer();
+        this.gui = gui;
     }
     
     public void addError(String message) {
-        System.out.println(message);
         errors.append(message);
+        if (gui.errorWindow != null) {
+            gui.errorWindow.appendErrorText(message);
+        }
     }
     
     public StringBuffer getErrors() {

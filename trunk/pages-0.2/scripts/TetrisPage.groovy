@@ -1,11 +1,11 @@
 import org.monome.pages.configuration.GroovyAPI
 
 class TetrisPage extends GroovyAPI {
-    int[][] state;
-    int ticks;
-    int curBlockX;
-    int curBlockY;
-    int curBlockShape;
+    int[][] state
+    int ticks
+    int curBlockX
+    int curBlockY
+    int curBlockShape
     def shapes = [
         [
             [0,0,0,0],
@@ -43,11 +43,11 @@ class TetrisPage extends GroovyAPI {
             [1,0,0,0],
             [1,1,1,0]
         ],
-    ];
+    ]
 
     void press(int x, int y, int val) {
         if (val == 1) {
-            rotateBlock();
+            rotateBlock()
         }
     }
     
@@ -57,17 +57,17 @@ class TetrisPage extends GroovyAPI {
     
     void clock() {
         if (ticks == 0) {
-            tick();
+            tick()
         }
-        ticks++;
+        ticks++
         if (ticks == 24) {
-            ticks = 0;
+            ticks = 0
         }
     }
     
     void tick() {
-        moveDown();
-        checkForLines();
+        moveDown()
+        checkForLines()
     }
     
     void moveDown() {

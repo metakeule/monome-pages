@@ -19,6 +19,7 @@ public class GroovyAPI implements GroovyPageInterface {
     int pageIndex;
     int sizeX;
     int sizeY;
+    private GroovyErrorLog errorLog;
     public void setMonome(MonomeConfiguration monome) {
         this.monome = monome;
         this.sizeX = monome.sizeX;
@@ -169,6 +170,9 @@ public class GroovyAPI implements GroovyPageInterface {
 		// TODO Auto-generated method stub
 		return monome.sizeY;
 	}
+	public void log(String message) {
+	    errorLog.addError(message + "\n");
+	}
 	public AbletonState ableton() {
 		return ConfigurationFactory.getConfiguration().getAbletonState();
 	}
@@ -179,7 +183,9 @@ public class GroovyAPI implements GroovyPageInterface {
 		return false;
 	}
     public void stop() {
-        // TODO Auto-generated method stub
+    }
+    public void setLogger(GroovyErrorLog errorLog) {
+        this.errorLog = errorLog;
         
     }
 }

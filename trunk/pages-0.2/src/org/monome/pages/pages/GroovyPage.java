@@ -58,7 +58,7 @@ public class GroovyPage implements Page {
 		gui = new GroovyGUI(this);
 		gcl = new GroovyClassLoader();
 		defaultText();
-		errorLog = new GroovyErrorLog();
+		errorLog = new GroovyErrorLog(gui);
 	}
 
 	public void handlePress(int x, int y, int value) {
@@ -127,7 +127,9 @@ public class GroovyPage implements Page {
 
 	public void setIndex(int index) {
 		this.index = index;
-		theApp.setPageIndex(index);
+		if (theApp != null) {
+		    theApp.setPageIndex(index);
+		}
 	}
 
 	public void send(MidiMessage message, long timeStamp) {
@@ -179,6 +181,7 @@ public class GroovyPage implements Page {
 	public void configure(Element pageElement) {
 		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
 		this.gui.codePane.setText(this.monome.readConfigValue(pageElement, "pageCode"));
+		this.gui.codePane.scrollTo(0, 0);
 		this.runCode();
 	}
 
@@ -210,46 +213,47 @@ public class GroovyPage implements Page {
 	
 	public void defaultText() {
 		gui.codePane.setText(
-				"import org.monome.pages.api.GroovyAPI;\n" +
+				"import org.monome.pages.api.GroovyAPI\n" +
 				"\n" +
 				"class GroovyTemplatePage extends GroovyAPI {\n" +
 				"\n" +
 				"    void init() {\n" +
-				"        println \"GroovyTemplatePage starting up\";\n" +
+				"        log(\"GroovyTemplatePage starting up\")\n" +
 				"    }\n" +
 				"\n" +
                 "    void stop() {\n" +
-                "        println \"GroovyTemplatePage shutting down\";\n" +
+                "        log(\"GroovyTemplatePage shutting down\")\n" +
                 "    }\n" +
                 "\n" +
 				"    void press(int x, int y, int val) {\n" +
-				"        led(x, y, val);\n" +
+				"        led(x, y, val)\n" +
 				"    }\n" +
 				"\n" +
 				"    void redraw() {\n" +
-				"        clear(0);\n" +
-				"        led(0, 0, 1);\n" +
-				"        row(1, 255, 255);\n" +
-				"        col(2, 255, 255);\n" +
+				"        clear(0)\n" +
+				"        led(0, 0, 1)\n" +
+				"        row(1, 255, 255)\n" +
+				"        col(2, 255, 255)\n" +
 				"    }\n" +
 				"\n" +
 				"    void note(int num, int velo, int chan, int on) {\n" +
-				"        noteOut(num, velo, chan, on);\n" +
+				"        noteOut(num, velo, chan, on)\n" +
 				"    }\n" +
 				"\n" +
 				"    void cc(int num, int val, int chan) {\n" +
-				"        ccOut(num, val, chan);\n" +
+				"        ccOut(num, val, chan)\n" +
 				"    }\n" +
 				"\n" +
 				"    void clock() {\n" +
-				"        clockOut();\n" +
+				"        clockOut()\n" +
 				"    }\n" +
 				"\n" +
 				"    void clockReset() {\n" +
-				"        clockResetOut();\n" +
+				"        clockResetOut()\n" +
 				"    }\n" +
 				"}"
 				);
+		gui.codePane.scrollTo(0, 0);
 	}
 
 	public void runCode() {
@@ -261,6 +265,7 @@ public class GroovyPage implements Page {
 			theScript = theClass.newInstance();
 			theApp = (GroovyPageInterface) theScript;
 			theApp.setMonome(monome);
+			theApp.setLogger(errorLog);
 			theApp.setPageIndex(index);
 			theApp.init();
 			theApp.redraw();

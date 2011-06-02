@@ -5,33 +5,33 @@ import org.monome.pages.ableton.AbletonClip;
 class SimpleClipLauncherPage extends GroovyAPI {
 
     void init() {
-        println "SimpleClipLauncherPage initialized";
+        log("SimpleClipLauncherPage initialized")
     }
 
     void press(int x, int y, int val) {
         if (val == 1) {
-            abletonOut().playClip(x, y);
+            abletonOut().playClip(x, y)
         }
     }
 
     void redraw() {
-        boolean drewLed;
+        boolean drewLed
         for (int x = 0; x < sizeX(); x++) {
             for (int y = 0; y < sizeY(); y++) {
-                drewLed = false;
-                AbletonTrack track = ableton().getTrack(x);
+                drewLed = false
+                AbletonTrack track = ableton().getTrack(x)
                 if (track != null) {
-                    AbletonClip clip = track.getClip(y);
+                    AbletonClip clip = track.getClip(y)
                     if (clip != null) {
-                        int state = clip.getState();
+                        int state = clip.getState()
                         if (state > 0) {
-                            led(x, y, 1);
-                            drewLed = true;
+                            led(x, y, 1)
+                            drewLed = true
                         }
                     }
                 }
                 if (!drewLed) {
-                    led(x, y, 0);
+                    led(x, y, 0)
                 }
             }
         }
@@ -50,6 +50,6 @@ class SimpleClipLauncherPage extends GroovyAPI {
     }
 
     public boolean redrawOnAbletonEvent() {
-        return true;
+        return true
     }
 }

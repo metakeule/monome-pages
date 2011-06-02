@@ -17,4 +17,5 @@ public interface GroovyPageInterface {
     public int sizeX();
     public int sizeY();
     public boolean redrawOnAbletonEvent();
+    public void setLogger(GroovyErrorLog errorLog);
 }
