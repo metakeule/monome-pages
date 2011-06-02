@@ -899,7 +899,7 @@ public class Configuration {
 	 * 
 	 * @param file the configuration file to read
 	 */
-	public void readConfigurationFile(File file) {
+	public boolean readConfigurationFile(File file) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
@@ -1262,13 +1262,11 @@ public class Configuration {
 					}
 				}
 			}
-		} catch (IOException e) {
+			return true;
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		}
+		} 
+		return false;
 	}
 
 	/**

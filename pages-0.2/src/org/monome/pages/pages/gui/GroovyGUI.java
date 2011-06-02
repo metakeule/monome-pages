@@ -1,5 +1,7 @@
 package org.monome.pages.pages.gui;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagLayout;
 import java.awt.Rectangle;
 
@@ -12,6 +14,9 @@ import org.monome.pages.gui.GroovyErrorConsole;
 import org.monome.pages.gui.Main;
 import org.monome.pages.gui.SerialOSCSetupFrame;
 import org.monome.pages.pages.GroovyPage;
+import org.syntax.jedit.JEditTextArea;
+import org.syntax.jedit.tokenmarker.JavaTokenMarker;
+
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 import java.io.BufferedReader;
@@ -22,6 +27,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.swing.Box;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JTextArea;
@@ -29,20 +35,25 @@ import javax.swing.JButton;
 import javax.swing.JTextPane;
 import javax.swing.JEditorPane;
 import javax.swing.text.EditorKit;
+import java.awt.GridLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.BoxLayout;
 
 public class GroovyGUI extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 	private GroovyPage page;
 	private JLabel pageLabel = null;
-	private JButton runBtn = null;
-	public JTextPane codePane = null;
+	private JButton runBtn = null;  //  @jve:decl-index=0:visual-constraint="748,97"
+	public JEditTextArea codePane = null;
 	private JScrollPane scrollPane;
-	private JButton stopButton = null;
-	private JButton saveButton = null;
-	private JButton loadButton = null;
-    private JButton logButton = null;
-    private GroovyErrorConsole errorWindow;
+	private JButton stopButton = null;  //  @jve:decl-index=0:visual-constraint="717,352"
+	private JButton saveButton = null;  //  @jve:decl-index=0:visual-constraint="749,224"
+	private JButton loadButton = null;  //  @jve:decl-index=0:visual-constraint="716,389"
+    private JButton logButton = null;  //  @jve:decl-index=0:visual-constraint="708,318"
+    public GroovyErrorConsole errorWindow;
+    private JPanel buttonPane = null;
 	/**
 	 * This is the default constructor
 	 */
@@ -58,23 +69,31 @@ public class GroovyGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(669, 539);
-		pageLabel = new JLabel();
-		pageLabel.setBounds(new Rectangle(5, 5, 291, 21));
-		setName("Groovy");
-		this.setLayout(null);
-		this.add(pageLabel, null);
-		this.add(getRunBtn(), null);
-		this.add(getCodePane(), null);
-		this.add(getStopButton(), null);
-		this.add(getSaveButton(), null);
-		this.add(getLoadButton(), null);
-		this.add(getLogButton(), null);
-		this.setLayout(null);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        this.add(getCodePane());
+        this.setSize(669, 600);
+        this.add(getButtonPane());
+	}
+	
+	private JPanel getButtonPane() {
+	    if (buttonPane == null) {
+    	    buttonPane = new JPanel();
+    	    buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+            buttonPane.add(getLoadButton());
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(getSaveButton());
+            buttonPane.add(Box.createRigidArea(new Dimension(50, 0)));
+            buttonPane.add(getLogButton());
+            buttonPane.add(Box.createRigidArea(new Dimension(50, 0)));
+            buttonPane.add(getRunBtn());
+            buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
+            buttonPane.add(getStopButton());
+	    }
+        return buttonPane;
 	}
 	
 	public void setName(String name) {
-		pageLabel.setText((page.getIndex() + 1) + ": " + name);
+		//pageLabel.setText((page.getIndex() + 1) + ": " + name);
 	}
 
 	/**
@@ -85,7 +104,6 @@ public class GroovyGUI extends JPanel {
 	private JButton getRunBtn() {
 		if (runBtn == null) {
 			runBtn = new JButton();
-			runBtn.setBounds(new Rectangle(500, 495, 69, 31));
 			runBtn.setText("Run");
 			runBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -101,14 +119,12 @@ public class GroovyGUI extends JPanel {
 	 * 	
 	 * @return javax.swing.JEditorPane	
 	 */
-	private JScrollPane getCodePane() {
+	private JEditTextArea getCodePane() {
 		if (codePane == null) {
-			codePane = new JTextPane();
-			codePane.setBounds(new Rectangle(5, 30, 656, 381));
-			scrollPane = new JScrollPane(codePane);
-			scrollPane.setBounds(new Rectangle(5, 30, 656, 451));
+			codePane = new JEditTextArea();
+			codePane.setTokenMarker(new JavaTokenMarker());
 		}
-		return scrollPane;
+		return codePane;
 	}
 
 	/**
@@ -119,7 +135,6 @@ public class GroovyGUI extends JPanel {
 	private JButton getStopButton() {
 		if (stopButton == null) {
 			stopButton = new JButton();
-			stopButton.setBounds(new Rectangle(590, 495, 71, 31));
 			stopButton.setText("Stop");
 			stopButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -138,7 +153,6 @@ public class GroovyGUI extends JPanel {
 	private JButton getSaveButton() {
 		if (saveButton == null) {
 			saveButton = new JButton();
-			saveButton.setBounds(new Rectangle(10, 495, 76, 31));
 			saveButton.setText("Save");
 			saveButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -181,7 +195,6 @@ public class GroovyGUI extends JPanel {
 	private JButton getLoadButton() {
 		if (loadButton == null) {
 			loadButton = new JButton();
-			loadButton.setBounds(new Rectangle(110, 495, 71, 31));
 			loadButton.setText("Load");
 			loadButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -222,6 +235,7 @@ public class GroovyGUI extends JPanel {
 				e.printStackTrace();
 			}
 			this.codePane.setText(code);
+			this.codePane.scrollTo(0, 0);
 		}
 	}
 
@@ -233,7 +247,6 @@ public class GroovyGUI extends JPanel {
     private JButton getLogButton() {
         if (logButton == null) {
             logButton = new JButton();
-            logButton.setBounds(new Rectangle(275, 495, 126, 31));
             logButton.setText("Log Window");
             logButton.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -265,5 +278,4 @@ public class GroovyGUI extends JPanel {
         }
         return logButton;
     }
-
-}  //  @jve:decl-index=0:visual-constraint="10,10"
+}  //  @jve:decl-index=0:visual-constraint="89,40"

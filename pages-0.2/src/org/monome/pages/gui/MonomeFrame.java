@@ -13,6 +13,7 @@ import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.pages.Page;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
@@ -79,7 +80,7 @@ public class MonomeFrame extends JInternalFrame {
 	public JPanel getJContentPane() {
 		if (jContentPane == null) {
 			jContentPane = new JPanel();
-			jContentPane.setLayout(null);
+			jContentPane.setLayout(new BorderLayout());
 		}
 		return jContentPane;
 	}
@@ -307,7 +308,7 @@ public class MonomeFrame extends JInternalFrame {
 		}
 		JPanel gui = page.getPanel();
 		currentPanel = gui;
-		getJContentPane().add(gui);
+		getJContentPane().add(gui, BorderLayout.CENTER);
 		Dimension guiSize = gui.getSize();
 		guiSize.height += 50;
 		guiSize.width += 10;

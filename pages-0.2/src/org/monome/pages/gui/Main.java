@@ -127,7 +127,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.2a4 starting up\n");
+		logger.error("Pages 0.2.2a6 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -421,6 +421,12 @@ public class Main extends JFrame {
 		Configuration configuration = new Configuration("Loading");
 		ConfigurationFactory.setConfiguration(configuration);
 
+		if (!configuration.readConfigurationFile(file)) {
+		    ConfigurationFactory.setConfiguration(null);
+		    setConfigurationFile(null);
+		    return;
+		}
+		
 		getMidiMenu().setEnabled(true);
 		getNewMonomeItem().setEnabled(true);
 		getConfigurationMenu().setEnabled(true);

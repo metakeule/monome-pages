@@ -8,6 +8,7 @@ import javax.swing.JScrollPane;
 import java.awt.Dimension;
 import javax.swing.JTextArea;
 import java.awt.Rectangle;
+import java.awt.FlowLayout;
 
 public class GroovyErrorConsole extends JInternalFrame {
 
@@ -17,7 +18,7 @@ public class GroovyErrorConsole extends JInternalFrame {
     private static final long serialVersionUID = 1L;
     private JPanel jContentPane = null;
     private JTextArea logWindow = null;
-    private JScrollPane scrollPane;
+    public JScrollPane scrollPane;
 
     /**
      * This is the xxx default constructor
@@ -35,6 +36,7 @@ public class GroovyErrorConsole extends JInternalFrame {
     private void initialize() {
         this.setSize(623, 404);
         this.setContentPane(getJContentPane());
+        this.setTitle("Log Window");
     }
 
     /**
@@ -45,8 +47,8 @@ public class GroovyErrorConsole extends JInternalFrame {
     private JPanel getJContentPane() {
         if (jContentPane == null) {
             jContentPane = new JPanel();
-            jContentPane.setLayout(null);
-            jContentPane.add(getLogWindow(), null);
+            jContentPane.setLayout(new BorderLayout());
+            jContentPane.add(getLogWindow(), BorderLayout.CENTER);
         }
         return jContentPane;
     }
@@ -61,13 +63,22 @@ public class GroovyErrorConsole extends JInternalFrame {
             logWindow = new JTextArea();
             logWindow.setBounds(new Rectangle(5, 0, 606, 366));
             scrollPane = new JScrollPane(logWindow);
-            scrollPane.setBounds(new Rectangle(5, 0, 606, 366));
         }
         return scrollPane;
     }
     
     public void setErrorText(StringBuffer text) {
         logWindow.setText(text.toString());
+    }
+    
+    public void appendErrorText(String message) {
+        logWindow.append(message);
+        scrollToBottom();
+    }
+
+    public void scrollToBottom() {
+        System.out.println("scrollpane height is " + scrollPane.getHeight());
+        logWindow.setCaretPosition(logWindow.getText().length());
     }
 
 }  //  @jve:decl-index=0:visual-constraint="10,10"
