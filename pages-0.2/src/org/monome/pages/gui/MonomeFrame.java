@@ -310,8 +310,9 @@ public class MonomeFrame extends JInternalFrame {
 		currentPanel = gui;
 		getJContentPane().add(gui, BorderLayout.CENTER);
 		Dimension guiSize = gui.getSize();
-		guiSize.height += 50;
-		guiSize.width += 10;
+		guiSize.height += 60;
+		guiSize.width += 16;
+		System.out.println(guiSize.height + ", " + guiSize.width);
 		this.setSize(guiSize);
 		getJContentPane().validate();
 	}
