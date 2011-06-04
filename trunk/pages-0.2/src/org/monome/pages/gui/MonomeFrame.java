@@ -312,7 +312,6 @@ public class MonomeFrame extends JInternalFrame {
 		Dimension guiSize = gui.getSize();
 		guiSize.height += 60;
 		guiSize.width += 16;
-		System.out.println(guiSize.height + ", " + guiSize.width);
 		this.setSize(guiSize);
 		getJContentPane().validate();
 	}

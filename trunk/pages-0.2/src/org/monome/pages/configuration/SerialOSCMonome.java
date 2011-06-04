@@ -100,6 +100,7 @@ public class SerialOSCMonome implements OSCListener {
 					config = ConfigurationFactory.getConfiguration();
 				}
 				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+				System.out.println("creating " + x + "x" + y + " monome with prefix /" + serial);
 				config.addMonomeConfigurationSerialOSC(MonomeConfigurationFactory.getNumMonomeConfigurations(), "/" + serial, serial, x, y, true, false, midiPageChangeRules, port, hostName);
 			}
 		}

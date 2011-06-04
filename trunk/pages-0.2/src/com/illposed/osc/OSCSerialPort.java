@@ -99,9 +99,7 @@ public class OSCSerialPort implements Runnable, SerialPortEventListener {
    		portStopBits = stopBits;
    		portParity = parity;
    		portId = CommPortIdentifier.getPortIdentifier(portName);
-   		System.out.println("Found port: "+portName);
    	} catch(NoSuchPortException e) {
-   		System.out.println("port " + portName + " not found.");
    		return false;
    	}
    	

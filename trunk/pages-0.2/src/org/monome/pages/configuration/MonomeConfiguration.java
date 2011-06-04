@@ -235,6 +235,7 @@ public class MonomeConfiguration {
 			}
 			this.monomeFrame.updateShowPageMenuItems(pageNames);
 		}
+		System.out.println("MonomeConfiguration " + this.serial + ": created " + className + " page");
 		return page;
 	}
 	

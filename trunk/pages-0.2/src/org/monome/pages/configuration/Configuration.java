@@ -246,7 +246,6 @@ public class Configuration {
 	 * Binds to MonomeSerial input/output ports
 	 */
 	public void startMonomeSerialOSC() {
-		System.out.println("startMonomeSerialOSC();");
 		if (this.monomeSerialOSCPortIn == null) {
 			this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
 			if (this.monomeSerialOSCPortIn == null) {
@@ -547,17 +546,14 @@ public class Configuration {
 	 */
 	public void closeMidiDevices() {
 		for (int i=0; i < this.midiInTransmitters.size(); i++) {
-			System.out.println("Closing MIDI transmitter: " + midiInTransmitters.get(i).toString());
 			this.midiInTransmitters.get(i).close();
 		}
 		
 		for (int i=0; i < this.midiInDevices.size(); i++) {
-			System.out.println("Closing MIDI in device: " + midiInDevices.get(i).getDeviceInfo().getName());
 			this.midiInDevices.get(i).close();
 		}
 
 		for (int i=0; i < this.midiOutDevices.size(); i++) {
-			System.out.println("Closing MIDI out device: " + midiOutDevices.get(i).getDeviceInfo().getName());
 			this.midiOutDevices.get(i).close();
 		}
 	}
@@ -1053,7 +1049,6 @@ public class Configuration {
 					}
 					
 					if (serialOSCHostName == null) {
-						System.out.println("starting monome serial");
 						startMonomeSerialOSC();
 					}
 
