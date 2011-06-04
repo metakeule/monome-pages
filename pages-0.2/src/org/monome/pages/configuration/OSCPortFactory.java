@@ -37,6 +37,7 @@ public class OSCPortFactory {
 			try {
 				newPort = new OSCPortIn(portNum);
 				newPort.startListening();
+				System.out.println("OSCFactory: began listening on port " + portNum);
 				oscInPorts.put(portNum, newPort);
 				return newPort;
 			} catch (NumberFormatException e) {
