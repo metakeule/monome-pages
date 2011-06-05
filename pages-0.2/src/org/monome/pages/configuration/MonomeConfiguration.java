@@ -331,7 +331,6 @@ public class MonomeConfiguration {
 	 * @param value The type of event (1 = press, 0 = release)
 	 */
 	public synchronized void handlePress(int x, int y, int value) {
-		
 		if (monomeFrame != null) {
 			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
 			if (monomeDisplayFrame != null) {
