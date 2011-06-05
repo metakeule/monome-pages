@@ -132,7 +132,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.2a8 starting up\n");
+		logger.error("Pages 0.2.2a9 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
