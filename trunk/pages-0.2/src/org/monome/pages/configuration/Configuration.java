@@ -249,8 +249,12 @@ public class Configuration {
 		if (this.monomeSerialOSCPortIn == null) {
 			this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
 			if (this.monomeSerialOSCPortIn == null) {
+			    System.out.println("Unable to bind to port " + this.monomeSerialOSCInPortNumber);
 				JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + this.monomeSerialOSCInPortNumber + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
 				return;
+			}
+			if (this.monomeSerialOSCPortOut == null) {
+			    this.monomeSerialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(monomeHostname, this.monomeSerialOSCOutPortNumber);
 			}
 			discoverOSCListener = new DiscoverOSCListener();
 			this.monomeSerialOSCPortIn.addListener("/sys/devices", discoverOSCListener);
@@ -1048,10 +1052,6 @@ public class Configuration {
 						}
 					}
 					
-					if (serialOSCHostName == null) {
-						startMonomeSerialOSC();
-					}
-
 					// set the width of the monome
 					nl = monomeElement.getElementsByTagName("sizeX");
 					el = (Element) nl.item(0);
@@ -1255,6 +1255,9 @@ public class Configuration {
 						int quantify = Integer.parseInt(quantization);
 						monomeConfig.setQuantization(k, quantify);
 					}
+		            if (serialOSCHostName == null) {
+		                startMonomeSerialOSC();
+		            }
 				}
 			}
 			return true;
