@@ -132,7 +132,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.2a9 starting up\n");
+		logger.error("Pages 0.2.2a10 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -429,8 +429,6 @@ public class Main extends JFrame {
 		getMidiMenu().setEnabled(true);
 		getNewMonomeItem().setEnabled(true);
 		getConfigurationMenu().setEnabled(true);
-		
-		configuration.readConfigurationFile(file);
 		
 		getFrame().setTitle("Pages : " + configuration.name);
 		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {

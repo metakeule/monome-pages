@@ -901,6 +901,7 @@ public class Configuration {
 	 */
 	public boolean readConfigurationFile(File file) {
 		try {
+		    System.out.println("Reading configuration file: " + file.getAbsolutePath());
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
 			Document doc = db.parse(file);
