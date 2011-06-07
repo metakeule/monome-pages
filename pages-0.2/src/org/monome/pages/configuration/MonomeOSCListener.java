@@ -23,7 +23,7 @@ public class MonomeOSCListener implements OSCListener {
 	/**
 	 * @param monome The MonomeConfiguration that this OSCListener triggers
 	 */
-	MonomeOSCListener(MonomeConfiguration monome) {
+	public MonomeOSCListener(MonomeConfiguration monome) {
 		this.monome = monome;
 	}
 

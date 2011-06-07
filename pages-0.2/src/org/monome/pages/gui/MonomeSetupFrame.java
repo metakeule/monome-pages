@@ -3,6 +3,7 @@ package org.monome.pages.gui;
 import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
 
+import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 
