@@ -111,7 +111,7 @@ public class Configuration {
 	/**
 	 * The port number to receive OSC messages from MonomeSerial.
 	 */
-	private int monomeSerialOSCInPortNumber = 8000;
+	public int monomeSerialOSCInPortNumber = 8000;
 
 	/**
 	 * The OSCPortIn object to receive messages from MonomeSerial.
@@ -121,7 +121,7 @@ public class Configuration {
 	/**
 	 * The port number to send OSC messages to MonomeSerial. 
 	 */
-	private int monomeSerialOSCOutPortNumber = 8080;
+	public int monomeSerialOSCOutPortNumber = 8080;
 
 	/**
 	 * The OSCPortOut object to send messages to MonomeSerial.
@@ -131,7 +131,7 @@ public class Configuration {
 	/**
 	 * The hostname that MonomeSerial is bound to.
 	 */
-	private String monomeHostname = "localhost";
+	public String monomeHostname = "localhost";
 
 	/**
 	 * The OSC listener that checks for discovery events (/sys/report responses)
@@ -246,6 +246,7 @@ public class Configuration {
 	 * Binds to MonomeSerial input/output ports
 	 */
 	public void startMonomeSerialOSC() {
+	    System.out.println("Starting Monome Serial OSC");
 		if (this.monomeSerialOSCPortIn == null) {
 			this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
 			if (this.monomeSerialOSCPortIn == null) {
@@ -264,11 +265,15 @@ public class Configuration {
 			this.monomeSerialOSCPortIn.addListener("/sys/offset", discoverOSCListener);
 			this.monomeSerialOSCPortIn.addListener("/sys/serial", discoverOSCListener);
 			
+			// used when loading config
 			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
-				if (monomeConfig != null) {
+				if (monomeConfig != null && monomeConfig.oscListener == null) {
 					MonomeOSCListener oscListener = new MonomeOSCListener(monomeConfig);
+					monomeConfig.oscListener = oscListener;
 					this.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/press", oscListener);
+		            System.out.println("Added listener for " + monomeConfig.prefix + "/press on port " + this.monomeSerialOSCInPortNumber);
+					/*
 					this.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/adc", oscListener);
 					this.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/tilt", oscListener);
 			
@@ -281,6 +286,7 @@ public class Configuration {
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					*/
 
 					initMonome(monomeConfig);
 				}

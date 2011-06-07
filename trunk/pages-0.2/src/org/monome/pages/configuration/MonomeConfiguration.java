@@ -174,6 +174,8 @@ public class MonomeConfiguration {
 
 	public String serialOSCHostname;
 
+    public MonomeOSCListener oscListener;
+
 	/**
 	 * @param index the index to assign to this MonomeConfiguration
 	 * @param prefix the prefix of the monome (/40h)

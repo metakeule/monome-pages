@@ -13,7 +13,10 @@ import javax.swing.JButton;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
+import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
+import org.monome.pages.configuration.MonomeOSCListener;
+import org.monome.pages.configuration.OSCPortFactory;
 
 public class NewMonomeConfigurationFrame extends JInternalFrame {
 
@@ -148,7 +151,15 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 				
 		Configuration config = ConfigurationFactory.getConfiguration();
 		config.addMonomeConfiguration(MonomeConfigurationFactory.getNumMonomeConfigurations(), prefix, "no serial", sizeX, sizeY, true, false, midiPageChangeRules);
-		
+        if (config.monomeSerialOSCPortIn == null) {
+            config.startMonomeSerialOSC();
+        } else {
+            MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(MonomeConfigurationFactory.getNumMonomeConfigurations() - 1);
+            MonomeOSCListener oscListener = new MonomeOSCListener(monomeConfig);
+            config.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/press", oscListener);
+            System.out.println("Added listener for " + monomeConfig.prefix + "/press on port " + config.monomeSerialOSCInPortNumber);
+            monomeConfig.oscListener = oscListener;
+        }
 		this.dispose();
 	}
 
