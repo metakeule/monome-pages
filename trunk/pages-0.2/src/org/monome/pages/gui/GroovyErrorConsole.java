@@ -77,7 +77,6 @@ public class GroovyErrorConsole extends JInternalFrame {
     }
 
     public void scrollToBottom() {
-        System.out.println("scrollpane height is " + scrollPane.getHeight());
         logWindow.setCaretPosition(logWindow.getText().length());
     }
 
