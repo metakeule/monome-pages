@@ -248,8 +248,13 @@ public class MIDIKeyboardPage implements Page {
 					this.monome.led(this.myKey, y, 1, this.index);
 					
 				} else if (y == 6 && x == 7) {
-					this.monome.led(x, y, 1, this.index);
-					this.sustain = 1;
+					if (this.sustain == 0) {
+						this.monome.led(x, y, 1, this.index);
+						this.sustain = 1;
+					} else if (this.sustain == 1) {
+						this.monome.led(x, y, 0, this.index);
+						this.sustain = 0;
+					}
 					this.doSustain();
 				}				
 				if (y == 7) {
@@ -378,10 +383,11 @@ public class MIDIKeyboardPage implements Page {
 			}
 		} else {
 			if (y == 6 && x == 7) {
+				// converted to toggle
 				//turn off sustain
-				this.monome.led(x, y, 0, this.index);
-				this.sustain = 0;
-				this.doSustain();
+				//this.monome.led(x, y, 0, this.index);
+				//this.sustain = 0;
+				//this.doSustain();
 			} else if (y == 7 && x == 0) {
 				transpose1Hold = false;				
 			} else if (y == 7 && x == 1) {
