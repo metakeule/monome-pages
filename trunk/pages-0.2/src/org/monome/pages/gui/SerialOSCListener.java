@@ -44,7 +44,8 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 
 	public void serviceFound(DNSSDService browser, int flags, int index, String serviceName, String regType, String domain) {
 		try {
-			DNSSD.resolve(0, DNSSD.ALL_INTERFACES, serviceName, regType, domain, this);
+			DNSSDService service = DNSSD.resolve(0, DNSSD.ALL_INTERFACES, serviceName, regType, domain, this);
+			Main.addService(service);
 		} catch (DNSSDException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

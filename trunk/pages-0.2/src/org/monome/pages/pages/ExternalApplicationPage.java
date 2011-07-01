@@ -152,7 +152,8 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			addListeners();
 			if (Main.zeroconfLibrary == Main.LIBRARY_APPLE) {			
     			try {
-    				DNSSD.register("extapp-" + this.inPort + "-" + monome.serial, "_monome-osc._udp", this.inPort, this);
+    				DNSSDRegistration reg = DNSSD.register("extapp-" + this.inPort + "-" + monome.serial, "_monome-osc._udp", this.inPort, this);
+    				Main.addRegistration(reg);
     			} catch (DNSSDException e) {
     				e.printStackTrace();
     			}

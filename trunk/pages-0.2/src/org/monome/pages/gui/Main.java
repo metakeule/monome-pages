@@ -59,6 +59,8 @@ import org.monome.pages.configuration.SerialOSCMonome;
 
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
+import com.apple.dnssd.DNSSDRegistration;
+import com.apple.dnssd.DNSSDService;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
@@ -68,6 +70,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Main extends JFrame {
@@ -114,7 +117,9 @@ public class Main extends JFrame {
 	
 	public static final int LIBRARY_APPLE = 0;
 	public static final int LIBRARY_JMDNS = 1;
-	public static int zeroconfLibrary = LIBRARY_APPLE; 
+	public static int zeroconfLibrary = LIBRARY_APPLE;
+	static ArrayList<DNSSDRegistration> dnssdRegistrations = new ArrayList<DNSSDRegistration>();
+    static ArrayList<DNSSDService> dnssdServices = new ArrayList<DNSSDService>();
 			
 	/**
 	 * And away we go!
@@ -132,7 +137,7 @@ public class Main extends JFrame {
 			PropertyConfigurator.configure("log4j.properties");
 			StdOutErrLog.tieSystemOutAndErrToLog();
 		}
-		logger.error("Pages 0.2.2a11 starting up\n");
+		logger.error("Pages 0.2.2a12 starting up\n");
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -210,7 +215,8 @@ public class Main extends JFrame {
             */
 	    
 		try {
-			DNSSD.browse("_monome-osc._udp", serialOSCListener);
+			DNSSDService service = DNSSD.browse("_monome-osc._udp", serialOSCListener);
+			addService(service);
 		} catch (DNSSDException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -416,6 +422,7 @@ public class Main extends JFrame {
 	}
 	
 	private void actionOpen(File file) {
+	    actionClose();
 		setConfigurationFile(file);
 		Configuration configuration = new Configuration("Loading");
 		ConfigurationFactory.setConfiguration(configuration);
@@ -503,6 +510,8 @@ public class Main extends JFrame {
 	 */
 	public void actionClose() {
 		Configuration configuration = ConfigurationFactory.getConfiguration();
+        OSCPortFactory.getInstance().destroy();
+        removeRegistrations();
 		if (configuration != null) {
 			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
@@ -1038,4 +1047,21 @@ public class Main extends JFrame {
 	private void setConfigurationFile(File cf) {
 		configurationFile = cf;
 	}
+
+    public static void addRegistration(DNSSDRegistration reg) {
+        dnssdRegistrations.add(reg);
+    }
+    
+    public static void addService(DNSSDService service) {
+        dnssdServices.add(service);
+    }
+    
+    public static void removeRegistrations() {
+        for (DNSSDRegistration reg : dnssdRegistrations) {
+            reg.stop();
+        }
+        for (DNSSDService service : dnssdServices) {
+            service.stop();
+        }
+    }
 }
