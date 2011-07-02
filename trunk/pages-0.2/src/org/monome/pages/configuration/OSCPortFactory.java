@@ -4,6 +4,7 @@ import java.net.BindException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import com.illposed.osc.OSCPortIn;
@@ -85,7 +86,13 @@ public class OSCPortFactory {
 
     public void destroy() {
         System.out.println("OSCPortFactory::destroy()");
-        for (Integer port : oscInPorts.keySet()) {
+        ArrayList<Integer> portsToDestroy = new ArrayList<Integer>();
+        synchronized(oscInPorts) {
+            for (Integer port : oscInPorts.keySet()) {
+                portsToDestroy.add(port);
+            }
+        }
+        for (Integer port : portsToDestroy) {
             destroyOSCPortIn(port);
         }
     }

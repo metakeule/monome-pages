@@ -1163,4 +1163,12 @@ public class MonomeConfiguration {
 			}
 		}	
 	}
+
+    public void reload() {
+        ledState = new int[32][32];
+        pageState = new int[255][32][32];
+        for (Page page : pages) {
+            page.redrawMonome();
+        }
+    }
 }

@@ -68,6 +68,7 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
 			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
 				Main.mainFrame.startMonome(monome);
+				monomeConfig.reload();
 			}
 		}		
 	}
