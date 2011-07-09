@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -34,6 +35,7 @@ public class MIDIGeneratorPage implements Page {
 	public int maxRadius;
 	public int midiChannel;
 	private int[][] noteMap = new int[32][32];
+    private Dimension origGuiDimension;
 	
 	public MIDIGeneratorPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
@@ -50,7 +52,12 @@ public class MIDIGeneratorPage implements Page {
 		midiChannel = 1;
 		generateNoteMap();
 		gui = new MIDIGeneratorGUI(this);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 	
 	public void generateNoteMap() {
 		int nextNote = startNote;

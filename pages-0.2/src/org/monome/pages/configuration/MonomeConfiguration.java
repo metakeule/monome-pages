@@ -382,19 +382,19 @@ public class MonomeConfiguration {
 				}
 				return;
 			}
-			int next_page = x + ((this.sizeY - y - 1) * this.sizeX);
+			int nextPage = x + ((this.sizeY - y - 1) * this.sizeX);
 			int patternNum = x;
 			int numPages = this.pages.size();
 			if (numPages > this.sizeX - 1) {
 				numPages++;
 			}
 			if (value == 1) {
-    			if (numPages > next_page && next_page < (this.sizeX * this.sizeY) / 2) {
+    			if (numPages > nextPage && nextPage < (this.sizeX * this.sizeY) / 2) {
     				// offset back by one because of the page change button
-    				if (next_page > this.sizeX - 1) {
-    					next_page--;
+    				if (nextPage > this.sizeX - 1) {
+    					nextPage--;
     				}
-    				this.curPage = next_page;
+    				this.curPage = nextPage;
     				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
     			} else if (y == 0 && value == 1) {
     				this.patternBanks.get(this.curPage).handlePress(patternNum);

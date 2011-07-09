@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -198,6 +199,8 @@ public class MIDISequencerPolyPage implements Page {
 	 */
 	private String pageName = "MIDI Sequencer Poly";
 
+    private Dimension origGuiDimension;
+
 	/**
 	 * @param monome
 	 *            The MonomeConfiguration that this page belongs to
@@ -283,7 +286,12 @@ public class MIDISequencerPolyPage implements Page {
 		this.globalMLRSize1[1] = 2;
 		this.globalMLRSize1[2] = 4;
 
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	private void handleBottomRow(int x, int y) {
 		if (x < 2) {

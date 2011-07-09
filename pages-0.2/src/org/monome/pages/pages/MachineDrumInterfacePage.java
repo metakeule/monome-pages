@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -71,6 +72,8 @@ public class MachineDrumInterfacePage implements Page {
 	
 	private ArrayList<LoadedModule> loadedModules;
 
+    private Dimension origGuiDimension;
+
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index The index of this page (the page number)
@@ -86,7 +89,12 @@ public class MachineDrumInterfacePage implements Page {
 		this.loadedModules.add(new LoadedModule(new MDMKitEditor(this, 2), 0, 8));
 		this.loadedModules.add(new LoadedModule(new MDMLFOManager(this, 3), 8, 8));
 		gui = new MachineDrumInterfaceGUI(this);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()

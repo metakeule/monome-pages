@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -77,6 +78,8 @@ public class MIDIFadersPage implements Page {
 	private String pageName = "MIDI Faders";
 	
 	private boolean horizontal;
+
+    private Dimension origGuiDimension;
 	
 	/**
 	 * Constructor.
@@ -93,7 +96,12 @@ public class MIDIFadersPage implements Page {
 		setCCOffset("0");
 		setMidiChannel("1");
 		setHorizontal(false);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 	
 	public void setHorizontal(boolean b) {
 		this.horizontal = b;

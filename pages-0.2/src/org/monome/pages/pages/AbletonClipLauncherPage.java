@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -56,6 +57,8 @@ public class AbletonClipLauncherPage implements Page {
 	 */
 	private String pageName = "Ableton Clip Launcher";
 
+    private Dimension origGuiDimension;
+
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index This page's index number
@@ -64,7 +67,12 @@ public class AbletonClipLauncherPage implements Page {
 		this.monome = monome;
 		this.index = index;
 		gui = new AbletonClipLauncherGUI(this);
+		origGuiDimension = gui.getSize();
 	}
+
+	public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()
@@ -614,4 +622,5 @@ public class AbletonClipLauncherPage implements Page {
 	public boolean redrawOnAbletonEvent() {
 		return true;
 	}
+
 }

@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -93,6 +94,8 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	private ExternalApplicationGUI gui;
 	
 	private HashMap<String, Integer> listenersAdded;
+
+    private Dimension origGuiDimension;
 		
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
@@ -103,7 +106,12 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		this.index = index;
 		listenersAdded = new HashMap<String, Integer>();
 		gui = new ExternalApplicationGUI(this);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	/**
 	 * Stops OSC communication with the external application

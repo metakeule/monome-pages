@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -31,6 +32,8 @@ public class QuadrantsPage implements Page {
 	QuadrantsGUI256 gui;
 	
 	public ArrayList<QuadrantConfiguration> quadrantConfigurations;
+
+    private Dimension origGuiDimension;
 	
 	public QuadrantsPage(MonomeConfiguration monome, int index) {
 		this.monome = monome;
@@ -97,7 +100,12 @@ public class QuadrantsPage implements Page {
 			quadConf.setPicture("<html>[#][#]<br/>[#][#]</html>");
 			quadrantConfigurations.add(quadConf);
 		}
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	public void configure(Element pageElement) {
 		this.setName(this.monome.readConfigValue(pageElement, "pageName"));

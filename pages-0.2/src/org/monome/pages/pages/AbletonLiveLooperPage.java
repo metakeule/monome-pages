@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -61,6 +62,8 @@ public class AbletonLiveLooperPage implements Page {
 	 * The name of the page 
 	 */
 	private String pageName = "Ableton Live Looper";
+
+    private Dimension origGuiDimension;
 	
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -70,7 +73,12 @@ public class AbletonLiveLooperPage implements Page {
 		this.monome = monome;
 		this.index = index;
 		gui = new AbletonLiveLooperGUI(this);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()

@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -93,6 +94,8 @@ public class MIDITriggersPage implements Page {
 	 * The name of the page 
 	 */
 	private String pageName = "MIDI Triggers";
+
+    private Dimension origGuiDimension;
 	
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -111,7 +114,12 @@ public class MIDITriggersPage implements Page {
 			}
 		}
 		gui.onAndOffCB.setSelected(true);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()

@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -47,6 +48,8 @@ public class GroovyPage implements Page {
 	private GroovyPageInterface theApp;
 	
 	public GroovyErrorLog errorLog;
+
+    private Dimension origGuiDimension;
 	
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
@@ -59,7 +62,12 @@ public class GroovyPage implements Page {
 		gcl = new GroovyClassLoader();
 		defaultText();
 		errorLog = new GroovyErrorLog(gui);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	public void handlePress(int x, int y, int value) {
 		if (theApp != null) {
