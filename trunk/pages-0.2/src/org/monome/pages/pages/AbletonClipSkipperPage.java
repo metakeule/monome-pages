@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -55,6 +56,8 @@ public class AbletonClipSkipperPage implements Page {
 	 * The name of the page 
 	 */
 	private String pageName = "Ableton Clip Skipper";
+
+    private Dimension origGuiDimension;
 			
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
@@ -64,7 +67,12 @@ public class AbletonClipSkipperPage implements Page {
 		this.monome = monome;
 		this.index = index;
 		this.gui = new AbletonClipSkipperGUI(this);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()

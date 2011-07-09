@@ -1,5 +1,7 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
+
 import javax.sound.midi.MidiMessage;
 import javax.swing.JPanel;
 
@@ -112,4 +114,6 @@ public interface Page {
 	public int getIndex();
 	
 	public boolean redrawOnAbletonEvent();
+	
+	public Dimension getOrigGuiDimension();
 }

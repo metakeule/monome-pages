@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -146,6 +147,8 @@ public class MIDISequencerPage implements Page {
 
 	private int velocityMode;
 
+    private Dimension origGuiDimension;
+
 	/**
 	 * @param monome The MonomeConfiguration that this page belongs to
 	 * @param index The index of this page (the page number)
@@ -174,7 +177,12 @@ public class MIDISequencerPage implements Page {
 		this.noteNumbers[14] = this.noteToMidiNumber("C-3");
 		this.noteNumbers[15] = this.noteToMidiNumber("D-3");
 		this.setQuantization("6");
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#handlePress(int, int, int)

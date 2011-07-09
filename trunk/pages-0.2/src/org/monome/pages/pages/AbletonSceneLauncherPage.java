@@ -1,5 +1,6 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -57,6 +58,8 @@ public class AbletonSceneLauncherPage implements Page {
 	 */
 	private String pageName = "Ableton Scene Launcher";
 
+    private Dimension origGuiDimension;
+
 	/**
 	 * @param monome The MonomeConfiguration this page belongs to
 	 * @param index This page's index number
@@ -65,7 +68,12 @@ public class AbletonSceneLauncherPage implements Page {
 		this.monome = monome;
 		this.index = index;
 		gui = new AbletonSceneLauncherGUI(this);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#getName()

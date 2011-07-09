@@ -1,5 +1,7 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
@@ -38,6 +40,8 @@ public class MIDIPadsPage implements Page {
 	int velocityFactor;
 	int delayTime;
 	int midiChannel;
+
+    private Dimension origGuiDimension;
 	
 	public MIDIPadsPage(MonomeConfiguration monome, int index) {
 		this.index = index;
@@ -47,7 +51,12 @@ public class MIDIPadsPage implements Page {
 		setVelocityFactor(32);
 		setDelayTime(5);
 		setMidiChannel(0);
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 	
 	public void setMidiStartNote(int midiStartNote) {
 		this.midiStartNote = midiStartNote;

@@ -1,5 +1,7 @@
 package org.monome.pages.pages;
 
+import java.awt.Dimension;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
@@ -149,6 +151,8 @@ public class MIDIKeyboardPage implements Page {
 	 * The name of the page 
 	 */
 	private String pageName = "MIDI Keyboard";
+
+    private Dimension origGuiDimension;
 	
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
@@ -165,7 +169,12 @@ public class MIDIKeyboardPage implements Page {
 		if (this.monome.sizeX == 8)
 			this.flashOn[4][0] = true;
 		this.gui.resetScales();
-	}
+        origGuiDimension = gui.getSize();
+    }
+
+    public Dimension getOrigGuiDimension() {
+        return origGuiDimension;
+    }
 	
 	private final class Flasher implements Runnable {
 		// TODO properly kill this thread when monome configuration is removed
