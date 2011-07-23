@@ -374,6 +374,9 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("led_col")) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
+				if ((i - 1) * 8 >= monome.sizeY) {
+					break;
+				}
 				if (args[i] instanceof Integer) {
 					intArgs.add((Integer) args[i]);
 				}
@@ -387,6 +390,9 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("/grid/led/col")) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
+				if ((i - 2) * 8 >= monome.sizeY) {
+					break;
+				}
 				if (i == 1) {
 					continue;
 				}
@@ -404,6 +410,9 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("led_row")) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=0; i < args.length; i++) {
+				if ((i - 1) * 8 >= monome.sizeX) {
+					break;
+				}
 				if (args[i] instanceof Integer) {
 					intArgs.add((Integer) args[i]);
 				}
@@ -417,6 +426,9 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		if (msg.getAddress().contains("/grid/led/row")) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
 			for (int i=1; i < args.length; i++) {
+				if ((i - 2) * 8 >= monome.sizeX) {
+					break;
+				}
 				if (args[i] instanceof Integer) {
 					intArgs.add((Integer) args[i]);
 				}
