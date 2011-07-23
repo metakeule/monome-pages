@@ -41,6 +41,7 @@ public class QuadrantsPage implements Page {
 		this.quadrantConfigurations = new ArrayList<QuadrantConfiguration>();
 		this.createQuadrantConfigurations();
 		gui = new QuadrantsGUI256(this, 0);
+        origGuiDimension = gui.getSize();
 	}
 	
 	private void createQuadrantConfigurations() {
@@ -100,7 +101,6 @@ public class QuadrantsPage implements Page {
 			quadConf.setPicture("<html>[#][#]<br/>[#][#]</html>");
 			quadrantConfigurations.add(quadConf);
 		}
-        origGuiDimension = gui.getSize();
     }
 
     public Dimension getOrigGuiDimension() {
