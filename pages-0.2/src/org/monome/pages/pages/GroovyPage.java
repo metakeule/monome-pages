@@ -318,4 +318,9 @@ public class GroovyPage implements Page {
 		theScript = null;
 		theApp = null;
 	}
+
+	public void onBlur() {
+		// TODO Auto-generated method stub
+		
+	}
 }

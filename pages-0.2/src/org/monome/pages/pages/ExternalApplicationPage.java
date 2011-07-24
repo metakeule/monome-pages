@@ -566,4 +566,9 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			String serviceName, String regType, String domain) {
 		System.out.println("Service registered: " + serviceName + " / " + regType + " / " + domain);
 	}
+
+	public void onBlur() {
+		// TODO Auto-generated method stub
+		
+	}
 }

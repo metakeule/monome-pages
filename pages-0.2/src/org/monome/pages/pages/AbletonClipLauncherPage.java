@@ -623,4 +623,9 @@ public class AbletonClipLauncherPage implements Page {
 		return true;
 	}
 
+	public void onBlur() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

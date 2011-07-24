@@ -351,9 +351,7 @@ public class MIDIKeyboardPage implements Page {
 					}
 				}
 				if (!(y == 6 && x == 7) && !(y == 7 && x < 2) && !this.functionLock) {
-					
 					this.stopNotes();
-					retriggerNotes();
 				}
 					
 				// select the midi channel
@@ -424,6 +422,7 @@ public class MIDIKeyboardPage implements Page {
 	
 	//allows for playing notes by pressing different key/accidental/scale buttons
 	private void retriggerNotes() {
+		System.out.println("retriggerNotes");
 		for (int i=0; i<128; i++) {
 			this.notesOn[this.midiChannel][i] = 0;
 		}
@@ -1120,5 +1119,9 @@ public class MIDIKeyboardPage implements Page {
 	
 	public boolean redrawOnAbletonEvent() {
 		return false;
+	}
+
+	public void onBlur() {
+		stopNotes();
 	}
 }

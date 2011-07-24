@@ -672,4 +672,9 @@ public class AbletonSceneLauncherPage implements Page {
 	public boolean redrawOnAbletonEvent() {
 		return true;
 	}
+
+	public void onBlur() {
+		// TODO Auto-generated method stub
+		
+	}
 }
