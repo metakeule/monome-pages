@@ -1277,4 +1277,9 @@ public class MIDISequencerPage implements Page {
 	public boolean redrawOnAbletonEvent() {
 		return false;
 	}
+
+	public void onBlur() {
+		// TODO Auto-generated method stub
+		
+	}
 }

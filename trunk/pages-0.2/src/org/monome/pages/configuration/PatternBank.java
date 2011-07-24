@@ -99,6 +99,10 @@ public class PatternBank {
 	}
 	
 	public void setPatternLength(int bars) {
+		for (int i=0; i < this.numPatterns; i++) {
+			this.patternPosition[i] = 0;
+			this.recordPosition[i] = 0;
+		}
 		this.patternLength = 96 * bars;
 	}
 	

@@ -116,4 +116,6 @@ public interface Page {
 	public boolean redrawOnAbletonEvent();
 	
 	public Dimension getOrigGuiDimension();
+	
+	public void onBlur();
 }

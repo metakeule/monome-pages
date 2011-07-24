@@ -397,6 +397,7 @@ public class MonomeConfiguration {
     				this.curPage = nextPage;
     				this.switchPage(this.pages.get(this.curPage), this.curPage, true);
     			} else if (y == 0 && value == 1) {
+    				this.pages.get(curPage).onBlur();
     				this.patternBanks.get(this.curPage).handlePress(patternNum);
     			}
     			this.pageChanged = true;
@@ -413,6 +414,7 @@ public class MonomeConfiguration {
 			}
 			this.clear(0, -1);
 			this.drawPatternState();
+			this.pages.get(curPage).onBlur();
 			return;
 		}
 		

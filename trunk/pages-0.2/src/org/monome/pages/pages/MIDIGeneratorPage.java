@@ -336,4 +336,9 @@ public class MIDIGeneratorPage implements Page {
 	public boolean redrawOnAbletonEvent() {
 		return false;
 	}
+
+	public void onBlur() {
+		// TODO Auto-generated method stub
+		
+	}
 }

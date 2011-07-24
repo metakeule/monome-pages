@@ -1188,4 +1188,9 @@ public class MachineDrumInterfacePage implements Page {
 		
 	}
 
+	public void onBlur() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
