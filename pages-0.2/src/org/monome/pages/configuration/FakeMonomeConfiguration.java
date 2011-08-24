@@ -46,10 +46,11 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 		int[] quad = quadConf.getQuad(quadNum);
 		for (int y = quad[2]; y < quad[3]; y++) {
 			ArrayList<Integer> intArgs = new ArrayList<Integer>();
-			for (int numArgs = 0; numArgs < (quad[0] - quad[1]) / 8; numArgs++) {
+			intArgs.add(y);
+			for (int numArgs = 0; numArgs < (quad[1] - quad[0]) / 8; numArgs++) {
 				intArgs.add(state * 255);
 			}
-			this.led_row(intArgs, y);
+			this.led_row(intArgs, index);
 		}
 	}
 
@@ -109,6 +110,14 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 		for (int i = 1; i < numArgs + 1; i++) {
 			newIntArgs.add(intArgs.get(i));
 		}
+		int addOns = (parent.sizeY - quad[3]) / 8;
+		for (int i = 0; i < addOns; i++) {
+			int colState = 0;
+			for (int y = quad[3]; y < parent.sizeY; y++) {
+				colState += (parent.pageState[pageIndex][y][col + quad[0]] << (y - quad[3]));
+			}
+			newIntArgs.add(new Integer(colState));
+		}
 		parent.led_col(newIntArgs, pageIndex);
 	}
 
@@ -126,12 +135,20 @@ public class FakeMonomeConfiguration extends MonomeConfiguration {
 		for (int i = 0; i < shifts; i++) {
 			int rowState = 0;
 			for (int x = 0; x < 8; x++) {
-				rowState += (parent.pageState[pageIndex][x][row] << x);
+				rowState += (parent.pageState[pageIndex][x][row + quad[2]] << x);
 			}
 			newIntArgs.add(new Integer(rowState));
 		}
 		for (int i = 1; i < numArgs + 1; i++) {
 			newIntArgs.add(intArgs.get(i));
+		}
+		int addOns = (parent.sizeX - quad[1]) / 8;
+		for (int i = 0; i < addOns; i++) {
+			int rowState = 0;
+			for (int x = quad[1]; x < parent.sizeX; x++) {
+				rowState += (parent.pageState[pageIndex][x][row + quad[2]] << (x - quad[1]));
+			}
+			newIntArgs.add(new Integer(rowState));
 		}
 		parent.led_row(newIntArgs, pageIndex);
 	}
