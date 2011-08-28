@@ -1,6 +1,8 @@
 package org.monome.pages.configuration;
 
-public class MIDIPageChangeRule {
+import java.io.Serializable;
+
+public class MIDIPageChangeRule implements Serializable {
 	
 	private int note;
 	private int channel;

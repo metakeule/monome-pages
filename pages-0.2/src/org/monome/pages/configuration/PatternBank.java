@@ -1,8 +1,9 @@
 package org.monome.pages.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PatternBank {
+public class PatternBank implements Serializable {
 	
 	ArrayList<Pattern> patterns = new ArrayList<Pattern>();
 	private int[] patternState;

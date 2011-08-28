@@ -25,12 +25,14 @@ package org.monome.pages.configuration;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
@@ -76,7 +78,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak
  *
  */
-public class Configuration {
+public class Configuration implements Serializable {
 
 	/**
 	 * The name of the configuration.
@@ -116,7 +118,7 @@ public class Configuration {
 	/**
 	 * The OSCPortIn object to receive messages from MonomeSerial.
 	 */
-	public OSCPortIn monomeSerialOSCPortIn;
+	public transient OSCPortIn monomeSerialOSCPortIn;
 
 	/**
 	 * The port number to send OSC messages to MonomeSerial. 
@@ -126,7 +128,7 @@ public class Configuration {
 	/**
 	 * The OSCPortOut object to send messages to MonomeSerial.
 	 */
-	public OSCPortOut monomeSerialOSCPortOut;
+	public transient OSCPortOut monomeSerialOSCPortOut;
 
 	/**
 	 * The hostname that MonomeSerial is bound to.
@@ -136,7 +138,7 @@ public class Configuration {
 	/**
 	 * The OSC listener that checks for discovery events (/sys/report responses)
 	 */
-	private DiscoverOSCListener discoverOSCListener = null;
+	private transient DiscoverOSCListener discoverOSCListener = null;
 	
 	/**
 	 * The port number to receive OSC messages from Ableton.
@@ -146,7 +148,7 @@ public class Configuration {
 	/**
 	 * The OSCPortIn object to receive OSC messages from Ableton. 
 	 */
-	private OSCPortIn abletonOSCPortIn;
+	private transient OSCPortIn abletonOSCPortIn;
 
 	/**
 	 * The port number to send OSC messages to Ableton. 
@@ -156,13 +158,13 @@ public class Configuration {
 	/**
 	 * The OSCPortOut object to send OSC messages to Ableton.
 	 */
-	private OSCPortOut abletonOSCPortOut;
+	private transient OSCPortOut abletonOSCPortOut;
 
 	/**
 	 * Listens for /live/track/info and /live/tempo responses from Ableton and
 	 * updates this object.  Implements the OSCListener interface.
 	 */
-	private AbletonOSCListener abletonOSCListener;
+	private transient AbletonOSCListener abletonOSCListener;
 
 	/**
 	 * The hostname that Ableton is bound to.
@@ -177,21 +179,23 @@ public class Configuration {
 	/**
 	 * The current state of Ableton is stored in this object.
 	 */
-	public AbletonState abletonState;
+	public transient AbletonState abletonState;
 	
 	/**
 	 * True if Ableton OSC communication has been initialized.
 	 */
-	private boolean abletonInitialized = false;
+	private transient boolean abletonInitialized = false;
 
 	/**
 	 * True if we should not send any 'View Track' commands to Ableton.
 	 */
 	private boolean abletonIgnoreViewTrack = true;
 	
-	private RedrawAbletonThread redrawAbletonThread;
+	private transient RedrawAbletonThread redrawAbletonThread;
 
-	private OSCPortIn serialOSCPortIn;
+	private transient OSCPortIn serialOSCPortIn;
+	
+	private HashMap<Integer, MonomeConfiguration> monomeConfigurations = null;
 
 	/**
 	 * @param name The name of the configuration
@@ -199,6 +203,14 @@ public class Configuration {
 	public Configuration(String name) {
 		this.name = name;
 		this.abletonState = new AbletonState();
+	}
+	
+	public HashMap<Integer, MonomeConfiguration> getMonomeConfigurations() {
+		return monomeConfigurations;
+	}
+	
+	public void setMonomeConfigurations(HashMap<Integer, MonomeConfiguration> monomeConfigurations) {
+		this.monomeConfigurations = monomeConfigurations;
 	}
 
 	/**

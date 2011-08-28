@@ -4,12 +4,15 @@ import javax.swing.JPanel;
 
 import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.pages.AbletonClipLauncherPage;
+
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 
-public class AbletonClipLauncherGUI extends JPanel {
+public class AbletonClipLauncherGUI extends JPanel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private AbletonClipLauncherPage page = null;
