@@ -3,6 +3,7 @@
 package org.monome.pages.ableton;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 

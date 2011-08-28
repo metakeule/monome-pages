@@ -17,8 +17,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
+import java.io.Serializable;
 
-public class MonomeFrame extends JInternalFrame {
+public class MonomeFrame extends JInternalFrame implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;

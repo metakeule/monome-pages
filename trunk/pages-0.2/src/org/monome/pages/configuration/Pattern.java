@@ -1,8 +1,9 @@
 package org.monome.pages.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Pattern {
+public class Pattern implements Serializable {
 	
 	ArrayList<Press> presses = new ArrayList<Press>();
 	ArrayList<Press> queuedPresses = new ArrayList<Press>();

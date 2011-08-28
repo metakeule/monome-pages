@@ -66,8 +66,13 @@ import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -88,7 +93,7 @@ public class Main extends JFrame {
 	private JMenu fileMenu = null;
 	private JMenuItem newItem = null;
 	private JMenuItem closeItem = null;
-	private JMenuItem openItem = null;
+	private JMenuItem openOldItem = null;
 	private JMenuItem saveItem = null;
 	private JMenuItem saveAsItem = null;
 	private JMenuItem exitItem = null;
@@ -342,6 +347,7 @@ public class Main extends JFrame {
 			fileMenu.setText("File");
 			fileMenu.add(getNewItem());
 			fileMenu.add(getOpenItem());
+			fileMenu.add(getOpenOldItem());
 			fileMenu.addSeparator();
 			fileMenu.add(getCloseItem());
 			fileMenu.addSeparator();
@@ -401,12 +407,12 @@ public class Main extends JFrame {
 	 * @return javax.swing.JMenuItem	
 	 */
 	private JMenuItem getOpenItem() {
-		if (openItem == null) {
-			openItem = new JMenuItem();
-			openItem.setText("Open Configuration...");
-			openItem.setMnemonic(KeyEvent.VK_O);
-			openItem.getAccessibleContext().setAccessibleDescription("Open an existing configuration file");
-			openItem.addActionListener(new java.awt.event.ActionListener() {
+		if (openOldItem == null) {
+			openOldItem = new JMenuItem();
+			openOldItem.setText("Open Configuration...");
+			openOldItem.setMnemonic(KeyEvent.VK_O);
+			openOldItem.getAccessibleContext().setAccessibleDescription("Open an existing configuration file");
+			openOldItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					JFileChooser fc = new JFileChooser();
 					int returnVal = fc.showOpenDialog(getFrame());
@@ -418,10 +424,60 @@ public class Main extends JFrame {
 				}
 			});
 		}
-		return openItem;
+		return openOldItem;
 	}
 	
 	private void actionOpen(File file) {
+		Configuration configuration;
+		try {
+			FileInputStream fis = new FileInputStream(file.getAbsolutePath());
+			ObjectInputStream in = new ObjectInputStream(fis);
+			configuration = (Configuration) in.readObject();
+			ConfigurationFactory.setConfiguration(configuration);
+			in.close();
+			getMidiMenu().setEnabled(true);
+			getNewMonomeItem().setEnabled(true);
+			getConfigurationMenu().setEnabled(true);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * This method initializes openItem	
+	 * 	
+	 * @return javax.swing.JMenuItem	
+	 */
+	private JMenuItem getOpenOldItem() {
+		if (openOldItem == null) {
+			openOldItem = new JMenuItem();
+			openOldItem.setText("Open Old Configuration...");
+			openOldItem.setMnemonic(KeyEvent.VK_O);
+			openOldItem.getAccessibleContext().setAccessibleDescription("Open an existing configuration file");
+			openOldItem.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					JFileChooser fc = new JFileChooser();
+					int returnVal = fc.showOpenDialog(getFrame());
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						actionClose();
+						File file = fc.getSelectedFile();
+						actionOpenOld(file);
+					}
+				}
+			});
+		}
+		return openOldItem;
+	}
+	
+	private void actionOpenOld(File file) {
 	    actionClose();
 		setConfigurationFile(file);
 		Configuration configuration = new Configuration("Loading");
@@ -570,6 +626,34 @@ public class Main extends JFrame {
 	 * @param e the event that triggered this action 
 	 */
 	public void actionSave(java.awt.event.ActionEvent e) {
+		File file;
+		if ((file = getConfigurationFile()) == null) {
+			JFileChooser fc = new JFileChooser();
+			int returnVal = fc.showSaveDialog((JMenuItem) e.getSource());
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				file = fc.getSelectedFile();
+				setConfigurationFile(file);
+			}
+		}
+		try {
+			FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+			ObjectOutputStream out = new ObjectOutputStream(fos);
+			out.writeObject(ConfigurationFactory.getConfiguration());
+			out.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	
+	/**
+	 * Saves the current configuration to the current configuration file, or displays a file chooser.
+	 * 
+	 * @param e the event that triggered this action 
+	 */
+	public void actionOldSave(java.awt.event.ActionEvent e) {
 		if (getConfigurationFile() == null) {
 			JFileChooser fc = new JFileChooser();
 			int returnVal = fc.showSaveDialog((JMenuItem) e.getSource());

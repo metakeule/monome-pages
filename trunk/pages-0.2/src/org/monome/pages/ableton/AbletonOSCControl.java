@@ -23,6 +23,7 @@
 package org.monome.pages.ableton;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -40,7 +41,7 @@ import com.illposed.osc.OSCMessage;
  * @author Tom Dinchak
  *
  */
-public class AbletonOSCControl implements AbletonControl {
+public class AbletonOSCControl implements AbletonControl, Serializable {
 	
 	/* (non-Javadoc)
 	 * @see org.monome.pages.ableton.AbletonControl#armTrack(int)

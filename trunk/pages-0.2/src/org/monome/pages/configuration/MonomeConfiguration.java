@@ -22,6 +22,7 @@
 
 package org.monome.pages.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiDevice;
@@ -48,7 +49,7 @@ import com.illposed.osc.OSCPortOut;
  * @author Administrator
  *
  */
-public class MonomeConfiguration {
+public class MonomeConfiguration implements Serializable {
 
 	/**
 	 * The monome's prefix (ie. "/40h")
@@ -170,11 +171,11 @@ public class MonomeConfiguration {
 
 	public int serialOSCPort;
 
-	public OSCPortOut serialOSCPortOut;
+	public transient OSCPortOut serialOSCPortOut;
 
 	public String serialOSCHostname;
 
-    public MonomeOSCListener oscListener;
+    public transient MonomeOSCListener oscListener;
 
 	/**
 	 * @param index the index to assign to this MonomeConfiguration
@@ -915,7 +916,9 @@ public class MonomeConfiguration {
 					newArgs[3] = intArgs.get(2);
 				}
 				msg = new OSCMessage(this.prefix + "/grid/led/row", newArgs);
-				serialOSCPortOut.send(msg);
+				if (serialOSCPortOut != null) {
+					serialOSCPortOut.send(msg);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
