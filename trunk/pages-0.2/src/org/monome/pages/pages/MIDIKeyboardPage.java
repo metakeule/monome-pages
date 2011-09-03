@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
-import org.monome.pages.gui.Main;
+import org.monome.pages.gui.MainGUI;
 import org.monome.pages.pages.gui.MIDIKeyboardGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -948,7 +948,7 @@ public class MIDIKeyboardPage implements Page {
 						throw new NumberFormatException();
 					
 				} catch (java.lang.NumberFormatException nfe) {
-					JOptionPane.showMessageDialog(Main.getDesktopPane(), "Scale input must be formatted \"#,#,#,#,#,#,#\".", "Input Error!", 1);
+					JOptionPane.showMessageDialog(MainGUI.getDesktopPane(), "Scale input must be formatted \"#,#,#,#,#,#,#\".", "Input Error!", 1);
 					return;
 				}
 			}

@@ -4,7 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.monome.pages.gui.Main;
+import org.monome.pages.Main;
+import org.monome.pages.gui.MainGUI;
 import org.monome.pages.pages.Page;
 
 import com.illposed.osc.OSCListener;
@@ -45,7 +46,7 @@ public class SerialOSCMonome implements OSCListener {
 				if (monomeConfig != null) {
 					if (monomeConfig.serialOSCPort == 0) {
 						monomeConfig.serialOSCPort = port;
-						ConfigurationFactory.getConfiguration().initMonomeSerialOSC(monomeConfig);
+						Main.main.configuration.initMonomeSerialOSC(monomeConfig);
 						if (monomeConfig.curPage > -1) {
 							Page page = monomeConfig.pages.get(monomeConfig.curPage);
 							if (page != null) {
@@ -70,7 +71,7 @@ public class SerialOSCMonome implements OSCListener {
 						e.printStackTrace();
 					}
 					return;
-				} else if (Main.mainFrame.openingConfig == true) {
+				} else if (Main.main.openingConfig == true) {
 					return;
 				}
 				
@@ -90,14 +91,14 @@ public class SerialOSCMonome implements OSCListener {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				Configuration config = ConfigurationFactory.getConfiguration();
+				Configuration config = Main.main.configuration;
 				if (config == null) {
-					Main.mainFrame.getConfigurationMenu().setEnabled(true);
-					Main.mainFrame.getMidiMenu().setEnabled(true);
-					Main.mainFrame.getFrame().setTitle("Pages");
-					ConfigurationFactory.setConfiguration(new Configuration(""));
-					ConfigurationFactory.getConfiguration().initAbleton();
-					config = ConfigurationFactory.getConfiguration();
+					Main.main.mainFrame.getConfigurationMenu().setEnabled(true);
+					Main.main.mainFrame.getMidiMenu().setEnabled(true);
+					Main.main.mainFrame.getFrame().setTitle("Pages");
+					Main.main.configuration = new Configuration("");
+					Main.main.configuration.initAbleton();
+					config = Main.main.configuration;
 				}
 				ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 				System.out.println("creating " + x + "x" + y + " monome with prefix /" + serial);

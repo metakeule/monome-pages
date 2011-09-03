@@ -7,8 +7,8 @@ import java.awt.Rectangle;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import org.monome.pages.Main;
 import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
@@ -81,10 +81,10 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 		this.validate();
 		this.repaint();
 		this.nextDeviceHeight = 40;
-		if (Main.zeroconfLibrary == Main.LIBRARY_APPLE) {
-		    Main.mainFrame.appleSerialOSCDiscovery();
-		} else if (Main.zeroconfLibrary == Main.LIBRARY_JMDNS){
-            Main.mainFrame.jmdnsSerialOSCDiscovery();	    
+		if (Main.main.zeroconfLibrary == Main.LIBRARY_APPLE) {
+		    Main.main.appleSerialOSCDiscovery();
+		} else if (Main.main.zeroconfLibrary == Main.LIBRARY_JMDNS){
+            Main.main.jmdnsSerialOSCDiscovery();	    
 		}
 	}
 
@@ -137,7 +137,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	
 	private void addMonome(JButton addButton, SerialOSCMonome monome) {
 		jContentPane.remove(addButton);
-		Main.mainFrame.startMonome(monome);
+		Main.main.startMonome(monome);
 		this.validate();
 		this.repaint();
 	}
@@ -153,14 +153,14 @@ public class SerialOSCSetupFrame extends JInternalFrame {
             libSelect.setBounds(new Rectangle(5, 5, 116, 25));
             libSelect.addItem("Apple");
             libSelect.addItem("JmDNS");
-            libSelect.setSelectedIndex(Main.zeroconfLibrary);
+            libSelect.setSelectedIndex(Main.main.zeroconfLibrary);
             libSelect.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
                     String mode = (String) libSelect.getSelectedItem();
                     if (mode.compareTo("Apple") == 0) {
-                        Main.zeroconfLibrary = Main.LIBRARY_APPLE;
+                        Main.main.zeroconfLibrary = Main.LIBRARY_APPLE;
                     } else if (mode.compareTo("JmDNS") == 0) {
-                        Main.zeroconfLibrary = Main.LIBRARY_JMDNS;
+                        Main.main.zeroconfLibrary = Main.LIBRARY_JMDNS;
                     }
                 }
             });

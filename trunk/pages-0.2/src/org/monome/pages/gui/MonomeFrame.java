@@ -8,6 +8,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.monome.pages.Main;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
@@ -65,7 +66,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 	 * 
 	 * @return void
 	 */
-	private void initialize() {
+	void initialize() {
 		this.setSize(300, 200);
 		this.setJMenuBar(getMonomeMenuBar());
 		this.setContentPane(getJContentPane());
@@ -180,7 +181,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 			deletePageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					int confirm = JOptionPane.showConfirmDialog(
-							Main.getDesktopPane(),
+							MainGUI.getDesktopPane(),
 							"Are you sure you want to delete this page?",
 							"Delete Page",
 							JOptionPane.OK_CANCEL_OPTION,
@@ -215,7 +216,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 					}
 
 					String name = (String)JOptionPane.showInputDialog(
-							Main.getDesktopPane(),
+							MainGUI.getDesktopPane(),
 							"Select a new page type",
 							"New Page",
 							JOptionPane.PLAIN_MESSAGE,
@@ -284,7 +285,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 		if (monomeDisplayFrame == null || monomeDisplayFrame.isClosed()) {
 			MonomeConfiguration monomeConfiguration = MonomeConfigurationFactory.getMonomeConfiguration(index);
 			monomeDisplayFrame = new MonomeDisplayFrame(monomeConfiguration.sizeX, monomeConfiguration.sizeY);
-			Main.getDesktopPane().add(monomeDisplayFrame);
+			MainGUI.getDesktopPane().add(monomeDisplayFrame);
 			try {
 				monomeDisplayFrame.setSelected(true);
 			} catch (PropertyVetoException e) {
@@ -492,7 +493,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 		pccFrame = new PageChangeConfigurationFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
 		pccFrame.setSize(new Dimension(212, 256));
 		pccFrame.setVisible(true);
-		Main.getGUI().add(pccFrame);
+		Main.main.mainFrame.add(pccFrame);
 		try {
 			pccFrame.setSelected(true);
 		} catch (PropertyVetoException e) {
@@ -513,7 +514,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 		monomeSetupFrame = new MonomeSetupFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
 		monomeSetupFrame.setSize(new Dimension(148, 207));
 		monomeSetupFrame.setVisible(true);
-		Main.getGUI().add(monomeSetupFrame);
+		Main.main.mainFrame.add(monomeSetupFrame);
 		try {
 			monomeSetupFrame.setSelected(true);
 		} catch (PropertyVetoException e) {

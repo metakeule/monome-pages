@@ -1,10 +1,12 @@
 package org.monome.pages.api;
 
+import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.ableton.AbletonState;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
+import org.monome.pages.configuration.PatternBank;
+
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
 
@@ -174,10 +176,10 @@ public class GroovyAPI implements GroovyPageInterface {
 	    errorLog.addError(message + "\n");
 	}
 	public AbletonState ableton() {
-		return ConfigurationFactory.getConfiguration().getAbletonState();
+		return Main.main.configuration.getAbletonState();
 	}
 	public AbletonControl abletonOut() {
-		return ConfigurationFactory.getConfiguration().getAbletonControl();
+		return Main.main.configuration.getAbletonControl();
 	}
 	public boolean redrawOnAbletonEvent() {
 		return false;
@@ -186,6 +188,11 @@ public class GroovyAPI implements GroovyPageInterface {
     }
     public void setLogger(GroovyErrorLog errorLog) {
         this.errorLog = errorLog;
-        
+    }
+    public int pageIndex() {
+        return pageIndex;
+    }
+    public PatternBank patterns() {
+        return monome().patternBanks.get(pageIndex);
     }
 }

@@ -33,9 +33,11 @@ import javax.sound.midi.Transmitter;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
+import org.monome.pages.Main;
 import org.monome.pages.gui.MonomeDisplayFrame;
 import org.monome.pages.gui.MonomeFrame;
 
+import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.Page;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -79,7 +81,7 @@ public class MonomeConfiguration implements Serializable {
 	/**
 	 * The monome GUI window
 	 */
-	public MonomeFrame monomeFrame;
+	public transient MonomeFrame monomeFrame;
 
 	/**
 	 * ledState[x][y] - The LED state cache for the monome
@@ -205,8 +207,8 @@ public class MonomeConfiguration implements Serializable {
 		this.monomeFrame = monomeFrame;
 		
 		if (monomeFrame != null) {
-			monomeFrame.updateMidiInMenuOptions(ConfigurationFactory.getConfiguration().getMidiInOptions());
-			monomeFrame.updateMidiOutMenuOptions(ConfigurationFactory.getConfiguration().getMidiOutOptions());
+			monomeFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
+			monomeFrame.updateMidiOutMenuOptions(MidiDeviceFactory.getMidiOutOptions());
 		}
 
 		this.clearMonome();
@@ -310,6 +312,21 @@ public class MonomeConfiguration implements Serializable {
 			monomeFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
 		}
 	}
+	
+	public void switchPage(int pageIndex) {
+	    if (pages.size() <= pageIndex) {
+	        return;
+	    }
+	    Page page = pages.get(pageIndex);
+        this.curPage = pageIndex;
+        page.redrawMonome();
+        if (monomeFrame != null) {
+            monomeFrame.redrawPagePanel(page);
+            monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
+            monomeFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
+        }
+	    
+	}
 		
 	/**
 	 * Redraws only the Ableton pages (for when a new event arrives)
@@ -318,7 +335,6 @@ public class MonomeConfiguration implements Serializable {
 		if (this.pages.size() == 0) {
 			return;
 		}
-		
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i).redrawOnAbletonEvent()) {
 				pages.get(i).redrawMonome();
@@ -738,8 +754,8 @@ public class MonomeConfiguration implements Serializable {
 		try {
 			if (this.serialOSCPort == 0) {
 				msg = new OSCMessage(this.prefix + "/led", args);
-				if (ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut != null) {
-					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				if (Main.main.configuration.monomeSerialOSCPortOut != null) {
+					Main.main.configuration.monomeSerialOSCPortOut.send(msg);
 				}
 			} else {
 				msg = new OSCMessage(this.prefix + "/grid/led/set", args);
@@ -819,8 +835,8 @@ public class MonomeConfiguration implements Serializable {
 		try {
 			if (this.serialOSCPort == 0) {
 				msg = new OSCMessage(this.prefix + "/led_col", args);
-				if (ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut != null) {
-					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				if (Main.main.configuration.monomeSerialOSCPortOut != null) {
+					Main.main.configuration.monomeSerialOSCPortOut.send(msg);
 				}
 			} else {
 				Object newArgs[] = new Object[numValues + 1];
@@ -902,8 +918,8 @@ public class MonomeConfiguration implements Serializable {
 		try {
 			if (this.serialOSCPort == 0) {
 				msg = new OSCMessage(this.prefix + "/led_row", args);
-				if (ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut != null) {
-					ConfigurationFactory.getConfiguration().monomeSerialOSCPortOut.send(msg);
+				if (Main.main.configuration.monomeSerialOSCPortOut != null) {
+					Main.main.configuration.monomeSerialOSCPortOut.send(msg);
 				}
 			} else {
 				Object newArgs[] = new Object[numValues + 1];
@@ -992,7 +1008,7 @@ public class MonomeConfiguration implements Serializable {
 						}
 					} else {
 						msg = new OSCMessage(this.prefix + "/clear", args);
-						Configuration configuration = ConfigurationFactory.getConfiguration();
+						Configuration configuration = Main.main.configuration;
 						if (configuration != null && configuration.monomeSerialOSCPortOut != null) {
 							configuration.monomeSerialOSCPortOut.send(msg);
 						}
@@ -1115,7 +1131,7 @@ public class MonomeConfiguration implements Serializable {
 	 * @return The MIDI receiver
 	 */
 	public Receiver getMidiReceiver(String midiDeviceName) {
-		return ConfigurationFactory.getConfiguration().getMIDIReceiverByName(midiDeviceName);
+		return MidiDeviceFactory.getMIDIReceiverByName(midiDeviceName);
 	}
 	
 	/**
@@ -1125,7 +1141,7 @@ public class MonomeConfiguration implements Serializable {
 	 * @return The MIDI transmitter
 	 */
 	public Transmitter getMidiTransmitter(String midiDeviceName) {
-		return ConfigurationFactory.getConfiguration().getMIDITransmitterByName(midiDeviceName);
+		return MidiDeviceFactory.getMIDITransmitterByName(midiDeviceName);
 	}
 
 	/**

@@ -7,8 +7,8 @@ import java.awt.Rectangle;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import org.monome.pages.Main;
 import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 
 public class MonomeSerialSetupFrame extends JInternalFrame {
 
@@ -85,7 +85,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		if (host == null) {
 			host = new JTextField();
 			host.setBounds(new Rectangle(120, 10, 91, 21));
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			host.setText(config.getMonomeHostname());
 		}
 		return host;
@@ -100,7 +100,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		if (inPort == null) {
 			inPort = new JTextField();
 			inPort.setBounds(new Rectangle(120, 40, 56, 21));
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			inPort.setText("" + config.getMonomeSerialOSCInPortNumber());
 		}
 		return inPort;
@@ -115,7 +115,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		if (outPort == null) {
 			outPort = new JTextField();
 			outPort.setBounds(new Rectangle(120, 70, 56, 21));
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			outPort.setText("" + config.getMonomeSerialOSCOutPortNumber());
 		}
 		return outPort;
@@ -145,7 +145,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		int outport = Integer.parseInt(this.outPort.getText());
 		String hostname = this.host.getText();
 		
-		Configuration config = ConfigurationFactory.getConfiguration();
+		Configuration config = Main.main.configuration;
 		config.stopMonomeSerialOSC();
 		
 		try {
@@ -159,7 +159,7 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		config.setMonomeHostname(hostname);
 		config.startMonomeSerialOSC();
 		
-		Main.getNewMonomeItem().setEnabled(true);
+		MainGUI.getNewMonomeItem().setEnabled(true);
 		
 		this.dispose();
 	}
@@ -211,12 +211,12 @@ public class MonomeSerialSetupFrame extends JInternalFrame {
 		int outport = Integer.parseInt(this.outPort.getText());
 		String hostname = this.host.getText();
 		
-		Configuration config = ConfigurationFactory.getConfiguration();
+		Configuration config = Main.main.configuration;
 		config.setMonomeSerialOSCInPortNumber(inport);
 		config.setMonomeSerialOSCOutPortNumber(outport);
 		config.setMonomeHostname(hostname);
 		config.discoverMonomes();
-		Main.getNewMonomeItem().setEnabled(true);
+		MainGUI.getNewMonomeItem().setEnabled(true);
 		this.dispose();
 	}
 

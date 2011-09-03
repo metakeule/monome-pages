@@ -49,13 +49,15 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.ableton.AbletonOSCControl;
 import org.monome.pages.ableton.AbletonOSCListener;
 import org.monome.pages.ableton.AbletonState;
-import org.monome.pages.gui.Main;
+import org.monome.pages.gui.MainGUI;
 import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.midi.MIDIInReceiver;
+import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.Page;
 
 import org.w3c.dom.Document;
@@ -84,31 +86,6 @@ public class Configuration implements Serializable {
 	 * The name of the configuration.
 	 */
 	public String name;
-
-	/**
-	 * The selected MIDI input device to receive MIDI messages from.
-	 */
-	private ArrayList<MidiDevice> midiInDevices = new ArrayList<MidiDevice>();
-
-	/**
-	 * midiInDevice's associated Transmitter object. 
-	 */
-	private ArrayList<Transmitter> midiInTransmitters = new ArrayList<Transmitter>();
-	
-	/**
-	 * midiInDevice's associated MIDIINReceiver object.
-	 */
-	private ArrayList<MIDIInReceiver> midiInReceivers = new ArrayList<MIDIInReceiver>();
-
-	/**
-	 * The selected MIDI output devices.
-	 */
-	private ArrayList<MidiDevice> midiOutDevices = new ArrayList<MidiDevice>();
-
-	/**
-	 * midiOutDevices' associated Receiver objects.
-	 */
-	private ArrayList<Receiver> midiOutReceivers = new ArrayList<Receiver>();
 
 	/**
 	 * The port number to receive OSC messages from MonomeSerial.
@@ -228,7 +205,7 @@ public class Configuration implements Serializable {
 	 */
 	public MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules) {
 		MonomeFrame monomeFrame = new MonomeFrame(index);
-		Main.getDesktopPane().add(monomeFrame);
+		MainGUI.getDesktopPane().add(monomeFrame);
 		try {
 			monomeFrame.setSelected(true);
 		} catch (PropertyVetoException e) {
@@ -241,7 +218,7 @@ public class Configuration implements Serializable {
 	
 	public MonomeConfiguration addMonomeConfigurationSerialOSC(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, int port, String hostName) {
 		MonomeFrame monomeFrame = new MonomeFrame(index);
-		Main.getDesktopPane().add(monomeFrame);
+		MainGUI.getDesktopPane().add(monomeFrame);
 		try {
 			monomeFrame.setSelected(true);
 		} catch (PropertyVetoException e) {
@@ -263,7 +240,7 @@ public class Configuration implements Serializable {
 			this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
 			if (this.monomeSerialOSCPortIn == null) {
 			    System.out.println("Unable to bind to port " + this.monomeSerialOSCInPortNumber);
-				JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + this.monomeSerialOSCInPortNumber + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(MainGUI.getDesktopPane(), "Unable to bind to port " + this.monomeSerialOSCInPortNumber + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			if (this.monomeSerialOSCPortOut == null) {
@@ -420,7 +397,7 @@ public class Configuration implements Serializable {
 	 * 
 	 * @param monome The MonomeConfiguration object to initialize
 	 */
-	private void initMonome(MonomeConfiguration monome) {
+	public void initMonome(MonomeConfiguration monome) {
 		monome.clearMonome();
 	}
 	
@@ -460,7 +437,7 @@ public class Configuration implements Serializable {
 				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
 				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
 					if (midiDevice.getMaxTransmitters() != 0) {
-						toggleMidiInDevice(midiDevice);
+						MidiDeviceFactory.toggleMidiInDevice(midiDevice);
 					}
 				}
 			} catch (MidiUnavailableException e) {
@@ -484,7 +461,7 @@ public class Configuration implements Serializable {
 				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
 				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
 					if (midiDevice.getMaxReceivers() != 0) {
-						toggleMidiOutDevice(midiDevice);
+						MidiDeviceFactory.toggleMidiOutDevice(midiDevice);
 					}
 				}
 			} catch (MidiUnavailableException e) {
@@ -493,182 +470,6 @@ public class Configuration implements Serializable {
 		}		
 	}
 	
-	/**
-	 * Returns a MIDI Transmitter object for the corresponding MIDI device name.
-	 * 
-	 * @param midiDeviceName the name of the MIDI device to get the Transmitter object for
-	 * @return the Transmitter object associated with the MIDI device named midiDeviceName
-	 */
-	public Transmitter getMIDITransmitterByName(String midiDeviceName) {
-		for (int i=0; i < this.midiInDevices.size(); i++) {
-			if (this.midiInDevices.get(i).getDeviceInfo().toString().compareTo(midiDeviceName) == 0) {
-				Transmitter transmitter = this.midiInTransmitters.get(i);
-				return transmitter;
-			}
-		}
-		return null;		
-	}
-	
-	/**
-	 * Returns a MIDI Receiver object for the corresponding MIDI device name.
-	 * 
-	 * @param midiDeviceName the name of the MIDI device to get the Receiver object for
-	 * @return the Receiver object associated with the MIDI device named midiDeviceName
-	 */
-	public Receiver getMIDIReceiverByName(String midiDeviceName) {
-		for (int i=0; i < this.midiOutDevices.size(); i++) {
-			if (this.midiOutDevices.get(i).getDeviceInfo().toString().compareTo(midiDeviceName) == 0) {
-				Receiver receiver = this.midiOutReceivers.get(i);
-				return receiver;
-			}
-		}
-		return null;		
-	}
-	
-	/**
-	 * @return The MIDI outputs that have been enabled in the main configuration.
-	 */
-	public String[] getMidiOutOptions() {
-		ArrayList<MidiDevice> midiOuts = this.getMidiOutDevices();
-		String[] midiOutOptions = new String[midiOuts.size()];
-		for (int i=0; i < midiOuts.size(); i++) {
-			midiOutOptions[i] = midiOuts.get(i).getDeviceInfo().toString();
-		}
-		return midiOutOptions;
-	}
-	
-	/**
-	 * @return The MIDI outputs that have been enabled in the main configuration.
-	 */
-	public String[] getMidiInOptions() {
-		ArrayList<MidiDevice> midiIns = this.getMidiInDevices();
-		String[] midiOutOptions = new String[midiIns.size()];
-		for (int i=0; i < midiIns.size(); i++) {
-			midiOutOptions[i] = midiIns.get(i).getDeviceInfo().toString();
-		}
-		return midiOutOptions;
-	}
-	
-	/**
-	 * @return The selected MIDI input device to receive MIDI clock sync from
-	 */
-	public ArrayList<MidiDevice> getMidiInDevices() {
-		return this.midiInDevices;
-	}
-
-	/**
-	 * @return The selected MIDI output devices
-	 */
-	public ArrayList<MidiDevice> getMidiOutDevices() {
-		return this.midiOutDevices;
-	}
-	
-	/**
-	 * Closes all selected MIDI devices.
-	 */
-	public void closeMidiDevices() {
-		for (int i=0; i < this.midiInTransmitters.size(); i++) {
-			this.midiInTransmitters.get(i).close();
-		}
-		
-		for (int i=0; i < this.midiInDevices.size(); i++) {
-			this.midiInDevices.get(i).close();
-		}
-
-		for (int i=0; i < this.midiOutDevices.size(); i++) {
-			this.midiOutDevices.get(i).close();
-		}
-	}
-
-	/**
-	 * Called when a MIDI output device is selected or de-selected from the MIDI menu
-	 * 
-	 * @param midiOutDevice The MIDI output device to select or de-select
-	 */
-	public void toggleMidiOutDevice(MidiDevice midiOutDevice) {
-		// check if the device is already enabled, if so disable it
-		for (int i=0; i < this.midiOutDevices.size(); i++) {
-			if (this.midiOutDevices.get(i).getDeviceInfo().getName().equals(midiOutDevice.getDeviceInfo().getName())) {
-				MidiDevice outDevice = this.midiOutDevices.get(i);
-				this.midiOutReceivers.remove(i);
-				this.midiOutDevices.remove(i);
-				outDevice.close();
-				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-					if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-						monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
-					}
-				}
-				Main.getGUI().enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), false);
-				return;
-			}
-		}
-
-		// try to enable the device
-		try {
-			midiOutDevice.open();
-			Receiver recv = midiOutDevice.getReceiver();
-			this.midiOutDevices.add(midiOutDevice);
-			this.midiOutReceivers.add(recv);
-			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-				if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-					MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
-				}
-			}
-			Main.getGUI().enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), true);
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Enables a MIDI in device to receive MIDI clock.
-	 * 
-	 * @param midiInDevice The MIDI input device to enable
-	 */
-	public void toggleMidiInDevice(MidiDevice midiInDevice) {
-		// close the currently open device if we have one
-		for (int i=0; i < this.midiInDevices.size(); i++) {
-			if (this.midiInDevices.get(i).getDeviceInfo().getName().equals(midiInDevice.getDeviceInfo().getName())) {
-				MidiDevice inDevice = this.midiInDevices.get(i);
-				Transmitter transmitter = this.midiInTransmitters.get(i);
-				this.midiInTransmitters.remove(i);
-				this.midiInDevices.remove(i);
-				this.midiInReceivers.remove(i);
-				transmitter.close();
-				inDevice.close();
-				for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-					MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-					if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-						monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
-					}
-				}
-				Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), false);
-				return;
-			}
-		}
-
-		// try to open the new midi in device
-		try {
-			midiInDevice.open();
-			Transmitter transmitter = midiInDevice.getTransmitter();
-			MIDIInReceiver receiver = new MIDIInReceiver(midiInDevice);
-			transmitter.setReceiver(receiver);
-			this.midiInDevices.add(midiInDevice);
-			this.midiInTransmitters.add(transmitter);
-			this.midiInReceivers.add(receiver);
-			for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
-				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-				if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
-				}
-			}
-			Main.getGUI().enableMidiInOption(midiInDevice.getDeviceInfo().getName(), true);
-		} catch (MidiUnavailableException e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Called by MIDIInReceiver objects when a MIDI message is received.
@@ -946,7 +747,7 @@ public class Configuration implements Serializable {
                 rootNL2 = rootEL.getChildNodes();
                 String zeroconfLibrary = ((Node) rootNL2.item(0)).getNodeValue();
                 try {
-                    Main.zeroconfLibrary = Integer.parseInt(zeroconfLibrary);
+                    Main.main.zeroconfLibrary = Integer.parseInt(zeroconfLibrary);
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                 }
@@ -1150,8 +951,8 @@ public class Configuration implements Serializable {
 						monomeConfig.altClear = true;
 					}
 					monomeConfig.serialOSCHostname = serialOSCHostName;
-					monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
-					monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+					monomeConfig.monomeFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
+					monomeConfig.monomeFrame.updateMidiOutMenuOptions(MidiDeviceFactory.getMidiOutOptions());
 										
 					String s;
 					float [] min = {0,0,0,0};
@@ -1297,7 +1098,7 @@ public class Configuration implements Serializable {
 		xml  = "<configuration>\n";
 		xml += "  <name>" + this.name + "</name>\n";
 		xml += "  <hostname>" + this.monomeHostname + "</hostname>\n";
-        xml += "  <zeroconfLibrary>" + Main.zeroconfLibrary + "</zeroconfLibrary>\n";
+        xml += "  <zeroconfLibrary>" + Main.main.zeroconfLibrary + "</zeroconfLibrary>\n";
 		xml += "  <oscinport>" + this.monomeSerialOSCInPortNumber + "</oscinport>\n";
 		xml += "  <oscoutport>" + this.monomeSerialOSCOutPortNumber + "</oscoutport>\n";
 		xml += "  <abletonhostname>" + this.abletonHostname + "</abletonhostname>\n";
@@ -1308,11 +1109,11 @@ public class Configuration implements Serializable {
 			ignoreViewTrack = "true";
 		}
 		xml += "  <abletonignoreviewtrack>" + ignoreViewTrack + "</abletonignoreviewtrack>\n";
-		for (int i=0; i < this.midiInDevices.size(); i++) {
-			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(this.midiInDevices.get(i).getDeviceInfo().toString()) + "</midiinport>\n";
+		for (int i=0; i < MidiDeviceFactory.midiInDevices.size(); i++) {
+			xml += "  <midiinport>" + StringEscapeUtils.escapeXml(MidiDeviceFactory.midiInDevices.get(i).getDeviceInfo().toString()) + "</midiinport>\n";
 		}
-		for (int i=0; i < this.midiOutDevices.size(); i++) {
-			xml += "  <midioutport>" + StringEscapeUtils.escapeXml(this.midiOutDevices.get(i).getDeviceInfo().toString()) + "</midioutport>\n";
+		for (int i=0; i < MidiDeviceFactory.midiOutDevices.size(); i++) {
+			xml += "  <midioutport>" + StringEscapeUtils.escapeXml(MidiDeviceFactory.midiOutDevices.get(i).getDeviceInfo().toString()) + "</midioutport>\n";
 		}
 
 		// monome and page configuration

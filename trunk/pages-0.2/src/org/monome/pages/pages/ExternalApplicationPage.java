@@ -12,20 +12,13 @@ import javax.sound.midi.MidiMessage;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.Main;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
-import org.monome.pages.gui.Main;
+import org.monome.pages.gui.MainGUI;
 import org.monome.pages.pages.gui.ExternalApplicationGUI;
 import org.w3c.dom.Element;
 
-/*
-import com.apple.dnssd.DNSSD;
-import com.apple.dnssd.DNSSDException;
-import com.apple.dnssd.DNSSDRegistration;
-import com.apple.dnssd.DNSSDService;
-import com.apple.dnssd.RegisterListener;
-*/
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
 import com.apple.dnssd.DNSSDRegistration;
@@ -152,24 +145,24 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			
 			this.oscIn = OSCPortFactory.getInstance().getOSCPortIn(Integer.valueOf(this.inPort));
 			if (this.oscIn == null) {
-				JOptionPane.showMessageDialog(Main.getDesktopPane(), "External Application Page was unable to bind to port " + this.inPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(MainGUI.getDesktopPane(), "External Application Page was unable to bind to port " + this.inPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
 				this.oscIn = null;
 				return;
 			}
 			
 			addListeners();
-			if (Main.zeroconfLibrary == Main.LIBRARY_APPLE) {			
+			if (Main.main.zeroconfLibrary == Main.LIBRARY_APPLE) {			
     			try {
     				DNSSDRegistration reg = DNSSD.register("extapp-" + this.inPort + "-" + monome.serial, "_monome-osc._udp", this.inPort, this);
-    				Main.addRegistration(reg);
+    				Main.main.addRegistration(reg);
     			} catch (DNSSDException e) {
     				e.printStackTrace();
     			}
-			} else if (Main.zeroconfLibrary == Main.LIBRARY_JMDNS) {
+			} else if (Main.main.zeroconfLibrary == Main.LIBRARY_JMDNS) {
     			ServiceInfo info = ServiceInfo.create("_monome-osc._udp.local.", "extapp-" + this.inPort + "-" + monome.serial, this.inPort, "extapp-" + this.inPort + "-" + monome.serial);
     			
     			try {
-                    Main.jmdns.registerService(info);
+                    Main.main.jmdns.registerService(info);
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
