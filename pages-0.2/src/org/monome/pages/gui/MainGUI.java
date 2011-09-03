@@ -50,12 +50,14 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.PropertyConfigurator;
+import org.monome.pages.Main;
+import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.SerialOSCMonome;
+import org.monome.pages.midi.MidiDeviceFactory;
 
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
@@ -78,10 +80,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Main extends JFrame {
-
+public class MainGUI extends JFrame {
+    
 	private static final long serialVersionUID = 1L;
-	public static Main mainFrame = null;
 	private static JDesktopPane jDesktopPane = null;
 	private MonomeSerialSetupFrame monomeSerialSetupFrame = null;
 	public SerialOSCSetupFrame serialOscSetupFrame = null;
@@ -108,163 +109,7 @@ public class Main extends JFrame {
 	private JMenu midiInMenu = null;
 	private JMenu midiOutMenu = null;
 	
-	private File configurationFile = null;
-	public boolean openingConfig = false;
-	
-	public static Logger logger = Logger.getLogger("socketLogger");
-	
-	private static SerialOSCListener serialOSCListener = new SerialOSCListener();
-	private static OSCPortIn pagesOSCIn;
-	public static final int PAGES_OSC_PORT = 12345;
-	
-	public static boolean sentSerialOSCInfoMsg;
-	public static JmDNS jmdns;
-	
-	public static final int LIBRARY_APPLE = 0;
-	public static final int LIBRARY_JMDNS = 1;
-	public static int zeroconfLibrary = LIBRARY_APPLE;
-	static ArrayList<DNSSDRegistration> dnssdRegistrations = new ArrayList<DNSSDRegistration>();
-    static ArrayList<DNSSDService> dnssdServices = new ArrayList<DNSSDService>();
-			
-	/**
-	 * And away we go!
-	 * 
-	 * @param args
-	 */
-	public static void main(final String[] args) {
-	    try {
-            jmdns = JmDNS.create();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-		File logConfigFile = new File("log4j.properties");
-		if (logConfigFile.exists() && logConfigFile.canRead()) {
-			PropertyConfigurator.configure("log4j.properties");
-			StdOutErrLog.tieSystemOutAndErrToLog();
-		}
-		logger.error("Pages 0.2.2a17 starting up\n");
-		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
-				} catch (InstantiationException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (UnsupportedLookAndFeelException e) {
-					e.printStackTrace();
-				}
-				Main theClass = new Main();
-				mainFrame = theClass;
-				mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				mainFrame.setVisible(true);
-		        if (args.length > 0) {
-		            File file = new File(args[0]);
-		            if (file.canRead()) {
-		                mainFrame.actionOpen(file);
-		            }
-		        }
-			}
-		});
-	}
-	
-	public void jmdnsSerialOSCDiscovery() {
-	    HashMap<String, String> serials = new HashMap<String, String>();
-        final ServiceInfo[] svcInfos = jmdns.list("_monome-osc._udp.local.");
-        for (int i = 0; i < svcInfos.length; i++) {
-            String serial = svcInfos[i].getName();
-            if (serial.indexOf("(") != -1) {
-                serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
-            }
-            int port = svcInfos[i].getPort();
-            SerialOSCMonome monome = new SerialOSCMonome();
-            monome.port = port;
-            monome.serial = serial;
-            monome.hostName = "127.0.0.1";
-            if (serials.containsKey(serial)) {
-                continue;
-            }
-            serials.put(monome.serial, monome.hostName);
-            if (Main.mainFrame.serialOscSetupFrame != null) {
-                Main.mainFrame.serialOscSetupFrame.addDevice(monome);
-            } else {
-                MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
-                if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
-                    Main.mainFrame.startMonome(monome);
-                }
-            }
-        }
-	}
-	
-	public void appleSerialOSCDiscovery() {
-	    /*
-            if (serial.indexOf("(") != -1) {
-                serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
-            }
-            SerialOSCMonome monome = new SerialOSCMonome();
-            monome.port = port;
-            monome.serial = serial;
-            monome.hostName = hostName;
-            
-            if (Main.mainFrame.serialOscSetupFrame != null) {
-                Main.mainFrame.serialOscSetupFrame.addDevice(monome);
-            } else {
-                MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
-                if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
-                    Main.mainFrame.startMonome(monome);
-                }
-            }            
-            */
-	    
-		try {
-			DNSSDService service = DNSSD.browse("_monome-osc._udp", serialOSCListener);
-			addService(service);
-		} catch (DNSSDException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	public static class StdOutErrLog {
-
-	    public static void tieSystemOutAndErrToLog() {
-	        System.setOut(createLoggingProxy(System.out));
-	        System.setErr(createLoggingProxy(System.err));
-	    }
-
-	    public static PrintStream createLoggingProxy(final PrintStream realPrintStream) {
-	        return new PrintStream(realPrintStream) {
-	            public void print(final String string) {
-	                try {
-	                	if (System.getProperty("user.name") != null) {
-	                		MDC.put("username", System.getProperty("user.name"));
-	                	}
-		                if (System.getProperty("os.name") != null) {
-		                	MDC.put("osname", System.getProperty("os.name"));
-		                }
-		                if (System.getProperty("os.version") != null) {
-		                	MDC.put("osversion", System.getProperty("os.version"));
-		                }
-		                if (System.getProperty("user.country") != null) {
-		                	MDC.put("region", System.getProperty("user.country"));
-		                }
-		                logger.error(string);
-		                MDC.remove("username");
-		                MDC.remove("osname");
-		                MDC.remove("osversion");
-		                MDC.remove("region");
-	                } catch (Exception e) {
-	                	e.printStackTrace(realPrintStream);
-	                }
-	            }
-	        };
-	    }
-	}
-	
-	public Main() {
+	public MainGUI() {
 		super();
 		initialize();
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -272,15 +117,6 @@ public class Main extends JFrame {
 		    	actionExit();
 		    }
 		});
-	}
-
-	/**
-	 * Returns a static instance of the main GUI.  Configuration uses it to update MIDI menu items.
-	 * 
-	 * @return a static instance of the main GUI
-	 */
-	public static Main getGUI() {
-		return mainFrame;
 	}
 	
 	/**
@@ -347,7 +183,7 @@ public class Main extends JFrame {
 			fileMenu.setText("File");
 			fileMenu.add(getNewItem());
 			fileMenu.add(getOpenItem());
-			fileMenu.add(getOpenOldItem());
+			//fileMenu.add(getOpenOldItem());
 			fileMenu.addSeparator();
 			fileMenu.add(getCloseItem());
 			fileMenu.addSeparator();
@@ -391,9 +227,9 @@ public class Main extends JFrame {
 					getConfigurationMenu().setEnabled(true);
 					getMidiMenu().setEnabled(true);
 					getFrame().setTitle("Pages : " + name);
-					ConfigurationFactory.setConfiguration(new Configuration(name));
-					ConfigurationFactory.getConfiguration().initAbleton();
-					configurationFile = null;
+					Main.main.configuration = new Configuration(name);
+					Main.main.configuration.initAbleton();
+					Main.main.setConfigurationFile(null);
 				}
 					
 			});
@@ -419,7 +255,7 @@ public class Main extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						actionClose();
 						File file = fc.getSelectedFile();
-						actionOpen(file);
+						actionOpenOld(file);
 					}
 				}
 			});
@@ -427,17 +263,29 @@ public class Main extends JFrame {
 		return openOldItem;
 	}
 	
-	private void actionOpen(File file) {
+	public void actionOpen(File file) {
 		Configuration configuration;
 		try {
 			FileInputStream fis = new FileInputStream(file.getAbsolutePath());
 			ObjectInputStream in = new ObjectInputStream(fis);
 			configuration = (Configuration) in.readObject();
-			ConfigurationFactory.setConfiguration(configuration);
+			Main.main.configuration = configuration;
+			Main.main.configuration.abletonState = new AbletonState();
+            configuration.initAbleton();
 			in.close();
 			getMidiMenu().setEnabled(true);
 			getNewMonomeItem().setEnabled(true);
 			getConfigurationMenu().setEnabled(true);
+			for (Integer key : configuration.getMonomeConfigurations().keySet()) {
+			    MonomeConfiguration monomeConfig = configuration.getMonomeConfigurations().get(key);
+		        MonomeFrame monomeFrame = new MonomeFrame(monomeConfig.index);
+		        monomeConfig.monomeFrame = monomeFrame;
+		        monomeConfig.setFrameTitle();
+		        getDesktopPane().add(monomeFrame);
+		        if (!monomeConfig.pages.isEmpty()) {
+		            monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
+		        }
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -479,13 +327,13 @@ public class Main extends JFrame {
 	
 	private void actionOpenOld(File file) {
 	    actionClose();
-		setConfigurationFile(file);
+		Main.main.setConfigurationFile(file);
 		Configuration configuration = new Configuration("Loading");
-		ConfigurationFactory.setConfiguration(configuration);
+		Main.main.configuration = configuration;
 
 		if (!configuration.readConfigurationFile(file)) {
-		    ConfigurationFactory.setConfiguration(null);
-		    setConfigurationFile(null);
+		    Main.main.configuration = null;
+		    Main.main.setConfigurationFile(null);
 		    return;
 		}
 		
@@ -500,37 +348,13 @@ public class Main extends JFrame {
 				monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
 			}
 		}
-		this.openingConfig = true;
-		if (zeroconfLibrary == LIBRARY_APPLE) {
-		    appleSerialOSCDiscovery();
-		} else if (zeroconfLibrary == LIBRARY_JMDNS) {
-		    jmdnsSerialOSCDiscovery();
+		Main.main.openingConfig = true;
+		if (Main.main.zeroconfLibrary == Main.LIBRARY_APPLE) {
+		    Main.main.appleSerialOSCDiscovery();
+		} else if (Main.main.zeroconfLibrary == Main.LIBRARY_JMDNS) {
+		    Main.main.jmdnsSerialOSCDiscovery();
 		}
 	}
-	
-	public void startMonome(SerialOSCMonome monome) {
-		OSCPortIn inPort = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
-		if (inPort == null) {
-			JOptionPane.showMessageDialog(Main.getDesktopPane(), "Unable to bind to port " + Main.PAGES_OSC_PORT + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		inPort.addListener("/sys/size", monome);
-		inPort.addListener("/sys/port", monome);
-		inPort.addListener("/sys/id", monome);
-		inPort.addListener("/sys/prefix", monome);
-		inPort.addListener("/sys/host", monome);
-		OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(monome.hostName, monome.port);
-		OSCMessage infoMsg = new OSCMessage();
-		infoMsg.setAddress("/sys/info");
-		infoMsg.addArgument("127.0.0.1");
-		infoMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
-		try {
-			outPort.send(infoMsg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	
 	/**
 	 * This method initializes closeItem	
@@ -546,7 +370,7 @@ public class Main extends JFrame {
 			closeItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					int confirm = JOptionPane.showConfirmDialog(
-							Main.getDesktopPane(),
+							MainGUI.getDesktopPane(),
 							"Are you sure you want to close this configuration?",
 							"Close Configuration",
 							JOptionPane.OK_CANCEL_OPTION,
@@ -565,9 +389,9 @@ public class Main extends JFrame {
 	 * Handles closing the configuration.  Disables MIDI devices, stops OSC listening.
 	 */
 	public void actionClose() {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
         OSCPortFactory.getInstance().destroy();
-        removeRegistrations();
+        Main.main.removeRegistrations();
 		if (configuration != null) {
 			for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
@@ -583,7 +407,7 @@ public class Main extends JFrame {
 			}
 			configuration.stopAbleton();
 			configuration.destroyAllPages();
-			configuration.closeMidiDevices();
+			MidiDeviceFactory.closeMidiDevices();
 			getFrame().setTitle("Pages");
 			getConfigurationMenu().setEnabled(false);
 			getMidiMenu().setEnabled(false);
@@ -595,9 +419,9 @@ public class Main extends JFrame {
 			}
 			configuration.stopMonomeSerialOSC();
 			MonomeConfigurationFactory.removeMonomeConfigurations();
-			ConfigurationFactory.setConfiguration(null);
+			Main.main.configuration = null;
 		}
-		configurationFile = null;
+		Main.main.setConfigurationFile(null);
 	}
 
 	/**
@@ -613,7 +437,7 @@ public class Main extends JFrame {
 			saveItem.getAccessibleContext().setAccessibleDescription("Save current configuration to the open configuration file");
 			saveItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					actionSave(e);
+					actionSaveOld(e);
 				}
 			});
 		}
@@ -627,18 +451,18 @@ public class Main extends JFrame {
 	 */
 	public void actionSave(java.awt.event.ActionEvent e) {
 		File file;
-		if ((file = getConfigurationFile()) == null) {
+		if ((file = Main.main.getConfigurationFile()) == null) {
 			JFileChooser fc = new JFileChooser();
 			int returnVal = fc.showSaveDialog((JMenuItem) e.getSource());
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				file = fc.getSelectedFile();
-				setConfigurationFile(file);
+				Main.main.setConfigurationFile(file);
 			}
 		}
 		try {
 			FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
 			ObjectOutputStream out = new ObjectOutputStream(fos);
-			out.writeObject(ConfigurationFactory.getConfiguration());
+			out.writeObject(Main.main.configuration);
 			out.close();
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -653,17 +477,17 @@ public class Main extends JFrame {
 	 * 
 	 * @param e the event that triggered this action 
 	 */
-	public void actionOldSave(java.awt.event.ActionEvent e) {
-		if (getConfigurationFile() == null) {
+	public void actionSaveOld(java.awt.event.ActionEvent e) {
+		if (Main.main.getConfigurationFile() == null) {
 			JFileChooser fc = new JFileChooser();
 			int returnVal = fc.showSaveDialog((JMenuItem) e.getSource());
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = fc.getSelectedFile();
-				setConfigurationFile(file);
+				Main.main.setConfigurationFile(file);
 				try {
-					if (ConfigurationFactory.getConfiguration() != null) {
+					if (Main.main.configuration != null) {
 						FileWriter fw = new FileWriter(file);
-						fw.write(ConfigurationFactory.getConfiguration().toXml());
+						fw.write(Main.main.configuration.toXml());
 						fw.close();
 					}
 				} catch (IOException ex) {
@@ -673,8 +497,8 @@ public class Main extends JFrame {
 		} else {
 			FileWriter fw;
 			try {
-				fw = new FileWriter(getConfigurationFile());
-				fw.write(ConfigurationFactory.getConfiguration().toXml());
+				fw = new FileWriter(Main.main.getConfigurationFile());
+				fw.write(Main.main.configuration.toXml());
 				fw.close();
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -700,11 +524,11 @@ public class Main extends JFrame {
 					int returnVal = fc.showSaveDialog((JMenuItem) e.getSource());
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
-						setConfigurationFile(file);
+						Main.main.setConfigurationFile(file);
 						try {
-							if (ConfigurationFactory.getConfiguration() != null) {
+							if (Main.main.configuration != null) {
 								FileWriter fw = new FileWriter(file);
-								fw.write(ConfigurationFactory.getConfiguration().toXml());
+								fw.write(Main.main.configuration.toXml());
 								fw.close();
 							}
 						} catch (IOException ex) {
@@ -741,11 +565,11 @@ public class Main extends JFrame {
 	 * Exits the application cleanly.
 	 */
 	public void actionExit() {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		int confirm = 1;
 		if (configuration != null) {
 			confirm = JOptionPane.showConfirmDialog(
-					Main.getDesktopPane(),
+					MainGUI.getDesktopPane(),
 					"Do you want to save before closing?",
 					"Exit",
 					JOptionPane.YES_NO_CANCEL_OPTION,
@@ -801,7 +625,7 @@ public class Main extends JFrame {
 	}
 	
 	private void showSerialOscSetup() {
-		this.openingConfig = false;
+		Main.main.openingConfig = false;
 		if (serialOscSetupFrame != null && serialOscSetupFrame.isShowing()) {
 			try {
 				serialOscSetupFrame.setSelected(true);
@@ -1017,7 +841,7 @@ public class Main extends JFrame {
 				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
 				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
 					if (midiDevice.getMaxTransmitters() != 0) {
-						ConfigurationFactory.getConfiguration().toggleMidiInDevice(midiDevice);
+						MidiDeviceFactory.toggleMidiInDevice(midiDevice);
 					}
 				}
 			} catch (MidiUnavailableException e) {
@@ -1089,7 +913,7 @@ public class Main extends JFrame {
 				midiDevice = MidiSystem.getMidiDevice(midiInfo[i]);
 				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
 					if (midiDevice.getMaxReceivers() != 0) {
-						ConfigurationFactory.getConfiguration().toggleMidiOutDevice(midiDevice);
+						MidiDeviceFactory.toggleMidiOutDevice(midiDevice);
 					}
 				}
 			} catch (MidiUnavailableException e) {
@@ -1114,38 +938,5 @@ public class Main extends JFrame {
 		}
 	}
 					
-	/**
-	 * Returns the current open configuration file.  This file is used when File -> Save is clicked.
-	 * 
-	 * @return the current open configuration file
-	 */
-	private File getConfigurationFile() {
-		return configurationFile;
-	}
-	
-	/**
-	 * Sets the current open configuration file.  This file is used when File -> Save is clicked.
-	 * 
-	 * @param cf the file to set to the current open configuration file.
-	 */
-	private void setConfigurationFile(File cf) {
-		configurationFile = cf;
-	}
 
-    public static void addRegistration(DNSSDRegistration reg) {
-        dnssdRegistrations.add(reg);
-    }
-    
-    public static void addService(DNSSDService service) {
-        dnssdServices.add(service);
-    }
-    
-    public static void removeRegistrations() {
-        for (DNSSDRegistration reg : dnssdRegistrations) {
-            reg.stop();
-        }
-        for (DNSSDService service : dnssdServices) {
-            service.stop();
-        }
-    }
 }

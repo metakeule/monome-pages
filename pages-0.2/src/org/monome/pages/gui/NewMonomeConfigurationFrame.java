@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
+import org.monome.pages.Main;
 import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
@@ -149,7 +149,7 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
 		String prefix = this.prefix.getText();
 		ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
 				
-		Configuration config = ConfigurationFactory.getConfiguration();
+		Configuration config = Main.main.configuration;
 		config.addMonomeConfiguration(MonomeConfigurationFactory.getNumMonomeConfigurations(), prefix, "no serial", sizeX, sizeY, true, false, midiPageChangeRules);
         if (config.monomeSerialOSCPortIn == null) {
             config.startMonomeSerialOSC();

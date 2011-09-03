@@ -7,7 +7,8 @@ import java.net.SocketException;
 
 import javax.swing.JOptionPane;
 
-import org.monome.pages.gui.Main;
+import org.monome.pages.Main;
+import org.monome.pages.gui.MainGUI;
 
 import com.illposed.osc.utility.OSCByteArrayToJavaConverter;
 import com.illposed.osc.utility.OSCPacketDispatcher;
@@ -29,7 +30,7 @@ public class OSCPortIn extends OSCPort implements Runnable {
     		socket = new DatagramSocket(port);
     		this.port = port;
 	    } catch (Exception e) {
-            JOptionPane.showMessageDialog(Main.mainFrame, "Error binding to port " + port + ": " + e.getMessage(),
+            JOptionPane.showMessageDialog(Main.main.mainFrame, "Error binding to port " + port + ": " + e.getMessage(),
                     "Groovy-error", JOptionPane.WARNING_MESSAGE);
 	    }
 	}

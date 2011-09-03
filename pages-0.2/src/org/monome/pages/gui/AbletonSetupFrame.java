@@ -7,9 +7,9 @@ import java.awt.Rectangle;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
+import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 import javax.swing.JCheckBox;
 
 public class AbletonSetupFrame extends JInternalFrame {
@@ -93,7 +93,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 		if (host == null) {
 			host = new JTextField();
 			host.setBounds(new Rectangle(120, 10, 91, 21));
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			host.setText(config.getAbletonHostname());
 		}
 		return host;
@@ -108,7 +108,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 		if (inPort == null) {
 			inPort = new JTextField();
 			inPort.setBounds(new Rectangle(120, 40, 56, 21));
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			inPort.setText("" + config.getAbletonOSCInPortNumber());
 		}
 		return inPort;
@@ -123,7 +123,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 		if (outPort == null) {
 			outPort = new JTextField();
 			outPort.setBounds(new Rectangle(120, 70, 56, 21));
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			outPort.setText("" + config.getAbletonOSCOutPortNumber());
 		}
 		return outPort;
@@ -153,7 +153,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 		int outport = Integer.parseInt(this.outPort.getText());
 		String hostname = this.host.getText();
 		
-		Configuration config = ConfigurationFactory.getConfiguration();
+		Configuration config = Main.main.configuration;
 		config.setAbletonOSCInPortNumber(inport);
 		config.setAbletonOSCOutPortNumber(outport);
 		config.setAbletonHostname(hostname);
@@ -206,7 +206,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 	
 	private void refresh() {
 		AbletonControl control =
-			ConfigurationFactory.getConfiguration().getAbletonControl();
+			Main.main.configuration.getAbletonControl();
 		if (control != null) {
 			control.refreshAbleton();
 		}
@@ -221,7 +221,7 @@ public class AbletonSetupFrame extends JInternalFrame {
 		if (ignoreViewCB == null) {
 			ignoreViewCB = new JCheckBox();
 			ignoreViewCB.setBounds(new Rectangle(155, 100, 21, 21));
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			ignoreViewCB.setSelected(config.getAbletonIgnoreViewTrack());
 		}
 		return ignoreViewCB;

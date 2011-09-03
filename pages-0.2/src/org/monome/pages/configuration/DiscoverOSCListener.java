@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.monome.pages.Main;
+
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 
@@ -38,7 +40,7 @@ public class DiscoverOSCListener implements OSCListener {
 				return;
 			}
 			
-			Configuration config = ConfigurationFactory.getConfiguration();
+			Configuration config = Main.main.configuration;
 			
 			if (message.getAddress().contains("/sys/type")) {
 				if (args.length != 2) {

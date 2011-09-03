@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 
+import org.monome.pages.Main;
 import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
@@ -45,7 +45,7 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 	public void serviceFound(DNSSDService browser, int flags, int index, String serviceName, String regType, String domain) {
 		try {
 			DNSSDService service = DNSSD.resolve(0, DNSSD.ALL_INTERFACES, serviceName, regType, domain, this);
-			Main.addService(service);
+			Main.main.addService(service);
 		} catch (DNSSDException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,12 +62,12 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 		monome.serial = serial;
 		monome.hostName = hostName;
 		
-		if (Main.mainFrame.serialOscSetupFrame != null) {
-			Main.mainFrame.serialOscSetupFrame.addDevice(monome);
+		if (Main.main.mainFrame.serialOscSetupFrame != null) {
+			Main.main.mainFrame.serialOscSetupFrame.addDevice(monome);
 		} else {
 			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
 			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
-				Main.mainFrame.startMonome(monome);
+				Main.main.startMonome(monome);
 				monomeConfig.reload();
 			}
 		}		

@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import javax.sound.midi.MidiMessage;
 import javax.swing.JPanel;
 
+import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonClipDelay;
 import org.monome.pages.ableton.AbletonTrack;
-//import org.monome.pages.configuration.ADCOptions;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.AbletonLiveLooperGUI;
 import org.w3c.dom.Element;
@@ -143,7 +142,7 @@ public class AbletonLiveLooperPage implements Page {
 				// if this is the bottom row then arm/disarm track number x
 				if (y == this.monome.sizeY - 1 && this.gui.getDisableArmCB().isSelected() == false) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
+					AbletonTrack track = Main.main.configuration.abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getArm() == 0) {
 							this.armTrack(track_num);
@@ -156,7 +155,7 @@ public class AbletonLiveLooperPage implements Page {
 				else if ((y == this.monome.sizeY - 2 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == false) ||
 						  y == this.monome.sizeY - 1 && this.gui.getDisableSoloCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
+					AbletonTrack track = Main.main.configuration.abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getSolo() == 0) {
 							this.soloTrack(track_num);
@@ -172,7 +171,7 @@ public class AbletonLiveLooperPage implements Page {
 						 (y == this.monome.sizeY - 2 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == false) ||
                          (y == this.monome.sizeY - 1 && this.gui.getDisableMuteCB().isSelected() == false && this.gui.getDisableArmCB().isSelected() == true && this.gui.getDisableSoloCB().isSelected() == true)) {
 					int track_num = x + (this.trackOffset * (this.monome.sizeX - 1));
-					AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
+					AbletonTrack track = Main.main.configuration.abletonState.getTrack(track_num);
 					if (track != null) {
 						if (track.getMute() == 0) {
 							this.muteTrack(track_num);
@@ -219,18 +218,18 @@ public class AbletonLiveLooperPage implements Page {
 	 * @param clip The clip number to play (0 = first clip)
 	 */
 	public void playClip(int trackNum, int clipNum) {
-		AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackNum);
+		AbletonTrack track = Main.main.configuration.abletonState.getTrack(trackNum);
 		if (track != null) {
 			AbletonClip clip = track.getClip(clipNum);
 			if (clip != null) {
 				if (clip.getState() == AbletonClip.STATE_EMPTY) {
 					//int delay = (int) (((60000.0 / (double) this.tempo) * 2.0 * this.loopLength) + 
 					//		           (((96.0 - this.numTicks) * 2.0 * ((60000.0 / (double) this.tempo)) / 96)));
-					int delay = (int) (((60000.0 / (double) ConfigurationFactory.getConfiguration().abletonState.getTempo()) * 2.0 * this.loopLength) - 100.0);
+					int delay = (int) (((60000.0 / (double) Main.main.configuration.abletonState.getTempo()) * 2.0 * this.loopLength) - 100.0);
 					AbletonClipDelay acd = new AbletonClipDelay(delay, trackNum, clipNum);
 					new Thread(acd).start();
 				}
-				ConfigurationFactory.getConfiguration().getAbletonControl().playClip(trackNum, clipNum);				
+				Main.main.configuration.getAbletonControl().playClip(trackNum, clipNum);				
 			}
 		}
 	}
@@ -241,7 +240,7 @@ public class AbletonLiveLooperPage implements Page {
 	 * @param track The track number to arm (0 = first track)
 	 */
 	public void armTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().armTrack(track);
+		Main.main.configuration.getAbletonControl().armTrack(track);
 	}
 
 		
@@ -251,7 +250,7 @@ public class AbletonLiveLooperPage implements Page {
 	 * @param track The track number to disarm (0 = first track)
 	 */
 	public void disarmTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().disarmTrack(track);
+		Main.main.configuration.getAbletonControl().disarmTrack(track);
 	}
 
 	/**
@@ -260,7 +259,7 @@ public class AbletonLiveLooperPage implements Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void stopTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().stopTrack(track);
+		Main.main.configuration.getAbletonControl().stopTrack(track);
 	}
 	
 	/**
@@ -269,15 +268,15 @@ public class AbletonLiveLooperPage implements Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void muteTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().muteTrack(track);
+		Main.main.configuration.getAbletonControl().muteTrack(track);
 	}
 	
 	public void soloTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().soloTrack(track);
+		Main.main.configuration.getAbletonControl().soloTrack(track);
 	}
 	
 	public void unsoloTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().unsoloTrack(track);
+		Main.main.configuration.getAbletonControl().unsoloTrack(track);
 	}
 	
 	/**
@@ -286,11 +285,11 @@ public class AbletonLiveLooperPage implements Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void unmuteTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().unmuteTrack(track);
+		Main.main.configuration.getAbletonControl().unmuteTrack(track);
 	}
 	
 	public void refreshAbleton() {
-		ConfigurationFactory.getConfiguration().getAbletonControl().refreshAbleton();
+		Main.main.configuration.getAbletonControl().refreshAbleton();
 	}
 
 	/**
@@ -299,7 +298,7 @@ public class AbletonLiveLooperPage implements Page {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void viewTrack(int track) {
-		ConfigurationFactory.getConfiguration().getAbletonControl().viewTrack(track);
+		Main.main.configuration.getAbletonControl().viewTrack(track);
 	}
 	
 	/* (non-Javadoc)
@@ -323,7 +322,7 @@ public class AbletonLiveLooperPage implements Page {
 		// track state and flash if appropriate
 		for (int x = 0; x < this.monome.sizeX; x++) {
 			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 1));
-			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackNum);
+			AbletonTrack track = Main.main.configuration.abletonState.getTrack(trackNum);
 			if (track != null) {
 				for (int y = 0; y < this.monome.sizeY - numEnabledRows; y++) {
 					int clipNum = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
@@ -359,7 +358,7 @@ public class AbletonLiveLooperPage implements Page {
 		// redraw the upper part of the monome (the clip state)
 		for (int x = 0; x < this.monome.sizeX - 1; x++) {
 			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 1));
-			AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(trackNum);
+			AbletonTrack track = Main.main.configuration.abletonState.getTrack(trackNum);
 			if (track != null) {
 				for (int y = 0; y < (this.monome.sizeY - this.numEnabledRows); y++) {
 					int clipNum = y + (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
@@ -388,7 +387,7 @@ public class AbletonLiveLooperPage implements Page {
 			for (int i = 0; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
 				int yRow = this.monome.sizeY - 1;
-				AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
+				AbletonTrack track = Main.main.configuration.abletonState.getTrack(track_num);
 				if (track != null) {
 					if (track.getArm() == 1) {
 						this.monome.led(i, yRow, 1, this.index);
@@ -409,7 +408,7 @@ public class AbletonLiveLooperPage implements Page {
 				} else {
 					yRow = this.monome.sizeY - 1;
 				}
-				AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
+				AbletonTrack track = Main.main.configuration.abletonState.getTrack(track_num);
 				if (track != null) {
 					if (track.getSolo() == 1) {
 						this.monome.led(i, yRow, 1, this.index);
@@ -432,7 +431,7 @@ public class AbletonLiveLooperPage implements Page {
 				} else {
 					yRow = this.monome.sizeY - 3;
 				}
-				AbletonTrack track = ConfigurationFactory.getConfiguration().abletonState.getTrack(track_num);
+				AbletonTrack track = Main.main.configuration.abletonState.getTrack(track_num);
 				if (track != null) {
 					if (track.getMute() == 0) {
 						this.monome.led(i, yRow, 1, this.index);
@@ -466,7 +465,7 @@ public class AbletonLiveLooperPage implements Page {
 			int clipOffset = (this.clipOffset * (this.monome.sizeY - this.numEnabledRows));
 			int width = this.monome.sizeX - 1;
 			int height = this.monome.sizeY - this.numEnabledRows;
-			ConfigurationFactory.getConfiguration().getAbletonControl().setSelection(widthOffset, clipOffset, width, height);
+			Main.main.configuration.getAbletonControl().setSelection(widthOffset, clipOffset, width, height);
 		}
 	}
 

@@ -16,6 +16,7 @@ public class PatternBank implements Serializable {
 	private int quantify = 6;
 	private int curPattern = 0;
 	private int[] recordPosition;
+	private ArrayList<Press> ignore = new ArrayList();
 	
 	public PatternBank(int numPatterns) {
 		this.numPatterns = numPatterns;
@@ -25,6 +26,14 @@ public class PatternBank implements Serializable {
 		this.patternState = new int[numPatterns];
 		this.patternPosition = new int[numPatterns];
 		this.recordPosition = new int[numPatterns];
+	}
+	
+	public void ignore(int x, int y) {
+	    ignore.add(new Press(0, x, y, 0));
+	}
+	
+	public void clearIgnore() {
+	    ignore = new ArrayList<Press>();
 	}
 
 	public void handlePress(int patternNum) {
@@ -46,10 +55,16 @@ public class PatternBank implements Serializable {
 			this.patterns.get(patternNum).clearPattern();
 		} else if (this.patternState[patternNum] == PATTERN_STATE_RECORDED) {
 			this.patternState[patternNum] = PATTERN_STATE_TRIGGERED;
-		}	
+		}
 	}
 	
 	public void recordPress(int x, int y, int value) {
+	    for (Press press : ignore) {
+	        int[] xy = press.getPress();
+	        if (xy[0] == x && xy[1] == y) {
+	            return;
+	        }
+	    }
 		if (this.patternState[curPattern] == PATTERN_STATE_TRIGGERED) {
 			Pattern pattern = this.patterns.get(curPattern);
 			pattern.recordPress(this.recordPosition[curPattern], x, y, value);

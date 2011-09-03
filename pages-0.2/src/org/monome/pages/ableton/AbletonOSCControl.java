@@ -27,7 +27,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.Main;
 import com.illposed.osc.OSCMessage;
 
 /**
@@ -56,16 +56,16 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		// this for some reason
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			AbletonTrack abletonTrack = abletonState.getTrack(track);
 			if (abletonTrack != null) {
 				abletonTrack.setArm(1);
 			}
 			// redraw all ableton pages
-			ConfigurationFactory.getConfiguration().redrawAbletonPages();
+			Main.main.configuration.redrawAbletonPages();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -83,16 +83,16 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg = new OSCMessage("/live/arm", args);
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			AbletonTrack abletonTrack = abletonState.getTrack(track);
 			if (abletonTrack != null) {
 				abletonTrack.setArm(0);
 			}
 			// redraw all ableton pages
-			ConfigurationFactory.getConfiguration().redrawAbletonPages();
+			Main.main.configuration.redrawAbletonPages();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,7 +107,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		args[1] = new Integer(clip);
 		OSCMessage msg = new OSCMessage("/live/play/clipslot", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -123,7 +123,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		args[1] = new Integer(clip);
 		OSCMessage msg = new OSCMessage("/live/stop/clip", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -136,7 +136,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 	public void redo() {
 		OSCMessage msg = new OSCMessage("/live/redo");
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -156,13 +156,13 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		// this for some reason
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			abletonState.setOverdub(overdub);
 			// redraw all ableton pages
-			ConfigurationFactory.getConfiguration().redrawAbletonPages();
+			Main.main.configuration.redrawAbletonPages();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -182,10 +182,10 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg = new OSCMessage("/live/tempo", args);
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			abletonState.setTempo(tempo);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -202,7 +202,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		args[0] = new Integer(track);
 		OSCMessage msg = new OSCMessage("/live/stop/track", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -219,16 +219,16 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg = new OSCMessage("/live/mute", args);
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			AbletonTrack abletonTrack = abletonState.getTrack(track);
 			if (abletonTrack != null) {
 				abletonTrack.setMute(1);
 			}
 			// redraw all ableton pages
-			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
+			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -245,16 +245,16 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg = new OSCMessage("/live/mute", args);
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			AbletonTrack abletonTrack = abletonState.getTrack(track);
 			if (abletonTrack != null) {
 				abletonTrack.setMute(0);
 			}
 			// redraw all ableton pages
-			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
+			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -270,16 +270,16 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg = new OSCMessage("/live/solo", args);
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			AbletonTrack abletonTrack = abletonState.getTrack(track);
 			if (abletonTrack != null) {
 				abletonTrack.setSolo(1);
 			}
 			// redraw all ableton pages
-			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
+			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -292,16 +292,16 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg = new OSCMessage("/live/solo", args);
 		try {
 			for (int i = 0; i < 5; i++) {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			}
 			// update ableton state
-			AbletonState abletonState = ConfigurationFactory.getConfiguration().getAbletonState();
+			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			AbletonTrack abletonTrack = abletonState.getTrack(track);
 			if (abletonTrack != null) {
 				abletonTrack.setSolo(0);
 			}
 			// redraw all ableton pages
-			ConfigurationFactory.getConfiguration().redrawAbletonPages();			
+			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}		
@@ -313,12 +313,12 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 	 * @param track The track number to stop (0 = first track)
 	 */
 	public void viewTrack(int track) {
-		if (ConfigurationFactory.getConfiguration().getAbletonIgnoreViewTrack() == false) {
+		if (Main.main.configuration.getAbletonIgnoreViewTrack() == false) {
 			Object args[] = new Object[1];
 			args[0] = new Integer(track);
 			OSCMessage msg = new OSCMessage("/live/track/view", args);
 			try {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -331,7 +331,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		args[1] = new Float(amount);
 		OSCMessage msg = new OSCMessage("/live/track/jump", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -343,7 +343,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 	public void undo() {
 		OSCMessage msg = new OSCMessage("/live/undo");
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -355,7 +355,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		args[0] = new Integer(scene_num);
 		OSCMessage msg = new OSCMessage("/live/play/scene", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -368,7 +368,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		args[1] = clipNum;
 		OSCMessage msg = new OSCMessage("/live/clip/info", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -377,7 +377,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 	public void refreshAllTracks() {
 		OSCMessage msg = new OSCMessage("/live/track/info");
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -388,7 +388,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			e.printStackTrace();
 		}
 		
-		HashMap<Integer, AbletonTrack> tracks = ConfigurationFactory.getConfiguration().abletonState.getTracks();
+		HashMap<Integer, AbletonTrack> tracks = Main.main.configuration.abletonState.getTracks();
 		Iterator<Integer> i = tracks.keySet().iterator();
 		while (i.hasNext()) {
 			Integer trackNum = i.next();
@@ -397,8 +397,8 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			msg = new OSCMessage("/live/mute", args);
 			OSCMessage msg2 = new OSCMessage("/live/solo", args);
 			try {
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
-				ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg2);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg);
+				Main.main.configuration.getAbletonOSCPortOut().send(msg2);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -412,9 +412,9 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg2 = new OSCMessage("/live/mute", args);
 		OSCMessage msg3 = new OSCMessage("/live/solo", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg2);
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg3);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg2);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg3);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -426,20 +426,20 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		OSCMessage msg3 = new OSCMessage("/live/overdub");
 		OSCMessage msg4 = new OSCMessage("/live/scene");
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg2);
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg3);
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg4);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg2);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg3);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg4);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void refreshAbleton() {
-		ConfigurationFactory.getConfiguration().abletonState.reset();
+		Main.main.configuration.abletonState.reset();
 		refreshAllTracks();
 		refreshState();
-		ConfigurationFactory.getConfiguration().redrawAbletonPages();
+		Main.main.configuration.redrawAbletonPages();
 	}
 
 	public void setSelection(int widthOffset, int sceneOffset, int width,
@@ -451,7 +451,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 		args[3] = height;
 		OSCMessage msg = new OSCMessage("/live/selection", args);
 		try {
-			ConfigurationFactory.getConfiguration().getAbletonOSCPortOut().send(msg);
+			Main.main.configuration.getAbletonOSCPortOut().send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	

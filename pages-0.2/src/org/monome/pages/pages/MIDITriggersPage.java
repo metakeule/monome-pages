@@ -11,11 +11,11 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JPanel;
 
+import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonLooper;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
-import org.monome.pages.configuration.ConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDITriggersGUI;
 import org.w3c.dom.Element;
@@ -198,12 +198,7 @@ public class MIDITriggersPage implements Page {
 				}
 			}
 		} else {
-			if (this.getMode(b) == MODE_TRIGGERS) {
-				this.monome.led(x, y, value, this.index);
-			}
 			this.playNote(a, b, value);
-			// note on
-			// note off
 		}
 	}
 
@@ -215,12 +210,15 @@ public class MIDITriggersPage implements Page {
 	 * @param value The state, 1 = pressed, 0 = released
 	 */
 	public void playNote(int x, int y, int value) {
-		int note_num = x + 12;
-		int channel = y;
-		int index = y;
+	    /*
+		int note_num = ((x * this.monome.sizeX) + y) % 128;
 		if (getOrientation() == ORIENTATION_COLUMNS) {
-			index = x;
+			note_num = ((y * this.monome.sizeY) + x) % 128;
 		}
+        int channel = note_num / 128;
+        */
+	    int note_num = x + 12;
+	    int channel = y;
 		boolean ccMode = this.ccMode[index];
 		int velocity = value * this.velocity[index];
 		ShortMessage note_out = new ShortMessage();
@@ -333,7 +331,7 @@ public class MIDITriggersPage implements Page {
 				trackNum++;
 			}
 		}
-		AbletonState abletonState = ConfigurationFactory.getConfiguration().abletonState;
+		AbletonState abletonState = Main.main.configuration.abletonState;
 		HashMap<Integer, AbletonTrack> tracks = abletonState.getTracks();
 		if (trackNum >= tracks.size()) {
 			return;
@@ -387,7 +385,7 @@ public class MIDITriggersPage implements Page {
 				looperNum++;
 			}
 		}
-		AbletonState abletonState = ConfigurationFactory.getConfiguration().abletonState;
+		AbletonState abletonState = Main.main.configuration.abletonState;
 		HashMap<Integer, AbletonTrack> tracks = abletonState.getTracks();
 		int foundLoopersNum = -1;
 		for (int i = 0; i < tracks.size(); i++) {
@@ -448,16 +446,25 @@ public class MIDITriggersPage implements Page {
 	 */
 	public void send(MidiMessage message, long timeStamp) {
 		ShortMessage msg = (ShortMessage) message;
+		int note_num = msg.getData1() + (msg.getChannel() * 128);
+		/*
+		int x = note_num / monome.sizeX;
+		int y = note_num % monome.sizeY;
+		if (getOrientation() == ORIENTATION_COLUMNS) {
+	        x = note_num % monome.sizeX;
+	        y = note_num / monome.sizeY;
+		}
+		*/
 		int x = msg.getData1() - 12;
 		int y = msg.getChannel();
 		if (x >= 0 && x < this.monome.sizeX && y >= 0 && y < this.monome.sizeY) {
-			int velocity = msg.getData2();
-			if (velocity == 127) {
+			if (msg.getCommand() == ShortMessage.NOTE_ON) {
 				this.toggleValues[x][y] = 1;
+				this.monome.led(x, y, 1, this.index);
 			} else {
 				this.toggleValues[x][y] = 0;
+				this.monome.led(x, y, 0, this.index);
 			}
-			this.redrawMonome();
 		}
 		return;
 	}

@@ -9,9 +9,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.Main;
 import org.monome.pages.gui.GroovyErrorConsole;
-import org.monome.pages.gui.Main;
+import org.monome.pages.gui.MainGUI;
 import org.monome.pages.gui.SerialOSCSetupFrame;
 import org.monome.pages.pages.GroovyPage;
 import org.syntax.jedit.JEditTextArea;
@@ -176,7 +176,7 @@ public class GroovyGUI extends JPanel {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
 			try {
-				if (ConfigurationFactory.getConfiguration() != null) {
+				if (Main.main.configuration != null) {
 					FileWriter fw = new FileWriter(file);
 					fw.write(codePane.getText());
 					fw.close();
@@ -265,14 +265,14 @@ public class GroovyGUI extends JPanel {
                     errorWindow.setClosable(true);
                     errorWindow.setResizable(true);
                     errorWindow.setErrorText(page.errorLog.getErrors());
-                    Main.mainFrame.add(errorWindow);
+                    Main.main.mainFrame.add(errorWindow);
                     try {
                         errorWindow.setSelected(true);
                     } catch (PropertyVetoException ex) {
                         ex.printStackTrace();
                     }
                     
-                    Main.mainFrame.validate();
+                    Main.main.mainFrame.validate();
                 }
             });
         }

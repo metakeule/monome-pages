@@ -4,7 +4,7 @@ import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 
-import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.Main;
 
 public class MIDIInReceiver implements Receiver {
 
@@ -20,8 +20,8 @@ public class MIDIInReceiver implements Receiver {
 	}
 
 	public void send(MidiMessage arg0, long arg1) {
-		if (ConfigurationFactory.getConfiguration() != null && this.device != null) {
-			ConfigurationFactory.getConfiguration().send(this.device, arg0, arg1);
+		if (Main.main.configuration != null && this.device != null) {
+			Main.main.configuration.send(this.device, arg0, arg1);
 		}
 	}
 

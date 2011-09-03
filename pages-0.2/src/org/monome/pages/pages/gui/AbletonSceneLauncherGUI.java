@@ -2,7 +2,7 @@ package org.monome.pages.pages.gui;
 
 import javax.swing.JPanel;
 
-import org.monome.pages.configuration.ConfigurationFactory;
+import org.monome.pages.Main;
 import org.monome.pages.pages.AbletonSceneLauncherPage;
 
 import javax.swing.JLabel;
@@ -154,7 +154,7 @@ public class AbletonSceneLauncherGUI extends JPanel {
 			refreshButton.setText("Refresh From Ableton");
 			refreshButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					ConfigurationFactory.getConfiguration().getAbletonControl().refreshAbleton();
+					Main.main.configuration.getAbletonControl().refreshAbleton();
 				}
 			});
 		}

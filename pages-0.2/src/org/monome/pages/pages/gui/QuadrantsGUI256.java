@@ -19,7 +19,7 @@ import javax.swing.JButton;
 
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
-import org.monome.pages.gui.Main;
+import org.monome.pages.gui.MainGUI;
 import org.monome.pages.pages.QuadrantsPage;
 
 public class QuadrantsGUI256 extends JPanel {
@@ -327,8 +327,8 @@ public class QuadrantsGUI256 extends JPanel {
 		configFrame.add(configPanel);
 		configFrame.setSize(size);
 		configFrame.setVisible(true);
-		Main.getDesktopPane().add(configFrame);
-		Main.getDesktopPane().validate();
+		MainGUI.getDesktopPane().add(configFrame);
+		MainGUI.getDesktopPane().validate();
 		configFrame.moveToFront();
 	}
 

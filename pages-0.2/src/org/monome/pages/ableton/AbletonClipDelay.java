@@ -22,8 +22,8 @@
 
 package org.monome.pages.ableton;
 
+import org.monome.pages.Main;
 import org.monome.pages.configuration.Configuration;
-import org.monome.pages.configuration.ConfigurationFactory;
 
 /**
  * Delays sending a play clip command to Ableton, used by the Live Looper page to cut loops.
@@ -58,7 +58,7 @@ public class AbletonClipDelay implements Runnable {
 	 * @see java.lang.Runnable#run()
 	 */
 	public void run() {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		try {
 			Thread.sleep(this.delay);
 		} catch (InterruptedException e) {

@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.monome.pages.Main;
 import org.monome.pages.gui.MonomeFrame;
 
 public class MonomeConfigurationFactory {
 			
 	public static synchronized MonomeConfiguration getMonomeConfiguration(int index) {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		if (configuration.getMonomeConfigurations() == null) {
 			configuration.setMonomeConfigurations(new HashMap<Integer, MonomeConfiguration>());
 		}
@@ -25,7 +26,7 @@ public class MonomeConfigurationFactory {
 	}
 	
 	public static synchronized MonomeConfiguration getMonomeConfiguration(String prefix) {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		if (configuration.getMonomeConfigurations() == null) {
 			configuration.setMonomeConfigurations(new HashMap<Integer, MonomeConfiguration>());
 		}
@@ -41,7 +42,7 @@ public class MonomeConfigurationFactory {
 	}
 	
 	public static synchronized MonomeConfiguration addMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		if (configuration.getMonomeConfigurations() == null) {
 			configuration.setMonomeConfigurations(new HashMap<Integer, MonomeConfiguration>());
 		}
@@ -52,7 +53,7 @@ public class MonomeConfigurationFactory {
 	}
 	
 	public static synchronized MonomeConfiguration addFakeMonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame, QuadrantConfiguration quadConf, int pageIndex, MonomeConfiguration parent, int quadNum) {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		if (configuration.getMonomeConfigurations() == null) {
 			configuration.setMonomeConfigurations(new HashMap<Integer, MonomeConfiguration>());
 		}
@@ -64,13 +65,13 @@ public class MonomeConfigurationFactory {
 	}
 	
 	public static synchronized void moveIndex(int oldIndex, int newIndex) {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		configuration.getMonomeConfigurations().put(new Integer(newIndex), configuration.getMonomeConfigurations().get(oldIndex));
 		configuration.getMonomeConfigurations().remove(new Integer(oldIndex));
 	}
 	
 	public static synchronized int getNumMonomeConfigurations() {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		if (configuration.getMonomeConfigurations() == null) {
 			configuration.setMonomeConfigurations(new HashMap<Integer, MonomeConfiguration>());
 		}
@@ -78,12 +79,12 @@ public class MonomeConfigurationFactory {
 	}
 	
 	public static synchronized void removeMonomeConfigurations() {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		configuration.setMonomeConfigurations(new HashMap<Integer, MonomeConfiguration>());
 	}
 	
 	public static synchronized void removeMonomeConfiguration(int index) {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		MonomeConfiguration monomeConfig = configuration.getMonomeConfigurations().get(new Integer(index));
 		if (monomeConfig != null && monomeConfig.monomeFrame != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
 			monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
@@ -95,7 +96,7 @@ public class MonomeConfigurationFactory {
 	}
 
 	public static synchronized boolean prefixExists(String prefix) {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		if (configuration.getMonomeConfigurations() == null) {
 			configuration.setMonomeConfigurations(new HashMap<Integer, MonomeConfiguration>());
 		}
@@ -111,7 +112,7 @@ public class MonomeConfigurationFactory {
 	}
 
 	public static void combineMonomeConfigurations() {
-		Configuration configuration = ConfigurationFactory.getConfiguration();
+		Configuration configuration = Main.main.configuration;
 		if (configuration.getMonomeConfigurations() == null) {
 			return;
 		}
