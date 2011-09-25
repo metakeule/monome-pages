@@ -89,6 +89,10 @@ public class MachineDrumInterfacePage implements Page {
 		this.loadedModules.add(new LoadedModule(new MDMKitEditor(this, 2), 0, 8));
 		this.loadedModules.add(new LoadedModule(new MDMLFOManager(this, 3), 8, 8));
 		gui = new MachineDrumInterfaceGUI(this);
+		gui.mod1CB.setSelectedIndex(0);
+		gui.mod2CB.setSelectedIndex(1);
+		gui.mod3CB.setSelectedIndex(2);
+		gui.mod4CB.setSelectedIndex(3);
         origGuiDimension = gui.getSize();
     }
 
@@ -138,6 +142,9 @@ public class MachineDrumInterfacePage implements Page {
 	 * @see org.monome.pages.Page#send(javax.sound.midi.MidiMessage, long)
 	 */
 	public void send(MidiMessage message, long timeStamp) {
+		if (!gui.syncCB.isSelected()) {
+			return;
+		}
 		if (message instanceof ShortMessage) {
 			ShortMessage shortMessage = (ShortMessage) message;
 			switch (shortMessage.getCommand()) {
@@ -166,6 +173,15 @@ public class MachineDrumInterfacePage implements Page {
 		xml += "      <name>Machine Drum Interface</name>\n";
 		xml += "      <pageName>" + this.pageName + "</pageName>\n";
 		xml += "      <speed>" + this.speed + "</speed>\n";
+		String syncEnabled = "false";
+		if (this.gui.syncCB.isSelected()) {
+			syncEnabled = "true";
+		}
+		xml += "      <syncEnabled>" + syncEnabled + "</syncEnabled>\n";
+		xml += "      <module1>" + gui.mod1CB.getSelectedIndex() + "</module1>\n";
+		xml += "      <module2>" + gui.mod2CB.getSelectedIndex() + "</module2>\n";
+		xml += "      <module3>" + gui.mod3CB.getSelectedIndex() + "</module3>\n";
+		xml += "      <module4>" + gui.mod4CB.getSelectedIndex() + "</module4>\n";
 		return xml;
 	}
 
@@ -239,6 +255,57 @@ public class MachineDrumInterfacePage implements Page {
 	public void configure(Element pageElement) {
 		this.setName(this.monome.readConfigValue(pageElement, "pageName"));
 		this.setSpeed(Integer.parseInt(this.monome.readConfigValue(pageElement, "speed")));
+		if (this.monome.readConfigValue(pageElement, "syncEnabled") != null) {
+			if (this.monome.readConfigValue(pageElement, "syncEnabled").equalsIgnoreCase("true")) {
+				gui.syncCB.setSelected(true);
+			} else {
+				gui.syncCB.setSelected(false);
+			}
+		}
+		this.loadedModules = new ArrayList<LoadedModule>();
+		for (int i = 0; i < 4; i++) {
+			try {
+				if (this.monome.readConfigValue(pageElement, "module" + (i + 1)) == null) {
+					continue;
+				}
+				int option = Integer.parseInt(this.monome.readConfigValue(pageElement, "module" + (i + 1)));
+				if (i == 0) {
+					gui.mod1CB.setSelectedIndex(option);
+				} else if (i == 1) {
+					gui.mod2CB.setSelectedIndex(option);					
+				} else if (i == 2) {
+					gui.mod3CB.setSelectedIndex(option);					
+				} else if (i == 3) {
+					gui.mod4CB.setSelectedIndex(option);					
+				}
+				loadModule(option, i);
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void updateModulePrefs() {
+		this.loadedModules = new ArrayList<LoadedModule>();
+		loadModule(gui.mod1CB.getSelectedIndex(), 0);
+		loadModule(gui.mod2CB.getSelectedIndex(), 1);
+		loadModule(gui.mod3CB.getSelectedIndex(), 2);
+		loadModule(gui.mod4CB.getSelectedIndex(), 3);
+		this.redrawMonome();
+	}
+	
+	public void loadModule(int option, int moduleNumber) {
+		int x = (moduleNumber % 2) * 8;
+		int y = (moduleNumber / 2) * 8;
+		if (option == 0) {
+			this.loadedModules.add(new LoadedModule(new MDMPatternManager(this, moduleNumber), x, y));
+		} else if (option == 1) {
+			this.loadedModules.add(new LoadedModule(new MDMKitRandomizer(this, moduleNumber), x, y));			
+		} else if (option == 2) {
+			this.loadedModules.add(new LoadedModule(new MDMKitEditor(this, moduleNumber), x, y));			
+		} else if (option == 3) {
+			this.loadedModules.add(new LoadedModule(new MDMLFOManager(this, moduleNumber), x, y));			
+		}
 	}
 
 	public int getIndex() {
@@ -272,6 +339,9 @@ public class MachineDrumInterfacePage implements Page {
 	}
 	
 	public void handleTick() {
+		if (!gui.syncCB.isSelected()) {
+			return;
+		}
 		for (int i = 0; i < this.loadedModules.size(); i++) {
 			loadedModules.get(i).module.handleTick();
 		}

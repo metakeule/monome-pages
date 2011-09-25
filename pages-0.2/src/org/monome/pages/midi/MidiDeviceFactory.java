@@ -97,14 +97,23 @@ public class MidiDeviceFactory {
      */
     public static void closeMidiDevices() {
         for (int i=0; i < midiInTransmitters.size(); i++) {
+        	if (midiInTransmitters.get(i) == null) {
+        		continue;
+        	}
             midiInTransmitters.get(i).close();
         }
         
         for (int i=0; i < midiInDevices.size(); i++) {
+        	if (midiInDevices.get(i) == null) {
+        		continue;
+        	}
             midiInDevices.get(i).close();
         }
 
         for (int i=0; i < midiOutDevices.size(); i++) {
+        	if (midiOutDevices.get(i) == null) {
+        		continue;
+        	}
             midiOutDevices.get(i).close();
         }
     }
