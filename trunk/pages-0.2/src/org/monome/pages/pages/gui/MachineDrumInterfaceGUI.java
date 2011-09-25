@@ -7,6 +7,9 @@ import javax.swing.JLabel;
 
 import org.monome.pages.pages.MachineDrumInterfacePage;
 import javax.swing.JButton;
+import java.awt.Dimension;
+import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
 
 public class MachineDrumInterfaceGUI extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -15,6 +18,13 @@ public class MachineDrumInterfaceGUI extends JPanel {
 	private JLabel speedLBL = null;
 	private JLabel pageLabel = null;
 	private JButton updatePrefsBtn = null;
+	public JComboBox mod1CB = null;
+	public String[] options = {"Pattern Sequencer", "Kit Randomizer", "Kit Editor", "LFO Editor"};
+	public JComboBox mod2CB = null;
+	public JComboBox mod3CB = null;
+	public JComboBox mod4CB = null;
+	public JCheckBox syncCB = null;
+	private JLabel syncLbl = null;
 
 	/**
 	 * This is the default constructor
@@ -31,13 +41,22 @@ public class MachineDrumInterfaceGUI extends JPanel {
 	 * @return void
 	 */
 	private void initialize() {
+		syncLbl = new JLabel();
+		syncLbl.setBounds(new Rectangle(40, 175, 126, 26));
+		syncLbl.setText("Echo MIDI");
 		this.setLayout(null);
 		this.add(getPageLabel(), null);
 		setName("MachineDrum Interface Page");
-		this.setSize(200, 200);
+		this.setSize(184, 240);
 		this.add(getSpeedTF(), null);
 		this.add(getSpeedLBL(), null);
 		this.add(getUpdatePrefsBtn(), null);
+		this.add(getMod1CB(), null);
+		this.add(getMod2CB(), null);
+		this.add(getMod3CB(), null);
+		this.add(getMod4CB(), null);
+		this.add(getSyncCB(), null);
+		this.add(syncLbl, null);
 	}
 	
 	public void setName(String name) {
@@ -93,7 +112,7 @@ public class MachineDrumInterfaceGUI extends JPanel {
 	private JButton getUpdatePrefsBtn() {
 		if (updatePrefsBtn == null) {
 			updatePrefsBtn = new JButton();
-			updatePrefsBtn.setBounds(new Rectangle(10, 55, 148, 21));
+			updatePrefsBtn.setBounds(new Rectangle(15, 210, 148, 21));
 			updatePrefsBtn.setText("Update Preferences");
 			updatePrefsBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -106,9 +125,77 @@ public class MachineDrumInterfaceGUI extends JPanel {
 						}
 					} catch (NumberFormatException ex) {
 						getSpeedTF().setText("" + page.getSpeed());
-					}				
+					}
+					
+					page.updateModulePrefs();
 				}
 			});
 		}
 		return updatePrefsBtn;
+	}
+
+	/**
+	 * This method initializes mod1CB	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */
+	private JComboBox getMod1CB() {
+		if (mod1CB == null) {
+			mod1CB = new JComboBox(options);
+			mod1CB.setBounds(new Rectangle(10, 55, 161, 25));
+		}
+		return mod1CB;
+	}
+
+	/**
+	 * This method initializes mod2CB	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */
+	private JComboBox getMod2CB() {
+		if (mod2CB == null) {
+			mod2CB = new JComboBox(options);
+			mod2CB.setBounds(new Rectangle(10, 85, 161, 25));
+		}
+		return mod2CB;
+	}
+
+	/**
+	 * This method initializes mod3CB	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */
+	private JComboBox getMod3CB() {
+		if (mod3CB == null) {
+			mod3CB = new JComboBox(options);
+			mod3CB.setBounds(new Rectangle(10, 115, 161, 25));
+		}
+		return mod3CB;
+	}
+
+	/**
+	 * This method initializes mod4CB	
+	 * 	
+	 * @return javax.swing.JComboBox	
+	 */
+	private JComboBox getMod4CB() {
+		if (mod4CB == null) {
+			mod4CB = new JComboBox(options);
+			mod4CB.setBounds(new Rectangle(10, 145, 161, 25));
+		}
+		return mod4CB;
+	}
+
+	/**
+	 * This method initializes syncCB	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getSyncCB() {
+		if (syncCB == null) {
+			syncCB = new JCheckBox();
+			syncCB.setBounds(new Rectangle(15, 175, 21, 26));
+			syncCB.setSelected(true);
+		}
+		return syncCB;
 	}} //  @jve:decl-index=0:visual-constraint="10,10"
