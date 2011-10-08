@@ -1,6 +1,7 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
@@ -26,7 +27,8 @@ import org.w3c.dom.NodeList;
  *
  */
 
-public class MIDIKeyboardPage implements Page {
+public class MIDIKeyboardPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * The MonomeConfiguration that this page belongs to
@@ -421,7 +423,8 @@ public class MIDIKeyboardPage implements Page {
 	}
 	
 	//allows for playing notes by pressing different key/accidental/scale buttons
-	private void retriggerNotes() {
+	@SuppressWarnings("unused")
+    private void retriggerNotes() {
 		System.out.println("retriggerNotes");
 		for (int i=0; i<128; i++) {
 			this.notesOn[this.midiChannel][i] = 0;

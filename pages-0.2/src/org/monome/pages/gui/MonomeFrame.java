@@ -21,8 +21,8 @@ import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
 public class MonomeFrame extends JInternalFrame implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private JPanel jContentPane = null;
 	private JMenuBar monomeMenuBar = null;
 	private JMenu pageMenu = null;  //  @jve:decl-index=0:visual-constraint="365,110"
@@ -573,8 +573,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 		}
 		return pageChangeMidiInMenu;
 	}
-	
-	
+
 	public void updateMidiInMenuOptions(String[] midiInOptions) {
 		midiInMenu.removeAll();
 		pageChangeMidiInMenu.removeAll();
@@ -593,6 +592,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 					String[] pieces = e.getActionCommand().split("MIDI Input: ");
 					actionTogglePageChangeMidiInput(pieces[1]);
 				}});
+			System.out.println("adding " + cbMenuItem.getText() + " to midi in menu");
 			midiInMenu.add(cbMenuItem);
 			pageChangeMidiInMenu.add(cbMenuItem2);
 		}

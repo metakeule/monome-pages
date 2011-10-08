@@ -10,12 +10,11 @@ import javax.swing.JLabel;
 import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import java.awt.Dimension;
 import javax.swing.JCheckBox;
 
 public class MonomeSetupFrame extends JInternalFrame {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 42L;
 	private JPanel jContentPane = null;
 	private MonomeConfiguration monome;
 	private JLabel prefixLBL = null;

@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
  *
  */
 public class AbletonClipLauncherPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * Reference to the MonomeConfiguration this page belongs to.

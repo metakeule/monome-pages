@@ -44,7 +44,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
 /**
@@ -52,6 +51,7 @@ import com.illposed.osc.OSCPortOut;
  *
  */
 public class MonomeConfiguration implements Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * The monome's prefix (ie. "/40h")
@@ -96,12 +96,12 @@ public class MonomeConfiguration implements Serializable {
 	/**
 	 * Enabled MIDI In devices by page 
 	 */
-	String[][] midiInDevices = new String[255][32];
+	public String[][] midiInDevices = new String[255][32];
 
 	/**
 	 * Enabled MIDI In devices by page 
 	 */
-	String[][] midiOutDevices = new String[255][32];
+	public String[][] midiOutDevices = new String[255][32];
 
 	/**
 	 * The pages that belong to this monome

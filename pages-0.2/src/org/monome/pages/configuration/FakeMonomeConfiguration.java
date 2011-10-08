@@ -13,9 +13,9 @@ import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.pages.Page;
 
 
-public class FakeMonomeConfiguration extends MonomeConfiguration {
-	
-	QuadrantConfiguration quadConf;
+public class FakeMonomeConfiguration extends MonomeConfiguration {	
+    static final long serialVersionUID = 42L;
+    QuadrantConfiguration quadConf;
 	MonomeConfiguration parent;
 	int quadNum;
 	int pageIndex;

@@ -9,11 +9,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
 import org.monome.pages.pages.MIDISequencerPage;
-import java.awt.Dimension;
+import java.io.Serializable;
 
-public class MIDISequencerGUI extends JPanel {
+public class MIDISequencerGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	MIDISequencerPage page;
 	private JLabel pageLabel = null;
 	public JComboBox rowCB = null;

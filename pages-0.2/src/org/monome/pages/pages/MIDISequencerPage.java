@@ -1,6 +1,7 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -39,7 +40,9 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak
  *
  */
-public class MIDISequencerPage implements Page {
+public class MIDISequencerPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
+
 	/**
 	 * The MonomeConfiguration that this page belongs to
 	 */

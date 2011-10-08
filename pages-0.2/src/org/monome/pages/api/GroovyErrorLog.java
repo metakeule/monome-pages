@@ -1,7 +1,5 @@
 package org.monome.pages.api;
 
-import java.awt.Rectangle;
-
 import org.monome.pages.pages.gui.GroovyGUI;
 
 public class GroovyErrorLog {

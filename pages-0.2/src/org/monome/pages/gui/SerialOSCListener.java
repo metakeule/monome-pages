@@ -1,35 +1,18 @@
 package org.monome.pages.gui;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
 
 import org.monome.pages.Main;
-import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
-import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.SerialOSCMonome;
 
-/*
 import com.apple.dnssd.BrowseListener;
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
 import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.ResolveListener;
 import com.apple.dnssd.TXTRecord;
-*/
-import com.apple.dnssd.BrowseListener;
-import com.apple.dnssd.DNSSD;
-import com.apple.dnssd.DNSSDException;
-import com.apple.dnssd.DNSSDService;
-import com.apple.dnssd.ResolveListener;
-import com.apple.dnssd.TXTRecord;
-import com.illposed.osc.OSCListener;
-import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPortIn;
-import com.illposed.osc.OSCPortOut;
 
 public class SerialOSCListener implements BrowseListener, ResolveListener {
 	

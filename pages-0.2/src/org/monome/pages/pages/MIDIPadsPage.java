@@ -1,6 +1,7 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiMessage;
@@ -12,7 +13,8 @@ import org.monome.pages.pages.gui.MIDIPadsGUI;
 import org.w3c.dom.Element;
 
 
-public class MIDIPadsPage implements Page {
+public class MIDIPadsPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * The MonomeConfiguration that this page belongs to

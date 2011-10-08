@@ -21,8 +21,6 @@
  */
 package org.monome.pages.gui;
 
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -43,29 +41,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.SwingUtilities;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
-import org.apache.log4j.PropertyConfigurator;
 import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
-import org.monome.pages.configuration.SerialOSCMonome;
 import org.monome.pages.midi.MidiDeviceFactory;
-
-import com.apple.dnssd.DNSSD;
-import com.apple.dnssd.DNSSDException;
-import com.apple.dnssd.DNSSDRegistration;
-import com.apple.dnssd.DNSSDService;
-import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPortIn;
-import com.illposed.osc.OSCPortOut;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -75,9 +58,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintStream;
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainGUI extends JFrame {
@@ -183,7 +163,7 @@ public class MainGUI extends JFrame {
 			fileMenu.setText("File");
 			fileMenu.add(getNewItem());
 			fileMenu.add(getOpenItem());
-			//fileMenu.add(getOpenOldItem());
+			fileMenu.add(getOpenOldItem());
 			fileMenu.addSeparator();
 			fileMenu.add(getCloseItem());
 			fileMenu.addSeparator();
@@ -255,7 +235,7 @@ public class MainGUI extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						actionClose();
 						File file = fc.getSelectedFile();
-						actionOpenOld(file);
+						actionOpen(file);
 					}
 				}
 			});
@@ -264,39 +244,93 @@ public class MainGUI extends JFrame {
 	}
 	
 	public void actionOpen(File file) {
-		Configuration configuration;
-		try {
-			FileInputStream fis = new FileInputStream(file.getAbsolutePath());
-			ObjectInputStream in = new ObjectInputStream(fis);
-			configuration = (Configuration) in.readObject();
-			Main.main.configuration = configuration;
-			Main.main.configuration.abletonState = new AbletonState();
+		Configuration configuration = null;
+		FileInputStream fis;
+        try {
+            fis = new FileInputStream(file.getAbsolutePath());
+            ObjectInputStream in = new ObjectInputStream(fis);
+            configuration = (Configuration) in.readObject();
+            Main.main.configuration = configuration;
+            Main.main.configuration.abletonState = new AbletonState();
             configuration.initAbleton();
-			in.close();
-			getMidiMenu().setEnabled(true);
-			getNewMonomeItem().setEnabled(true);
-			getConfigurationMenu().setEnabled(true);
-			for (Integer key : configuration.getMonomeConfigurations().keySet()) {
-			    MonomeConfiguration monomeConfig = configuration.getMonomeConfigurations().get(key);
-		        MonomeFrame monomeFrame = new MonomeFrame(monomeConfig.index);
-		        monomeConfig.monomeFrame = monomeFrame;
-		        monomeConfig.setFrameTitle();
-		        getDesktopPane().add(monomeFrame);
-		        if (!monomeConfig.pages.isEmpty()) {
-		            monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
-		        }
-			}
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            in.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        for (Integer key : configuration.getMonomeConfigurations().keySet()) {
+            MonomeConfiguration monomeConfig = configuration.getMonomeConfigurations().get(key);
+            MonomeFrame monomeFrame = new MonomeFrame(monomeConfig.index);
+            monomeConfig.monomeFrame = monomeFrame;
+            monomeConfig.setFrameTitle();
+            if (monomeConfig.pages.size() > 0) {
+                monomeFrame.enableMidiMenu(true);
+            }
+            getDesktopPane().add(monomeFrame);
+            if (!monomeConfig.pages.isEmpty()) {
+                monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
+            }
+        }       
+        
+		getMidiMenu().setEnabled(true);
+		getNewMonomeItem().setEnabled(true);
+		getConfigurationMenu().setEnabled(true);
+        Info[] midiInfo = MidiSystem.getMidiDeviceInfo();
+        MidiDevice midiDevice;
+        
+        for (int i = 0; i < configuration.midiInDevices.length; i++) {
+            if (configuration.midiInDevices[i] == null) continue;
+            for (int j = 0; j < midiInfo.length; j++) {
+                try {
+                    midiDevice = MidiSystem.getMidiDevice(midiInfo[j]);
+                } catch (MidiUnavailableException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                if (configuration.midiInDevices[i].compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
+                    if (midiDevice.getMaxTransmitters() != 0) {
+                        MidiDeviceFactory.toggleMidiInDevice(midiDevice);
+                    }
+                }
+            }
+        }
 		
+        for (int i = 0; i < configuration.midiOutDevices.length; i++) {
+            if (configuration.midiOutDevices[i] == null) continue;
+            for (int j = 0; j < midiInfo.length; j++) {
+                try {
+                    midiDevice = MidiSystem.getMidiDevice(midiInfo[j]);
+                } catch (MidiUnavailableException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+                if (configuration.midiOutDevices[i].compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
+                    if (midiDevice.getMaxReceivers() != 0) {
+                        MidiDeviceFactory.toggleMidiOutDevice(midiDevice);
+                    }
+                }
+            }
+        }
+        
+        HashMap<Integer, MonomeConfiguration> monomeConfigs = configuration.getMonomeConfigurations();
+        for (Integer key : monomeConfigs.keySet()) {
+            MonomeConfiguration monomeConfig = monomeConfigs.get(key);
+            if (monomeConfig != null) {
+                for (int pageNum = 0; pageNum < monomeConfig.pages.size(); pageNum++) {
+                    System.out.println("update midi selected items on page # " + pageNum);
+                    monomeConfig.monomeFrame.updateMidiInSelectedItems(monomeConfig.midiInDevices[pageNum]);
+                    monomeConfig.monomeFrame.updateMidiOutSelectedItems(monomeConfig.midiOutDevices[pageNum]);
+                }
+            }
+        }
+        System.out.println("done loading");
 	}
 	
 	/**
@@ -304,7 +338,7 @@ public class MainGUI extends JFrame {
 	 * 	
 	 * @return javax.swing.JMenuItem	
 	 */
-	private JMenuItem getOpenOldItem() {
+    private JMenuItem getOpenOldItem() {
 		if (openOldItem == null) {
 			openOldItem = new JMenuItem();
 			openOldItem.setText("Open Old Configuration...");
@@ -437,7 +471,7 @@ public class MainGUI extends JFrame {
 			saveItem.getAccessibleContext().setAccessibleDescription("Save current configuration to the open configuration file");
 			saveItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					actionSaveOld(e);
+					actionSave(e);
 				}
 			});
 		}
@@ -457,18 +491,22 @@ public class MainGUI extends JFrame {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				file = fc.getSelectedFile();
 				Main.main.setConfigurationFile(file);
+				saveSerialized(file);
 			}
 		}
-		try {
-			FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
-			ObjectOutputStream out = new ObjectOutputStream(fos);
-			out.writeObject(Main.main.configuration);
-			out.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+	}
+	
+	public void saveSerialized(File file) {
+        try {
+            FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
+            ObjectOutputStream out = new ObjectOutputStream(fos);
+            out.writeObject(Main.main.configuration);
+            out.close();
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 	}
 
 	
@@ -525,6 +563,8 @@ public class MainGUI extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
 						Main.main.setConfigurationFile(file);
+                        saveSerialized(file);
+						/*
 						try {
 							if (Main.main.configuration != null) {
 								FileWriter fw = new FileWriter(file);
@@ -534,6 +574,7 @@ public class MainGUI extends JFrame {
 						} catch (IOException ex) {
 							ex.printStackTrace();
 						}
+						*/
 					}
 				}
 			});
@@ -636,7 +677,7 @@ public class MainGUI extends JFrame {
 		}
 		
 		serialOscSetupFrame = new SerialOSCSetupFrame();
-		serialOscSetupFrame.setSize(new Dimension(400, 250));
+		serialOscSetupFrame.setSize(new Dimension(510, 250));
 		serialOscSetupFrame.setVisible(true);
 		jDesktopPane.add(serialOscSetupFrame);
 		try {
@@ -842,6 +883,7 @@ public class MainGUI extends JFrame {
 				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
 					if (midiDevice.getMaxTransmitters() != 0) {
 						MidiDeviceFactory.toggleMidiInDevice(midiDevice);
+						Main.main.configuration.toggleMidiInDevice(sMidiDevice);
 					}
 				}
 			} catch (MidiUnavailableException e) {
@@ -914,6 +956,7 @@ public class MainGUI extends JFrame {
 				if (sMidiDevice.compareTo(midiDevice.getDeviceInfo().toString()) == 0) {
 					if (midiDevice.getMaxReceivers() != 0) {
 						MidiDeviceFactory.toggleMidiOutDevice(midiDevice);
+                        Main.main.configuration.toggleMidiOutDevice(sMidiDevice);
 					}
 				}
 			} catch (MidiUnavailableException e) {

@@ -9,11 +9,11 @@ import java.awt.Rectangle;
 import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
-import java.awt.Dimension;
+import java.io.Serializable;
 
-public class ExternalApplicationGUI extends JPanel {
+public class ExternalApplicationGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private JLabel pageLabel = null;
 	private ExternalApplicationPage page = null;
 	private JLabel oscInLabel = null;

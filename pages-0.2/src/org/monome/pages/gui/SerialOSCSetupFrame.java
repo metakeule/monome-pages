@@ -8,18 +8,10 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 
 import org.monome.pages.Main;
-import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
-import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.SerialOSCMonome;
 
-import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPortIn;
-import com.illposed.osc.OSCPortOut;
-
-import java.awt.Dimension;
-import java.io.IOException;
 import javax.swing.JComboBox;
 
 public class SerialOSCSetupFrame extends JInternalFrame {
@@ -30,6 +22,8 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	private JButton closeButton = null;
 	private int nextDeviceHeight = 40;
     private JComboBox libSelect = null;
+    private JLabel portLbl = null;
+    private JTextField portTF = null;
 	
 	public SerialOSCSetupFrame() {
 		super();
@@ -38,7 +32,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	}
 	
 	private void initialize() {
-		this.setSize(400, 250);
+		this.setSize(494, 247);
 		this.setTitle("SerialOSC Setup");
 		this.setContentPane(getJContentPane());
 		this.setResizable(true);
@@ -51,6 +45,8 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 			jContentPane.add(getDiscoverBtn(), null);
 			jContentPane.add(getCloseButton(), null);
 			jContentPane.add(getLibSelect(), null);
+			jContentPane.add(getPortLbl(), null);
+			jContentPane.add(getPortTF(), null);
 		}
 		return jContentPane;
 	}
@@ -63,7 +59,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	private JButton getDiscoverBtn() {
 		if (discoverBtn == null) {
 			discoverBtn = new JButton();
-			discoverBtn.setBounds(new Rectangle(135, 5, 151, 26));
+			discoverBtn.setBounds(new Rectangle(250, 5, 151, 26));
 			discoverBtn.setText("Discover Devices");
 			discoverBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -96,7 +92,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	private JButton getCloseButton() {
 		if (closeButton == null) {
 			closeButton = new JButton();
-			closeButton.setBounds(new Rectangle(300, 5, 76, 26));
+			closeButton.setBounds(new Rectangle(405, 5, 76, 26));
 			closeButton.setText("Close");
 			closeButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -150,7 +146,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
     private JComboBox getLibSelect() {
         if (libSelect == null) {
             libSelect = new JComboBox();
-            libSelect.setBounds(new Rectangle(5, 5, 116, 25));
+            libSelect.setBounds(new Rectangle(130, 5, 116, 26));
             libSelect.addItem("Apple");
             libSelect.addItem("JmDNS");
             libSelect.setSelectedIndex(Main.main.zeroconfLibrary);
@@ -166,5 +162,45 @@ public class SerialOSCSetupFrame extends JInternalFrame {
             });
         }
         return libSelect;
+    }
+
+    /**
+     * This method initializes portLbl	
+     * 	
+     * @return javax.swing.JLabel	
+     */
+    private JLabel getPortLbl() {
+        if (portLbl == null) {
+            portLbl = new JLabel();
+            portLbl.setText("Port");
+            portLbl.setBounds(new Rectangle(5, 5, 41, 26));
+        }
+        return portLbl;
+    }
+
+    /**
+     * This method initializes portTF	
+     * 	
+     * @return javax.swing.JTextField	
+     */
+    private JTextField getPortTF() {
+        if (portTF == null) {
+            portTF = new JTextField();
+            portTF.setBounds(new Rectangle(50, 5, 76, 26));
+            portTF.setText("" + Main.main.configuration.oscListenPort);
+            portTF.addCaretListener(new javax.swing.event.CaretListener() {
+                public void caretUpdate(javax.swing.event.CaretEvent e) {
+                    try {
+                        int newPort = Integer.parseInt(portTF.getText());
+                        if (newPort >= 1024 && newPort <= 65535) {
+                            Main.main.configuration.oscListenPort = newPort;
+                        }
+                    } catch (NumberFormatException ex) {
+                        
+                    }
+                }
+            });
+        }
+        return portTF;
     }
 }  //  @jve:decl-index=0:visual-constraint="10,10"

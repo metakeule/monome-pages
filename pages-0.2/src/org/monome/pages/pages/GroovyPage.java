@@ -2,6 +2,7 @@ package org.monome.pages.pages;
 
 import java.awt.Dimension;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 
 import groovy.lang.GroovyClassLoader;
@@ -11,14 +12,16 @@ import javax.sound.midi.ShortMessage;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.monome.pages.api.GroovyAPI;
 import org.monome.pages.api.GroovyErrorLog;
 import org.monome.pages.api.GroovyPageInterface;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.GroovyGUI;
 import org.w3c.dom.Element;
 
-public class GroovyPage implements Page {
-	
+public class GroovyPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
+
 	/**
 	 * The MonomeConfiguration this page belongs to
 	 */
@@ -41,7 +44,7 @@ public class GroovyPage implements Page {
 	
 	public GroovyClassLoader gcl;
 
-	private Class theClass;
+	private Class<GroovyAPI> theClass;
 
 	private Object theScript;
 	
@@ -264,7 +267,8 @@ public class GroovyPage implements Page {
 		gui.codePane.scrollTo(0, 0);
 	}
 
-	public void runCode() {
+	@SuppressWarnings("unchecked")
+    public void runCode() {
 		try {
 		    if (theApp != null) {
 		        theApp.stop();

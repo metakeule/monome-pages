@@ -3,15 +3,17 @@ package org.monome.pages.pages.gui;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
 import org.monome.pages.pages.MIDIFadersPage;
 import javax.swing.JCheckBox;
 
-public class MIDIFadersGUI extends JPanel {
+public class MIDIFadersGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private MIDIFadersPage page;
 	private JLabel pageLabel = null;
 	private JTextField delayTF = null;

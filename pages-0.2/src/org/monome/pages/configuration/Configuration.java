@@ -39,15 +39,12 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.MidiUnavailableException;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Transmitter;
 import javax.sound.midi.MidiDevice.Info;
 
 import javax.swing.JOptionPane;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonControl;
@@ -56,7 +53,6 @@ import org.monome.pages.ableton.AbletonOSCListener;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.gui.MainGUI;
 import org.monome.pages.gui.MonomeFrame;
-import org.monome.pages.midi.MIDIInReceiver;
 import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.Page;
 
@@ -64,7 +60,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -81,11 +76,14 @@ import com.illposed.osc.OSCPortOut;
  *
  */
 public class Configuration implements Serializable {
-
+    static final long serialVersionUID = 42L;
+    
 	/**
 	 * The name of the configuration.
 	 */
 	public String name;
+	
+	public int oscListenPort = 12345;
 
 	/**
 	 * The port number to receive OSC messages from MonomeSerial.
@@ -173,6 +171,16 @@ public class Configuration implements Serializable {
 	private transient OSCPortIn serialOSCPortIn;
 	
 	private HashMap<Integer, MonomeConfiguration> monomeConfigurations = null;
+	
+    /**
+     * Enabled MIDI In devices (global) 
+     */
+    public String[] midiInDevices = new String[32];
+
+    /**
+     * Enabled MIDI Out devices (global)
+     */
+    public String[] midiOutDevices = new String[32];
 
 	/**
 	 * @param name The name of the configuration
@@ -405,13 +413,13 @@ public class Configuration implements Serializable {
 		monome.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(monome.serialOSCHostname, monome.serialOSCPort);
 
 		MonomeOSCListener oscListener = new MonomeOSCListener(monome);
-		this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
+		this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(oscListenPort);
 		this.serialOSCPortIn.addListener(monome.prefix + "/grid/key", oscListener);
 		
 		try {
 	        OSCMessage portMsg = new OSCMessage();
 	        portMsg.setAddress("/sys/port");
-	        portMsg.addArgument(Main.PAGES_OSC_PORT);
+	        portMsg.addArgument(oscListenPort);
 			monome.serialOSCPortOut.send(portMsg);
 			portMsg = new OSCMessage();
             portMsg.setAddress("/sys/host");
@@ -444,8 +452,33 @@ public class Configuration implements Serializable {
 				e.printStackTrace();
 			}
 		}
-
 	}
+	
+    /**
+     * Turns a MIDI In device on or off for the current page.
+     * 
+     * @param deviceName the MIDI device name
+     */
+    public void toggleMidiInDevice(String deviceName) {
+        for (int i = 0; i < this.midiInDevices.length; i++) {
+            // if this device was enabled, disable it
+            if (this.midiInDevices[i] == null) {
+                continue;
+            }
+            if (this.midiInDevices[i].compareTo(deviceName) == 0) {
+                midiInDevices[i] = new String();
+                return;
+            }
+        }
+
+        // if we didn't disable it, enable it
+        for (int i = 0; i < this.midiInDevices.length; i++) {
+            if (this.midiInDevices[i] == null) {
+                this.midiInDevices[i] = deviceName;
+                return;
+            }
+        }
+    }
 
 	/**
 	 * Enables or disables a MIDI output device
@@ -470,6 +503,31 @@ public class Configuration implements Serializable {
 		}		
 	}
 	
+    /**
+     * Toggles a MIDI Out device on or off for the current page.
+     * 
+     * @param deviceName the name of the MIDI device
+     */
+    public void toggleMidiOutDevice(String deviceName) {
+        for (int i = 0; i < this.midiOutDevices.length; i++) {
+            // if this device was enabled, disable it
+            if (this.midiOutDevices[i] == null) {
+                continue;
+            }
+            if (this.midiOutDevices[i].compareTo(deviceName) == 0) {
+                midiOutDevices[i] = new String();
+                return;
+            }
+        }
+
+        // if we didn't disable it, enable it
+        for (int i = 0; i < this.midiOutDevices.length; i++) {
+            if (this.midiOutDevices[i] == null) {
+                this.midiOutDevices[i] = deviceName;
+                return;
+            }
+        }
+    }
 
 	/**
 	 * Called by MIDIInReceiver objects when a MIDI message is received.

@@ -1,30 +1,24 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.GridBagLayout;
-
 import javax.swing.ButtonGroup;
-import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
-import java.awt.GridBagConstraints;
 import java.awt.Rectangle;
 import javax.swing.JRadioButton;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.Serializable;
 
 import javax.swing.JButton;
 
-import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.gui.MainGUI;
 import org.monome.pages.pages.QuadrantsPage;
 
-public class QuadrantsGUI256 extends JPanel {
+public class QuadrantsGUI256 extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private JLabel pageLabel = null;
 	private JRadioButton quad1RB = null;
 	private JLabel quad1LBL = null;

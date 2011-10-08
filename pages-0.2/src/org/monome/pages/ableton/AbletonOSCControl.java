@@ -41,9 +41,10 @@ import com.illposed.osc.OSCMessage;
  * @author Tom Dinchak
  *
  */
-public class AbletonOSCControl implements AbletonControl, Serializable {
-	
-	/* (non-Javadoc)
+public class AbletonOSCControl implements AbletonControl, Serializable {	
+    static final long serialVersionUID = 42L;
+
+    /* (non-Javadoc)
 	 * @see org.monome.pages.ableton.AbletonControl#armTrack(int)
 	 */
 	public void armTrack(int track) {

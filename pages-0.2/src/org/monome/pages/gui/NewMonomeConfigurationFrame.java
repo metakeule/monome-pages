@@ -16,7 +16,6 @@ import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.MonomeOSCListener;
-import org.monome.pages.configuration.OSCPortFactory;
 
 public class NewMonomeConfigurationFrame extends JInternalFrame {
 

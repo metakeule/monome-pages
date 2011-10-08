@@ -1,10 +1,12 @@
 package org.monome.pages.configuration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
-public class QuadrantConfiguration {
+public class QuadrantConfiguration implements Serializable {
+    static final long serialVersionUID = 42L;
 	
 	private ArrayList<Integer> startX;
 	private ArrayList<Integer> startY;

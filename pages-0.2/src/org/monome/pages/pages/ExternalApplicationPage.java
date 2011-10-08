@@ -2,6 +2,7 @@ package org.monome.pages.pages;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,7 +38,8 @@ import com.illposed.osc.OSCPortOut;
  * @author Tom Dinchak, Stephen McLeod
  *
  */
-public class ExternalApplicationPage implements Page, OSCListener, RegisterListener {
+public class ExternalApplicationPage implements Page, OSCListener, RegisterListener, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * The MonomeConfiguration this page belongs to

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Pattern implements Serializable {
+    static final long serialVersionUID = 42L;
 	
 	ArrayList<Press> presses = new ArrayList<Press>();
 	ArrayList<Press> queuedPresses = new ArrayList<Press>();

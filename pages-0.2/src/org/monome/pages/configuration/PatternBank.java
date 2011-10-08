@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class PatternBank implements Serializable {
+    static final long serialVersionUID = 42L;
 	
 	ArrayList<Pattern> patterns = new ArrayList<Pattern>();
 	private int[] patternState;
@@ -16,7 +17,7 @@ public class PatternBank implements Serializable {
 	private int quantify = 6;
 	private int curPattern = 0;
 	private int[] recordPosition;
-	private ArrayList<Press> ignore = new ArrayList();
+	private ArrayList<Press> ignore = new ArrayList<Press>();
 	
 	public PatternBank(int numPatterns) {
 		this.numPatterns = numPatterns;

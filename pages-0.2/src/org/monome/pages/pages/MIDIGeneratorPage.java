@@ -1,6 +1,7 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -12,7 +13,8 @@ import org.monome.pages.configuration.Press;
 import org.monome.pages.pages.gui.MIDIGeneratorGUI;
 import org.w3c.dom.Element;
 
-public class MIDIGeneratorPage implements Page {
+public class MIDIGeneratorPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	private MonomeConfiguration monome;
 	private MIDIGeneratorGUI gui;

@@ -7,12 +7,14 @@ import org.monome.pages.pages.AbletonSceneLauncherPage;
 
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 
-public class AbletonSceneLauncherGUI extends JPanel {
+public class AbletonSceneLauncherGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private AbletonSceneLauncherPage page = null;
 	private JLabel pageLabel = null;
 	private JCheckBox disableMuteCB = null;
