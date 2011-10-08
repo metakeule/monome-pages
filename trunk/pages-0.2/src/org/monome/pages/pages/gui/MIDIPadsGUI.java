@@ -5,12 +5,14 @@ import javax.swing.JPanel;
 import org.monome.pages.pages.MIDIPadsPage;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
-public class MIDIPadsGUI extends JPanel {
+public class MIDIPadsGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private JLabel pageLabel = null;
 	
 	/**

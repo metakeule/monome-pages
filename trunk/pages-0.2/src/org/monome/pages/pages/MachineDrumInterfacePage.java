@@ -1,16 +1,15 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
-import javax.sound.midi.SysexMessage;
 import javax.swing.JPanel;
 
-//import org.monome.pages.configuration.ADCOptions;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.machinedrum.MachineDrum;
 import org.monome.pages.pages.gui.MachineDrumInterfaceGUI;
@@ -36,7 +35,8 @@ import org.w3c.dom.Element;
  * @author Tom Dinchak
  *
  */
-public class MachineDrumInterfacePage implements Page {
+public class MachineDrumInterfacePage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * The MonomeConfiguration object this page belongs to

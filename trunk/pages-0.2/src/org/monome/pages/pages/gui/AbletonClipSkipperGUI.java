@@ -7,11 +7,13 @@ import org.monome.pages.pages.AbletonClipSkipperPage;
 
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import javax.swing.JButton;
 
-public class AbletonClipSkipperGUI extends JPanel {
-
-	private static final long serialVersionUID = 1L;
+public class AbletonClipSkipperGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
+    
 	private AbletonClipSkipperPage page = null;
 	private JLabel pageLabel = null;
 	private JButton refreshButton = null;

@@ -5,12 +5,14 @@ import javax.swing.JPanel;
 import org.monome.pages.pages.MIDIGeneratorPage;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
-public class MIDIGeneratorGUI extends JPanel {
+public class MIDIGeneratorGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private MIDIGeneratorPage page;
 	private JLabel pageLabel = null;
 	private JLabel scaleLbl = null;

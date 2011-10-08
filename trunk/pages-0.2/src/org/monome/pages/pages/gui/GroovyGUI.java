@@ -1,18 +1,9 @@
 package org.monome.pages.pages.gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
-import java.awt.Rectangle;
-
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 
 import org.monome.pages.Main;
 import org.monome.pages.gui.GroovyErrorConsole;
-import org.monome.pages.gui.MainGUI;
-import org.monome.pages.gui.SerialOSCSetupFrame;
 import org.monome.pages.pages.GroovyPage;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
@@ -26,28 +17,19 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 
 import javax.swing.Box;
 import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
-import javax.swing.JTextArea;
 import javax.swing.JButton;
-import javax.swing.JTextPane;
-import javax.swing.JEditorPane;
-import javax.swing.text.EditorKit;
-import java.awt.GridLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
 import javax.swing.BoxLayout;
 
-public class GroovyGUI extends JPanel {
+public class GroovyGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private GroovyPage page;
-	private JLabel pageLabel = null;
 	private JButton runBtn = null;  //  @jve:decl-index=0:visual-constraint="748,97"
 	public JEditTextArea codePane = null;
-	private JScrollPane scrollPane;
 	private JButton stopButton = null;  //  @jve:decl-index=0:visual-constraint="717,352"
 	private JButton saveButton = null;  //  @jve:decl-index=0:visual-constraint="749,224"
 	private JButton loadButton = null;  //  @jve:decl-index=0:visual-constraint="716,389"

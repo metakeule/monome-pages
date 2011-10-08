@@ -5,10 +5,8 @@ import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 
-import java.awt.Dimension;
 import javax.swing.JTextArea;
 import java.awt.Rectangle;
-import java.awt.FlowLayout;
 
 public class GroovyErrorConsole extends JInternalFrame {
 

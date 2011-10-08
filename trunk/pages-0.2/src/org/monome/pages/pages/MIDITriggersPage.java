@@ -1,6 +1,7 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -42,7 +43,8 @@ import org.w3c.dom.NodeList;
  * @author Tom Dinchak
  *
  */
-public class MIDITriggersPage implements Page {
+public class MIDITriggersPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * Toggles mode constant
@@ -345,7 +347,7 @@ public class MIDITriggersPage implements Page {
 		Set<Integer> keySet = clips.keySet();
 		Iterator<Integer> it = keySet.iterator();
 		while (it.hasNext()) {
-			int clipId = (Integer) it.next();
+			int clipId = it.next();
 			AbletonClip clip = clips.get(clipId);
 			if (clip.getState() == AbletonClip.STATE_EMPTY) {
 				if (getOrientation() == ORIENTATION_COLUMNS) {
@@ -395,11 +397,11 @@ public class MIDITriggersPage implements Page {
 			}
 			HashMap<Integer, AbletonLooper> loopers = track.getLoopers();
 			Set<Integer> keySet = loopers.keySet();
-			Iterator it = keySet.iterator();
+			Iterator<Integer> it = keySet.iterator();
 			//for (int j = 0; j < loopers.size(); j++) {
 			while (it.hasNext()) {
 				foundLoopersNum++;
-				Integer deviceId = (Integer) it.next();
+				Integer deviceId = it.next();
 				if (foundLoopersNum != looperNum) {
 					continue;
 				}
@@ -446,7 +448,7 @@ public class MIDITriggersPage implements Page {
 	 */
 	public void send(MidiMessage message, long timeStamp) {
 		ShortMessage msg = (ShortMessage) message;
-		int note_num = msg.getData1() + (msg.getChannel() * 128);
+		//int note_num = msg.getData1() + (msg.getChannel() * 128);
 		/*
 		int x = note_num / monome.sizeX;
 		int y = note_num % monome.sizeY;

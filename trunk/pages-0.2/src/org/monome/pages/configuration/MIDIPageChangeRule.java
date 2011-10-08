@@ -3,6 +3,7 @@ package org.monome.pages.configuration;
 import java.io.Serializable;
 
 public class MIDIPageChangeRule implements Serializable {
+    static final long serialVersionUID = 42L;
 	
 	private int note;
 	private int channel;

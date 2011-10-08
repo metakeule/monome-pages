@@ -1,6 +1,5 @@
 package org.monome.pages.configuration;
 
-import java.net.BindException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;

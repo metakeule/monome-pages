@@ -3,14 +3,16 @@ package org.monome.pages.pages.gui;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.io.Serializable;
+
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
 import org.monome.pages.pages.MIDIKeyboardPage;
 
-public class MIDIKeyboardGUI extends JPanel {
+public class MIDIKeyboardGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private MIDIKeyboardPage page;
 	private JLabel pageLabel = null;
 	private JLabel scalesLBL = null;

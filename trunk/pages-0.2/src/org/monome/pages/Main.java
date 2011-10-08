@@ -38,7 +38,6 @@ public class Main {
     public static final int LIBRARY_APPLE = 0;
     public static final int LIBRARY_JMDNS = 1;
     public static Logger logger = Logger.getLogger("socketLogger");
-    public static final int PAGES_OSC_PORT = 12345;
 
     public static Main main;
 
@@ -47,7 +46,6 @@ public class Main {
     File configurationFile = null;
     public boolean openingConfig = false;
     private SerialOSCListener serialOSCListener = new SerialOSCListener();
-    private OSCPortIn pagesOSCIn;
     public boolean sentSerialOSCInfoMsg;
     public JmDNS jmdns;
     public ArrayList<DNSSDRegistration> dnssdRegistrations = new ArrayList<DNSSDRegistration>();
@@ -192,9 +190,12 @@ public class Main {
     }
     
     public void startMonome(SerialOSCMonome monome) {
-        OSCPortIn inPort = OSCPortFactory.getInstance().getOSCPortIn(Main.PAGES_OSC_PORT);
+        if (configuration == null) {
+            return;
+        }
+        OSCPortIn inPort = OSCPortFactory.getInstance().getOSCPortIn(configuration.oscListenPort);
         if (inPort == null) {
-            JOptionPane.showMessageDialog(MainGUI.getDesktopPane(), "Unable to bind to port " + Main.PAGES_OSC_PORT + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(MainGUI.getDesktopPane(), "Unable to bind to port " + configuration.oscListenPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         inPort.addListener("/sys/size", monome);
@@ -206,7 +207,7 @@ public class Main {
         OSCMessage infoMsg = new OSCMessage();
         infoMsg.setAddress("/sys/info");
         infoMsg.addArgument("127.0.0.1");
-        infoMsg.addArgument(new Integer(Main.PAGES_OSC_PORT));
+        infoMsg.addArgument(new Integer(configuration.oscListenPort));
         try {
             outPort.send(infoMsg);
         } catch (IOException e) {

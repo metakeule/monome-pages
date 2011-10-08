@@ -7,12 +7,14 @@ import javax.swing.JLabel;
 
 import org.monome.pages.pages.MachineDrumInterfacePage;
 import javax.swing.JButton;
-import java.awt.Dimension;
+import java.io.Serializable;
+
 import javax.swing.JComboBox;
 import javax.swing.JCheckBox;
 
-public class MachineDrumInterfaceGUI extends JPanel {
-	private static final long serialVersionUID = 1L;
+public class MachineDrumInterfaceGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
+
 	private MachineDrumInterfacePage page = null;
 	private JTextField speedTF = null;
 	private JLabel speedLBL = null;

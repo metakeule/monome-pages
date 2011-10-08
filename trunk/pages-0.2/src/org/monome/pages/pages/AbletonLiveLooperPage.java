@@ -1,6 +1,7 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -22,7 +23,8 @@ import org.w3c.dom.Element;
  * @author Tom Dinchak
  *
  */
-public class AbletonLiveLooperPage implements Page {
+public class AbletonLiveLooperPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * Reference to the MonomeConfiguration this page belongs to.

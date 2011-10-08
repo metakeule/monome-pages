@@ -16,9 +16,11 @@ import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.configuration.QuadrantConfiguration;
 import org.monome.pages.pages.QuadrantsPage;
 
-public class QuadrantsGUI extends JPanel implements ActionListener {
+import java.io.Serializable;
 
-	private static final long serialVersionUID = 1L;
+public class QuadrantsGUI extends JPanel implements ActionListener, Serializable {
+    static final long serialVersionUID = 42L;
+
 	QuadrantsPage page;
 	private JLabel pageNameLBL;
 	private ButtonGroup quadrantBG;

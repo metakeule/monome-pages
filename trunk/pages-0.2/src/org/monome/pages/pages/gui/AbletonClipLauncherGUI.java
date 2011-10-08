@@ -13,8 +13,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JButton;
 
 public class AbletonClipLauncherGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	private AbletonClipLauncherPage page = null;
 	private JLabel pageLabel = null;
 	private JCheckBox disableMuteCB = null;

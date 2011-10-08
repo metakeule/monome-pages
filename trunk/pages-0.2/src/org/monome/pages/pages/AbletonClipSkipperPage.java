@@ -1,6 +1,7 @@
 package org.monome.pages.pages;
 
 import java.awt.Dimension;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
@@ -23,7 +24,8 @@ import org.w3c.dom.Element;
  * @author Tom Dinchak
  *
  */
-public class AbletonClipSkipperPage implements Page {
+public class AbletonClipSkipperPage implements Page, Serializable {
+    static final long serialVersionUID = 42L;
 
 	/**
 	 * The MonomeConfiguration this page belongs to

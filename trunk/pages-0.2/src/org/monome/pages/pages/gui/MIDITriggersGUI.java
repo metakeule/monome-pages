@@ -10,12 +10,13 @@ import javax.swing.JComboBox;
 import org.monome.pages.pages.MIDITriggersPage;
 import javax.swing.JRadioButton;
 import javax.swing.JCheckBox;
-import java.awt.Dimension;
+import java.io.Serializable;
+
 import javax.swing.JTextField;
 
-public class MIDITriggersGUI extends JPanel {
+public class MIDITriggersGUI extends JPanel implements Serializable {
+    static final long serialVersionUID = 42L;
 
-	private static final long serialVersionUID = 1L;
 	MIDITriggersPage page;
 	private JLabel pageLabel = null;
 	private JComboBox rowColCB = null;

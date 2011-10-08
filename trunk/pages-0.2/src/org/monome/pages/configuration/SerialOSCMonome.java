@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.monome.pages.Main;
-import org.monome.pages.gui.MainGUI;
 import org.monome.pages.pages.Page;
 
 import com.illposed.osc.OSCListener;

@@ -116,7 +116,8 @@ public class MonomeConfigurationFactory {
 		if (configuration.getMonomeConfigurations() == null) {
 			return;
 		}
-		HashMap<Integer, MonomeConfiguration> tmpMonomeConfigurations = (HashMap<Integer, MonomeConfiguration>) configuration.getMonomeConfigurations().clone();
+		@SuppressWarnings("unchecked")
+        HashMap<Integer, MonomeConfiguration> tmpMonomeConfigurations = (HashMap<Integer, MonomeConfiguration>) configuration.getMonomeConfigurations().clone();
 		Iterator<Integer> it = tmpMonomeConfigurations.keySet().iterator();
 		while (it.hasNext()) {
 			Integer key = it.next();
