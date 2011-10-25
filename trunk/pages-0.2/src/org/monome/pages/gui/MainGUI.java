@@ -163,7 +163,7 @@ public class MainGUI extends JFrame {
 			fileMenu.setText("File");
 			fileMenu.add(getNewItem());
 			fileMenu.add(getOpenItem());
-			fileMenu.add(getOpenOldItem());
+			//fileMenu.add(getOpenOldItem());
 			fileMenu.addSeparator();
 			fileMenu.add(getCloseItem());
 			fileMenu.addSeparator();
@@ -235,7 +235,7 @@ public class MainGUI extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						actionClose();
 						File file = fc.getSelectedFile();
-						actionOpen(file);
+						actionOpenOld(file);
 					}
 				}
 			});
@@ -471,7 +471,7 @@ public class MainGUI extends JFrame {
 			saveItem.getAccessibleContext().setAccessibleDescription("Save current configuration to the open configuration file");
 			saveItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					actionSave(e);
+				    actionSaveOld(e);
 				}
 			});
 		}
@@ -563,8 +563,9 @@ public class MainGUI extends JFrame {
 					if (returnVal == JFileChooser.APPROVE_OPTION) {
 						File file = fc.getSelectedFile();
 						Main.main.setConfigurationFile(file);
-                        saveSerialized(file);
 						/*
+                        saveSerialized(file);
+						*/
 						try {
 							if (Main.main.configuration != null) {
 								FileWriter fw = new FileWriter(file);
@@ -574,7 +575,6 @@ public class MainGUI extends JFrame {
 						} catch (IOException ex) {
 							ex.printStackTrace();
 						}
-						*/
 					}
 				}
 			});

@@ -8,8 +8,12 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 
 import org.monome.pages.Main;
+import org.monome.pages.configuration.ArcConfiguration;
+import org.monome.pages.configuration.ArcConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
+import org.monome.pages.configuration.SerialOSCArc;
+import org.monome.pages.configuration.SerialOSCDevice;
 import org.monome.pages.configuration.SerialOSCMonome;
 
 import javax.swing.JComboBox;
@@ -32,7 +36,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	}
 	
 	private void initialize() {
-		this.setSize(494, 247);
+		this.setSize(505, 247);
 		this.setTitle("SerialOSC Setup");
 		this.setContentPane(getJContentPane());
 		this.setResizable(true);
@@ -107,23 +111,38 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 		this.dispose();
 	}
 
-	public void addDevice(final SerialOSCMonome monome) {
+	public void addDevice(final SerialOSCDevice device) {
 		JLabel deviceLabel = new JLabel();
-		deviceLabel.setText(monome.serial + " [" + monome.hostName + ":" + monome.port + "]");
-		deviceLabel.setBounds(new Rectangle(10, nextDeviceHeight, 300, 20));
+		deviceLabel.setText(device.getDeviceName() + " (" + device.getSerial() + ") [" + device.getHostName() + ":" + device.getPort() + "]");
+		deviceLabel.setBounds(new Rectangle(10, nextDeviceHeight, 400, 20));
 		jContentPane.add(deviceLabel);
 		
-		MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + monome.serial);
-		if (monomeConfig == null || (monomeConfig != null && monomeConfig.serialOSCHostname != null && !monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
-			final JButton addButton = new JButton();
-			addButton.setBounds(new Rectangle(300, nextDeviceHeight, 76, 20));
-			addButton.setText("Add");
-			addButton.addActionListener(new java.awt.event.ActionListener() {
-				public void actionPerformed(java.awt.event.ActionEvent e) {
-					addMonome(addButton, monome);
-				}
-			});
-			jContentPane.add(addButton);
+		if (device instanceof SerialOSCMonome) {
+    		MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + device.getSerial());
+    		if (monomeConfig == null || (monomeConfig != null && monomeConfig.serialOSCHostname != null && !monomeConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+    			final JButton addButton = new JButton();
+    			addButton.setBounds(new Rectangle(400, nextDeviceHeight, 76, 20));
+    			addButton.setText("Add");
+    			addButton.addActionListener(new java.awt.event.ActionListener() {
+    				public void actionPerformed(java.awt.event.ActionEvent e) {
+    					addMonome(addButton, (SerialOSCMonome) device);
+    				}
+    			});
+    			jContentPane.add(addButton);
+    		}
+		} else if (device instanceof SerialOSCArc) {
+            ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + device.getSerial());
+            if (arcConfig == null || (arcConfig != null && arcConfig.serialOSCHostname != null && !arcConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+                final JButton addButton = new JButton();
+                addButton.setBounds(new Rectangle(400, nextDeviceHeight, 76, 20));
+                addButton.setText("Add");
+                addButton.addActionListener(new java.awt.event.ActionListener() {
+                    public void actionPerformed(java.awt.event.ActionEvent e) {
+                        addArc(addButton, (SerialOSCArc) device);
+                    }
+                });
+                jContentPane.add(addButton);
+            }
 		}
 		
 		nextDeviceHeight += 25;
@@ -131,7 +150,14 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 		this.repaint();
 	}
 	
-	private void addMonome(JButton addButton, SerialOSCMonome monome) {
+	protected void addArc(JButton addButton, SerialOSCArc arc) {
+        jContentPane.remove(addButton);
+        Main.main.startArc(arc);
+        this.validate();
+        this.repaint();
+    }
+
+    private void addMonome(JButton addButton, SerialOSCMonome monome) {
 		jContentPane.remove(addButton);
 		Main.main.startMonome(monome);
 		this.validate();

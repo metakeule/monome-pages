@@ -11,13 +11,14 @@ import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
 
-public class SerialOSCMonome implements OSCListener {
+public class SerialOSCMonome implements SerialOSCDevice, OSCListener {
 	
-	public int port;
-	public String serial;
-	public int sizeX;
-	public int sizeY;
-	public String hostName;
+    int port;
+	String serial;
+	String hostName;
+	String deviceName;
+    int sizeX;
+    int sizeY;
 
 	public void acceptMessage(Date time, OSCMessage message) {
 		Object args[] = message.getArguments();
@@ -105,4 +106,36 @@ public class SerialOSCMonome implements OSCListener {
 			}
 		}
 	}
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public void setHostName(String hostname) {
+        this.hostName = hostname;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
+    }
 }
