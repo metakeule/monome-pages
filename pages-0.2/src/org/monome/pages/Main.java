@@ -17,13 +17,17 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.apache.log4j.PropertyConfigurator;
+import org.monome.pages.configuration.ArcConfiguration;
+import org.monome.pages.configuration.ArcConfigurationFactory;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.OSCPortFactory;
+import org.monome.pages.configuration.SerialOSCArc;
+import org.monome.pages.configuration.SerialOSCDevice;
 import org.monome.pages.configuration.SerialOSCMonome;
 import org.monome.pages.gui.MainGUI;
-import org.monome.pages.gui.SerialOSCListener;
+import org.monome.pages.configuration.SerialOSCListener;
 
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
@@ -62,7 +66,7 @@ public class Main {
         if (args.length > 0) {
             file = new File(args[0]);
         }
-        logger.error("Pages 0.2.2a19 starting up\n");
+        logger.error("Pages 0.2.2a20 starting up\n");
         main = new Main(file);
     }
     
@@ -100,25 +104,49 @@ public class Main {
         HashMap<String, String> serials = new HashMap<String, String>();
         final ServiceInfo[] svcInfos = jmdns.list("_monome-osc._udp.local.");
         for (int i = 0; i < svcInfos.length; i++) {
-            String serial = svcInfos[i].getName();
-            if (serial.indexOf("(") != -1) {
-                serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
+            String serial = "unknown";
+            String fullName = svcInfos[i].getName();
+            System.out.println("fullName is " + fullName);
+            if (fullName.indexOf("(") != -1) {
+                serial = fullName.substring(fullName.indexOf("(")+1, fullName.indexOf(")"));
             }
+            SerialOSCDevice device = null;
+            String deviceName = "unknown";
+            if (fullName.indexOf("monome arc") != -1) {
+                String knobs = fullName.substring(fullName.indexOf(" arc ") + 5, fullName.indexOf(" arc ") + 6);
+                deviceName = "arc " + knobs;
+                device = new SerialOSCArc();
+            } else {
+                String monomeType = fullName.substring(fullName.indexOf("monome ") + 7, fullName.indexOf(" ("));
+                deviceName = "monome " + monomeType;
+                device = new SerialOSCMonome();
+            }
+            System.out.println("deviceName is '" + deviceName + "'");
+            System.out.println("serial is '" + serial + "'");
             int port = svcInfos[i].getPort();
-            SerialOSCMonome monome = new SerialOSCMonome();
-            monome.port = port;
-            monome.serial = serial;
-            monome.hostName = "127.0.0.1";
+            String hostName = "127.0.0.1";
+            device.setPort(port);
+            device.setHostName(hostName);
+            device.setSerial(serial);
+            device.setDeviceName(deviceName);
+
             if (serials.containsKey(serial)) {
                 continue;
             }
-            serials.put(monome.serial, monome.hostName);
+            serials.put(device.getSerial(), device.getHostName());
             if (mainFrame.serialOscSetupFrame != null) {
-                mainFrame.serialOscSetupFrame.addDevice(monome);
+                mainFrame.serialOscSetupFrame.addDevice(device);
             } else {
-                MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
-                if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(monome.hostName))) {
-                    startMonome(monome);
+                if (device instanceof SerialOSCMonome) {
+                    MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
+                    if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+                        startMonome((SerialOSCMonome) device);
+                    }
+                } else if (device instanceof SerialOSCArc) {
+                    ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + serial);
+                    if (arcConfig != null && (arcConfig.serialOSCHostname == null || arcConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+                        startArc((SerialOSCArc) device);
+                    }
                 }
             }
         }
@@ -203,7 +231,7 @@ public class Main {
         inPort.addListener("/sys/id", monome);
         inPort.addListener("/sys/prefix", monome);
         inPort.addListener("/sys/host", monome);
-        OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(monome.hostName, monome.port);
+        OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(monome.getHostName(), monome.getPort());
         OSCMessage infoMsg = new OSCMessage();
         infoMsg.setAddress("/sys/info");
         infoMsg.addArgument("127.0.0.1");
@@ -215,6 +243,17 @@ public class Main {
         }
     }
 
+    public void startArc(SerialOSCArc arc) {
+        if (configuration == null) {
+            return;
+        }
+        OSCPortIn inPort = OSCPortFactory.getInstance().getOSCPortIn(configuration.oscListenPort);
+        if (inPort == null) {
+            JOptionPane.showMessageDialog(MainGUI.getDesktopPane(), "Unable to bind to port " + configuration.oscListenPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        arc.startArc();
+    }
     
     /**
      * Returns the current open configuration file.  This file is used when File -> Save is clicked.

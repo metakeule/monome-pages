@@ -172,6 +172,8 @@ public class Configuration implements Serializable {
 	
 	private HashMap<Integer, MonomeConfiguration> monomeConfigurations = null;
 	
+	private HashMap<Integer, ArcConfiguration> arcConfigurations = null;
+	
     /**
      * Enabled MIDI In devices (global) 
      */
@@ -197,6 +199,14 @@ public class Configuration implements Serializable {
 	public void setMonomeConfigurations(HashMap<Integer, MonomeConfiguration> monomeConfigurations) {
 		this.monomeConfigurations = monomeConfigurations;
 	}
+	
+    public HashMap<Integer, ArcConfiguration> getArcConfigurations() {
+        return arcConfigurations;
+    }
+    
+    public void setArcConfigurations(HashMap<Integer, ArcConfiguration> arcConfigurations) {
+        this.arcConfigurations = arcConfigurations;
+    }
 
 	/**
 	 * Called from GUI to add a new monome configuration.
@@ -238,6 +248,14 @@ public class Configuration implements Serializable {
 		this.initMonomeSerialOSC(monome);
 		return monome;
 	}
+	
+    public ArcConfiguration addArcConfigurationSerialOSC(int index, String prefix, String serial, int knobs, int port, String hostName) {
+        ArcConfiguration arc = ArcConfigurationFactory.addArcConfiguration(index, prefix, serial, knobs);
+        arc.serialOSCPort = port;
+        arc.serialOSCHostname = hostName;
+        this.initArcSerialOSC(arc);
+        return arc;
+    }
 	
 	/**
 	 * Binds to MonomeSerial input/output ports
@@ -430,6 +448,32 @@ public class Configuration implements Serializable {
 		}
 		monome.clearMonome();
 	}
+	
+    public void initArcSerialOSC(ArcConfiguration arc) {
+        arc.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(arc.serialOSCHostname, arc.serialOSCPort);
+        System.out.println("serialOSCPortOut set to " + arc.serialOSCPortOut);
+        ArcOSCListener oscListener = new ArcOSCListener(arc);
+        this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(oscListenPort);
+        this.serialOSCPortIn.addListener(arc.prefix + "/enc/delta", oscListener);
+        this.serialOSCPortIn.addListener(arc.prefix + "/enc/key", oscListener);
+        
+        try {
+            OSCMessage portMsg = new OSCMessage();
+            portMsg.setAddress("/sys/port");
+            portMsg.addArgument(oscListenPort);
+            arc.serialOSCPortOut.send(portMsg);
+            portMsg = new OSCMessage();
+            portMsg.setAddress("/sys/host");
+            portMsg.addArgument("127.0.0.1");
+            arc.serialOSCPortOut.send(portMsg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        arc.clearArc();
+        arc.initArc();
+    }
+
 	
 	/**
 	 * Enables or disables a MIDI input device
