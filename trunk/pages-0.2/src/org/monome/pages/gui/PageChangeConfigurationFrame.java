@@ -11,6 +11,7 @@ import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 
+import org.monome.pages.configuration.ArcConfiguration;
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
 
@@ -31,6 +32,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton saveBtn = null;
 	private JButton cancelBtn = null;
 	private MonomeConfiguration monome;
+	private ArcConfiguration arc;
 	private int[] midiChannels = new int[255];
 	private int[] midiNotes = new int[255];
 	private int[] pageChangeDelays = new int[255];
@@ -52,13 +54,32 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		this.pack();
 	}
 	
-	private void initializeValues() {
-		ArrayList<MIDIPageChangeRule> midiPageChangeRules = monome.midiPageChangeRules;
-		for (int i = 0; i < midiPageChangeRules.size(); i++) {
-			midiChannels[i] = midiPageChangeRules.get(i).getChannel();
-			midiNotes[i] = midiPageChangeRules.get(i).getNote();
-			pageChangeDelays[i] = monome.pageChangeDelays[i];
-		}
+	public PageChangeConfigurationFrame(ArcConfiguration arc) {
+        super();
+        this.arc = arc;
+        getMidiChangeCB().setSelected(arc.useMIDIPageChanging);
+        getMonomeChangeCB().setSelected(arc.usePageChangeButton);
+        initialize();
+        initializeValues();
+        populateTextFields();
+        this.pack();
+    }
+
+    private void initializeValues() {
+        if (monome != null) {
+    		ArrayList<MIDIPageChangeRule> midiPageChangeRules = monome.midiPageChangeRules;
+    		for (int i = 0; i < midiPageChangeRules.size(); i++) {
+    			midiChannels[i] = midiPageChangeRules.get(i).getChannel();
+    			midiNotes[i] = midiPageChangeRules.get(i).getNote();
+    			pageChangeDelays[i] = monome.pageChangeDelays[i];
+    		}
+        } else if (arc != null) {
+            ArrayList<MIDIPageChangeRule> midiPageChangeRules = arc.midiPageChangeRules;
+            for (int i = 0; i < midiPageChangeRules.size(); i++) {
+                midiChannels[i] = midiPageChangeRules.get(i).getChannel();
+                midiNotes[i] = midiPageChangeRules.get(i).getNote();
+            }
+        }
 	}
 
 	/**
@@ -127,8 +148,14 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 					populateTextFields();
 				}
 			});
-			for (int i = 0; i < monome.pages.size(); i++) {
-				pageCB.addItem("" + (i+1) + ": " + monome.pages.get(i).getName());
+			if (monome != null) {
+    			for (int i = 0; i < monome.pages.size(); i++) {
+    				pageCB.addItem("" + (i+1) + ": " + monome.pages.get(i).getName());
+    			}
+			} else if (arc != null) {
+                for (int i = 0; i < arc.pages.size(); i++) {
+                    pageCB.addItem("" + (i+1) + ": " + arc.pages.get(i).getName());
+                }
 			}
 		}
 		return pageCB;
@@ -278,16 +305,27 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					storeValues();
-					monome.useMIDIPageChanging = getMidiChangeCB().isSelected();
-					monome.usePageChangeButton = getMonomeChangeCB().isSelected();
-					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
-					for (int i = 0; i < monome.pages.size(); i++) {
-						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
-						midiPageChangeRules.add(mpcr);
-						monome.pageChangeDelays[i] = pageChangeDelays[i];
+					if (monome != null) {
+    					monome.useMIDIPageChanging = getMidiChangeCB().isSelected();
+    					monome.usePageChangeButton = getMonomeChangeCB().isSelected();
+    					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+    					for (int i = 0; i < monome.pages.size(); i++) {
+    						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
+    						midiPageChangeRules.add(mpcr);
+    						monome.pageChangeDelays[i] = pageChangeDelays[i];
+    					}
+    					monome.midiPageChangeRules = midiPageChangeRules;
+					} else if (arc != null) {
+                        arc.useMIDIPageChanging = getMidiChangeCB().isSelected();
+                        arc.usePageChangeButton = getMonomeChangeCB().isSelected();
+                        ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+                        for (int i = 0; i < arc.pages.size(); i++) {
+                            MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
+                            midiPageChangeRules.add(mpcr);
+                        }
+                        arc.midiPageChangeRules = midiPageChangeRules;
 					}
-					monome.midiPageChangeRules = midiPageChangeRules;
-					cancel();
+    				cancel();
 				}
 			});
 		}

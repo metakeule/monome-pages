@@ -51,6 +51,7 @@ import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.ableton.AbletonOSCControl;
 import org.monome.pages.ableton.AbletonOSCListener;
 import org.monome.pages.ableton.AbletonState;
+import org.monome.pages.gui.ArcFrame;
 import org.monome.pages.gui.MainGUI;
 import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.midi.MidiDeviceFactory;
@@ -250,7 +251,14 @@ public class Configuration implements Serializable {
 	}
 	
     public ArcConfiguration addArcConfigurationSerialOSC(int index, String prefix, String serial, int knobs, int port, String hostName) {
-        ArcConfiguration arc = ArcConfigurationFactory.addArcConfiguration(index, prefix, serial, knobs);
+        ArcFrame arcFrame = new ArcFrame(index);
+        try {
+            arcFrame.setSelected(true);
+        } catch (PropertyVetoException e) {
+            e.printStackTrace();
+        }
+        MainGUI.getDesktopPane().add(arcFrame);
+        ArcConfiguration arc = ArcConfigurationFactory.addArcConfiguration(index, prefix, serial, knobs, arcFrame);
         arc.serialOSCPort = port;
         arc.serialOSCHostname = hostName;
         this.initArcSerialOSC(arc);
@@ -447,6 +455,7 @@ public class Configuration implements Serializable {
 			e.printStackTrace();
 		}
 		monome.clearMonome();
+		monome.initMonome();
 	}
 	
     public void initArcSerialOSC(ArcConfiguration arc) {
@@ -470,7 +479,6 @@ public class Configuration implements Serializable {
             e.printStackTrace();
         }
         
-        arc.clearArc();
         arc.initArc();
     }
 
