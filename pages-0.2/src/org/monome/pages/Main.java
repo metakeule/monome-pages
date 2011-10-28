@@ -57,11 +57,11 @@ public class Main {
     public MainGUI mainFrame = null;
 
     public static void main(final String[] args) {
-        File logConfigFile = new File("log4j.properties");
-        if (logConfigFile.exists() && logConfigFile.canRead()) {
-            PropertyConfigurator.configure("log4j.properties");
-            StdOutErrLog.tieSystemOutAndErrToLog();
-        }
+        //File logConfigFile = new File("log4j.properties");
+        //if (logConfigFile.exists() && logConfigFile.canRead()) {
+            //PropertyConfigurator.configure("log4j.properties");
+            //StdOutErrLog.tieSystemOutAndErrToLog();
+        //}
         File file = null;
         if (args.length > 0) {
             file = new File(args[0]);
@@ -241,6 +241,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
     }
 
     public void startArc(SerialOSCArc arc) {

@@ -4,6 +4,8 @@ import javax.swing.JPanel;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import java.awt.Rectangle;
+import java.util.ArrayList;
+
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
@@ -28,9 +30,11 @@ public class SerialOSCSetupFrame extends JInternalFrame {
     private JComboBox libSelect = null;
     private JLabel portLbl = null;
     private JTextField portTF = null;
+    private ArrayList<String> addedDevices;
 	
 	public SerialOSCSetupFrame() {
 		super();
+		addedDevices = new ArrayList<String>();
 		initialize();
 		this.pack();
 	}
@@ -113,7 +117,14 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 
 	public void addDevice(final SerialOSCDevice device) {
 		JLabel deviceLabel = new JLabel();
-		deviceLabel.setText(device.getDeviceName() + " (" + device.getSerial() + ") [" + device.getHostName() + ":" + device.getPort() + "]");
+		String label = device.getDeviceName() + " (" + device.getSerial() + ") [" + device.getHostName() + ":" + device.getPort() + "]";
+		for (int i = 0; i < addedDevices.size(); i++) {
+		    if (addedDevices.get(i).compareTo(label) == 0) {
+		        return;
+		    }
+		}
+		addedDevices.add(label);
+		deviceLabel.setText(label);
 		deviceLabel.setBounds(new Rectangle(10, nextDeviceHeight, 400, 20));
 		jContentPane.add(deviceLabel);
 		

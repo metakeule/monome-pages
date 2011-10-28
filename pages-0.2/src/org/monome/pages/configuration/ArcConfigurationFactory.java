@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.monome.pages.Main;
+import org.monome.pages.gui.ArcFrame;
 import org.monome.pages.gui.MonomeFrame;
 
 public class ArcConfigurationFactory {
@@ -41,13 +42,14 @@ public class ArcConfigurationFactory {
         return null;
     }
     
-    public static synchronized ArcConfiguration addArcConfiguration(int index, String prefix, String serial, int knobs) {
+    public static synchronized ArcConfiguration addArcConfiguration(int index, String prefix, String serial, int knobs, ArcFrame arcFrame) {
         Configuration configuration = Main.main.configuration;
         if (configuration.getArcConfigurations() == null) {
             configuration.setArcConfigurations(new HashMap<Integer, ArcConfiguration>());
         }
-        ArcConfiguration arcConfiguration = new ArcConfiguration(index, prefix, serial, knobs);
+        ArcConfiguration arcConfiguration = new ArcConfiguration(index, prefix, serial, knobs, arcFrame);
         configuration.getArcConfigurations().put(index, arcConfiguration);
+        arcConfiguration.setFrameTitle();
         return arcConfiguration;
     }
     
@@ -57,6 +59,15 @@ public class ArcConfigurationFactory {
             configuration.setArcConfigurations(new HashMap<Integer, ArcConfiguration>());
         }
         return configuration.getArcConfigurations().size();
+    }
+
+    public static void removeArcConfiguration(int index) {
+        Configuration configuration = Main.main.configuration;
+        ArcConfiguration arcConfig = configuration.getArcConfigurations().get(new Integer(index));
+        if (arcConfig != null && arcConfig.arcFrame != null) {
+            arcConfig.arcFrame.dispose();
+        }
+        configuration.getArcConfigurations().remove(new Integer(index));
     }
 
 }

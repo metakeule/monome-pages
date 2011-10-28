@@ -22,6 +22,7 @@
 
 package org.monome.pages.configuration;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -1191,5 +1192,43 @@ public class MonomeConfiguration implements Serializable {
         for (Page page : pages) {
             page.redrawMonome();
         }
+    }
+
+    public void initMonome() {
+        class InitMonomeAnimation implements Runnable {
+            
+            MonomeConfiguration monomeConfig;
+            
+            public InitMonomeAnimation(MonomeConfiguration monomeConfig) {
+                this.monomeConfig = monomeConfig;
+            }
+            
+            public void run() {
+                for (int value = 1; value >= 0; value--) {
+                    int[][] leds = new int[monomeConfig.sizeX][monomeConfig.sizeY];
+                    for (int led = 0; led < monomeConfig.sizeX * monomeConfig.sizeY; led++) {
+                        boolean found = false;
+                        int x = 0;
+                        int y = 0;
+                        while (!found) {
+                            x = (int) (Math.random() * monomeConfig.sizeX);
+                            y = (int) (Math.random() * monomeConfig.sizeY);
+                            if (leds[x][y] == 0) {
+                                found = true;
+                                leds[x][y] = 1;
+                            }
+                        }
+                        try {
+                            Thread.sleep(4);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        led(x, y, value, -1);
+                    }
+                }
+            }
+        }
+        
+        new Thread(new InitMonomeAnimation(this)).start();
     }
 }

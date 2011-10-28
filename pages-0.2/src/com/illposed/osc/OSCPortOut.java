@@ -47,12 +47,6 @@ public class OSCPortOut extends OSCPort {
 	 */
 
 	public void send(OSCPacket aPacket) throws IOException {
-	    String bytes = "";
-	    byte[] byteArr = aPacket.getByteArray();
-	    for (int i = 0; i < byteArr.length; i++) {
-	        bytes += (char) byteArr[i];
-	    }
-	    System.out.println("!!! send: " + bytes);
 		byte[] byteArray = aPacket.getByteArray();
 		DatagramPacket packet =
 			new DatagramPacket(byteArray, byteArray.length, address, port);

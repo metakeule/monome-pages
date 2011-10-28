@@ -49,32 +49,33 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 		    deviceName = "arc " + knobs;
 		    device = new SerialOSCArc();
 		    ((SerialOSCArc) device).setKnobs(Integer.parseInt(knobs));
-		} else {
+		} else if (fullName.indexOf("monome\\032") != -1) {
 		    String monomeType = fullName.substring(fullName.indexOf("monome\\032") +10, fullName.indexOf("\\032("));
 		    deviceName = "monome " + monomeType;
 	        device = new SerialOSCMonome();
 		}
-        device.setPort(port);
-        device.setHostName(hostName);
-        device.setSerial(serial);
-        device.setDeviceName(deviceName);
-		
-		if (Main.main.mainFrame.serialOscSetupFrame != null) {
-			Main.main.mainFrame.serialOscSetupFrame.addDevice(device);
-		} else {
-		    if (device instanceof SerialOSCMonome) {
-    			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
-    			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
-    				Main.main.startMonome((SerialOSCMonome) device);
-    				monomeConfig.reload();
-    			}
-		    } else if (device instanceof SerialOSCArc) {
-                ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + serial);
-                if (arcConfig != null && (arcConfig.serialOSCHostname == null || arcConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
-                    Main.main.startArc((SerialOSCArc) device);
-                    arcConfig.reload();
-                }
-		    }
-		}		
+		if (device != null) {
+            device.setPort(port);
+            device.setHostName(hostName);
+            device.setSerial(serial);
+            device.setDeviceName(deviceName);
+    		if (Main.main.mainFrame.serialOscSetupFrame != null) {
+    			Main.main.mainFrame.serialOscSetupFrame.addDevice(device);
+    		} else {
+    		    if (device instanceof SerialOSCMonome) {
+        			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
+        			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+        				Main.main.startMonome((SerialOSCMonome) device);
+        				monomeConfig.reload();
+        			}
+    		    } else if (device instanceof SerialOSCArc) {
+                    ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + serial);
+                    if (arcConfig != null && (arcConfig.serialOSCHostname == null || arcConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+                        Main.main.startArc((SerialOSCArc) device);
+                        arcConfig.reload();
+                    }
+    		    }
+    		}
+		}
 	}
 }

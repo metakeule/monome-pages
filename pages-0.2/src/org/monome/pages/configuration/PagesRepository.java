@@ -11,15 +11,17 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.pages.ArcPage;
 import org.monome.pages.pages.Page;
 
 public class PagesRepository {
 	
 	static Collection<Class<? extends Page>> pageTypes;
+	static Collection<Class<? extends ArcPage>> arcPageTypes;
 	
 	static{
 		try { 
-			pageTypes = loadPages();
+			loadPages();
 		} catch(Exception e) {
 			System.out.println("PagesRepository: couldn't load page implementations.");
 			e.printStackTrace();
@@ -35,6 +37,16 @@ public class PagesRepository {
 		}
 		return res;
 	}
+	
+    public static String[] getArcPageNames(){
+        String[] res = new String[arcPageTypes.size()];
+        int i = 0;
+        for (Class<? extends ArcPage> clz : arcPageTypes){
+            res[i++] = clz.getName();
+        }
+        return res;
+    }
+
 	
 	static Page getPageInstance(String name, MonomeConfiguration conf, int index){
 		Page page;
@@ -53,9 +65,28 @@ public class PagesRepository {
 		return null;
 	}
 	
-	public static Collection<Class<? extends Page>> loadPages() throws IOException {
+    static ArcPage getArcPageInstance(String name, ArcConfiguration arcConfiguration, int index){
+        ArcPage page;
+        for (Class<? extends ArcPage> clz : arcPageTypes){
+            if (clz.getName().equals(name)) {
+                try {
+                    Constructor<? extends ArcPage> ctor = clz.getConstructor(ArcConfiguration.class, int.class);
+                    page = ctor.newInstance(arcConfiguration, index);
+                    return page;
+                } catch(Exception e) {
+                    System.out.println("PagesRepository: Failed to create arc page with name " + name + " on index " + index);
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
+	
+	public static void loadPages() throws IOException {
 		  ClassLoader ldr = Thread.currentThread().getContextClassLoader();
 		  Collection<Class<? extends Page>> pages = new ArrayList<Class<? extends Page>>();
+		  Collection<Class<? extends ArcPage>> arcPages = new ArrayList<Class<? extends ArcPage>>();
 		  
 		  Enumeration<URL> e = ldr.getResources("META-INF/services/" + Page.class.getName());
 
@@ -76,10 +107,15 @@ public class PagesRepository {
 		        if (name.length() == 0)
 		          continue;
 		        Class<?> clz = Class.forName(name, true, ldr);
-		        Class<? extends Page> impl = clz.asSubclass(Page.class);
+		        if (clz.getName().contains("org.monome.pages.pages.arc.")) {
+		            Class<? extends ArcPage> impl = clz.asSubclass(ArcPage.class);
+		            arcPages.add(impl);
+		        } else {
+                    Class<? extends Page> impl = clz.asSubclass(Page.class);
+                    pages.add(impl);
+		        }
 		        //Constructor<? extends Page> ctor = impl.getConstructor();
 		        //Page svc = ctor.newInstance();
-		        pages.add(impl);
 		      }
 		    }
 		    catch(Exception ex){
@@ -92,7 +128,8 @@ public class PagesRepository {
 		      	//do nothing
 		    }
 		  }
-		  return pages;
+		  pageTypes = pages;
+		  arcPageTypes = arcPages;
 		}
 
 }
