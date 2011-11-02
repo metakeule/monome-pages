@@ -127,9 +127,11 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 				this.oscIn.removeListener(prefix + "/grid/led/set");
 				this.oscIn.removeListener(prefix + "/grid/led/row");
 				this.oscIn.removeListener(prefix + "/grid/led/col");
+				this.oscIn.removeListener(prefix + "/grid/led/all");
 				this.oscIn.removeListener("/grid/led/set");
 				this.oscIn.removeListener("/grid/led/row");
 				this.oscIn.removeListener("/grid/led/col");
+				this.oscIn.removeListener("/grid/led/all");
 
 				listenersAdded.remove(prefix);
 			}
@@ -192,6 +194,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		this.oscIn.addListener(this.prefix + "/grid/led/set", this);
 		this.oscIn.addListener(this.prefix + "/grid/led/row", this);
 		this.oscIn.addListener(this.prefix + "/grid/led/col", this);
+		this.oscIn.addListener(this.prefix + "/grid/led/all", this);
 		
 		listenersAdded.put(this.prefix + " " + index, 1);
 	}
@@ -352,7 +355,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			return;
 		}
 		// handle a monome clear request from the external application
-		if (msg.getAddress().contains("clear")) {
+		if (msg.getAddress().contains("clear") || msg.getAddress().contains("/grid/led/all")) {
 			int int_arg = 0;
 			if (args.length > 0) {
 				if (args[0] instanceof Integer) {
@@ -433,7 +436,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			}
 			this.monome.led_row(intArgs, this.index);
 		}
-
+		
 		// handle a monome led request from the external application
 		else if (msg.getAddress().contains("led") || msg.getAddress().contains("/grid/led/set")) {
 			int[] int_args = {0, 0, 0};

@@ -1219,7 +1219,7 @@ public class MonomeConfiguration implements Serializable {
                             }
                         }
                         try {
-                            Thread.sleep(4);
+                            Thread.sleep(1);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
