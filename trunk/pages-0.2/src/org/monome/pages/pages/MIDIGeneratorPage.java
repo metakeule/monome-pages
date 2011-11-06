@@ -147,7 +147,7 @@ public class MIDIGeneratorPage implements Page, Serializable {
 				held = new ArrayList<Press>();
 			}
 			int position = (int) ((float) tickNum / (float) quantization) * quantization; 
-			held.add(new Press(position, x, y, 1));
+			held.add(new Press(position, x, y, 1, -1, -1));
 			
 			MIDIGenerator mg = new MIDIGenerator(monome, index, x, y, maxRadius, chance, numNotes, noteMap, midiChannel);
 			generators.add(mg);

@@ -6,12 +6,15 @@ public class Press {
 	private int y = -1;
 	private int value = -1;
 	private int position = -1;
+	private int patternNum = 0;
+	private int pageNum = -1;
 	
-	public Press(int position, int x, int y, int value) {
+	public Press(int position, int x, int y, int value, int patternNum, int pageNum) {
 		this.position = position;
 		this.x = x;
 		this.y = y;
 		this.value = value;
+		this.patternNum = patternNum;
 	}
 	
 	public int[] getPress() {
@@ -22,4 +25,13 @@ public class Press {
 	public int getPosition() {
 		return this.position;
 	}
+	
+	public int getPatternNum() {
+		return patternNum;
+	}
+	
+	public int getPageNum() {
+		return pageNum;
+	}
+	
 }

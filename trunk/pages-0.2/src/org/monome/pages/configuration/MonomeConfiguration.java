@@ -133,6 +133,8 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
     public transient MonomeOSCListener oscListener;
 
     private MonomeFrame monomeFrame;
+    
+    private ArrayList<Press> pressesInPlayback = new ArrayList<Press>();
 
     /**
 	 * @param index the index to assign to this MonomeConfiguration
@@ -172,7 +174,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
     @Override
     protected void onPageAdd(String className, Page page) {
         int numPatterns = this.sizeX;
-        this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
+        this.patternBanks.add(this.numPages, new PatternBank(numPatterns, page));
 
         System.out.println("MonomeConfiguration " + this.serial + ": created " + className + " page");
     }
@@ -237,7 +239,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 		if (this.usePageChangeButton == false) {
 			// pass presses to the current page and record them in the pattern bank
 			if (this.pages.get(curPage) != null) {
-				this.patternBanks.get(curPage).recordPress(x, y, value);
+				this.patternBanks.get(curPage).recordPress(x, y, value, curPage);
 				this.pages.get(curPage).handlePress(x, y, value);
 			}
 			return;
@@ -253,9 +255,9 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 				if (this.pageChanged == false) {
 					if (this.pages.get(curPage) != null) {
 						this.pages.get(curPage).handlePress(x, y, 1);
-						this.patternBanks.get(curPage).recordPress(x, y, 1);
+						this.patternBanks.get(curPage).recordPress(x, y, 1, curPage);
 						this.pages.get(curPage).handlePress(x, y, 0);
-						this.patternBanks.get(curPage).recordPress(x, y, 0);
+						this.patternBanks.get(curPage).recordPress(x, y, 0, curPage);
 					}
 				}
 				if (this.pages.get(curPage) != null) {
@@ -302,7 +304,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 		
 		// pass presses to the current page and record them in the pattern bank
 		if (this.pages.get(curPage) != null) {
-			this.patternBanks.get(curPage).recordPress(x, y, value);
+			this.patternBanks.get(curPage).recordPress(x, y, value, curPage);
 			this.pages.get(curPage).handlePress(x, y, value);
 		}
 	}
@@ -396,6 +398,16 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 					if (presses != null) {
 						for (int k=0; k < presses.size(); k++) {
 							int[] press = presses.get(k).getPress();
+							for (int pb = 0; pb < this.pressesInPlayback.size(); pb++) {
+								if (pressesInPlayback.get(pb) == null) return;
+								int[] pbPress = pressesInPlayback.get(pb).getPress();
+								if (press[0] == pbPress[0] && press[1] == pbPress[1] && press[2] == 0) {
+									pressesInPlayback.remove(pb);
+								}
+							}
+							if (press[2] == 1) {
+								pressesInPlayback.add(presses.get(k));
+							}
 							this.pages.get(i).handlePress(press[0], press[1], press[2]);
 						}
 					}
@@ -966,27 +978,16 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 		return xml;
 	}
 	
-	public String readConfigValue(Element pageElement, String name) {
-		NodeList nameNL = pageElement.getElementsByTagName(name);
-		Element el = (Element) nameNL.item(0);
-		if (el != null) {
-			NodeList nl = el.getChildNodes();
-			String value = ((Node) nl.item(0)).getNodeValue();
-			return value;			
-		}
-		return null;
-	}
-	
 	public void setPatternLength(int pageNum, int length) {
 		if (this.patternBanks.size() <= pageNum) {
-			this.patternBanks.add(pageNum, new PatternBank(this.sizeX));
+			this.patternBanks.add(pageNum, new PatternBank(this.sizeX, this.pages.get(pageNum)));
 		}
 		this.patternBanks.get(pageNum).setPatternLength(length);
 	}
 	
 	public void setQuantization(int pageNum, int quantization) {
 		if (this.patternBanks.size() <= pageNum) {
-			this.patternBanks.add(pageNum, new PatternBank(this.sizeX));
+			this.patternBanks.add(pageNum, new PatternBank(this.sizeX, this.pages.get(pageNum)));
 		}
 		this.patternBanks.get(pageNum).setQuantization(quantization);
 	}

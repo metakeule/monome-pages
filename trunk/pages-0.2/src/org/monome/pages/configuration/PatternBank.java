@@ -3,6 +3,8 @@ package org.monome.pages.configuration;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.monome.pages.pages.Page;
+
 public class PatternBank implements Serializable {
     static final long serialVersionUID = 42L;
 	
@@ -18,11 +20,13 @@ public class PatternBank implements Serializable {
 	private int curPattern = 0;
 	private int[] recordPosition;
 	private ArrayList<Press> ignore = new ArrayList<Press>();
+	Page page;
 	
-	public PatternBank(int numPatterns) {
+	public PatternBank(int numPatterns, Page page) {
 		this.numPatterns = numPatterns;
+		this.page = page;
 		for (int i=0; i < numPatterns; i++) {
-			patterns.add(i, new Pattern());
+			patterns.add(i, new Pattern(i));
 		}
 		this.patternState = new int[numPatterns];
 		this.patternPosition = new int[numPatterns];
@@ -30,7 +34,7 @@ public class PatternBank implements Serializable {
 	}
 	
 	public void ignore(int x, int y) {
-	    ignore.add(new Press(0, x, y, 0));
+	    ignore.add(new Press(0, x, y, 0, 0, -1));
 	}
 	
 	public void clearIgnore() {
@@ -59,7 +63,7 @@ public class PatternBank implements Serializable {
 		}
 	}
 	
-	public void recordPress(int x, int y, int value) {
+	public void recordPress(int x, int y, int value, int pageNum) {
 	    for (Press press : ignore) {
 	        int[] xy = press.getPress();
 	        if (xy[0] == x && xy[1] == y) {
@@ -68,7 +72,7 @@ public class PatternBank implements Serializable {
 	    }
 		if (this.patternState[curPattern] == PATTERN_STATE_TRIGGERED) {
 			Pattern pattern = this.patterns.get(curPattern);
-			pattern.recordPress(this.recordPosition[curPattern], x, y, value);
+			pattern.recordPress(this.recordPosition[curPattern], x, y, value, pageNum);
 		}
 	}
 	

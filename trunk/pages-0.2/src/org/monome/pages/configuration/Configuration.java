@@ -55,6 +55,7 @@ import org.monome.pages.gui.ArcFrame;
 import org.monome.pages.gui.MainGUI;
 import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.midi.MidiDeviceFactory;
+import org.monome.pages.pages.ArcPage;
 import org.monome.pages.pages.Page;
 
 import org.w3c.dom.Document;
@@ -249,6 +250,20 @@ public class Configuration implements Serializable {
 		this.initMonomeSerialOSC(monome);
 		return monome;
 	}
+	
+    public ArcConfiguration addArcConfiguration(int index, String prefix, String serial, int knobs) {
+        ArcFrame arcFrame = new ArcFrame(index);
+        try {
+            arcFrame.setSelected(true);
+        } catch (PropertyVetoException e) {
+            e.printStackTrace();
+        }
+        MainGUI.getDesktopPane().add(arcFrame);
+        ArcConfiguration arc = ArcConfigurationFactory.addArcConfiguration(index, prefix, serial, knobs, arcFrame);
+        this.initArcSerialOSC(arc);
+        return arc;
+    }
+
 	
     public ArcConfiguration addArcConfigurationSerialOSC(int index, String prefix, String serial, int knobs, int port, String hostName) {
         ArcFrame arcFrame = new ArcFrame(index);
@@ -1190,6 +1205,153 @@ public class Configuration implements Serializable {
 		            }
 				}
 			}
+			
+			// read in each <arc> block
+			rootNL = doc.getElementsByTagName("arc");
+			for (int i=0; i < rootNL.getLength(); i++) {
+				Node node = rootNL.item(i);					
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					Element monomeElement = (Element) node;
+
+					// set the monome prefix
+					NodeList nl = monomeElement.getElementsByTagName("prefix");
+					Element el = (Element) nl.item(0);
+					nl = el.getChildNodes();
+					String prefix = "";
+					if (nl.item(0) != null) {
+						prefix = ((Node) nl.item(0)).getNodeValue();
+					}	
+					
+					// set the monome prefix
+					nl = monomeElement.getElementsByTagName("serial");
+					el = (Element) nl.item(0);
+					String serial = "no serial";
+					if (el != null) {
+						nl = el.getChildNodes();
+						if (nl.item(0) != null) {
+							serial = ((Node) nl.item(0)).getNodeValue();
+						}
+					}
+					
+					// set the monome serialosc hostname if present
+					String serialOSCHostName = null;
+					nl = monomeElement.getElementsByTagName("serialOSCHostname");
+					if (nl != null) {
+						el = (Element) nl.item(0);
+						if (el != null) {
+							nl = el.getChildNodes();
+							if (nl.item(0) != null) {
+								serialOSCHostName = ((Node) nl.item(0)).getNodeValue();
+							}
+						}
+					}
+					
+					// set the number of knobs
+					nl = monomeElement.getElementsByTagName("knobs");
+					el = (Element) nl.item(0);
+					nl = el.getChildNodes();
+					String knobs = ((Node) nl.item(0)).getNodeValue();
+					
+					boolean boolUseMIDIPageChanging = false;
+					nl = monomeElement.getElementsByTagName("useMIDIPageChanging");
+					el = (Element) nl.item(0);
+					if (el != null) {
+						nl = el.getChildNodes();
+						String useMIDIPageChanging = ((Node) nl.item(0)).getNodeValue();
+						if (useMIDIPageChanging.equals("true")) {
+							boolUseMIDIPageChanging = true;
+						}
+					}
+					
+					NodeList rootNL3 = monomeElement.getElementsByTagName("MIDIPageChangeRule");
+					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
+					for (int i2=0; i2 < rootNL3.getLength(); i2++) {
+						Node node2 = rootNL3.item(i2);					
+						if (node2.getNodeType() == Node.ELEMENT_NODE) {
+							Element monomeElement2 = (Element) node2;
+						
+							NodeList nl2 = monomeElement2.getElementsByTagName("pageIndex");
+							Element el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String pageIndex = ((Node) nl2.item(0)).getNodeValue();
+							
+							nl2 = monomeElement2.getElementsByTagName("note");
+							el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String note = ((Node) nl2.item(0)).getNodeValue();
+							
+							nl2 = monomeElement2.getElementsByTagName("channel");
+							el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String channel = ((Node) nl2.item(0)).getNodeValue();
+							MIDIPageChangeRule mpcr = new MIDIPageChangeRule(Integer.valueOf(note).intValue(), Integer.valueOf(channel).intValue(), Integer.valueOf(pageIndex).intValue());
+							midiPageChangeRules.add(mpcr);
+						}
+					}
+
+					
+					// create the new monome configuration and display its window
+					ArcConfiguration arcConfig = addArcConfiguration(i, prefix, serial, Integer.parseInt(knobs));
+					arcConfig.serialOSCHostname = serialOSCHostName;
+					arcConfig.deviceFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
+					arcConfig.deviceFrame.updateMidiOutMenuOptions(MidiDeviceFactory.getMidiOutOptions());
+
+					NodeList pcmidiNL = monomeElement.getElementsByTagName("selectedpagechangemidiinport");
+					for (int k=0; k < pcmidiNL.getLength(); k++) {
+						el = (Element) pcmidiNL.item(k);
+						if(el != null) {
+							nl = el.getChildNodes();
+							String midintport = ((Node) nl.item(0)).getNodeValue();
+							arcConfig.togglePageChangeMidiInDevice(midintport);
+						}
+					}
+					
+					// read in each page of the monome
+					arcConfig.curPage = -1;
+					NodeList pageNL = monomeElement.getElementsByTagName("page");
+					for (int j=0; j < pageNL.getLength(); j++) {
+						Node pageNode = pageNL.item(j);
+						if (pageNode.getNodeType() == Node.ELEMENT_NODE) {
+							Element pageElement = (Element) pageNode;
+							String pageClazz = pageElement.getAttribute("class");
+
+							// all pages have a name
+							nl = pageElement.getElementsByTagName("name");
+							el = (Element) nl.item(0);
+							nl = el.getChildNodes();
+							String pageName = ((Node) nl.item(0)).getNodeValue();
+							ArcPage page;
+							page = arcConfig.addPage(pageClazz);
+							page.setName(pageName);
+							arcConfig.curPage++;
+
+							// most pages have midi outputs
+							NodeList midiNL = pageElement.getElementsByTagName("selectedmidioutport");
+							for (int k=0; k < midiNL.getLength(); k++) {
+								el = (Element) midiNL.item(k);
+								if(el != null) {
+									nl = el.getChildNodes();
+									String midioutport = ((Node) nl.item(0)).getNodeValue();
+									arcConfig.toggleMidiOutDevice(midioutport);
+								}
+							}
+							
+							// most pages have midi inputs
+							midiNL = pageElement.getElementsByTagName("selectedmidiinport");
+							for (int k=0; k < midiNL.getLength(); k++) {
+								el = (Element) midiNL.item(k);
+								if(el != null) {
+									nl = el.getChildNodes();
+									String midintport = ((Node) nl.item(0)).getNodeValue();
+									arcConfig.toggleMidiInDevice(midintport);
+								}
+							}
+							page.configure(pageElement);
+						}
+					}					
+				}
+			}
+
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -1233,6 +1395,15 @@ public class Configuration implements Serializable {
 				continue;
 			}
 			xml += MonomeConfigurationFactory.getMonomeConfiguration(i).toXml();
+		}
+		
+		// arc and page configuration
+		for (int i=0; i < ArcConfigurationFactory.getNumArcConfigurations(); i++) {
+			ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(i); 
+			if (arcConfig == null) {
+				continue;
+			}
+			xml += ArcConfigurationFactory.getArcConfiguration(i).toXml();
 		}
 		xml += "</configuration>\n";
 		return xml;

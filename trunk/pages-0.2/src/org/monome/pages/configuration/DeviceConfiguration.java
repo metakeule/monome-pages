@@ -3,6 +3,9 @@ package org.monome.pages.configuration;
 import org.monome.pages.gui.DeviceFrame;
 import org.monome.pages.pages.BasePage;
 import org.monome.pages.pages.Page;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -146,5 +149,16 @@ public abstract class DeviceConfiguration<TPage extends BasePage> implements Ser
         if (deviceFrame != null) {
             deviceFrame.dispose();
         }
+    }
+    
+    public String readConfigValue(Element pageElement, String name) {
+        NodeList nameNL = pageElement.getElementsByTagName(name);
+        Element el = (Element) nameNL.item(0);
+        if (el != null) {
+            NodeList nl = el.getChildNodes();
+            String value = ((Node) nl.item(0)).getNodeValue();
+            return value;           
+        }
+        return null;
     }
 }

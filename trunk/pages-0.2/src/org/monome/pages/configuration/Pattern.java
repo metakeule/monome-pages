@@ -8,12 +8,14 @@ public class Pattern implements Serializable {
 	
 	ArrayList<Press> presses = new ArrayList<Press>();
 	ArrayList<Press> queuedPresses = new ArrayList<Press>();
+	int patternNum;
 	
-	public Pattern() {
+	public Pattern(int patternNum) {
+		this.patternNum = patternNum;
 	}
 
-	public void recordPress(int position, int x, int y, int value) {
-		this.queuedPresses.add(new Press(position, x, y, value));
+	public void recordPress(int position, int x, int y, int value, int pageNum) {
+		this.queuedPresses.add(new Press(position, x, y, value, patternNum, pageNum));
 	}
 
 	public ArrayList<Press> getRecordedPress(int position) {
