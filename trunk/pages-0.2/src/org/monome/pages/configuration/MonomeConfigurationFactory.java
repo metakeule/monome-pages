@@ -86,12 +86,11 @@ public class MonomeConfigurationFactory {
 	public static synchronized void removeMonomeConfiguration(int index) {
 		Configuration configuration = Main.main.configuration;
 		MonomeConfiguration monomeConfig = configuration.getMonomeConfigurations().get(new Integer(index));
-		if (monomeConfig != null && monomeConfig.monomeFrame != null && monomeConfig.monomeFrame.monomeDisplayFrame != null) {
-			monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
-		}
-		if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-			monomeConfig.monomeFrame.dispose();
-		}
+
+        if (monomeConfig != null) {
+            monomeConfig.dispose();
+        }
+
 		configuration.getMonomeConfigurations().remove(new Integer(index));
 	}
 

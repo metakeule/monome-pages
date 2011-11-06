@@ -14,6 +14,7 @@ import org.monome.pages.configuration.ArcConfiguration;
 import org.monome.pages.configuration.ArcConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.pages.ArcPage;
+import org.monome.pages.pages.BasePage;
 import org.monome.pages.pages.Page;
 
 import java.awt.BorderLayout;
@@ -22,7 +23,7 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
-public class ArcFrame extends JInternalFrame implements Serializable {
+public class ArcFrame extends JInternalFrame implements Serializable, DeviceFrame {
     static final long serialVersionUID = 42L;
 
     private JPanel jContentPane = null;
@@ -204,7 +205,7 @@ public class ArcFrame extends JInternalFrame implements Serializable {
             newPageItem.setMnemonic(KeyEvent.VK_N);
             newPageItem.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent e) {
-                    String[] options = PagesRepository.getArcPageNames();
+                    String[] options = PagesRepository.getPageNames(ArcPage.class);
                     
                     for (int i=0; i<options.length; i++) {
                         options[i] = options[i].substring(27);                  
@@ -252,7 +253,7 @@ public class ArcFrame extends JInternalFrame implements Serializable {
         return configurationMenu;
     }
 
-    public void redrawPagePanel(ArcPage page) {
+    public void redrawPagePanel(BasePage page) {
         if (currentPanel != null) {
             getJContentPane().remove(currentPanel);
         }
@@ -610,5 +611,11 @@ public class ArcFrame extends JInternalFrame implements Serializable {
             });
             showPageMenu.add(pageItem);
         }       
+    }
+
+    public void clearPage() {
+        getJContentPane().removeAll();
+        getJContentPane().validate();
+        pack();
     }
 }

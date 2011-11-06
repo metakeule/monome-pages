@@ -230,7 +230,7 @@ public class MIDIFadersPage implements Page, Serializable {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
-	public void redrawMonome() {
+	public void redrawDevice() {
 		int sizeX = this.monome.sizeX;
 		int sizeY = this.monome.sizeY;
 		if (horizontal) {

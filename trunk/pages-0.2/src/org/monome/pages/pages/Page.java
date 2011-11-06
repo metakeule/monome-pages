@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
  * @author Tom Dinchak
  *
  */
-public interface Page {
+public interface Page extends BasePage {
 	/**
 	 * Called whenever a press event is received on the monome this page belongs to.
 	 * 
@@ -45,33 +45,12 @@ public interface Page {
 	 */
 	//public void setAdcOptions(ADCOptions options);
 
-	/**
-	 * Called whenever the monome needs to be redrawn from the current page state.  Should
-	 * turn on or off every LED on the monome, even if the button is unused.
-	 */
-	public void redrawMonome();
-
-	/**
+    /**
 	 * Called whenever a MIDI clock tick message is received from the selected MIDI input deviec.
 	 */
 	public void handleTick();
 
-	/**
-	 * Returns the name of the page.
-	 * 
-	 * @return The name of the page
-	 * @param optional: "type" will return page type instead of name
-	 */
-	public String getName();
-	
-	/**
-	 * Sets the name of the page.
-	 */
-	public void setName(String name);
-	
-	public void setIndex(int index);
-
-	/**
+    /**
 	 * Called whenever a MIDI message is received from the MIDI input device
 	 * 
 	 * @param message The MIDI message received
@@ -97,25 +76,5 @@ public interface Page {
 	 * @return true if the LED cache should be disabled
 	 */
 	public boolean getCacheDisabled();
-	
-	/**
-	 * Configure this page instance from the configuration file
-	 * @param pageEl
-	 */
-	public void configure(Element pageElement);
 
-	/**
-	 * Should handle any cleanup needed when the page is destroyed (close open OSC ports, etc.)
-	 */
-	public void destroyPage();
-	
-	public JPanel getPanel();
-	
-	public int getIndex();
-	
-	public boolean redrawOnAbletonEvent();
-	
-	public Dimension getOrigGuiDimension();
-	
-	public void onBlur();
 }

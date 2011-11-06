@@ -268,7 +268,7 @@ public class MainGUI extends JFrame {
         for (Integer key : configuration.getMonomeConfigurations().keySet()) {
             MonomeConfiguration monomeConfig = configuration.getMonomeConfigurations().get(key);
             MonomeFrame monomeFrame = new MonomeFrame(monomeConfig.index);
-            monomeConfig.monomeFrame = monomeFrame;
+            monomeConfig.deviceFrame = monomeFrame;
             monomeConfig.setFrameTitle();
             if (monomeConfig.pages.size() > 0) {
                 monomeFrame.enableMidiMenu(true);
@@ -325,8 +325,8 @@ public class MainGUI extends JFrame {
             if (monomeConfig != null) {
                 for (int pageNum = 0; pageNum < monomeConfig.pages.size(); pageNum++) {
                     System.out.println("update midi selected items on page # " + pageNum);
-                    monomeConfig.monomeFrame.updateMidiInSelectedItems(monomeConfig.midiInDevices[pageNum]);
-                    monomeConfig.monomeFrame.updateMidiOutSelectedItems(monomeConfig.midiOutDevices[pageNum]);
+                    monomeConfig.deviceFrame.updateMidiInSelectedItems(monomeConfig.midiInDevices[pageNum]);
+                    monomeConfig.deviceFrame.updateMidiOutSelectedItems(monomeConfig.midiOutDevices[pageNum]);
                 }
             }
         }
@@ -431,12 +431,7 @@ public class MainGUI extends JFrame {
 				MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(i);
 				if (monomeConfig != null) {
 					monomeConfig.clear(0, -1);
-				}
-				if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-					if (monomeConfig.monomeFrame.monomeDisplayFrame != null) {
-						monomeConfig.monomeFrame.monomeDisplayFrame.dispose();
-					}
-					monomeConfig.monomeFrame.dispose();
+                    monomeConfig.dispose();
 				}
 			}
 			configuration.stopAbleton();

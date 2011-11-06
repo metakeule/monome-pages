@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
  * @author Tom Dinchak
  *
  */
-public interface ArcPage {
+public interface ArcPage extends BasePage {
     /**
      * Called whenever a delta event is received on the arc this page belongs to.
      * 
@@ -26,32 +26,11 @@ public interface ArcPage {
      * Called when a key event is received.
      */
     public void handleKey(int enc, int value);
-    
-    /**
-     * Called whenever the arc needs to be redrawn from the current page state.  Should
-     * turn on or off every LED on the arc, even if the LED is unused.
-     */
-    public void redrawArc();
 
     /**
      * Called whenever a MIDI clock tick message is received from the selected MIDI input deviec.
      */
     public void handleTick();
-
-    /**
-     * Returns the name of the page.
-     * 
-     * @return The name of the page
-     * @param optional: "type" will return page type instead of name
-     */
-    public String getName();
-    
-    /**
-     * Sets the name of the page.
-     */
-    public void setName(String name);
-    
-    public void setIndex(int index);
 
     /**
      * Called whenever a MIDI message is received from the MIDI input device
@@ -72,25 +51,4 @@ public interface ArcPage {
      * @return XML representation of the page's current configuration.
      */
     public String toXml();
-    
-    /**
-     * Configure this page instance from the configuration file
-     * @param pageEl
-     */
-    public void configure(Element pageElement);
-
-    /**
-     * Should handle any cleanup needed when the page is destroyed (close open OSC ports, etc.)
-     */
-    public void destroyPage();
-    
-    public JPanel getPanel();
-    
-    public int getIndex();
-    
-    public boolean redrawOnAbletonEvent();
-    
-    public Dimension getOrigGuiDimension();
-    
-    public void onBlur();
 }

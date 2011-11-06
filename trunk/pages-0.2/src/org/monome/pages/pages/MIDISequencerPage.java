@@ -204,7 +204,7 @@ public class MIDISequencerPage implements Page, Serializable {
 					if (x < 2) {
 						if (this.monome.sizeY == 8) {
 							this.depth = x;
-							this.redrawMonome();
+							this.redrawDevice();
 						}
 					}
 					if (x == 2) {
@@ -235,20 +235,20 @@ public class MIDISequencerPage implements Page, Serializable {
 					}
 					if (x == 6) {
 						bankMode = 0;
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 					
 					if (x == 8 && this.copyMode == 0 && this.clearMode == 0) {
 						if (bank > 0) {
 							bank--;
-							redrawMonome();
+							redrawDevice();
 						}
 					}
 					
 					if (x == 9 && this.copyMode == 0 && this.clearMode == 0) {
 						if (bank < 239) {
 							bank++;
-							redrawMonome();
+							redrawDevice();
 						}
 					}
 					
@@ -256,7 +256,7 @@ public class MIDISequencerPage implements Page, Serializable {
 						if (bank < 238) {
 							this.sequencerCopyBank(bank, bank+1);
 							bank++;
-							redrawMonome();
+							redrawDevice();
 						}
 					}
 					
@@ -266,12 +266,12 @@ public class MIDISequencerPage implements Page, Serializable {
 						} else {
 							this.muteMode = 0;
 						}
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 					
 					if (x == 12 && this.copyMode == 0 && this.clearMode == 0) {
 						this.sequencerClearBank(bank);
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 
 
@@ -280,18 +280,18 @@ public class MIDISequencerPage implements Page, Serializable {
 					if (this.bankCopyMode == 1) {
 						this.bankCopyMode = 0;
 						this.sequencerCopyBank(this.bank, (y * (this.monome.sizeX)) + x);
-						this.redrawMonome();
+						this.redrawDevice();
 					} else if (bankClearMode == 1) {
 						this.bankClearMode = 0;
 						this.sequencerClearBank((y * (this.monome.sizeX)) + x);
 						if (this.bank == (y * (this.monome.sizeX)) + x) {
 							this.stopNotes();
 						}
-						this.redrawMonome();
+						this.redrawDevice();
 					} else {
 						this.bank = (y * (this.monome.sizeX)) + x;
 						this.stopNotes();
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 				}
 				// sequence edit mode
@@ -311,7 +311,7 @@ public class MIDISequencerPage implements Page, Serializable {
 							this.sequencerClearPattern(x);
 						}
 						this.pattern = x;
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 					// copy mode
 					if (x == 4 && this.clearMode == 0 && this.bankMode == 0) {
@@ -336,20 +336,20 @@ public class MIDISequencerPage implements Page, Serializable {
 					// bank button
 					if (x == 6 && this.copyMode == 0 && this.clearMode == 0) {
 						this.bankMode = 1;
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 					
 					if (x == 8 && this.copyMode == 0 && this.clearMode == 0) {
 						if (bank > 0) {
 							bank--;
-							redrawMonome();
+							redrawDevice();
 						}
 					}
 					
 					if (x == 9 && this.copyMode == 0 && this.clearMode == 0) {
 						if (bank < 239) {
 							bank++;
-							redrawMonome();
+							redrawDevice();
 						}
 					}
 					
@@ -357,13 +357,13 @@ public class MIDISequencerPage implements Page, Serializable {
 						if (bank < 238) {
 							this.sequencerCopyBank(bank, bank+1);
 							bank++;
-							redrawMonome();
+							redrawDevice();
 						}
 					}
 					
 					if (x == 11 && this.copyMode == 0 && this.clearMode == 0) {
 						this.sequencerClearBank(bank);
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 					
 					if (x == 12) {
@@ -372,7 +372,7 @@ public class MIDISequencerPage implements Page, Serializable {
 						} else {
 							this.muteMode = 0;
 						}
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 					
 					
@@ -382,7 +382,7 @@ public class MIDISequencerPage implements Page, Serializable {
 						} else {
 							this.velocityMode = 0;
 						}
-						this.redrawMonome();
+						this.redrawDevice();
 					}
 
 
@@ -562,14 +562,14 @@ public class MIDISequencerPage implements Page, Serializable {
 	public void handleReset() {
 		this.tickNum = 0;
 		this.sequencePosition = 0;
-		this.redrawMonome();
+		this.redrawDevice();
 	}
 
 	/**
 	 * Redraws a column as the sequence position indicator passes by.
 	 * 
-	 * @param col The column number to redraw
-	 * @param val The value of the led_col message that triggered this redraw
+	 * @param col The column number to redrawDevice
+	 * @param val The value of the led_col message that triggered this redrawDevice
 	 */
 	private void redrawCol(int col, int val) {
 		if (val == 0 && this.bankMode == 0) {
@@ -847,10 +847,10 @@ public class MIDISequencerPage implements Page, Serializable {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
-	public void redrawMonome() {
+	public void redrawDevice() {
 		int x_seq;
 		int y_seq;
-		// redraw if we're in bank mode
+		// redrawDevice if we're in bank mode
 		if (this.bankMode == 1) {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				for (int y = 0; y < (this.monome.sizeY - 1); y++) {
@@ -873,7 +873,7 @@ public class MIDISequencerPage implements Page, Serializable {
 					}
 				}
 			}
-			// redraw if we're in sequence mode
+			// redrawDevice if we're in sequence mode
 		} else {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				x_seq = (this.pattern * (this.monome.sizeX)) + x;
@@ -887,7 +887,7 @@ public class MIDISequencerPage implements Page, Serializable {
 				}
 			}
 		}
-		// redraw the bottom row
+		// redrawDevice the bottom row
 		this.sequencerRedrawBottomRow();
 	}
 
@@ -895,7 +895,7 @@ public class MIDISequencerPage implements Page, Serializable {
 	 * Redraws the bottom row of the sequencer page on the monome.
 	 */
 	public void sequencerRedrawBottomRow() {
-		// redraw this way if we're in bank mode
+		// redrawDevice this way if we're in bank mode
 		if (this.bankMode == 1) {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				if (x < 4) {
@@ -924,7 +924,7 @@ public class MIDISequencerPage implements Page, Serializable {
 					this.monome.led(x, (this.monome.sizeY - 1), 0, this.index);
 				}
 			}
-			// redraw this way if we're in sequence edit mode
+			// redrawDevice this way if we're in sequence edit mode
 		} else {
 			for (int x = 0; x < (this.monome.sizeX); x++) {
 				if (x < 4) {
@@ -1250,7 +1250,7 @@ public class MIDISequencerPage implements Page, Serializable {
 			String sequence = ((Node) nl.item(0)).getNodeValue();		
 			this.setSequence(l, sequence);		
 		}
-		this.redrawMonome();		
+		this.redrawDevice();
 	}
 
 	private void setQuantization(String quantization) {

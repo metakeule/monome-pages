@@ -221,7 +221,7 @@ public class QuadrantsPage implements Page, Serializable {
 		return false;
 	}
 
-	public void redrawMonome() {
+	public void redrawDevice() {
 		boolean didRedraw = false;
 		if (quadrantConfigurations.size() == 0) {
 			return;
@@ -230,7 +230,7 @@ public class QuadrantsPage implements Page, Serializable {
 			FakeMonomeConfiguration monomeConfig = quadrantConfigurations.get(gui.selectedQuadConf).getMonomeConfiguration(j);
 			if (monomeConfig.pages != null) {
 				for (int k = 0; k < monomeConfig.pages.size(); k++) {
-					monomeConfig.pages.get(k).redrawMonome();
+					monomeConfig.pages.get(k).redrawDevice();
 					didRedraw = true;
 				}
 			}
@@ -291,7 +291,7 @@ public class QuadrantsPage implements Page, Serializable {
 	}
 
 	public void redrawPage(int selectedQuadConf) {
-		MonomeConfigurationFactory.getMonomeConfiguration(index).monomeFrame.redrawPagePanel(this);
+		MonomeConfigurationFactory.getMonomeConfiguration(index).deviceFrame.redrawPagePanel(this);
 	}
 	
 	public boolean redrawOnAbletonEvent() {

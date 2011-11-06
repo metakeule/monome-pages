@@ -1061,8 +1061,8 @@ public class Configuration implements Serializable {
 						monomeConfig.altClear = true;
 					}
 					monomeConfig.serialOSCHostname = serialOSCHostName;
-					monomeConfig.monomeFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
-					monomeConfig.monomeFrame.updateMidiOutMenuOptions(MidiDeviceFactory.getMidiOutOptions());
+					monomeConfig.deviceFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
+					monomeConfig.deviceFrame.updateMidiOutMenuOptions(MidiDeviceFactory.getMidiOutOptions());
 										
 					String s;
 					float [] min = {0,0,0,0};

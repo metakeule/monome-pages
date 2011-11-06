@@ -257,8 +257,8 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
-	public void redrawMonome() {
-		// redraw the monome from the pageState, this is updated when the page isn't selected
+	public void redrawDevice() {
+		// redrawDevice the monome from the pageState, this is updated when the page isn't selected
 		for (int x=0; x < this.monome.sizeX; x++) {
 			for (int y=0; y < this.monome.sizeY; y++) {
 				this.monome.led(x, y, this.monome.pageState[this.index][x][y], this.index);

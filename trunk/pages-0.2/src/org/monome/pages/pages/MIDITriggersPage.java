@@ -297,7 +297,7 @@ public class MIDITriggersPage implements Page, Serializable {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
-	public void redrawMonome() {
+	public void redrawDevice() {
 		for (int x = 0; x < this.monome.sizeX; x++) {
 			for (int y = 0; y < this.monome.sizeY; y++) {
 				int a = x;
@@ -725,7 +725,7 @@ public class MIDITriggersPage implements Page, Serializable {
 		}		
 		*/
 
-		this.redrawMonome();		
+		this.redrawDevice();
 	}
 
 	public int getIndex() {

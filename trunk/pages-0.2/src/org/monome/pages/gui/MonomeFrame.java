@@ -12,6 +12,7 @@ import org.monome.pages.Main;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 import org.monome.pages.configuration.PagesRepository;
+import org.monome.pages.pages.BasePage;
 import org.monome.pages.pages.Page;
 
 import java.awt.BorderLayout;
@@ -20,7 +21,7 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.io.Serializable;
 
-public class MonomeFrame extends JInternalFrame implements Serializable {
+public class MonomeFrame extends JInternalFrame implements Serializable, DeviceFrame {
     static final long serialVersionUID = 42L;
 
 	private JPanel jContentPane = null;
@@ -209,7 +210,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 			newPageItem.setMnemonic(KeyEvent.VK_N);
 			newPageItem.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					String[] options = PagesRepository.getPageNames();
+					String[] options = PagesRepository.getPageNames(Page.class);
 					
 					for (int i=0; i<options.length; i++) {
 						options[i] = options[i].substring(23);					
@@ -304,7 +305,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 		return monomeDisplayFrame;
 	}
 
-	public void redrawPagePanel(Page page) {
+	public void redrawPagePanel(BasePage page) {
 		if (currentPanel != null) {
 			getJContentPane().remove(currentPanel);
 		}
@@ -812,4 +813,10 @@ public class MonomeFrame extends JInternalFrame implements Serializable {
 			showPageMenu.add(pageItem);
 		}		
 	}
+
+    public void clearPage() {
+        getJContentPane().removeAll();
+        getJContentPane().validate();
+        pack();
+    }
 }

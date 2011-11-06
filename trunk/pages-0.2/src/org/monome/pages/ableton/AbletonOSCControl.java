@@ -65,7 +65,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			if (abletonTrack != null) {
 				abletonTrack.setArm(1);
 			}
-			// redraw all ableton pages
+			// redrawDevice all ableton pages
 			Main.main.configuration.redrawAbletonPages();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -92,7 +92,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			if (abletonTrack != null) {
 				abletonTrack.setArm(0);
 			}
-			// redraw all ableton pages
+			// redrawDevice all ableton pages
 			Main.main.configuration.redrawAbletonPages();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -162,7 +162,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			// update ableton state
 			AbletonState abletonState = Main.main.configuration.getAbletonState();
 			abletonState.setOverdub(overdub);
-			// redraw all ableton pages
+			// redrawDevice all ableton pages
 			Main.main.configuration.redrawAbletonPages();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -228,7 +228,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			if (abletonTrack != null) {
 				abletonTrack.setMute(1);
 			}
-			// redraw all ableton pages
+			// redrawDevice all ableton pages
 			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -254,7 +254,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			if (abletonTrack != null) {
 				abletonTrack.setMute(0);
 			}
-			// redraw all ableton pages
+			// redrawDevice all ableton pages
 			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -279,7 +279,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			if (abletonTrack != null) {
 				abletonTrack.setSolo(1);
 			}
-			// redraw all ableton pages
+			// redrawDevice all ableton pages
 			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -301,7 +301,7 @@ public class AbletonOSCControl implements AbletonControl, Serializable {
 			if (abletonTrack != null) {
 				abletonTrack.setSolo(0);
 			}
-			// redraw all ableton pages
+			// redrawDevice all ableton pages
 			Main.main.configuration.redrawAbletonPages();			
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -14,6 +14,7 @@ import javax.swing.JButton;
 
 import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.gui.MainGUI;
+import org.monome.pages.pages.Page;
 import org.monome.pages.pages.QuadrantsPage;
 
 public class QuadrantsGUI256 extends JPanel implements Serializable {
@@ -263,7 +264,7 @@ public class QuadrantsGUI256 extends JPanel implements Serializable {
 		if (page.quadrantConfigurations.get(selectedQuadConf).getNumQuads() <= configNum) {
 			return;
 		}
-		String options[] = PagesRepository.getPageNames();
+		String options[] = PagesRepository.getPageNames(Page.class);
 		
 		for (int i=0; i<options.length; i++) {
 			options[i] = options[i].substring(23);
@@ -282,7 +283,7 @@ public class QuadrantsGUI256 extends JPanel implements Serializable {
 		name = "org.monome.pages.pages." + name;
 		page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).deletePage(0);
 		page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).addPage(name);
-		page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).pages.get(0).redrawMonome();
+		page.quadrantConfigurations.get(selectedQuadConf).getMonomeConfiguration(configNum).pages.get(0).redrawDevice();
 	}
 
 	/**

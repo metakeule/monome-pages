@@ -291,7 +291,7 @@ public class MachineDrumInterfacePage implements Page, Serializable {
 		loadModule(gui.mod2CB.getSelectedIndex(), 1);
 		loadModule(gui.mod3CB.getSelectedIndex(), 2);
 		loadModule(gui.mod4CB.getSelectedIndex(), 3);
-		this.redrawMonome();
+		this.redrawDevice();
 	}
 	
 	public void loadModule(int option, int moduleNumber) {
@@ -321,7 +321,7 @@ public class MachineDrumInterfacePage implements Page, Serializable {
 		this.monome.led(x + module.xOffset, y + module.yOffset, value, this.index);
 	}
 	
-	public void redrawMonome() {
+	public void redrawDevice() {
 		for (int i = 0; i < this.loadedModules.size(); i++) {
 			loadedModules.get(i).module.redrawMonome();
 		}
@@ -1215,7 +1215,7 @@ public class MachineDrumInterfacePage implements Page, Serializable {
 		public void redrawMonome() {
 			for (int x = 0; x < 8; x++) {
 				for (int y = 0; y < 8; y++) {
-					// redraw the morph machine state (top 2 rows)
+					// redrawDevice the morph machine state (top 2 rows)
 					if (y < 2) {
 						int machine_num = getMachineNum(x, y);
 						if (morph_machines[machine_num] == 1) {
@@ -1223,7 +1223,7 @@ public class MachineDrumInterfacePage implements Page, Serializable {
 						} else {
 							this.page.led(x, y, 0, this.index);
 						}
-						// redraw the morph param state (next 3 rows)
+						// redrawDevice the morph param state (next 3 rows)
 					} else if (y < 5) {
 						int param_num = getMachineNum(x, y - 2);
 						if (morph_params[param_num] == 1) {
@@ -1231,7 +1231,7 @@ public class MachineDrumInterfacePage implements Page, Serializable {
 						} else {
 							this.page.led(x, y, 0, this.index);
 						}
-						// redraw the bottom row (auto morph and fx toggles)
+						// redrawDevice the bottom row (auto morph and fx toggles)
 					} else if (y == 7) {
 						if (x == 0) {
 							if (auto_morph == true) {

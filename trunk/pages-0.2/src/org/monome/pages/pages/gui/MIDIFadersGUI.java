@@ -173,7 +173,7 @@ public class MIDIFadersGUI extends JPanel implements Serializable {
 					page.setCCOffset(getCcOffsetTF().getText());
 					page.setMidiChannel(getChannelTF().getText());
 					page.setHorizontal(getHorizontalCB().isSelected());
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}
