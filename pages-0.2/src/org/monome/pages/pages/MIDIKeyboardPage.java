@@ -575,7 +575,7 @@ public class MIDIKeyboardPage implements Page, Serializable {
 	 * @see org.monome.pages.Page#handleReset()
 	 */
 	public void handleReset() {
-		this.redrawMonome();
+		this.redrawDevice();
 	}
 	
 	private void stopNotes() {
@@ -694,7 +694,7 @@ public class MIDIKeyboardPage implements Page, Serializable {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */	
-	public void redrawMonome() {
+	public void redrawDevice() {
 		// for 128 / 256 monomes
 		if (this.monome.sizeX > 8) {
 			this.redrawMonome256();

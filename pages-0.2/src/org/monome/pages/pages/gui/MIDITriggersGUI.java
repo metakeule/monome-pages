@@ -100,7 +100,7 @@ public class MIDITriggersGUI extends JPanel implements Serializable {
 			rowColCB.addItem(colChoices[i]);
 		}
 		rowColLBL.setText("Col");
-		page.redrawMonome();
+		page.redrawDevice();
 	}
 	
 	private void rowMode() {
@@ -109,7 +109,7 @@ public class MIDITriggersGUI extends JPanel implements Serializable {
 			rowColCB.addItem(rowChoices[i]);
 		}
 		rowColLBL.setText("Row");
-		page.redrawMonome();
+		page.redrawDevice();
 	}
 
 	/**
@@ -293,7 +293,7 @@ public class MIDITriggersGUI extends JPanel implements Serializable {
 					} else if (mode.compareTo("Ableton Looper") == 0) {
 						page.mode[index] = page.MODE_LOOPER_OVERLAY;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 			modeCB.addItem("Triggers");

@@ -100,7 +100,7 @@ public class GroovyPage implements Page, Serializable {
 		return false;
 	}
 
-	public void redrawMonome() {
+	public void redrawDevice() {
 		if (theApp != null) {
 			try {
 				theApp.redraw();
@@ -240,7 +240,7 @@ public class GroovyPage implements Page, Serializable {
 				"        led(x, y, val)\n" +
 				"    }\n" +
 				"\n" +
-				"    void redraw() {\n" +
+				"    void redrawDevice() {\n" +
 				"        clear(0)\n" +
 				"        led(0, 0, 1)\n" +
 				"        row(1, 255, 255)\n" +

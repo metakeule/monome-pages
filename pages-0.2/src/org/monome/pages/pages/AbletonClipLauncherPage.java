@@ -101,25 +101,25 @@ public class AbletonClipLauncherPage implements Page, Serializable {
 				if (y == 0) {
 					if (this.clipOffset > 0) {
 						this.clipOffset -= 1;
-						redrawMonome();
+						redrawDevice();
 					}
 				// plus 1 clip offset
 				} else if (y == 1) {
 					if ((this.clipOffset + 1) * (this.monome.sizeY - this.numEnabledRows) < 960) {
 						this.clipOffset += 1;
-						redrawMonome();
+						redrawDevice();
 					}
 				// minus 1 track offset
 				} else if (y == 2) {
 					if (this.trackOffset > 0) {
 						this.trackOffset -= 1;
-						redrawMonome();
+						redrawDevice();
 					}
 				// plus 1 track offset
 				} else if (y == 3) {
 					if ((this.trackOffset + 1) * (this.monome.sizeX - 1) < 100) {
 						this.trackOffset += 1;
-						redrawMonome();
+						redrawDevice();
 					}
 				} else if (y == 4) {
 					this.tempoDown();
@@ -371,8 +371,8 @@ public class AbletonClipLauncherPage implements Page, Serializable {
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
-	public void redrawMonome() {
-		// redraw the upper part of the monome (the clip state)
+	public void redrawDevice() {
+		// redrawDevice the upper part of the monome (the clip state)
 		for (int x = 0; x < this.monome.sizeX - 1; x++) {
 			int trackNum = x + (this.trackOffset * (this.monome.sizeX - 1));
 			AbletonTrack track = Main.main.configuration.abletonState.getTrack(trackNum);
@@ -402,7 +402,7 @@ public class AbletonClipLauncherPage implements Page, Serializable {
 			}
 		}
 		
-		// redraw the track armed/disarmed state
+		// redrawDevice the track armed/disarmed state
 		if (this.gui.getDisableArmCB().isSelected() == false) {
 			for (int i = 0; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
@@ -420,7 +420,7 @@ public class AbletonClipLauncherPage implements Page, Serializable {
 			}
 		}
 		
-		// redraw the track solo/unsolo state
+		// redrawDevice the track solo/unsolo state
 		if (this.gui.getDisableSoloCB().isSelected() == false) {
 			for (int i = 0; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));
@@ -443,7 +443,7 @@ public class AbletonClipLauncherPage implements Page, Serializable {
 			}
 		}
 
-		// redraw the track mute/unmute state
+		// redrawDevice the track mute/unmute state
 		if (this.gui.getDisableMuteCB().isSelected() == false) {
 			for (int i = 0; i < this.monome.sizeX - 1; i++) {
 				int track_num = i + (this.trackOffset * (this.monome.sizeX - 1));

@@ -90,7 +90,7 @@ public class AbletonClipLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}
@@ -113,7 +113,7 @@ public class AbletonClipLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}
@@ -136,7 +136,7 @@ public class AbletonClipLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}
@@ -178,7 +178,7 @@ public class AbletonClipLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}

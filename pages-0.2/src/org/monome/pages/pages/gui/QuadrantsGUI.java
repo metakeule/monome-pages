@@ -14,6 +14,7 @@ import javax.swing.JRadioButton;
 
 import org.monome.pages.configuration.PagesRepository;
 import org.monome.pages.configuration.QuadrantConfiguration;
+import org.monome.pages.pages.Page;
 import org.monome.pages.pages.QuadrantsPage;
 
 import java.io.Serializable;
@@ -69,7 +70,7 @@ public class QuadrantsGUI extends JPanel implements ActionListener, Serializable
 	
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("New Page")) {
-			String options[] = PagesRepository.getPageNames();
+			String options[] = PagesRepository.getPageNames(Page.class);
 			
 			//don't know if this is the best way to do this...but I was getting tired of the long messy classnames :)
 			for (int i=0; i<options.length; i++) {

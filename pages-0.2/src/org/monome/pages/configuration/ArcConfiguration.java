@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.monome.pages.gui.ArcFrame;
-import org.monome.pages.gui.MonomeDisplayFrame;
-import org.monome.pages.gui.MonomeFrame;
 import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.ArcPage;
-import org.monome.pages.pages.Page;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -16,22 +13,7 @@ import org.w3c.dom.NodeList;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
 
-public class ArcConfiguration {
-    /**
-     * The arc's prefix (ie. "/arc")
-     */
-    public String prefix;
-    
-    /**
-     * The arc's serial number (ie. m0000226)
-     */
-    public String serial;
-    
-    /**
-     * The arc's index
-     */
-    public int index;
-    
+public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
     /**
      * The arc GUI window
      */
@@ -94,11 +76,11 @@ public class ArcConfiguration {
     private int numPages;
     
     public ArcConfiguration(int index, String prefix, String serial, int knobs, ArcFrame arcFrame) {
-        this.index = index;
-        this.prefix = prefix;
-        this.serial = serial;
+        super(index, prefix, serial);
+
         this.knobs = knobs;
         this.arcFrame = arcFrame;
+        this.deviceFrame = arcFrame;
         if (arcFrame != null) {
             arcFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
             arcFrame.updateMidiOutMenuOptions(MidiDeviceFactory.getMidiOutOptions());
@@ -267,64 +249,15 @@ public class ArcConfiguration {
         return level;
     }
     
-    /**
-     * Switch pages on this monome.
-     * 
-     * @param page The page to switch to
-     * @param pageIndex The index of the page to switch to
-     * @param redrawPanel true if the GUI panel should be redrawn
-     */
-    public void switchPage(ArcPage page, int pageIndex, boolean redrawPanel) {
-        this.curPage = pageIndex;
-        page.redrawArc();
-        if (arcFrame != null) {
-            arcFrame.redrawPagePanel(page);
-            arcFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
-            arcFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
-        }
-    }
-    
-    public void switchPage(int pageIndex) {
-        if (pages.size() <= pageIndex) {
-            return;
-        }
-        ArcPage page = pages.get(pageIndex);
-        this.curPage = pageIndex;
-        page.redrawArc();
-        if (arcFrame != null) {
-            arcFrame.redrawPagePanel(page);
-            arcFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
-            arcFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
-        }
-    }
-    
-    /**
-     * Adds a new page to this monome
-     * 
-     * @param className The class name of the page to add
-     * @return The new Page object
-     */
-    public ArcPage addPage(String className) {
-        ArcPage page;      
-
-        page = PagesRepository.getArcPageInstance(className, this, this.numPages);
-        this.pages.add(this.numPages, page);
-        
-        this.numPages++;
-        if (this.arcFrame != null) {
-            this.arcFrame.enableMidiMenu(true);
-            String[] pageNames = new String[this.pages.size()];
-            for (int i = 0; i < this.pages.size(); i++) {
-                ArcPage tmpPage = this.pages.get(i);
-                String pageName = tmpPage.getName();
-                pageNames[i] = pageName;
-            }
-            this.arcFrame.updateShowPageMenuItems(pageNames);
-        }
+    @Override
+    protected void onPageAdd(String className, ArcPage page) {
         System.out.println("ArcConfiguration " + this.serial + ": created " + className + " page");
-        return page;
     }
 
+    @Override
+    protected Class getPageType() {
+        return ArcPage.class;
+    }
 
     /**
      * Destroys this object.
@@ -335,47 +268,6 @@ public class ArcConfiguration {
             deletePage(i);
         }
         ArcConfigurationFactory.removeArcConfiguration(index);
-    }
-    
-    /**
-     * Deletes a page.
-     * 
-     * @param i the index of the page to delete
-     */
-    public void deletePage(int i) {
-        if (this.numPages == 0) {
-            return;
-        }
-        this.pages.get(i).destroyPage();
-        this.pages.remove(i);       
-        for (int x=0; x < this.pages.size(); x++) {
-            this.pages.get(x).setIndex(x);
-        }
-        
-        this.numPages--;
-        this.curPage--;
-        if (curPage <= 0) {
-            curPage = 0;
-        }
-        if (this.numPages == 0) {
-            if (this.arcFrame != null) {
-                this.arcFrame.enableMidiMenu(false);
-                arcFrame.getJContentPane().removeAll();
-                arcFrame.getJContentPane().validate();
-                arcFrame.pack();
-            }
-        } else {
-            switchPage(pages.get(curPage), curPage, true);
-        }
-        String[] pageNames = new String[this.pages.size()];
-        for (int i1 = 0; i1 < this.pages.size(); i1++) {
-            ArcPage tmpPage = this.pages.get(i1);
-            String pageName = tmpPage.getName();
-            pageNames[i1] = pageName;
-        }
-        if (this.arcFrame != null) {
-            this.arcFrame.updateShowPageMenuItems(pageNames);
-        }
     }
 
     /**

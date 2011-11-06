@@ -22,8 +22,6 @@
 
 package org.monome.pages.configuration;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.sound.midi.MidiDevice;
@@ -51,15 +49,9 @@ import com.illposed.osc.OSCPortOut;
  * @author Administrator
  *
  */
-public class MonomeConfiguration implements Serializable {
-    static final long serialVersionUID = 42L;
+public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 
-	/**
-	 * The monome's prefix (ie. "/40h")
-	 */
-	public String prefix;
-
-	/**
+    /**
 	 * The monome's width (ie. 8 or 16)
 	 */
 	public int sizeX;
@@ -68,23 +60,8 @@ public class MonomeConfiguration implements Serializable {
 	 * The monome's height (ie. 8 or 16) 
 	 */
 	public int sizeY;
-	
-	/**
-	 * The monome's serial number (ie. m40h0146)
-	 */
-	public String serial;
-	
-	/**
-	 * The monome's index in MonomeSerial
-	 */
-	public int index;
-	
-	/**
-	 * The monome GUI window
-	 */
-	public transient MonomeFrame monomeFrame;
 
-	/**
+    /**
 	 * ledState[x][y] - The LED state cache for the monome
 	 */
 	public int[][] ledState = new int[32][32];
@@ -93,38 +70,13 @@ public class MonomeConfiguration implements Serializable {
 	 * pageState[page_num][x][y] - The LED state cache for each page
 	 */
 	public int[][][] pageState = new int[255][32][32];
-	
-	/**
-	 * Enabled MIDI In devices by page 
-	 */
-	public String[][] midiInDevices = new String[255][32];
 
-	/**
-	 * Enabled MIDI In devices by page 
-	 */
-	public String[][] midiOutDevices = new String[255][32];
-
-	/**
-	 * The pages that belong to this monome
-	 */
-	public ArrayList<Page> pages = new ArrayList<Page>();
-	
-	/**
+    /**
 	 * The monome's pattern banks
 	 */
 	public ArrayList<PatternBank> patternBanks = new ArrayList<PatternBank>();
 
-	/**
-	 * The number of pages this monome has 
-	 */
-	private int numPages = 0;
-
-	/**
-	 * The currently selected page
-	 */
-	public int curPage = 0;
-
-	/**
+    /**
 	 * The options dropdown when creating a new page (contains a list of all page names)
 	 */
 	private String options[];
@@ -180,7 +132,9 @@ public class MonomeConfiguration implements Serializable {
 
     public transient MonomeOSCListener oscListener;
 
-	/**
+    private MonomeFrame monomeFrame;
+
+    /**
 	 * @param index the index to assign to this MonomeConfiguration
 	 * @param prefix the prefix of the monome (/40h)
 	 * @param serial the serial # of the monome (if auto-discovery was used)
@@ -191,22 +145,22 @@ public class MonomeConfiguration implements Serializable {
 	 * @param midiPageChangeRules the set of MIDI page changing rules
 	 * @param monomeFrame the GUI frame for this monome
 	 */
-	public MonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {		
-		this.options = PagesRepository.getPageNames();		
+	public MonomeConfiguration(int index, String prefix, String serial, int sizeX, int sizeY, boolean usePageChangeButton, boolean useMIDIPageChanging, ArrayList<MIDIPageChangeRule> midiPageChangeRules, MonomeFrame monomeFrame) {
+        super(index, prefix, serial);
+
+        this.options = PagesRepository.getPageNames(Page.class);
 		for (int i=0; i<options.length; i++) {
 			options[i] = options[i].substring(17);					
 		}
-		this.index = index;
-		this.prefix = prefix;
-		this.serial = serial;
-		this.sizeX = sizeX;
+        this.sizeX = sizeX;
 		this.sizeY = sizeY;
 
 		this.midiPageChangeRules = midiPageChangeRules;
 		this.usePageChangeButton = usePageChangeButton;
 		this.useMIDIPageChanging = useMIDIPageChanging;
-		this.monomeFrame = monomeFrame;
-		
+		this.deviceFrame = monomeFrame;
+        this.monomeFrame = monomeFrame;
+
 		if (monomeFrame != null) {
 			monomeFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
 			monomeFrame.updateMidiOutMenuOptions(MidiDeviceFactory.getMidiOutOptions());
@@ -215,37 +169,20 @@ public class MonomeConfiguration implements Serializable {
 		this.clearMonome();
 	}
 
-	/**
-	 * Adds a new page to this monome
-	 * 
-	 * @param className The class name of the page to add
-	 * @return The new Page object
-	 */
-	public Page addPage(String className) {
-		Page page;		
+    @Override
+    protected void onPageAdd(String className, Page page) {
+        int numPatterns = this.sizeX;
+        this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
 
-		page = PagesRepository.getPageInstance(className, this, this.numPages);
-		this.pages.add(this.numPages, page);
+        System.out.println("MonomeConfiguration " + this.serial + ": created " + className + " page");
+    }
 
-		int numPatterns = this.sizeX;
-		this.patternBanks.add(this.numPages, new PatternBank(numPatterns));
-		
-		this.numPages++;
-		if (this.monomeFrame != null) {
-			this.monomeFrame.enableMidiMenu(true);
-			String[] pageNames = new String[this.pages.size()];
-			for (int i = 0; i < this.pages.size(); i++) {
-				Page tmpPage = this.pages.get(i);
-				String pageName = tmpPage.getName();
-				pageNames[i] = pageName;
-			}
-			this.monomeFrame.updateShowPageMenuItems(pageNames);
-		}
-		System.out.println("MonomeConfiguration " + this.serial + ": created " + className + " page");
-		return page;
-	}
-	
-	/**
+    @Override
+    protected Class getPageType() {
+        return Page.class;
+    }
+
+    /**
 	 * Destroys this object.
 	 *
 	 */
@@ -255,81 +192,8 @@ public class MonomeConfiguration implements Serializable {
 		}
 		MonomeConfigurationFactory.removeMonomeConfiguration(index);
 	}
-	
-	/**
-	 * Deletes a page.
-	 * 
-	 * @param i the index of the page to delete
-	 */
-	public void deletePage(int i) {
-		if (this.numPages == 0) {
-			return;
-		}
-		this.pages.get(i).destroyPage();
-		this.pages.remove(i);		
-		for (int x=0; x < this.pages.size(); x++) {
-			this.pages.get(x).setIndex(x);
-		}
-		
-		this.numPages--;
-		this.curPage--;
-		if (curPage <= 0) {
-			curPage = 0;
-		}
-		if (this.numPages == 0) {
-			if (this.monomeFrame != null) {
-				this.monomeFrame.enableMidiMenu(false);
-				monomeFrame.getJContentPane().removeAll();
-				monomeFrame.getJContentPane().validate();
-				monomeFrame.pack();
-			}
-		} else {
-			switchPage(pages.get(curPage), curPage, true);
-		}
-		String[] pageNames = new String[this.pages.size()];
-		for (int i1 = 0; i1 < this.pages.size(); i1++) {
-			Page tmpPage = this.pages.get(i1);
-			String pageName = tmpPage.getName();
-			pageNames[i1] = pageName;
-		}
-		if (this.monomeFrame != null) {
-			this.monomeFrame.updateShowPageMenuItems(pageNames);
-		}
-	}
 
-	/**
-	 * Switch pages on this monome.
-	 * 
-	 * @param page The page to switch to
-	 * @param pageIndex The index of the page to switch to
-	 * @param redrawPanel true if the GUI panel should be redrawn
-	 */
-	public void switchPage(Page page, int pageIndex, boolean redrawPanel) {
-		this.curPage = pageIndex;
-		page.redrawMonome();
-		if (monomeFrame != null) {
-			monomeFrame.redrawPagePanel(page);
-			monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
-			monomeFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
-		}
-	}
-	
-	public void switchPage(int pageIndex) {
-	    if (pages.size() <= pageIndex) {
-	        return;
-	    }
-	    Page page = pages.get(pageIndex);
-        this.curPage = pageIndex;
-        page.redrawMonome();
-        if (monomeFrame != null) {
-            monomeFrame.redrawPagePanel(page);
-            monomeFrame.updateMidiInSelectedItems(this.midiInDevices[this.curPage]);
-            monomeFrame.updateMidiOutSelectedItems(this.midiOutDevices[this.curPage]);
-        }
-	    
-	}
-		
-	/**
+    /**
 	 * Redraws only the Ableton pages (for when a new event arrives)
 	 */
 	public void redrawAbletonPages() {
@@ -338,7 +202,7 @@ public class MonomeConfiguration implements Serializable {
 		}
 		for (int i = 0; i < this.pages.size(); i++) {
 			if (pages.get(i).redrawOnAbletonEvent()) {
-				pages.get(i).redrawMonome();
+				pages.get(i).redrawDevice();
 			}
 		}
 	}
@@ -351,7 +215,7 @@ public class MonomeConfiguration implements Serializable {
 	 * @param value The type of event (1 = press, 0 = release)
 	 */
 	public synchronized void handlePress(int x, int y, int value) {
-		if (monomeFrame != null) {
+		if (deviceFrame != null) {
 			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
 			if (monomeDisplayFrame != null) {
 				monomeDisplayFrame.press(x, y, value);
@@ -396,7 +260,7 @@ public class MonomeConfiguration implements Serializable {
 				}
 				if (this.pages.get(curPage) != null) {
 					this.ledState = new int[32][32];
-					this.pages.get(curPage).redrawMonome();
+					this.pages.get(curPage).redrawDevice();
 				}
 				return;
 			}
@@ -442,8 +306,17 @@ public class MonomeConfiguration implements Serializable {
 			this.pages.get(curPage).handlePress(x, y, value);
 		}
 	}
-	
-	class PageChangeTimer implements Runnable {
+
+    @Override
+    public void dispose() {
+        if (monomeFrame.monomeDisplayFrame != null) {
+            monomeFrame.monomeDisplayFrame.dispose();
+        }
+
+        super.dispose();
+    }
+
+    class PageChangeTimer implements Runnable {
 
 		MonomeConfiguration monome;
 		int delay;
@@ -619,8 +492,8 @@ public class MonomeConfiguration implements Serializable {
 			}
 			if (this.midiInDevices[this.curPage][i].compareTo(deviceName) == 0) {
 				midiInDevices[this.curPage][i] = new String();
-				if (this.monomeFrame != null) {
-					this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				if (this.deviceFrame != null) {
+					this.deviceFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
 				}
 				return;
 			}
@@ -630,8 +503,8 @@ public class MonomeConfiguration implements Serializable {
 		for (int i = 0; i < this.midiInDevices[this.curPage].length; i++) {
 			if (this.midiInDevices[this.curPage][i] == null) {
 				this.midiInDevices[this.curPage][i] = deviceName;
-				if (this.monomeFrame != null) {
-					this.monomeFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
+				if (this.deviceFrame != null) {
+					this.deviceFrame.updateMidiInSelectedItems(midiInDevices[this.curPage]);
 				}
 				return;
 			}
@@ -651,7 +524,7 @@ public class MonomeConfiguration implements Serializable {
 			}
 			if (this.pageChangeMidiInDevices[i].compareTo(deviceName) == 0) {
 				pageChangeMidiInDevices[i] = new String();
-				this.monomeFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
+				this.deviceFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
 				return;
 			}
 		}
@@ -660,8 +533,8 @@ public class MonomeConfiguration implements Serializable {
 		for (int i = 0; i < this.pageChangeMidiInDevices.length; i++) {
 			if (this.pageChangeMidiInDevices[i] == null) {
 				this.pageChangeMidiInDevices[i] = deviceName;
-				if (this.monomeFrame != null) {
-					this.monomeFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
+				if (this.deviceFrame != null) {
+					this.deviceFrame.updatePageChangeMidiInSelectedItems(pageChangeMidiInDevices);
 				}
 				return;
 			}
@@ -684,8 +557,8 @@ public class MonomeConfiguration implements Serializable {
 			}
 			if (this.midiOutDevices[this.curPage][i].compareTo(deviceName) == 0) {
 				midiOutDevices[this.curPage][i] = new String();
-				if (this.monomeFrame != null) {
-					this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				if (this.deviceFrame != null) {
+					this.deviceFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
 				}
 				return;
 			}
@@ -695,8 +568,8 @@ public class MonomeConfiguration implements Serializable {
 		for (int i = 0; i < this.midiOutDevices[this.curPage].length; i++) {
 			if (this.midiOutDevices[this.curPage][i] == null) {
 				this.midiOutDevices[this.curPage][i] = deviceName;
-				if (this.monomeFrame != null) {
-					this.monomeFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
+				if (this.deviceFrame != null) {
+					this.deviceFrame.updateMidiOutSelectedItems(midiOutDevices[this.curPage]);
 				}
 				return;
 			}
@@ -740,7 +613,7 @@ public class MonomeConfiguration implements Serializable {
 
 		this.ledState[x][y] = value;
 		
-		if (this.monomeFrame != null) {
+		if (this.deviceFrame != null) {
 			MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
 			if (monomeDisplayFrame != null) {
 				monomeDisplayFrame.setLedState(ledState);
@@ -819,7 +692,7 @@ public class MonomeConfiguration implements Serializable {
 				this.ledState[col][y] = bit;
 			}
 			
-			if (this.monomeFrame != null) {
+			if (this.deviceFrame != null) {
 				MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
 				if (monomeDisplayFrame != null) {
 					monomeDisplayFrame.setLedState(ledState);
@@ -902,7 +775,7 @@ public class MonomeConfiguration implements Serializable {
 				this.ledState[x][row] = bit;
 			}
 			
-			if (this.monomeFrame != null) {
+			if (this.deviceFrame != null) {
 				MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
 				if (monomeDisplayFrame != null) {
 					monomeDisplayFrame.setLedState(ledState);
@@ -986,7 +859,7 @@ public class MonomeConfiguration implements Serializable {
 					}
 				}
 				
-				if (this.monomeFrame != null) {
+				if (this.deviceFrame != null) {
 					MonomeDisplayFrame monomeDisplayFrame = monomeFrame.getMonomeDisplayFrame();
 					if (monomeDisplayFrame != null) {
 						monomeDisplayFrame.setLedState(ledState);
@@ -1168,8 +1041,8 @@ public class MonomeConfiguration implements Serializable {
 		if (sizeX != 0 && sizeY != 0) {
 			title += " | " + sizeX + "x" + sizeY;
 		}
-		if (this.monomeFrame != null) {
-			monomeFrame.setTitle(title);
+		if (this.deviceFrame != null) {
+			deviceFrame.setTitle(title);
 		}
 	}
 
@@ -1190,7 +1063,7 @@ public class MonomeConfiguration implements Serializable {
         ledState = new int[32][32];
         pageState = new int[255][32][32];
         for (Page page : pages) {
-            page.redrawMonome();
+            page.redrawDevice();
         }
     }
 

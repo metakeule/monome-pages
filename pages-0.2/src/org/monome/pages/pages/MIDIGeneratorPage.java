@@ -212,7 +212,7 @@ public class MIDIGeneratorPage implements Page, Serializable {
 		return false;
 	}
 
-	public void redrawMonome() {
+	public void redrawDevice() {
 		this.monome.clear(0, index);
 	}
 

@@ -133,8 +133,8 @@ public class MidiDeviceFactory {
                 outDevice.close();
                 for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
                     MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-                    if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-                        monomeConfig.monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+                    if (monomeConfig != null && monomeConfig.deviceFrame != null) {
+                        monomeConfig.deviceFrame.updateMidiOutMenuOptions(getMidiOutOptions());
                     }
                 }
                 Main.main.mainFrame.enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), false);
@@ -150,8 +150,8 @@ public class MidiDeviceFactory {
             midiOutReceivers.add(recv);
             for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
                 MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-                if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-                    MonomeConfigurationFactory.getMonomeConfiguration(j).monomeFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+                if (monomeConfig != null && monomeConfig.deviceFrame != null) {
+                    MonomeConfigurationFactory.getMonomeConfiguration(j).deviceFrame.updateMidiOutMenuOptions(getMidiOutOptions());
                 }
             }
             Main.main.mainFrame.enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), true);
@@ -178,9 +178,9 @@ public class MidiDeviceFactory {
                 inDevice.close();
                 for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
                     MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-                    if (monomeConfig != null && monomeConfig.monomeFrame != null) {
+                    if (monomeConfig != null && monomeConfig.deviceFrame != null) {
                         System.out.println("update midi in menu options");
-                        monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+                        monomeConfig.deviceFrame.updateMidiInMenuOptions(getMidiInOptions());
                     }
                 }
                 Main.main.mainFrame.enableMidiInOption(midiInDevice.getDeviceInfo().getName(), false);
@@ -199,8 +199,8 @@ public class MidiDeviceFactory {
             midiInReceivers.add(receiver);
             for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
                 MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
-                if (monomeConfig != null && monomeConfig.monomeFrame != null) {
-                    monomeConfig.monomeFrame.updateMidiInMenuOptions(getMidiInOptions());
+                if (monomeConfig != null && monomeConfig.deviceFrame != null) {
+                    monomeConfig.deviceFrame.updateMidiInMenuOptions(getMidiInOptions());
                 }
             }
             Main.main.mainFrame.enableMidiInOption(midiInDevice.getDeviceInfo().getName(), true);

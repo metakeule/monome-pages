@@ -212,10 +212,10 @@ public class ExternalApplicationPage implements ArcPage, OSCListener, RegisterLi
 	}
 
 	/* (non-Javadoc)
-	 * @see org.monome.pages.Page#redrawMonome()
+	 * @see org.monome.pages.Page#redrawDevice()
 	 */
-	public void redrawArc() {
-		// redraw the arc from the pageState, this is updated when the page isn't selected
+	public void redrawDevice() {
+		// redrawDevice the arc from the pageState, this is updated when the page isn't selected
 	    for (int enc = 0; enc < arc.knobs; enc++) {
 	        Integer[] levels = new Integer[64];
 	        for (int led = 0; led < 64; led++) {

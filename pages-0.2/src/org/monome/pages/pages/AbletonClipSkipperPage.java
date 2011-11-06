@@ -179,13 +179,13 @@ public class AbletonClipSkipperPage implements Page, Serializable {
 				}
 			}
 		}
-		this.redrawMonome();
+		this.redrawDevice();
 	}
 
 	/* (non-Javadoc)
 	 * @see org.monome.pages.Page#redrawMonome()
 	 */
-	public void redrawMonome() {
+	public void redrawDevice() {
 		for (int y = 0; y < this.monome.sizeY; y++) {
 			AbletonTrack track = Main.main.configuration.abletonState.getTrack(y);
 			if (track != null) {

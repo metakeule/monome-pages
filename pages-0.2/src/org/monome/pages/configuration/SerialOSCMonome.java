@@ -50,7 +50,7 @@ public class SerialOSCMonome implements SerialOSCDevice, OSCListener {
 						if (monomeConfig.curPage > -1) {
 							Page page = monomeConfig.pages.get(monomeConfig.curPage);
 							if (page != null) {
-								page.redrawMonome();
+								page.redrawDevice();
 							}
 						}
 					}

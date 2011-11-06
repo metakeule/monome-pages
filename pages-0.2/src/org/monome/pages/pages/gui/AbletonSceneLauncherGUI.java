@@ -90,7 +90,7 @@ public class AbletonSceneLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 
@@ -114,7 +114,7 @@ public class AbletonSceneLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}
@@ -137,7 +137,7 @@ public class AbletonSceneLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}
@@ -179,7 +179,7 @@ public class AbletonSceneLauncherGUI extends JPanel implements Serializable {
 					} else {
 						page.numEnabledRows++;
 					}
-					page.redrawMonome();
+					page.redrawDevice();
 				}
 			});
 		}
