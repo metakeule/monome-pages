@@ -44,6 +44,8 @@ import javax.swing.JOptionPane;
 
 import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonState;
+import org.monome.pages.configuration.ArcConfiguration;
+import org.monome.pages.configuration.ArcConfigurationFactory;
 import org.monome.pages.configuration.Configuration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
@@ -324,13 +326,11 @@ public class MainGUI extends JFrame {
             MonomeConfiguration monomeConfig = monomeConfigs.get(key);
             if (monomeConfig != null) {
                 for (int pageNum = 0; pageNum < monomeConfig.pages.size(); pageNum++) {
-                    System.out.println("update midi selected items on page # " + pageNum);
                     monomeConfig.deviceFrame.updateMidiInSelectedItems(monomeConfig.midiInDevices[pageNum]);
                     monomeConfig.deviceFrame.updateMidiOutSelectedItems(monomeConfig.midiOutDevices[pageNum]);
                 }
             }
         }
-        System.out.println("done loading");
 	}
 	
 	/**
@@ -382,8 +382,15 @@ public class MainGUI extends JFrame {
 				monomeConfig.switchPage(monomeConfig.pages.get(monomeConfig.curPage), monomeConfig.curPage, true);
 			}
 		}
+        for (int i = 0; i < ArcConfigurationFactory.getNumArcConfigurations(); i++) {
+            ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(i);
+            if (arcConfig != null && arcConfig.pages != null && arcConfig.pages.size() > 0) {
+                arcConfig.switchPage(arcConfig.pages.get(arcConfig.curPage), arcConfig.curPage, true);
+            }
+        }
 		Main.main.openingConfig = true;
 		if (Main.main.zeroconfLibrary == Main.LIBRARY_APPLE) {
+		    
 		    Main.main.appleSerialOSCDiscovery();
 		} else if (Main.main.zeroconfLibrary == Main.LIBRARY_JMDNS) {
 		    Main.main.jmdnsSerialOSCDiscovery();

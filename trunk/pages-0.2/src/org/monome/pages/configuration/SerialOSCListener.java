@@ -38,6 +38,7 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 	}
 	
 	public synchronized void serviceResolved(DNSSDService resolver, int flags, int ifIndex, String fullName, String hostName, int port, TXTRecord txtRecord) {
+	    System.out.println("found " + fullName);
 		String serial = fullName.substring(0, fullName.indexOf("._"));
 		if (serial.indexOf("(") != -1) {
 			serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
