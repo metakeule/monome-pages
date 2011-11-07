@@ -106,7 +106,6 @@ public class Main {
         for (int i = 0; i < svcInfos.length; i++) {
             String serial = "unknown";
             String fullName = svcInfos[i].getName();
-            System.out.println("fullName is " + fullName);
             if (fullName.indexOf("(") != -1) {
                 serial = fullName.substring(fullName.indexOf("(")+1, fullName.indexOf(")"));
             }
@@ -121,8 +120,6 @@ public class Main {
                 deviceName = "monome " + monomeType;
                 device = new SerialOSCMonome();
             }
-            System.out.println("deviceName is '" + deviceName + "'");
-            System.out.println("serial is '" + serial + "'");
             int port = svcInfos[i].getPort();
             String hostName = "127.0.0.1";
             device.setPort(port);
@@ -253,7 +250,17 @@ public class Main {
             JOptionPane.showMessageDialog(MainGUI.getDesktopPane(), "Unable to bind to port " + configuration.oscListenPort + ".  Try closing any other programs that might be listening on it.", "OSC Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        arc.startArc();
+        OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(arc.getHostName(), arc.getPort());
+        OSCMessage infoMsg = new OSCMessage();
+        inPort.addListener("/sys/port", arc);
+        infoMsg.setAddress("/sys/info");
+        infoMsg.addArgument("127.0.0.1");
+        infoMsg.addArgument(new Integer(configuration.oscListenPort));
+        try {
+            outPort.send(infoMsg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     /**

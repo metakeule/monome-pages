@@ -284,7 +284,6 @@ public class Configuration implements Serializable {
 	 * Binds to MonomeSerial input/output ports
 	 */
 	public void startMonomeSerialOSC() {
-	    System.out.println("Starting Monome Serial OSC");
 		if (this.monomeSerialOSCPortIn == null) {
 			this.monomeSerialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(this.monomeSerialOSCInPortNumber);
 			if (this.monomeSerialOSCPortIn == null) {
@@ -475,7 +474,6 @@ public class Configuration implements Serializable {
 	
     public void initArcSerialOSC(ArcConfiguration arc) {
         arc.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(arc.serialOSCHostname, arc.serialOSCPort);
-        System.out.println("serialOSCPortOut set to " + arc.serialOSCPortOut);
         ArcOSCListener oscListener = new ArcOSCListener(arc);
         this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(oscListenPort);
         this.serialOSCPortIn.addListener(arc.prefix + "/enc/delta", oscListener);
@@ -1290,7 +1288,7 @@ public class Configuration implements Serializable {
 					}
 
 					
-					// create the new monome configuration and display its window
+					// create the new arc configuration and display its window
 					ArcConfiguration arcConfig = addArcConfiguration(i, prefix, serial, Integer.parseInt(knobs));
 					arcConfig.serialOSCHostname = serialOSCHostName;
 					arcConfig.deviceFrame.updateMidiInMenuOptions(MidiDeviceFactory.getMidiInOptions());
@@ -1306,7 +1304,7 @@ public class Configuration implements Serializable {
 						}
 					}
 					
-					// read in each page of the monome
+					// read in each page of the arc
 					arcConfig.curPage = -1;
 					NodeList pageNL = monomeElement.getElementsByTagName("page");
 					for (int j=0; j < pageNL.getLength(); j++) {

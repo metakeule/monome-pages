@@ -411,7 +411,6 @@ public class ArcFrame extends JInternalFrame implements Serializable, DeviceFram
                     String[] pieces = e.getActionCommand().split("MIDI Input: ");
                     actionTogglePageChangeMidiInput(pieces[1]);
                 }});
-            System.out.println("adding " + cbMenuItem.getText() + " to midi in menu");
             midiInMenu.add(cbMenuItem);
             pageChangeMidiInMenu.add(cbMenuItem2);
         }

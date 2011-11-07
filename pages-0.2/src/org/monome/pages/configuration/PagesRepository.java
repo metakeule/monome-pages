@@ -28,7 +28,13 @@ public class PagesRepository {
     }
 
     public static String[] getPageNames(Class<? extends BasePage> pageClass) {
-        String[] res = new String[pageTypes.size() - 1];
+        int numPages = 0;
+        for (Class<?> clz : pageTypes) {
+            if (pageClass.isAssignableFrom(clz)) {
+                numPages++;
+            }
+        }
+        String[] res = new String[numPages];
         int i = 0;
         for (Class<?> clz : pageTypes) {
             if (pageClass.isAssignableFrom(clz)) {
@@ -41,16 +47,20 @@ public class PagesRepository {
     static <TPage extends BasePage> TPage getPageInstance(Class<TPage> pageClass, String name, DeviceConfiguration conf, int index) {
         TPage page;
         for (Class<? extends BasePage> clz : pageTypes) {
-            Class<? extends TPage> clzTPage = clz.asSubclass(pageClass);
-            if (clzTPage.getName().equals(name)) {
-                try {
-                    Constructor<? extends TPage> ctor = clzTPage.getConstructor(conf.getClass(), int.class);
-                    page = ctor.newInstance(conf, index);
-                    return page;
-                } catch (Exception e) {
-                    System.out.println("PagesRepository: Failed to create page with name " + name + " on index " + index);
-                    e.printStackTrace();
+            try {
+                Class<? extends TPage> clzTPage = clz.asSubclass(pageClass);
+                if (clzTPage.getName().equals(name)) {
+                    try {
+                        Constructor<? extends TPage> ctor = clzTPage.getConstructor(conf.getClass(), int.class);
+                        page = ctor.newInstance(conf, index);
+                        return page;
+                    } catch (Exception e) {
+                        System.out.println("PagesRepository: Failed to create page with name " + name + " on index " + index);
+                        e.printStackTrace();
+                    }
                 }
+            } catch (ClassCastException ex) {
+                continue;
             }
         }
         return null;

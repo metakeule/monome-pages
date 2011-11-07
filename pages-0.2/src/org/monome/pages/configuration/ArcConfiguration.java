@@ -39,16 +39,11 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
      * Enabled MIDI In devices by page 
      */
     public String[][] midiOutDevices = new String[255][32];
-
-    /**
-     * The pages that belong to this arc
-     */
-    public ArrayList<ArcPage> pages = new ArrayList<ArcPage>();
     
     /**
      * Rules on which MIDI note numbers should trigger switching to which pages.
      */
-    public ArrayList<MIDIPageChangeRule> midiPageChangeRules;
+    public ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
     
     /**
      * true if the page change button should be active
@@ -67,14 +62,9 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
 
 
     public int knobs;
-    
-    public int curPage;
-    
     public String serialOSCHostname;
     public int serialOSCPort;
     public transient OSCPortOut serialOSCPortOut;
-
-    private int numPages;
     
     public ArcConfiguration(int index, String prefix, String serial, int knobs, ArcFrame arcFrame) {
         super(index, prefix, serial);

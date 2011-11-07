@@ -504,7 +504,6 @@ public class ExternalApplicationPage implements ArcPage, OSCListener, RegisterLi
         args[1] = new Integer(delta);
         OSCMessage msg = new OSCMessage(this.prefix + "/enc/delta", args);
         try {
-            System.out.println("send handleDelta()");
             this.oscOut.send(msg);
         } catch (IOException e) {
             e.printStackTrace();

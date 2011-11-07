@@ -11,7 +11,7 @@ import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
 
-public class SerialOSCArc implements SerialOSCDevice {
+public class SerialOSCArc implements SerialOSCDevice, OSCListener {
     
     int port;
     String serial;
@@ -100,5 +100,18 @@ public class SerialOSCArc implements SerialOSCDevice {
     
     public void setKnobs(int knobs) {
         this.knobs = knobs;
+    }
+
+    public void acceptMessage(Date time, OSCMessage message) {
+        Object args[] = message.getArguments();
+        if (message.getAddress().compareToIgnoreCase("/sys/port") == 0) {
+            ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + serial);
+            if (arcConfig != null) {
+                if (arcConfig.serialOSCPort == 0) {
+                    arcConfig.serialOSCPort = port;
+                }
+                Main.main.configuration.initArcSerialOSC(arcConfig);
+            }
+        }
     }
 }
