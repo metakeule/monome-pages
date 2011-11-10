@@ -30,7 +30,6 @@ public class SerialOSCArc implements SerialOSCDevice, OSCListener {
             prefixMsg.addArgument("/" + serial);
             try {
                 OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(hostName, port);
-                System.out.println("send /sys/prefix message on " + hostName + ", " + port);
                 outPort.send(prefixMsg);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -45,7 +44,6 @@ public class SerialOSCArc implements SerialOSCDevice, OSCListener {
         prefixMsg.addArgument("/" + serial);
         try {
             OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(hostName, port);
-            System.out.println("send /sys/prefix message on " + hostName + ", " + port);
             outPort.send(prefixMsg);
         } catch (IOException e) {
             e.printStackTrace();
@@ -60,7 +58,6 @@ public class SerialOSCArc implements SerialOSCDevice, OSCListener {
             Main.main.configuration.initAbleton();
             config = Main.main.configuration;
         }
-        System.out.println("creating arc " + knobs + " with prefix /" + serial);
         config.addArcConfigurationSerialOSC(ArcConfigurationFactory.getNumArcConfigurations(), "/" + serial, serial, knobs, port, hostName);
     }
 
@@ -105,20 +102,6 @@ public class SerialOSCArc implements SerialOSCDevice, OSCListener {
     }
 
     public void acceptMessage(Date time, OSCMessage message) {
-        Object args[] = message.getArguments();
-        System.out.println("received " + message.getAddress() + " msg");
-        for (int i = 0; i < args.length; i++) {
-            System.out.println(args[i].getClass().toString());
-            if (args[i] instanceof Integer) {
-                int val = ((Integer) args[i]).intValue();
-                System.out.println("val=" + val);
-            }
-            if (args[i] instanceof String) {
-                String val = (String) args[i];
-                System.out.println("val=" + val);
-            }
-        }
-
         if (message.getAddress().compareToIgnoreCase("/sys/port") == 0) {
             ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + serial);
             if (arcConfig == null) {
