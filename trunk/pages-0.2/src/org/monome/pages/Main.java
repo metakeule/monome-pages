@@ -253,6 +253,7 @@ public class Main {
         OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(arc.getHostName(), arc.getPort());
         OSCMessage infoMsg = new OSCMessage();
         inPort.addListener("/sys/port", arc);
+        inPort.addListener("/sys/prefix", arc);
         infoMsg.setAddress("/sys/info");
         infoMsg.addArgument("127.0.0.1");
         infoMsg.addArgument(new Integer(configuration.oscListenPort));

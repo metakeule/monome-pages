@@ -64,7 +64,7 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	/**
 	 * The OSC input port number to receive messages from the external application 
 	 */
-	private int inPort = 8080;
+	public int inPort = 8080;
 
 	/**
 	 * The OSCPortIn object for communication with the external application
@@ -74,29 +74,30 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	/**
 	 * The OSC output port number to send messages to the external application
 	 */
-	private int outPort = 8000;
+	public int outPort = 8000;
 
 	/**
 	 * The OSCPortOut object for communication with the external application 
 	 */
 	private OSCPortOut oscOut;
-	
+
 	/**
 	 * The name of the page 
 	 */
 	private String pageName = "External Application";
-	
+
 	private ExternalApplicationGUI gui;
-	
+
 	private HashMap<String, Integer> listenersAdded;
 
     private Dimension origGuiDimension;
-		
+
 	/**
 	 * @param monome The MonomeConfiguration object this page belongs to
 	 * @param index The index of this page (page number)
 	 */
 	public ExternalApplicationPage(MonomeConfiguration monome, int index) {
+        inPort = (int) (1024 + (Math.random() * 65411.0));
 		this.monome = monome;
 		this.index = index;
 		listenersAdded = new HashMap<String, Integer>();
@@ -333,6 +334,9 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 		}
         
 		if (msg.getAddress().compareTo("/sys/port") == 0) {
+            if (gui.getIgnorePrefixCB().isSelected()) {
+                return;
+            }
 			int port = ((Integer) args[0]).intValue();
 			setOutPort("" + port);
 			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));

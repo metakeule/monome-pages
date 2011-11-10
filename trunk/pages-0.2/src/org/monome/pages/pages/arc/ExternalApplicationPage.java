@@ -65,7 +65,7 @@ public class ExternalApplicationPage implements ArcPage, OSCListener, RegisterLi
 	/**
 	 * The OSC input port number to receive messages from the external application 
 	 */
-	private int inPort = 8080;
+	public int inPort = 8080;
 
 	/**
 	 * The OSCPortIn object for communication with the external application
@@ -75,7 +75,7 @@ public class ExternalApplicationPage implements ArcPage, OSCListener, RegisterLi
 	/**
 	 * The OSC output port number to send messages to the external application
 	 */
-	private int outPort = 8000;
+	public int outPort = 8000;
 
 	/**
 	 * The OSCPortOut object for communication with the external application 
@@ -98,6 +98,7 @@ public class ExternalApplicationPage implements ArcPage, OSCListener, RegisterLi
 	 * @param index The index of this page (page number)
 	 */
 	public ExternalApplicationPage(ArcConfiguration arc, int index) {
+        inPort = (int) (1024 + (Math.random() * 65411)); 
 		this.arc = arc;
 		this.index = index;
 		listenersAdded = new HashMap<String, Integer>();
@@ -284,6 +285,9 @@ public class ExternalApplicationPage implements ArcPage, OSCListener, RegisterLi
 		}
         
 		if (msg.getAddress().compareTo("/sys/port") == 0) {
+            if (gui.getIgnorePrefixCB().isSelected()) {
+                return;
+            }
 			int port = ((Integer) args[0]).intValue();
 			setOutPort("" + port);
 			this.oscOut = OSCPortFactory.getInstance().getOSCPortOut(this.hostname, Integer.valueOf(this.outPort));
@@ -460,7 +464,7 @@ public class ExternalApplicationPage implements ArcPage, OSCListener, RegisterLi
 		gui.setCacheDisabled(this.arc.readConfigValue(pageElement, "disablecache"));
 		gui.setIgnorePrefix(this.arc.readConfigValue(pageElement, "ignoreprefix"));
 		this.stopOSC();
-		this.initOSC();		
+		this.initOSC();
 	}
 
 	public boolean getCacheDisabled() {

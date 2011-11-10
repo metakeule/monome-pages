@@ -15,8 +15,8 @@ public class ArcOSCListener implements OSCListener {
     
     public synchronized void acceptMessage(Date time, OSCMessage message) {
         Object[] args = message.getArguments();
-        System.out.println("received " + message.getAddress() + " msg");
         /*
+        System.out.println("received " + message.getAddress() + " msg");
         for (int i = 0; i < args.length; i++) {
             System.out.println(args[i].getClass().toString());
             if (args[i] instanceof Integer) {
@@ -34,7 +34,6 @@ public class ArcOSCListener implements OSCListener {
             if (args.length == 2) {
                 int enc = ((Integer) args[0]).intValue();
                 int delta = ((Integer) args[1]).intValue();
-                System.out.println("ArcOSCListener: passing handleDelta to arcConfig");
                 arcConfig.handleDelta(enc, delta);
             }
         }

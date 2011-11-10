@@ -52,7 +52,6 @@ public class OSCPortFactory {
 	public void destroyOSCPortIn(Integer portNum) {
 		synchronized(oscInPorts) {
 			if (oscInPorts.containsKey(portNum)) {
-			    System.out.println("Destroy OSC port " + portNum);
 				oscInPorts.get(portNum).stopListening();
 				oscInPorts.get(portNum).close();
 				oscInPorts.remove(portNum);
@@ -84,7 +83,6 @@ public class OSCPortFactory {
 	}
 
     public void destroy() {
-        System.out.println("OSCPortFactory::destroy()");
         ArrayList<Integer> portsToDestroy = new ArrayList<Integer>();
         synchronized(oscInPorts) {
             for (Integer port : oscInPorts.keySet()) {
