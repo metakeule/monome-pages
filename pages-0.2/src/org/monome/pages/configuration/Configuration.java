@@ -474,10 +474,8 @@ public class Configuration implements Serializable {
 		monome.initMonome();
 	}
 	
-    public void initArcSerialOSC(ArcConfiguration arc) {
-        
+    public void initArcSerialOSC(ArcConfiguration arc) {        
         if (arc.serialOSCPort == 0) return;
-        System.out.println("init arc out port to port # " + arc.serialOSCPort);
         arc.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(arc.serialOSCHostname, arc.serialOSCPort);
         ArcOSCListener oscListener = new ArcOSCListener(arc);
         this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(oscListenPort);

@@ -156,7 +156,6 @@ public class NewMonomeConfigurationFrame extends JInternalFrame {
             MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(MonomeConfigurationFactory.getNumMonomeConfigurations() - 1);
             MonomeOSCListener oscListener = new MonomeOSCListener(monomeConfig);
             config.monomeSerialOSCPortIn.addListener(monomeConfig.prefix + "/press", oscListener);
-            System.out.println("Added listener for " + monomeConfig.prefix + "/press on port " + config.monomeSerialOSCInPortNumber);
             monomeConfig.oscListener = oscListener;
         }
 		this.dispose();

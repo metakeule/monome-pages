@@ -425,7 +425,6 @@ public class MIDIKeyboardPage implements Page, Serializable {
 	//allows for playing notes by pressing different key/accidental/scale buttons
 	@SuppressWarnings("unused")
     private void retriggerNotes() {
-		System.out.println("retriggerNotes");
 		for (int i=0; i<128; i++) {
 			this.notesOn[this.midiChannel][i] = 0;
 		}

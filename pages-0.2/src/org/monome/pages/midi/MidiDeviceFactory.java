@@ -179,7 +179,6 @@ public class MidiDeviceFactory {
                 for (int j = 0; j < MonomeConfigurationFactory.getNumMonomeConfigurations(); j++) {
                     MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
                     if (monomeConfig != null && monomeConfig.deviceFrame != null) {
-                        System.out.println("update midi in menu options");
                         monomeConfig.deviceFrame.updateMidiInMenuOptions(getMidiInOptions());
                     }
                 }

@@ -593,7 +593,6 @@ public class MonomeFrame extends JInternalFrame implements Serializable, DeviceF
 					String[] pieces = e.getActionCommand().split("MIDI Input: ");
 					actionTogglePageChangeMidiInput(pieces[1]);
 				}});
-			System.out.println("adding " + cbMenuItem.getText() + " to midi in menu");
 			midiInMenu.add(cbMenuItem);
 			pageChangeMidiInMenu.add(cbMenuItem2);
 		}
