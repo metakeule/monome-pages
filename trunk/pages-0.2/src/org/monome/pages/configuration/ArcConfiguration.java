@@ -456,14 +456,4 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
 		xml += "  </arc>\n";
 		return xml;
 	}
-	
-    public void dispose() {
-        if (arcFrame != null) {
-            arcFrame.dispose();
-        }
-
-        super.dispose();
-    }
-
-    
 }
