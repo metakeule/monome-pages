@@ -70,4 +70,8 @@ public class ArcConfigurationFactory {
         configuration.getArcConfigurations().remove(new Integer(index));
     }
 
+    public static void removeArcConfigurations() {
+        Main.main.configuration.setArcConfigurations(new HashMap<Integer, ArcConfiguration>());
+    }
+
 }

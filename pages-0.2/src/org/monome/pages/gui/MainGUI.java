@@ -441,6 +441,15 @@ public class MainGUI extends JFrame {
                     monomeConfig.dispose();
 				}
 			}
+            for (int i = 0; i < ArcConfigurationFactory.getNumArcConfigurations(); i++) {
+                ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(i);
+                if (arcConfig != null) {
+                    for (int knob = 0; knob < arcConfig.knobs; knob++) {
+                        arcConfig.all(knob, 0, -1);
+                    }
+                    arcConfig.dispose();
+                }
+            }
 			configuration.stopAbleton();
 			configuration.destroyAllPages();
 			MidiDeviceFactory.closeMidiDevices();
@@ -455,7 +464,11 @@ public class MainGUI extends JFrame {
 			}
 			configuration.stopMonomeSerialOSC();
 			MonomeConfigurationFactory.removeMonomeConfigurations();
+			ArcConfigurationFactory.removeArcConfigurations();
 			Main.main.configuration = null;
+			if (serialOscSetupFrame != null) {
+			    serialOscSetupFrame.dispose();
+			}
 		}
 		Main.main.setConfigurationFile(null);
 	}

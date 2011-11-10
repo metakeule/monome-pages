@@ -259,12 +259,12 @@ public class Configuration implements Serializable {
             e.printStackTrace();
         }
         MainGUI.getDesktopPane().add(arcFrame);
+        arcFrame.moveToFront();
         ArcConfiguration arc = ArcConfigurationFactory.addArcConfiguration(index, prefix, serial, knobs, arcFrame);
         this.initArcSerialOSC(arc);
         return arc;
     }
 
-	
     public ArcConfiguration addArcConfigurationSerialOSC(int index, String prefix, String serial, int knobs, int port, String hostName) {
         ArcFrame arcFrame = new ArcFrame(index);
         try {
@@ -273,6 +273,7 @@ public class Configuration implements Serializable {
             e.printStackTrace();
         }
         MainGUI.getDesktopPane().add(arcFrame);
+        arcFrame.moveToFront();
         ArcConfiguration arc = ArcConfigurationFactory.addArcConfiguration(index, prefix, serial, knobs, arcFrame);
         arc.serialOSCPort = port;
         arc.serialOSCHostname = hostName;
@@ -465,6 +466,7 @@ public class Configuration implements Serializable {
             portMsg.setAddress("/sys/host");
             portMsg.addArgument("127.0.0.1");
             monome.serialOSCPortOut.send(portMsg);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -473,6 +475,9 @@ public class Configuration implements Serializable {
 	}
 	
     public void initArcSerialOSC(ArcConfiguration arc) {
+        
+        if (arc.serialOSCPort == 0) return;
+        System.out.println("init arc out port to port # " + arc.serialOSCPort);
         arc.serialOSCPortOut = OSCPortFactory.getInstance().getOSCPortOut(arc.serialOSCHostname, arc.serialOSCPort);
         ArcOSCListener oscListener = new ArcOSCListener(arc);
         this.serialOSCPortIn = OSCPortFactory.getInstance().getOSCPortIn(oscListenPort);
@@ -487,6 +492,10 @@ public class Configuration implements Serializable {
             portMsg = new OSCMessage();
             portMsg.setAddress("/sys/host");
             portMsg.addArgument("127.0.0.1");
+            arc.serialOSCPortOut.send(portMsg);
+            portMsg = new OSCMessage();
+            portMsg.setAddress("/sys/prefix");
+            portMsg.addArgument(arc.prefix);
             arc.serialOSCPortOut.send(portMsg);
         } catch (IOException e) {
             e.printStackTrace();

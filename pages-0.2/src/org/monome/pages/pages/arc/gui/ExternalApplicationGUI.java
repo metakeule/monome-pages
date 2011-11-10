@@ -93,7 +93,7 @@ public class ExternalApplicationGUI extends JPanel implements Serializable {
     private JTextField getOscInTF() {
         if (oscInTF == null) {
             oscInTF = new JTextField();
-            oscInTF.setText("8080");
+            oscInTF.setText(""+page.inPort);
             oscInTF.setBounds(new Rectangle(125, 95, 76, 21));
         }
         return oscInTF;
@@ -107,7 +107,7 @@ public class ExternalApplicationGUI extends JPanel implements Serializable {
     private JTextField getOscOutTF() {
         if (oscOutTF == null) {
             oscOutTF = new JTextField();
-            oscOutTF.setText("8000");
+            oscOutTF.setText(""+page.outPort);
             oscOutTF.setBounds(new Rectangle(125, 125, 76, 21));
         }
         return oscOutTF;
@@ -218,7 +218,7 @@ public class ExternalApplicationGUI extends JPanel implements Serializable {
     private JLabel getIgnorePrefixLbl() {
         if (ignorePrefixLbl == null) {
             ignorePrefixLbl = new JLabel();
-            ignorePrefixLbl.setText("Ignore /sys/prefix");
+            ignorePrefixLbl.setText("Ignore /sys messages");
             ignorePrefixLbl.setBounds(new Rectangle(75, 175, 121, 21));
         }
         return ignorePrefixLbl;
