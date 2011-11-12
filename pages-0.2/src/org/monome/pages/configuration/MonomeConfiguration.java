@@ -97,12 +97,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 	 * The current MIDI clock tick number (resets every measure, 1/96 resolution)
 	 */
 	private int tickNum = 0;
-			
-	/**
-	 * Rules on which MIDI note numbers should trigger switching to which pages.
-	 */
-	public ArrayList<MIDIPageChangeRule> midiPageChangeRules;
-	
+				
 	/**
 	 * true if the page change button should be active
 	 */
@@ -946,6 +941,8 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 				xml += "      <pageIndex>" + mpcr.getPageIndex() + "</pageIndex>\n";
 				xml += "      <note>" + mpcr.getNote() + "</note>\n";
 				xml += "      <channel>" + mpcr.getChannel() + "</channel>\n";
+                xml += "      <linkedSerial>" + mpcr.getLinkedSerial() + "</linkedSerial>\n";
+                xml += "      <linkedPageIndex>" + mpcr.getLinkedPageIndex() + "</linkedPageIndex>\n";
 				xml += "    </MIDIPageChangeRule>\n";
 			}
 		}
@@ -1100,6 +1097,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
                         led(x, y, value, -1);
                     }
                 }
+                monomeConfig.pages.get(curPage).redrawDevice();
             }
         }
         

@@ -11,9 +11,14 @@ import javax.swing.JTextField;
 import javax.swing.JCheckBox;
 import javax.swing.JButton;
 
+import org.monome.pages.Main;
 import org.monome.pages.configuration.ArcConfiguration;
+import org.monome.pages.configuration.ArcConfigurationFactory;
 import org.monome.pages.configuration.MIDIPageChangeRule;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.pages.ArcPage;
+
+import java.awt.Dimension;
 
 public class PageChangeConfigurationFrame extends JInternalFrame {
 
@@ -36,9 +41,13 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private int[] midiChannels = new int[255];
 	private int[] midiNotes = new int[255];
 	private int[] pageChangeDelays = new int[255];
+	private String[] linkedDevices = new String[255];
+	private int[] linkedPages = new int[255];
 	private int pageIndex = 0;
 	private JLabel pageChangeTimerLBL = null;
 	private JTextField pageChangeDelayTF = null;
+    private JComboBox linkedDeviceCB = null;
+    private JComboBox linkedPageCB = null;
 
 	/**
 	 * This is the default constructor
@@ -72,6 +81,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
     			midiChannels[i] = midiPageChangeRules.get(i).getChannel();
     			midiNotes[i] = midiPageChangeRules.get(i).getNote();
     			pageChangeDelays[i] = monome.pageChangeDelays[i];
+    			linkedDevices[i] = midiPageChangeRules.get(i).getLinkedSerial();
+    			linkedPages[i] = midiPageChangeRules.get(i).getLinkedPageIndex();
     		}
         } else if (arc != null) {
             ArrayList<MIDIPageChangeRule> midiPageChangeRules = arc.midiPageChangeRules;
@@ -89,7 +100,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	 */
 	private void initialize() {
 		this.setContentPane(getJContentPane());
-		this.setSize(212, 256);
+		this.setSize(214, 326);
 		this.setTitle("Page Change Configuration");
 		this.setResizable(true);
 	}
@@ -97,7 +108,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
 			pageChangeTimerLBL = new JLabel();
-			pageChangeTimerLBL.setBounds(new Rectangle(15, 105, 101, 21));
+			pageChangeTimerLBL.setBounds(new Rectangle(15, 155, 101, 21));
 			pageChangeTimerLBL.setText("PC Button Delay");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
@@ -115,6 +126,10 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			jContentPane.add(getCancelBtn(), null);
 			jContentPane.add(pageChangeTimerLBL, null);
 			jContentPane.add(getPageChangeDelayTF(), null);
+			if (arc == null && monome != null) {
+    			jContentPane.add(getLinkedDeviceCB(), null);
+    			jContentPane.add(getLinkedPageCB(), null);
+			}
 		}
 		return jContentPane;
 	}
@@ -169,6 +184,12 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			midiNotes[pageIndex] = value;
 			value = Integer.parseInt(getPageChangeDelayTF().getText());
 			pageChangeDelays[pageIndex] = value;
+			String device = linkedDeviceCB.getSelectedItem().toString();
+			if (device.compareTo("-- Select Device --") != 0) {
+			    linkedDevices[pageIndex] = device;
+			    int pageNum = linkedPageCB.getSelectedIndex();
+			    linkedPages[pageIndex] = pageNum;
+			}
 		} catch (NumberFormatException ex) {
 		}
 	}
@@ -181,6 +202,19 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			getChannelTF().setText(""+(midiChannels[pageIndex] + 1));
 			getNoteTF().setText(""+midiNotes[pageIndex]);
 			getPageChangeDelayTF().setText("" + pageChangeDelays[pageIndex]);
+			if (linkedDevices[pageIndex] != null) {
+    			int deviceIdx = 0;
+    			for (int i = 0; i < getLinkedDeviceCB().getItemCount(); i++) {
+    			    String itemName = getLinkedDeviceCB().getItemAt(i).toString();
+    			    if (itemName.compareTo(linkedDevices[pageIndex]) == 0) {
+    			        deviceIdx = i;
+    			    }
+    			}
+    			getLinkedDeviceCB().setSelectedIndex(deviceIdx);
+    			getLinkedPageCB().setSelectedIndex(linkedPages[pageIndex]);
+			} else {
+			    getLinkedDeviceCB().setSelectedIndex(0);
+			}
 		}
 	}
 
@@ -193,7 +227,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (channelLBL == null) {
 			channelLBL = new JLabel();
 			channelLBL.setText("MIDI Channel");
-			channelLBL.setBounds(new Rectangle(15, 55, 101, 21));
+			channelLBL.setBounds(new Rectangle(15, 105, 101, 21));
 		}
 		return channelLBL;
 	}
@@ -206,7 +240,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getChannelTF() {
 		if (channelTF == null) {
 			channelTF = new JTextField();
-			channelTF.setBounds(new Rectangle(120, 55, 51, 21));
+			channelTF.setBounds(new Rectangle(120, 105, 51, 21));
 		}
 		return channelTF;
 	}
@@ -220,7 +254,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (noteLBL == null) {
 			noteLBL = new JLabel();
 			noteLBL.setText("MIDI Note #");
-			noteLBL.setBounds(new Rectangle(15, 80, 101, 21));
+			noteLBL.setBounds(new Rectangle(15, 130, 101, 21));
 		}
 		return noteLBL;
 	}
@@ -233,7 +267,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getNoteTF() {
 		if (noteTF == null) {
 			noteTF = new JTextField();
-			noteTF.setBounds(new Rectangle(120, 80, 51, 21));
+			noteTF.setBounds(new Rectangle(120, 130, 51, 21));
 		}
 		return noteTF;
 	}
@@ -246,7 +280,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JCheckBox getMonomeChangeCB() {
 		if (monomeChangeCB == null) {
 			monomeChangeCB = new JCheckBox();
-			monomeChangeCB.setBounds(new Rectangle(15, 130, 21, 21));
+			monomeChangeCB.setBounds(new Rectangle(15, 180, 21, 21));
 		}
 		return monomeChangeCB;
 	}
@@ -259,7 +293,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JCheckBox getMidiChangeCB() {
 		if (midiChangeCB == null) {
 			midiChangeCB = new JCheckBox();
-			midiChangeCB.setBounds(new Rectangle(15, 155, 21, 21));
+			midiChangeCB.setBounds(new Rectangle(15, 205, 21, 21));
 		}
 		return midiChangeCB;
 	}
@@ -273,7 +307,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (monomeChangeLBL == null) {
 			monomeChangeLBL = new JLabel();
 			monomeChangeLBL.setText("Page Change Button");
-			monomeChangeLBL.setBounds(new Rectangle(40, 130, 141, 21));
+			monomeChangeLBL.setBounds(new Rectangle(40, 180, 141, 21));
 		}
 		return monomeChangeLBL;
 	}
@@ -287,7 +321,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (midiChangingLBL == null) {
 			midiChangingLBL = new JLabel();
 			midiChangingLBL.setText("MIDI Page Changing");
-			midiChangingLBL.setBounds(new Rectangle(40, 155, 141, 21));
+			midiChangingLBL.setBounds(new Rectangle(40, 205, 141, 21));
 		}
 		return midiChangingLBL;
 	}
@@ -300,7 +334,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getSaveBtn() {
 		if (saveBtn == null) {
 			saveBtn = new JButton();
-			saveBtn.setBounds(new Rectangle(20, 185, 76, 21));
+			saveBtn.setBounds(new Rectangle(20, 235, 76, 21));
 			saveBtn.setText("Save");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -313,6 +347,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
     						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
     						midiPageChangeRules.add(mpcr);
     						monome.pageChangeDelays[i] = pageChangeDelays[i];
+    						mpcr.setLinkedSerial(linkedDevices[i]);
+    						mpcr.setLinkedPageIndex(linkedPages[i]);
     					}
     					monome.midiPageChangeRules = midiPageChangeRules;
 					} else if (arc != null) {
@@ -340,7 +376,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getCancelBtn() {
 		if (cancelBtn == null) {
 			cancelBtn = new JButton();
-			cancelBtn.setBounds(new Rectangle(105, 185, 76, 21));
+			cancelBtn.setBounds(new Rectangle(105, 235, 76, 21));
 			cancelBtn.setText("Cancel");
 			cancelBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -363,8 +399,59 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getPageChangeDelayTF() {
 		if (pageChangeDelayTF == null) {
 			pageChangeDelayTF = new JTextField();
-			pageChangeDelayTF.setBounds(new Rectangle(120, 105, 51, 21));
+			pageChangeDelayTF.setBounds(new Rectangle(120, 155, 51, 21));
 		}
 		return pageChangeDelayTF;
 	}
+
+    /**
+     * This method initializes linkedDeviceCB	
+     * 	
+     * @return javax.swing.JComboBox	
+     */
+    private JComboBox getLinkedDeviceCB() {
+        if (linkedDeviceCB == null) {
+            linkedDeviceCB = new JComboBox();
+            linkedDeviceCB.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent e) {
+                    String deviceSerial = linkedDeviceCB.getSelectedItem().toString();
+                    ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + deviceSerial);
+                    if (linkedPageCB != null) {
+                        while (linkedPageCB.getItemCount() > 0) {
+                            linkedPageCB.removeItemAt(0);
+                        }
+                        if (arcConfig != null) {
+                            for (int i = 0; i < arcConfig.pages.size(); i++) {
+                                ArcPage page = arcConfig.pages.get(i);
+                                linkedPageCB.addItem(i + ": " + page.getName());
+                            }
+                        }
+                    }
+                }
+            });
+            linkedDeviceCB.setBounds(new Rectangle(5, 55, 176, 21));
+            linkedDeviceCB.addItem("-- Select Device --");
+            for (int i = 0; i < Main.main.configuration.getArcConfigurations().size(); i++) {
+                ArcConfiguration arcConfig = Main.main.configuration.getArcConfigurations().get(i);
+                if (arcConfig != null) {
+                    linkedDeviceCB.addItem(arcConfig.serial);
+                }
+            }
+        }
+        
+        return linkedDeviceCB;
+    }
+
+    /**
+     * This method initializes linkedPageCB	
+     * 	
+     * @return javax.swing.JComboBox	
+     */
+    private JComboBox getLinkedPageCB() {
+        if (linkedPageCB == null) {
+            linkedPageCB = new JComboBox();
+            linkedPageCB.setBounds(new Rectangle(5, 80, 176, 21));
+        }
+        return linkedPageCB;
+    }
 }  //  @jve:decl-index=0:visual-constraint="10,10"

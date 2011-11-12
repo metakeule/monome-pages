@@ -247,7 +247,6 @@ public class ArcFrame extends JInternalFrame implements Serializable, DeviceFram
             configurationMenu.addSeparator();
             configurationMenu.add(getPageChangeConfigurationItem());
             configurationMenu.add(getPageChangeMidiInMenu());
-            configurationMenu.addSeparator();
             configurationMenu.setMnemonic(KeyEvent.VK_C);
         }
         return configurationMenu;
@@ -331,7 +330,7 @@ public class ArcFrame extends JInternalFrame implements Serializable, DeviceFram
         }
         
         pccFrame = new PageChangeConfigurationFrame(ArcConfigurationFactory.getArcConfiguration(index));
-        pccFrame.setSize(new Dimension(212, 256));
+        pccFrame.setSize(new Dimension(212, 320));
         pccFrame.setVisible(true);
         Main.main.mainFrame.add(pccFrame);
         try {

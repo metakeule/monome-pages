@@ -492,7 +492,7 @@ public class MonomeFrame extends JInternalFrame implements Serializable, DeviceF
 		}
 		
 		pccFrame = new PageChangeConfigurationFrame(MonomeConfigurationFactory.getMonomeConfiguration(index));
-		pccFrame.setSize(new Dimension(212, 256));
+		pccFrame.setSize(new Dimension(212, 320));
 		pccFrame.setVisible(true);
 		Main.main.mainFrame.add(pccFrame);
 		try {
