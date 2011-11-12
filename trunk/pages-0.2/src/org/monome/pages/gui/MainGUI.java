@@ -390,7 +390,6 @@ public class MainGUI extends JFrame {
         }
 		Main.main.openingConfig = true;
 		if (Main.main.zeroconfLibrary == Main.LIBRARY_APPLE) {
-		    
 		    Main.main.appleSerialOSCDiscovery();
 		} else if (Main.main.zeroconfLibrary == Main.LIBRARY_JMDNS) {
 		    Main.main.jmdnsSerialOSCDiscovery();
