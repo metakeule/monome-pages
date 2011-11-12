@@ -59,7 +59,7 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
             device.setHostName(hostName);
             device.setSerial(serial);
             device.setDeviceName(deviceName);
-    		if (Main.main.mainFrame.serialOscSetupFrame != null) {
+    		if (Main.main.mainFrame.serialOscSetupFrame != null && Main.main.openingConfig == false) {
     			Main.main.mainFrame.serialOscSetupFrame.addDevice(device);
     		} else {
     		    if (device instanceof SerialOSCMonome) {
