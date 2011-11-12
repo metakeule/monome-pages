@@ -219,7 +219,7 @@ public class ExternalApplicationGUI extends JPanel implements Serializable {
 		if (ignorePrefixLbl == null) {
 			ignorePrefixLbl = new JLabel();
 			ignorePrefixLbl.setText("Ignore /sys messages");
-			ignorePrefixLbl.setBounds(new Rectangle(75, 175, 121, 21));
+			ignorePrefixLbl.setBounds(new Rectangle(75, 175, 160, 21));
 		}
 		return ignorePrefixLbl;
 	}

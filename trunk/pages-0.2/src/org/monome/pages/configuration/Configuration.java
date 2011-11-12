@@ -1070,6 +1070,26 @@ public class Configuration implements Serializable {
 							String channel = ((Node) nl2.item(0)).getNodeValue();
 							MIDIPageChangeRule mpcr = new MIDIPageChangeRule(Integer.valueOf(note).intValue(), Integer.valueOf(channel).intValue(), Integer.valueOf(pageIndex).intValue());
 							midiPageChangeRules.add(mpcr);
+							
+                            nl2 = monomeElement2.getElementsByTagName("linkedSerial");
+                            el2 = (Element) nl2.item(0);
+                            String linkedSerial = null;
+                            if (el2 != null) {
+                                nl2 = el2.getChildNodes();
+                                linkedSerial = ((Node) nl2.item(0)).getNodeValue();
+                                if (linkedSerial != null && linkedSerial.compareTo("null") != 0)
+                                    mpcr.setLinkedSerial(linkedSerial);
+                            }
+                            
+                            if (linkedSerial != null && linkedSerial.compareTo("null") != 0) {
+                                nl2 = monomeElement2.getElementsByTagName("linkedPageIndex");
+                                el2 = (Element) nl2.item(0);
+                                if (el2 != null) {
+                                    nl2 = el2.getChildNodes();
+                                    String linkedPageIndex = ((Node) nl2.item(0)).getNodeValue();
+                                    mpcr.setLinkedPageIndex(Integer.valueOf(linkedPageIndex).intValue());
+                                }
+                            }
 						}
 					}
 

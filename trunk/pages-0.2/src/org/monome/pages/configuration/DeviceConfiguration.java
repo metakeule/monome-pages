@@ -37,6 +37,11 @@ public abstract class DeviceConfiguration<TPage extends BasePage> implements Ser
      * Enabled MIDI In devices by page
      */
     public String[][] midiOutDevices = new String[255][32];
+    
+    /**
+     * Rules on which MIDI note numbers should trigger switching to which pages.
+     */
+    public ArrayList<MIDIPageChangeRule> midiPageChangeRules;
 
     // Needed for Serializable
     public DeviceConfiguration() {
@@ -122,6 +127,20 @@ public abstract class DeviceConfiguration<TPage extends BasePage> implements Ser
      * @param redrawPanel true if the GUI panel should be redrawn
      */
     public void switchPage(TPage page, int pageIndex, boolean redrawPanel) {
+        if (midiPageChangeRules != null) {
+            for (int i = 0; i < midiPageChangeRules.size(); i++) {
+                MIDIPageChangeRule mpcr = midiPageChangeRules.get(i);
+                if (mpcr.getPageIndex() == curPage && mpcr.getLinkedSerial() != null) {
+                    ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + mpcr.getLinkedSerial());
+                    if (arcConfig != null) {
+                        int linkedPage = mpcr.getLinkedPageIndex();
+                        if (arcConfig.pages.size() >= linkedPage) {
+                            arcConfig.switchPage(linkedPage);
+                        }
+                    }
+                }
+            }
+        }
         this.curPage = pageIndex;
         page.redrawDevice();
         if (deviceFrame != null) {

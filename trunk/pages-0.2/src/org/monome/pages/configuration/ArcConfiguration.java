@@ -110,6 +110,7 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
                     }
                 }
                 arcConfig.clearArc(-1);                
+                arcConfig.pages.get(curPage).redrawDevice();
             }
         }
         
