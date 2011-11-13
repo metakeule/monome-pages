@@ -306,7 +306,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 
     @Override
     public void dispose() {
-        if (monomeFrame.monomeDisplayFrame != null) {
+        if (monomeFrame != null && monomeFrame.monomeDisplayFrame != null) {
             monomeFrame.monomeDisplayFrame.dispose();
         }
 
