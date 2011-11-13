@@ -3,6 +3,7 @@ package org.monome.pages.api;
 import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonControl;
 import org.monome.pages.ableton.AbletonState;
+import org.monome.pages.configuration.ArcConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.configuration.PatternBank;
@@ -17,10 +18,15 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;	
 
 public class GroovyAPI implements GroovyPageInterface {
-    MonomeConfiguration monome;
     int pageIndex;
+
+    MonomeConfiguration monome;
     int sizeX;
     int sizeY;
+    
+    ArcConfiguration arc;
+    int knobs;
+    
     private GroovyErrorLog errorLog;
     
     public void setMonome(MonomeConfiguration monome) {
@@ -28,21 +34,29 @@ public class GroovyAPI implements GroovyPageInterface {
         this.sizeX = monome.sizeX;
         this.sizeY = monome.sizeY;
     }
+    
+    public void setArc(ArcConfiguration arc) {
+        this.arc = arc;
+        this.knobs = arc.knobs;
+    }
 
     public void setPageIndex(int pageIndex) {
         this.pageIndex = pageIndex;
     }
 
     public void led(ArrayList<Integer> args) {
+        if (monome == null) return;
         if (args.size() != 3) return;
         monome.led(args.get(0), args.get(1), args.get(2), pageIndex);
     }
 
     public void led(int x, int y, int val) {
+        if (monome == null) return;
         monome.led(x, y, val, pageIndex);
     }
 
     public void row(int row, ArrayList<Integer> rows) {
+        if (monome == null) return;
         ArrayList<Integer> args = new ArrayList<Integer>();
         args.add(row);
         for (int i = 0; i < rows.size(); i++) {
@@ -52,6 +66,7 @@ public class GroovyAPI implements GroovyPageInterface {
     }
 
     public void row(int row, int val1, int val2) {
+        if (monome == null) return;
         ArrayList<Integer> args = new ArrayList<Integer>();
         args.add(row);
         args.add(val1);
@@ -60,6 +75,7 @@ public class GroovyAPI implements GroovyPageInterface {
     }
 
     public void col(int col, ArrayList<Integer> cols) {
+        if (monome == null) return;
         ArrayList<Integer> args = new ArrayList<Integer>();
         args.add(col);
         for (int i = 0; i < cols.size(); i++) {
@@ -69,15 +85,37 @@ public class GroovyAPI implements GroovyPageInterface {
     }
 
     public void col(int col, int val1, int val2) {
+        if (monome == null) return;
         ArrayList<Integer> args = new ArrayList<Integer>();
         args.add(col);
         args.add(val1);
         args.add(val2);
         monome.led_col(args, pageIndex);
     }
+    
+    public void set(int enc, int led, int level) {
+        if (arc == null) return;
+        arc.set(enc, led, level, pageIndex);
+    }
+    
+    public void all(int enc, int level) {
+        if (arc == null) return;
+        arc.all(enc, level, pageIndex);
+    }
+    
+    public void map(int enc, Integer[] levels) {
+        if (arc == null) return;
+        arc.map(enc, levels, pageIndex);
+    }
 
+    public void range(int enc, int x1, int x2, int level) {
+        if (arc == null) return;
+        arc.range(enc, x1, x2, level, pageIndex);
+    }
+    
     public void clear(int state) {
-        monome.clear(state, pageIndex);
+        if (monome != null) monome.clear(state, pageIndex);
+        if (arc != null) arc.clearArc(pageIndex);
     }
 
     public void sendOSC(String addr, Object[] args, String host, int port) {
@@ -148,6 +186,12 @@ public class GroovyAPI implements GroovyPageInterface {
 	public void press(int x, int y, int val) {
 	}
 	
+	public void delta(int enc, int delta) {
+	}
+	
+	public void key(int enc, int value) {
+	}
+	
 	public void redraw() {
 	}
 	
@@ -173,6 +217,14 @@ public class GroovyAPI implements GroovyPageInterface {
 	
 	public int sizeY() {
 		return monome.sizeY;
+	}
+	
+	public ArcConfiguration arc() {
+	    return arc;
+	}
+	
+	public int knobs() {
+	    return knobs;
 	}
 	
 	public void log(String message) {
