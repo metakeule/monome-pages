@@ -101,18 +101,6 @@ public class MIDIFadersPage implements Page, Serializable {
 		setHorizontal(false);
         origGuiDimension = gui.getSize();
     }
-	
-	public MIDIFadersPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		gui = new MIDIFadersGUI(this);
-		
-		setDelayAmount("6");
-		setCCOffset("0");
-		setMidiChannel("1");
-		setHorizontal(false);
-        origGuiDimension = gui.getSize();
-    }
 
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;

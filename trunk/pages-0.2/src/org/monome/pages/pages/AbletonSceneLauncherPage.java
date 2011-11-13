@@ -73,13 +73,6 @@ public class AbletonSceneLauncherPage implements Page, Serializable {
         origGuiDimension = gui.getSize();
     }
 	
-	public AbletonSceneLauncherPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		gui = new AbletonSceneLauncherGUI(this);
-        origGuiDimension = gui.getSize();
-    }
-
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;
     }

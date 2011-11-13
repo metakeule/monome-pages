@@ -183,33 +183,6 @@ public class MIDISequencerPage implements Page, Serializable {
 		this.setQuantization("6");
         origGuiDimension = gui.getSize();
     }
-	
-	public MIDISequencerPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		this.gui = new MIDISequencerGUI(this);
-		// setup default notes
-		gui.channelTF.setText(midiChannel);
-		gui.bankSizeTF.setText(""+bankSize);
-		this.noteNumbers[0] = this.noteToMidiNumber("C-1");
-		this.noteNumbers[1] = this.noteToMidiNumber("D-1");
-		this.noteNumbers[2] = this.noteToMidiNumber("E-1");
-		this.noteNumbers[3] = this.noteToMidiNumber("F-1");
-		this.noteNumbers[4] = this.noteToMidiNumber("G-1");
-		this.noteNumbers[5] = this.noteToMidiNumber("A-1");
-		this.noteNumbers[6] = this.noteToMidiNumber("B-1");
-		this.noteNumbers[7] = this.noteToMidiNumber("C-2");
-		this.noteNumbers[8] = this.noteToMidiNumber("D-2");
-		this.noteNumbers[9] = this.noteToMidiNumber("E-2");
-		this.noteNumbers[10] = this.noteToMidiNumber("F-2");
-		this.noteNumbers[11] = this.noteToMidiNumber("G-2");
-		this.noteNumbers[12] = this.noteToMidiNumber("A-2");
-		this.noteNumbers[13] = this.noteToMidiNumber("B-2");
-		this.noteNumbers[14] = this.noteToMidiNumber("C-3");
-		this.noteNumbers[15] = this.noteToMidiNumber("D-3");
-		this.setQuantization("6");
-        origGuiDimension = gui.getSize();
-    }
 
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;

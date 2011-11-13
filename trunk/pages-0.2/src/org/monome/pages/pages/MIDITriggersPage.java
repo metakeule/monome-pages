@@ -119,22 +119,6 @@ public class MIDITriggersPage implements Page, Serializable {
 		gui.onAndOffCB.setSelected(true);
         origGuiDimension = gui.getSize();
     }
-	
-	public MIDITriggersPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		gui = new MIDITriggersGUI(this);
-		for (int i = 0; i < 16; i++) {
-			onAndOff[i] = false;
-			ccMode[i] = false;
-			velocity[i] = 127;
-			for (int j = 0; j < 16; j++) {
-				toggleValues[i][j] = 0;
-			}
-		}
-		gui.onAndOffCB.setSelected(true);
-        origGuiDimension = gui.getSize();
-    }
 
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;

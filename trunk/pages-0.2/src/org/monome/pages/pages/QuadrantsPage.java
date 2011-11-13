@@ -46,15 +46,6 @@ public class QuadrantsPage implements Page, Serializable {
         origGuiDimension = gui.getSize();
 	}
 	
-	public QuadrantsPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		this.quadrantConfigurations = new ArrayList<QuadrantConfiguration>();
-		this.createQuadrantConfigurations();
-		gui = new QuadrantsGUI256(this, 0);
-        origGuiDimension = gui.getSize();
-	}
-	
 	private void createQuadrantConfigurations() {
 		// 40h/64 etc possible configurations
 		if (this.monome.sizeX == 8 && this.monome.sizeY == 8) {

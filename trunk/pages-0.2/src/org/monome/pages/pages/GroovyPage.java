@@ -68,16 +68,6 @@ public class GroovyPage implements Page, Serializable {
 		errorLog = new GroovyErrorLog(gui);
         origGuiDimension = gui.getSize();
     }
-	
-	public GroovyPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		gui = new GroovyGUI(this);
-		gcl = new GroovyClassLoader();
-		defaultText();
-		errorLog = new GroovyErrorLog(gui);
-        origGuiDimension = gui.getSize();
-    }
 
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;

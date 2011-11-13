@@ -97,24 +97,6 @@ public class MachineDrumInterfacePage implements Page, Serializable {
         origGuiDimension = gui.getSize();
     }
 	
-	public MachineDrumInterfacePage(FakeMonomeConfiguration monome, int index) {
-		this.machinedrum = new MachineDrum();
-		this.monome = monome;
-		this.index = index;
-		this.generator = new Random();
-		this.loadedModules = new ArrayList<LoadedModule>();
-		this.loadedModules.add(new LoadedModule(new MDMPatternManager(this, 0), 0, 0));
-		this.loadedModules.add(new LoadedModule(new MDMKitRandomizer(this, 1), 8, 0));
-		this.loadedModules.add(new LoadedModule(new MDMKitEditor(this, 2), 0, 8));
-		this.loadedModules.add(new LoadedModule(new MDMLFOManager(this, 3), 8, 8));
-		gui = new MachineDrumInterfaceGUI(this);
-		gui.mod1CB.setSelectedIndex(0);
-		gui.mod2CB.setSelectedIndex(1);
-		gui.mod3CB.setSelectedIndex(2);
-		gui.mod4CB.setSelectedIndex(3);
-        origGuiDimension = gui.getSize();
-    }
-
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;
     }

@@ -56,17 +56,6 @@ public class MIDIPadsPage implements Page, Serializable {
 		setMidiChannel(0);
         origGuiDimension = gui.getSize();
     }
-	
-	public MIDIPadsPage(FakeMonomeConfiguration monome, int index) {
-		this.index = index;
-		this.monome = monome;
-		this.gui = new MIDIPadsGUI(this);
-		setMidiStartNote(31);
-		setVelocityFactor(32);
-		setDelayTime(5);
-		setMidiChannel(0);
-        origGuiDimension = gui.getSize();
-    }
 
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;
