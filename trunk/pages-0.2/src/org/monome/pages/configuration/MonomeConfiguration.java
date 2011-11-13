@@ -1097,7 +1097,8 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
                         led(x, y, value, -1);
                     }
                 }
-                monomeConfig.pages.get(curPage).redrawDevice();
+                if (monomeConfig.pages.size() > curPage)
+                	monomeConfig.pages.get(curPage).redrawDevice();
             }
         }
         
