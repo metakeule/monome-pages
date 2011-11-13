@@ -10,6 +10,7 @@ import javax.sound.midi.ShortMessage;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.MainGUI;
@@ -161,6 +162,20 @@ public class MIDIKeyboardPage implements Page, Serializable {
 	 * @param index The index of this page (the page number)
 	 */
 	public MIDIKeyboardPage(MonomeConfiguration monome, int index) {
+		this.monome = monome;
+		this.gui = new MIDIKeyboardGUI(this);
+		this.index = index;	 
+		this.thread = new Thread( new Flasher() );
+		this.thread.setDaemon(true);
+		this.thread.start();
+		
+		if (this.monome.sizeX == 8)
+			this.flashOn[4][0] = true;
+		this.gui.resetScales();
+        origGuiDimension = gui.getSize();
+    }
+	
+	public MIDIKeyboardPage(FakeMonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.gui = new MIDIKeyboardGUI(this);
 		this.index = index;	 

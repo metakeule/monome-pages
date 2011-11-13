@@ -17,6 +17,7 @@ import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonLooper;
 import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDITriggersGUI;
 import org.w3c.dom.Element;
@@ -104,6 +105,22 @@ public class MIDITriggersPage implements Page, Serializable {
 	 * @param index The index of this page (the page number)
 	 */
 	public MIDITriggersPage(MonomeConfiguration monome, int index) {
+		this.monome = monome;
+		this.index = index;
+		gui = new MIDITriggersGUI(this);
+		for (int i = 0; i < 16; i++) {
+			onAndOff[i] = false;
+			ccMode[i] = false;
+			velocity[i] = 127;
+			for (int j = 0; j < 16; j++) {
+				toggleValues[i][j] = 0;
+			}
+		}
+		gui.onAndOffCB.setSelected(true);
+        origGuiDimension = gui.getSize();
+    }
+	
+	public MIDITriggersPage(FakeMonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		gui = new MIDITriggersGUI(this);

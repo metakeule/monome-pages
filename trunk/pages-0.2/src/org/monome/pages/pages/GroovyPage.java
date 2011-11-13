@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.api.GroovyAPI;
 import org.monome.pages.api.GroovyErrorLog;
 import org.monome.pages.api.GroovyPageInterface;
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.GroovyGUI;
 import org.w3c.dom.Element;
@@ -59,6 +60,16 @@ public class GroovyPage implements Page, Serializable {
 	 * @param index The index of this page (page number)
 	 */
 	public GroovyPage(MonomeConfiguration monome, int index) {
+		this.monome = monome;
+		this.index = index;
+		gui = new GroovyGUI(this);
+		gcl = new GroovyClassLoader();
+		defaultText();
+		errorLog = new GroovyErrorLog(gui);
+        origGuiDimension = gui.getSize();
+    }
+	
+	public GroovyPage(FakeMonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		gui = new GroovyGUI(this);

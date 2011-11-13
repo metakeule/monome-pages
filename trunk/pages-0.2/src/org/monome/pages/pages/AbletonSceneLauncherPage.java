@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonTrack;
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.AbletonSceneLauncherGUI;
 import org.w3c.dom.Element;
@@ -66,6 +67,13 @@ public class AbletonSceneLauncherPage implements Page, Serializable {
 	 * @param index This page's index number
 	 */
 	public AbletonSceneLauncherPage(MonomeConfiguration monome, int index) {
+		this.monome = monome;
+		this.index = index;
+		gui = new AbletonSceneLauncherGUI(this);
+        origGuiDimension = gui.getSize();
+    }
+	
+	public AbletonSceneLauncherPage(FakeMonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		gui = new AbletonSceneLauncherGUI(this);

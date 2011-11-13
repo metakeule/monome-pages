@@ -8,6 +8,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.ShortMessage;
 import javax.swing.JPanel;
 
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDIPadsGUI;
 import org.w3c.dom.Element;
@@ -46,6 +47,17 @@ public class MIDIPadsPage implements Page, Serializable {
     private Dimension origGuiDimension;
 	
 	public MIDIPadsPage(MonomeConfiguration monome, int index) {
+		this.index = index;
+		this.monome = monome;
+		this.gui = new MIDIPadsGUI(this);
+		setMidiStartNote(31);
+		setVelocityFactor(32);
+		setDelayTime(5);
+		setMidiChannel(0);
+        origGuiDimension = gui.getSize();
+    }
+	
+	public MIDIPadsPage(FakeMonomeConfiguration monome, int index) {
 		this.index = index;
 		this.monome = monome;
 		this.gui = new MIDIPadsGUI(this);

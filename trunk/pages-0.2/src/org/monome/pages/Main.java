@@ -66,7 +66,7 @@ public class Main {
         if (args.length > 0) {
             file = new File(args[0]);
         }
-        logger.error("Pages 0.2.2a21 starting up\n");
+        logger.error("Pages 0.2.2a23 starting up\n");
         main = new Main(file);
     }
     
@@ -115,7 +115,7 @@ public class Main {
                 String knobs = fullName.substring(fullName.indexOf(" arc ") + 5, fullName.indexOf(" arc ") + 6);
                 deviceName = "arc " + knobs;
                 device = new SerialOSCArc();
-            } else {
+            } else if (fullName.indexOf("monome ") != -1) {
                 String monomeType = fullName.substring(fullName.indexOf("monome ") + 7, fullName.indexOf(" ("));
                 deviceName = "monome " + monomeType;
                 device = new SerialOSCMonome();
