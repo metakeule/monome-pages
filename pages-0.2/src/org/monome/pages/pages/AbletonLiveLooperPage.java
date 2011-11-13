@@ -11,6 +11,7 @@ import org.monome.pages.Main;
 import org.monome.pages.ableton.AbletonClip;
 import org.monome.pages.ableton.AbletonClipDelay;
 import org.monome.pages.ableton.AbletonTrack;
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.AbletonLiveLooperGUI;
 import org.w3c.dom.Element;
@@ -71,6 +72,13 @@ public class AbletonLiveLooperPage implements Page, Serializable {
 	 * @param index This page's index number
 	 */
 	public AbletonLiveLooperPage(MonomeConfiguration monome, int index) {
+		this.monome = monome;
+		this.index = index;
+		gui = new AbletonLiveLooperGUI(this);
+        origGuiDimension = gui.getSize();
+    }
+	
+	public AbletonLiveLooperPage(FakeMonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		gui = new AbletonLiveLooperGUI(this);

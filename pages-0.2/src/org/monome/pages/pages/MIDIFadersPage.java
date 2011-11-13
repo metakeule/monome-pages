@@ -8,6 +8,7 @@ import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Receiver;
 import javax.swing.JPanel;
 
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MIDIFader;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDIFadersGUI;
@@ -90,6 +91,18 @@ public class MIDIFadersPage implements Page, Serializable {
 	 * @param index The index of this page (page number)
 	 */
 	public MIDIFadersPage(MonomeConfiguration monome, int index) {
+		this.monome = monome;
+		this.index = index;
+		gui = new MIDIFadersGUI(this);
+		
+		setDelayAmount("6");
+		setCCOffset("0");
+		setMidiChannel("1");
+		setHorizontal(false);
+        origGuiDimension = gui.getSize();
+    }
+	
+	public MIDIFadersPage(FakeMonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		gui = new MIDIFadersGUI(this);

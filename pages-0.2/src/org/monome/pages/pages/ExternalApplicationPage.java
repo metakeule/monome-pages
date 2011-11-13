@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.monome.pages.Main;
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.OSCPortFactory;
 import org.monome.pages.gui.MainGUI;
@@ -97,6 +98,15 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 	 * @param index The index of this page (page number)
 	 */
 	public ExternalApplicationPage(MonomeConfiguration monome, int index) {
+        inPort = (int) (1024 + (Math.random() * 65411.0));
+		this.monome = monome;
+		this.index = index;
+		listenersAdded = new HashMap<String, Integer>();
+		gui = new ExternalApplicationGUI(this);
+        origGuiDimension = gui.getSize();
+    }
+	
+	public ExternalApplicationPage(FakeMonomeConfiguration monome, int index) {
         inPort = (int) (1024 + (Math.random() * 65411.0));
 		this.monome = monome;
 		this.index = index;

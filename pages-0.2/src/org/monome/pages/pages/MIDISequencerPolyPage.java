@@ -12,6 +12,7 @@ import javax.sound.midi.ShortMessage;
 
 import javax.swing.JPanel;
 
+import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.pages.gui.MIDISequencerPolyGUI;
 import org.w3c.dom.Element;
@@ -210,6 +211,88 @@ public class MIDISequencerPolyPage implements Page, Serializable {
 	 *            The index of this page (the page number)
 	 */
 	public MIDISequencerPolyPage(MonomeConfiguration monome, int index) {
+		this.monome = monome;
+		this.index = index;
+		this.gui = new MIDISequencerPolyGUI(this);
+		gui.channelTF.setText(midiChannel);
+		gui.bankSizeTF.setText(""+bankSize);
+		// setup default notes
+		this.noteNumbers[0] = this.noteToMidiNumber("C-1");
+		this.noteNumbers[1] = this.noteToMidiNumber("D-1");
+		this.noteNumbers[2] = this.noteToMidiNumber("E-1");
+		this.noteNumbers[3] = this.noteToMidiNumber("F-1");
+		this.noteNumbers[4] = this.noteToMidiNumber("G-1");
+		this.noteNumbers[5] = this.noteToMidiNumber("A-1");
+		this.noteNumbers[6] = this.noteToMidiNumber("B-1");
+		this.noteNumbers[7] = this.noteToMidiNumber("C-2");
+		this.noteNumbers[8] = this.noteToMidiNumber("D-2");
+		this.noteNumbers[9] = this.noteToMidiNumber("E-2");
+		this.noteNumbers[10] = this.noteToMidiNumber("F-2");
+		this.noteNumbers[11] = this.noteToMidiNumber("G-2");
+		this.noteNumbers[12] = this.noteToMidiNumber("A-2");
+		this.noteNumbers[13] = this.noteToMidiNumber("B-2");
+		this.noteNumbers[14] = this.noteToMidiNumber("C-3");
+		this.noteNumbers[15] = this.noteToMidiNumber("D-3");
+
+		// init pattern config
+		int globalHold = 0;
+		if (this.gui.getHoldModeCB().isSelected())
+			globalHold = 1;
+		else
+			globalHold = 0;
+		for (int i = 0; i < 256; i++) {
+			this.patlength[i] = 4 * this.monome.sizeX;
+			this.patHold[i] = globalHold;
+			this.patGate[i] = 0;
+			this.patOctgUp[i] = 0;
+			this.patSpeed[i] = 0;
+		}
+		for (int i = 0; i < 15; i++) {
+			this.rowMode[i] = 0;
+		}
+		this.rowMode[1] = 1;
+
+		for (int i = 0; i < 15; i++) {
+			noteSwitchs[i] = true;
+			this.patGate[this.monome.sizeX
+			             * (this.monome.sizeY - 3 + (i / (this.monome.sizeX - 1)))
+			             + (i %
+
+			            		 (this.monome.sizeX - 1))] = 0;
+		}
+
+		this.quantValue[0] = 2;
+		this.quantValue[1] = 4;
+		this.quantValue[2] = 8;
+		this.quantValue[3] = 16;
+		this.quantValue[4] = 24;
+		this.quantValue[5] = 32;
+		this.quantValue[6] = 64;
+
+		this.globalPitchValue[0] = -6;
+		this.globalPitchValue[1] = -4;
+		this.globalPitchValue[2] = -2;
+		this.globalPitchValue[3] = -0;
+		this.globalPitchValue[4] = 2;
+		this.globalPitchValue[5] = 4;
+		this.globalPitchValue[6] = 6;
+
+		this.globalLength[0] = 1;
+		this.globalLength[1] = 2;
+		this.globalLength[2] = 4;
+		this.globalLength[3] = 32;
+
+		this.globalMLRSize0[0] = 1;
+		this.globalMLRSize0[1] = 2;
+		this.globalMLRSize0[2] = 4;
+		this.globalMLRSize1[0] = 1;
+		this.globalMLRSize1[1] = 2;
+		this.globalMLRSize1[2] = 4;
+
+        origGuiDimension = gui.getSize();
+    }
+	
+	public MIDISequencerPolyPage(FakeMonomeConfiguration monome, int index) {
 		this.monome = monome;
 		this.index = index;
 		this.gui = new MIDISequencerPolyGUI(this);
