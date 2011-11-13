@@ -51,6 +51,16 @@ public class PagesRepository {
                 Class<? extends TPage> clzTPage = clz.asSubclass(pageClass);
                 if (clzTPage.getName().equals(name)) {
                     try {
+                        Constructor<?>[] ctors = clzTPage.getConstructors();
+                        for (Constructor<?> ctor : ctors) {
+                            Class<?>[] params = ctor.getParameterTypes();
+                            if (params.length == 2
+                                    && params[1] == int.class
+                                    && params[0].isAssignableFrom(conf.getClass())) {
+                                page = (TPage)ctor.newInstance(conf, index);
+                                return page;
+                            }
+                        }
                         Constructor<? extends TPage> ctor = clzTPage.getConstructor(conf.getClass(), int.class);
                         page = ctor.newInstance(conf, index);
                         return page;

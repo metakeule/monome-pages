@@ -106,15 +106,6 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
         origGuiDimension = gui.getSize();
     }
 	
-	public ExternalApplicationPage(FakeMonomeConfiguration monome, int index) {
-        inPort = (int) (1024 + (Math.random() * 65411.0));
-		this.monome = monome;
-		this.index = index;
-		listenersAdded = new HashMap<String, Integer>();
-		gui = new ExternalApplicationGUI(this);
-        origGuiDimension = gui.getSize();
-    }
-
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;
     }

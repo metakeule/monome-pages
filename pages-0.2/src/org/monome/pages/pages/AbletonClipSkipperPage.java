@@ -72,13 +72,6 @@ public class AbletonClipSkipperPage implements Page, Serializable {
         origGuiDimension = gui.getSize();
     }
 	
-	public AbletonClipSkipperPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		this.gui = new AbletonClipSkipperGUI(this);
-        origGuiDimension = gui.getSize();
-    }
-
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;
     }

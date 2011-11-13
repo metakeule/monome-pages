@@ -58,24 +58,6 @@ public class MIDIGeneratorPage implements Page, Serializable {
         origGuiDimension = gui.getSize();
     }
 	
-	public MIDIGeneratorPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		
-		maxRadius = 2;
-		numNotes = 10;
-		quantization = 6;
-		chance = 5;
-		patternLength = 384;
-		scale = "2,2,1,2,2,2,1";
-		startNote = 31;
-		maxNote = 74;
-		midiChannel = 1;
-		generateNoteMap();
-		gui = new MIDIGeneratorGUI(this);
-        origGuiDimension = gui.getSize();
-    }
-
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;
     }

@@ -71,13 +71,6 @@ public class AbletonClipLauncherPage implements Page, Serializable {
 		gui = new AbletonClipLauncherGUI(this);
 		origGuiDimension = gui.getSize();
 	}
-	
-	public AbletonClipLauncherPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		gui = new AbletonClipLauncherGUI(this);
-		origGuiDimension = gui.getSize();
-	}
 
 	public Dimension getOrigGuiDimension() {
         return origGuiDimension;

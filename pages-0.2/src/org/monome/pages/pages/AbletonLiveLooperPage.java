@@ -78,13 +78,6 @@ public class AbletonLiveLooperPage implements Page, Serializable {
         origGuiDimension = gui.getSize();
     }
 	
-	public AbletonLiveLooperPage(FakeMonomeConfiguration monome, int index) {
-		this.monome = monome;
-		this.index = index;
-		gui = new AbletonLiveLooperGUI(this);
-        origGuiDimension = gui.getSize();
-    }
-
     public Dimension getOrigGuiDimension() {
         return origGuiDimension;
     }
