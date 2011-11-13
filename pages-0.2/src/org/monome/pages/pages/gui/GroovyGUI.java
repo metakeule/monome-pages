@@ -5,6 +5,7 @@ import javax.swing.JPanel;
 import org.monome.pages.Main;
 import org.monome.pages.gui.GroovyErrorConsole;
 import org.monome.pages.pages.GroovyPage;
+import org.monome.pages.pages.Page;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.tokenmarker.JavaTokenMarker;
 

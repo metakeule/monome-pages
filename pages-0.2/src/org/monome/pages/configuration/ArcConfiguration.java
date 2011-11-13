@@ -109,8 +109,9 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
                         arcConfig.map(enc, levels, -1);
                     }
                 }
-                arcConfig.clearArc(-1);                
-                arcConfig.pages.get(curPage).redrawDevice();
+                arcConfig.clearArc(-1);
+                if (arcConfig.pages.size() > curPage)
+                    arcConfig.pages.get(curPage).redrawDevice();
             }
         }
         

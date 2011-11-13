@@ -189,6 +189,9 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			    linkedDevices[pageIndex] = device;
 			    int pageNum = linkedPageCB.getSelectedIndex();
 			    linkedPages[pageIndex] = pageNum;
+			} else {
+			    linkedDevices[pageIndex] = null;
+			    linkedPages[pageIndex] = 0;
 			}
 		} catch (NumberFormatException ex) {
 		}
