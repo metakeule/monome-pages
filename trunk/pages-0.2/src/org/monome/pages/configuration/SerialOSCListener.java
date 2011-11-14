@@ -2,6 +2,8 @@ package org.monome.pages.configuration;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.monome.pages.Main;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
@@ -54,28 +56,33 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 		    deviceName = "monome " + monomeType;
 	        device = new SerialOSCMonome();
 		}
-		if (device != null) {
-            device.setPort(port);
-            device.setHostName(hostName);
-            device.setSerial(serial);
-            device.setDeviceName(deviceName);
-    		if (Main.main.mainFrame.serialOscSetupFrame != null && Main.main.openingConfig == false) {
-    			Main.main.mainFrame.serialOscSetupFrame.addDevice(device);
-    		} else {
-    		    if (device instanceof SerialOSCMonome) {
-        			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
-        			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
-        				Main.main.startMonome((SerialOSCMonome) device);
-        				monomeConfig.reload();
-        			}
-    		    } else if (device instanceof SerialOSCArc) {
-                    ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + serial);
-                    if (arcConfig != null && (arcConfig.serialOSCHostname == null || arcConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
-                        Main.main.startArc((SerialOSCArc) device);
-                        arcConfig.reload();
-                    }
-    		    }
-    		}
+        if (device == null) {
+        	System.out.println("Couldn't detect device with name: " + fullName);
+            JOptionPane.showMessageDialog(Main.main.mainFrame, "Couldn't detect device with name: " + fullName,
+                    "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        device.setPort(port);
+        device.setHostName(hostName);
+        device.setSerial(serial);
+        device.setDeviceName(deviceName);
+		if (Main.main.mainFrame.serialOscSetupFrame != null && Main.main.openingConfig == false) {
+			Main.main.mainFrame.serialOscSetupFrame.addDevice(device);
+		} else {
+		    if (device instanceof SerialOSCMonome) {
+    			MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration("/" + serial);
+    			if (monomeConfig != null && (monomeConfig.serialOSCHostname == null || monomeConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+    				Main.main.startMonome((SerialOSCMonome) device);
+    				monomeConfig.reload();
+    			}
+		    } else if (device instanceof SerialOSCArc) {
+                ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration("/" + serial);
+                if (arcConfig != null && (arcConfig.serialOSCHostname == null || arcConfig.serialOSCHostname.equalsIgnoreCase(device.getHostName()))) {
+                    Main.main.startArc((SerialOSCArc) device);
+                    arcConfig.reload();
+                }
+		    }
 		}
 	}
 }

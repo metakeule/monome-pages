@@ -106,6 +106,7 @@ public class Main {
         for (int i = 0; i < svcInfos.length; i++) {
             String serial = "unknown";
             String fullName = svcInfos[i].getName();
+            System.out.println("fullName is " + fullName);
             if (fullName.indexOf("(") != -1) {
                 serial = fullName.substring(fullName.indexOf("(")+1, fullName.indexOf(")"));
             }
@@ -115,10 +116,16 @@ public class Main {
                 String knobs = fullName.substring(fullName.indexOf(" arc ") + 5, fullName.indexOf(" arc ") + 6);
                 deviceName = "arc " + knobs;
                 device = new SerialOSCArc();
-            } else if (fullName.indexOf("monome ") != -1) {
+            } else if (fullName.indexOf("monome") != -1) {
                 String monomeType = fullName.substring(fullName.indexOf("monome ") + 7, fullName.indexOf(" ("));
                 deviceName = "monome " + monomeType;
                 device = new SerialOSCMonome();
+            }
+            if (device == null) {
+            	System.out.println("Couldn't detect device with name: " + fullName);
+                JOptionPane.showMessageDialog(Main.main.mainFrame, "Couldn't detect device with name: " + fullName,
+                        "Error", JOptionPane.WARNING_MESSAGE);
+                return;
             }
             int port = svcInfos[i].getPort();
             String hostName = "127.0.0.1";
