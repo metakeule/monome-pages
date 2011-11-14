@@ -235,9 +235,11 @@ public class QuadrantsPage implements Page, Serializable {
 				}
 			}
 		}
+		/*
 		if (!didRedraw) {
 			monome.clearMonome();
 		}
+		*/
 	}
 
 	public void send(MidiMessage message, long timeStamp) {
