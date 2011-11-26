@@ -45,6 +45,7 @@ public class OSCPortIn extends OSCPort implements Runnable {
 		DatagramPacket packet = new DatagramPacket(buffer, 8192);
 		while (isListening) {
 			try {
+			    if (socket == null) continue;
 				socket.receive(packet);
 				OSCPacket oscPacket = converter.convert(buffer, packet.getLength());
 				dispatcher.dispatchPacket(oscPacket);

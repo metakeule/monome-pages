@@ -79,6 +79,7 @@ public class SerialOSCSetupFrame extends JInternalFrame {
 	}
 	
 	private void discover() {
+	    addedDevices = new ArrayList<String>();
 		jContentPane.removeAll();
 		jContentPane = null;
 		initialize();

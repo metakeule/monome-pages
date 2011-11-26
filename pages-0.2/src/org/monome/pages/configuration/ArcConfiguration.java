@@ -94,7 +94,7 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
                 }
                 for (int level = 15; level > -32; level--) {
                     try {
-                        Thread.sleep(16);
+                        Thread.sleep(8);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -110,7 +110,7 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
                     }
                 }
                 arcConfig.clearArc(-1);
-                if (arcConfig.pages.size() > curPage)
+                if (arcConfig.pages.size() > curPage && curPage > -1)
                     arcConfig.pages.get(curPage).redrawDevice();
             }
         }
@@ -214,13 +214,13 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
         if (serialOSCPortOut == null) return;
         if (index > -1) {
             for (int led = x1; led <= x2; led++) {
-                led = normalizeLedNumber(led);
-                pageState[index][enc][led] = level;
+                int normalLed = normalizeLedNumber(led);
+                pageState[index][enc][normalLed] = level;
             }
             if (index != curPage) return;
             for (int led = x1; led <= x2; led++) {
-                led = normalizeLedNumber(led);
-                ledState[enc][led] = level;
+                int normalLed = normalizeLedNumber(led);
+                ledState[enc][normalLed] = level;
             }
         }
         Object[] args = new Object[4];
