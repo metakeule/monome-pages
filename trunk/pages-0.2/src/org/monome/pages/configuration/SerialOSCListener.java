@@ -41,21 +41,40 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 	
 	public synchronized void serviceResolved(DNSSDService resolver, int flags, int ifIndex, String fullName, String hostName, int port, TXTRecord txtRecord) {
 		String serial = fullName.substring(0, fullName.indexOf("._"));
+		System.out.println("port is " + port);
 		if (serial.indexOf("(") != -1) {
 			serial = serial.substring(serial.indexOf("(")+1, serial.indexOf(")"));
 		}
-		SerialOSCDevice device = null;
-		String deviceName = "unknown";
-		if (fullName.indexOf("monome\\032arc") != -1) {
-		    String knobs = fullName.substring(fullName.indexOf("\\032arc\\032") + 11, fullName.indexOf("\\032arc\\032") + 12);
-		    deviceName = "arc " + knobs;
-		    device = new SerialOSCArc();
-		    ((SerialOSCArc) device).setKnobs(Integer.parseInt(knobs));
-		} else if (fullName.indexOf("monome\\032") != -1) {
-		    String monomeType = fullName.substring(fullName.indexOf("monome\\032") +10, fullName.indexOf("\\032("));
-		    deviceName = "monome " + monomeType;
-	        device = new SerialOSCMonome();
-		}
+        SerialOSCDevice device = null;
+        String deviceName = "unknown";
+        if (fullName.indexOf("monome\\032arc") != -1) {
+            String knobs = fullName.substring(fullName.indexOf("arc") + 7, fullName.indexOf("arc") + 8);
+            deviceName = "arc " + knobs;
+            device = new SerialOSCArc();
+            try {
+                int iKnobs = Integer.parseInt(knobs);
+                ((SerialOSCArc) device).setKnobs(iKnobs);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (fullName.indexOf("extapp") != -1) {
+                return;
+            }
+            if (fullName.indexOf("monome") != -1) {
+                String monomeType = fullName.substring(fullName.indexOf("monome\\032") + 10, fullName.indexOf("\\032("));
+                deviceName = "monome " + monomeType;
+            }
+            if (fullName.indexOf("mk") != -1) {
+                deviceName = "mk";
+            }
+            if (fullName.indexOf("arduinome") != -1) {
+                deviceName = "arduinome";
+            }
+            if (deviceName.compareTo("unknown") != -1) {
+                device = new SerialOSCMonome();
+            }
+        }
         if (device == null) {
         	System.out.println("Couldn't detect device with name: " + fullName);
             JOptionPane.showMessageDialog(Main.main.mainFrame, "Couldn't detect device with name: " + fullName,

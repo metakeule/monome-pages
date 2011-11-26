@@ -486,6 +486,7 @@ public class Configuration implements Serializable {
             OSCMessage portMsg = new OSCMessage();
             portMsg.setAddress("/sys/port");
             portMsg.addArgument(oscListenPort);
+            System.out.println("set port to " + oscListenPort);
             arc.serialOSCPortOut.send(portMsg);
             portMsg = new OSCMessage();
             portMsg.setAddress("/sys/host");
@@ -493,6 +494,7 @@ public class Configuration implements Serializable {
             arc.serialOSCPortOut.send(portMsg);
             portMsg = new OSCMessage();
             portMsg.setAddress("/sys/prefix");
+            System.out.println("set prefix to " + arc.prefix);
             portMsg.addArgument(arc.prefix);
             arc.serialOSCPortOut.send(portMsg);
         } catch (IOException e) {
