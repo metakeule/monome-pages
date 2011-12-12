@@ -403,7 +403,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 							if (press[2] == 1) {
 								pressesInPlayback.add(presses.get(k));
 							}
-							this.pages.get(i).handlePress(press[0], press[1], press[2]);
+							this.pages.get(i).handleRecordedPress(press[0], press[1], press[2], presses.get(k).getPatternNum());
 						}
 					}
 					this.pages.get(i).handleTick();

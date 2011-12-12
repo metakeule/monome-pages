@@ -257,4 +257,11 @@ public class GroovyAPI implements GroovyPageInterface {
     public PatternBank patterns() {
         return monome().patternBanks.get(pageIndex);
     }
+    
+    public void sendCommand(Command command) {
+    }
+
+    public void recordedPress(int x, int y, int val, int pattNum) {
+        press(x, y, val);
+    }
 }

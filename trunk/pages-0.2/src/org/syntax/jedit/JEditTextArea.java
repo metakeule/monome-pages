@@ -64,7 +64,7 @@ public class JEditTextArea extends JComponent
 	 */
 	public JEditTextArea()
 	{
-		this(TextAreaDefaults.getDefaults());
+		this(new TextAreaDefaults().getDefaults());
 	}
 
 	/**

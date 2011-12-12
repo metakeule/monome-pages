@@ -3,10 +3,15 @@ package org.monome.pages.configuration;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiMessage;
+import javax.sound.midi.ShortMessage;
+
 import org.apache.commons.lang.StringEscapeUtils;
 import org.monome.pages.gui.ArcFrame;
 import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.ArcPage;
+import org.monome.pages.pages.Page;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -65,6 +70,8 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
     public String serialOSCHostname;
     public int serialOSCPort;
     public transient OSCPortOut serialOSCPortOut;
+
+    private int tickNum;
     
     public ArcConfiguration(int index, String prefix, String serial, int knobs, ArcFrame arcFrame) {
         super(index, prefix, serial);
@@ -108,6 +115,11 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
                         }
                         arcConfig.map(enc, levels, -1);
                     }
+                }
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 arcConfig.clearArc(-1);
                 if (arcConfig.pages.size() > curPage && curPage > -1)
@@ -458,4 +470,88 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
 		xml += "  </arc>\n";
 		return xml;
 	}
+	
+    /**
+     * Called every time a MIDI clock sync 'tick' is received, this triggers each page's handleTick() method
+     */
+    public synchronized void tick(MidiDevice device) {
+        for (int i=0; i < this.numPages; i++) {
+            for (int j = 0; j < this.midiInDevices[i].length; j++) {
+                if (this.midiInDevices[i][j] == null) {
+                    continue;
+                }
+                if (this.midiInDevices[i][j].compareTo(device.getDeviceInfo().getName()) == 0) {
+                    this.pages.get(i).handleTick();
+                }
+            }
+        }
+        this.tickNum++;
+        if (this.tickNum == 96) {
+            this.tickNum = 0;
+        }
+    }
+
+    /**
+     * Called every time a MIDI clock sync 'reset' is received, this triggers each page's handleReset() method.
+     */
+    public void reset(MidiDevice device) {
+        for (int i=0; i < this.numPages; i++) {
+            for (int j = 0; j < this.midiInDevices[i].length; j++) {
+                if (this.midiInDevices[i][j] == null) {
+                    continue;
+                }
+                if (this.midiInDevices[i][j].compareTo(device.getDeviceInfo().getName()) == 0) {
+                    this.pages.get(i).handleReset();
+                }
+            }
+        }
+        this.tickNum = 0;
+    }
+	
+    /**
+     * Called every time a MIDI message is received, the messages are passed along to each page.
+     * 
+     * @param message The MIDI message received
+     * @param timeStamp The timestamp of the MIDI message
+     */
+    public synchronized void send(MidiDevice device, MidiMessage message, long timeStamp) {
+        if (this.useMIDIPageChanging) {
+            if (message instanceof ShortMessage) {
+                ShortMessage msg = (ShortMessage) message;
+                int velocity = msg.getData1();
+                if (msg.getCommand() == ShortMessage.NOTE_ON && velocity > 0) {
+                    int channel = msg.getChannel();
+                    int note = msg.getData1();
+                    
+                    for (int j = 0; j < this.pageChangeMidiInDevices.length; j++) {
+                        if (this.pageChangeMidiInDevices[j] == null) {
+                            continue;
+                        }
+                        if (this.pageChangeMidiInDevices[j].compareTo(device.getDeviceInfo().getName()) == 0) {
+                            for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
+                                MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
+                                if (mpcr.checkRule(note, channel) == true) {
+                                    int switchToPageIndex = mpcr.getPageIndex();
+                                    ArcPage page = this.pages.get(switchToPageIndex);
+                                    this.switchPage(page, switchToPageIndex, true);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < this.numPages; i++) {
+            for (int j = 0; j < this.midiInDevices[i].length; j++) {
+                if (this.midiInDevices[i][j] == null) {
+                    continue;
+                }
+                if (this.midiInDevices[i][j].compareTo(device.getDeviceInfo().getName()) == 0) {
+                    this.pages.get(i).send(message, timeStamp);
+                }
+            }
+        }
+    }
+
+	
 }

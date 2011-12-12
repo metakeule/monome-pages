@@ -77,4 +77,6 @@ public interface Page extends BasePage {
 	 */
 	public boolean getCacheDisabled();
 
+    public void handleRecordedPress(int x, int y, int val, int pattNum);
+
 }

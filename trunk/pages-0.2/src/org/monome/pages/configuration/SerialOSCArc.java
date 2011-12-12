@@ -36,9 +36,10 @@ public class SerialOSCArc implements SerialOSCDevice, OSCListener {
                 e.printStackTrace();
             }
             return;
-        } else if (Main.main.openingConfig == true) {
-            return;
         }
+        //else if (Main.main.openingConfig == true) {
+        //    return;
+        //}
         
         OSCMessage prefixMsg = new OSCMessage();
         prefixMsg.setAddress("/sys/prefix");

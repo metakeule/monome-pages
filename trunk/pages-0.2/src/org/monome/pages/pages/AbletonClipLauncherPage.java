@@ -630,4 +630,8 @@ public class AbletonClipLauncherPage implements Page, Serializable {
 		
 	}
 
+    public void handleRecordedPress(int x, int y, int val, int pattNum) {
+        handlePress(x, y, val);
+    }
+
 }

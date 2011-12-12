@@ -7,6 +7,7 @@ public interface GroovyPageInterface {
     public void init();
     public void stop();
     public void press(int x, int y, int val);
+    public void recordedPress(int x, int y, int val, int pattNum);
     public void delta(int enc, int delta);
     public void key(int enc, int value);
     public void redraw();
@@ -22,4 +23,5 @@ public interface GroovyPageInterface {
     public int sizeY();
     public boolean redrawOnAbletonEvent();
     public void setLogger(GroovyErrorLog errorLog);
+    public void sendCommand(Command command);
 }
