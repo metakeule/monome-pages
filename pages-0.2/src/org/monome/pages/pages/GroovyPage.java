@@ -49,7 +49,7 @@ public class GroovyPage implements Page, Serializable {
 
 	private Object theScript;
 	
-	private GroovyPageInterface theApp;
+	public GroovyPageInterface theApp;
 	
 	public GroovyErrorLog errorLog;
 
@@ -328,4 +328,17 @@ public class GroovyPage implements Page, Serializable {
 		// TODO Auto-generated method stub
 		
 	}
+	
+    public void handleRecordedPress(int x, int y, int val, int pattNum) {
+        if (theApp != null) {
+            try {
+                theApp.recordedPress(x, y, val, pattNum);
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                final PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                errorLog.addError(sw.toString());
+            }
+        }
+    }
 }

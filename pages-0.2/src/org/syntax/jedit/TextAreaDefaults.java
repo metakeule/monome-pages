@@ -20,7 +20,7 @@ import java.awt.Color;
  */
 public class TextAreaDefaults
 {
-	private static TextAreaDefaults DEFAULTS;
+	private TextAreaDefaults DEFAULTS;
 
 	public InputHandler inputHandler;
 	public SyntaxDocument document;
@@ -50,7 +50,7 @@ public class TextAreaDefaults
 	 * Returns a new TextAreaDefaults object with the default values filled
 	 * in.
 	 */
-	public static TextAreaDefaults getDefaults()
+	public TextAreaDefaults getDefaults()
 	{
 		if(DEFAULTS == null)
 		{

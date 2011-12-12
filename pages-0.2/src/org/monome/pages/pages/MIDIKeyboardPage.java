@@ -1127,4 +1127,9 @@ public class MIDIKeyboardPage implements Page, Serializable {
 	public void onBlur() {
 		stopNotes();
 	}
+	
+    public void handleRecordedPress(int x, int y, int val, int pattNum) {
+        handlePress(x, y, val);
+    }
+
 }

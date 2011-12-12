@@ -24,7 +24,7 @@ public abstract class DeviceConfiguration<TPage extends BasePage> implements Ser
     /**
      * The number of pages this monome has
      */
-    protected int numPages = 0;
+    public int numPages = 0;
     /**
      * The currently selected page
      */

@@ -8,6 +8,8 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.Transmitter;
 
 import org.monome.pages.Main;
+import org.monome.pages.configuration.ArcConfiguration;
+import org.monome.pages.configuration.ArcConfigurationFactory;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfigurationFactory;
 
@@ -137,6 +139,12 @@ public class MidiDeviceFactory {
                         monomeConfig.deviceFrame.updateMidiOutMenuOptions(getMidiOutOptions());
                     }
                 }
+                for (int j = 0; j < ArcConfigurationFactory.getNumArcConfigurations(); j++) {
+                    ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(j);
+                    if (arcConfig != null && arcConfig.deviceFrame != null) {
+                        arcConfig.deviceFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+                    }
+                }
                 Main.main.mainFrame.enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), false);
                 return;
             }
@@ -152,6 +160,12 @@ public class MidiDeviceFactory {
                 MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
                 if (monomeConfig != null && monomeConfig.deviceFrame != null) {
                     MonomeConfigurationFactory.getMonomeConfiguration(j).deviceFrame.updateMidiOutMenuOptions(getMidiOutOptions());
+                }
+            }
+            for (int j = 0; j < ArcConfigurationFactory.getNumArcConfigurations(); j++) {
+                ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(j);
+                if (arcConfig != null && arcConfig.deviceFrame != null) {
+                    arcConfig.deviceFrame.updateMidiOutMenuOptions(getMidiOutOptions());
                 }
             }
             Main.main.mainFrame.enableMidiOutOption(midiOutDevice.getDeviceInfo().getName(), true);
@@ -182,6 +196,12 @@ public class MidiDeviceFactory {
                         monomeConfig.deviceFrame.updateMidiInMenuOptions(getMidiInOptions());
                     }
                 }
+                for (int j = 0; j < ArcConfigurationFactory.getNumArcConfigurations(); j++) {
+                    ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(j);
+                    if (arcConfig != null && arcConfig.deviceFrame != null) {
+                        arcConfig.deviceFrame.updateMidiInMenuOptions(getMidiInOptions());
+                    }
+                }
                 Main.main.mainFrame.enableMidiInOption(midiInDevice.getDeviceInfo().getName(), false);
                 return;
             }
@@ -200,6 +220,12 @@ public class MidiDeviceFactory {
                 MonomeConfiguration monomeConfig = MonomeConfigurationFactory.getMonomeConfiguration(j);
                 if (monomeConfig != null && monomeConfig.deviceFrame != null) {
                     monomeConfig.deviceFrame.updateMidiInMenuOptions(getMidiInOptions());
+                }
+            }
+            for (int j = 0; j < ArcConfigurationFactory.getNumArcConfigurations(); j++) {
+                ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(j);
+                if (arcConfig != null && arcConfig.deviceFrame != null) {
+                    arcConfig.deviceFrame.updateMidiInMenuOptions(getMidiInOptions());
                 }
             }
             Main.main.mainFrame.enableMidiInOption(midiInDevice.getDeviceInfo().getName(), true);

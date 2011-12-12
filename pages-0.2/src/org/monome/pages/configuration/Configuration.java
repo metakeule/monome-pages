@@ -486,7 +486,6 @@ public class Configuration implements Serializable {
             OSCMessage portMsg = new OSCMessage();
             portMsg.setAddress("/sys/port");
             portMsg.addArgument(oscListenPort);
-            System.out.println("set port to " + oscListenPort);
             arc.serialOSCPortOut.send(portMsg);
             portMsg = new OSCMessage();
             portMsg.setAddress("/sys/host");
@@ -494,7 +493,6 @@ public class Configuration implements Serializable {
             arc.serialOSCPortOut.send(portMsg);
             portMsg = new OSCMessage();
             portMsg.setAddress("/sys/prefix");
-            System.out.println("set prefix to " + arc.prefix);
             portMsg.addArgument(arc.prefix);
             arc.serialOSCPortOut.send(portMsg);
         } catch (IOException e) {
@@ -619,6 +617,12 @@ public class Configuration implements Serializable {
 				monomeConfig.send(device, message, lTimeStamp);
 			}
 		}
+        for (int i = 0; i < ArcConfigurationFactory.getNumArcConfigurations(); i++) {
+            ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(i);
+            if (arcConfig != null) {
+                arcConfig.send(device, message, lTimeStamp);
+            }
+        }
 		
 		// filter for midi clock ticks or midi reset messages
 		if (message instanceof ShortMessage) {
@@ -632,6 +636,12 @@ public class Configuration implements Serializable {
 							monomeConfig.tick(device);
 						}
 					}
+			        for (int i = 0; i < ArcConfigurationFactory.getNumArcConfigurations(); i++) {
+			            ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(i);
+			            if (arcConfig != null) {
+			                arcConfig.tick(device);
+			            }
+			        }
 				}
 				if (shortMessage.getChannel() == 0x0C) {
 					for (int i=0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
@@ -640,6 +650,12 @@ public class Configuration implements Serializable {
 							monomeConfig.reset(device);
 						}
 					}
+                    for (int i = 0; i < ArcConfigurationFactory.getNumArcConfigurations(); i++) {
+                        ArcConfiguration arcConfig = ArcConfigurationFactory.getArcConfiguration(i);
+                        if (arcConfig != null) {
+                            arcConfig.reset(device);
+                        }
+                    }
 				}
 				break;
 			default:
@@ -1375,7 +1391,7 @@ public class Configuration implements Serializable {
 							}
 							page.configure(pageElement);
 						}
-					}					
+					}
 				}
 			}
 

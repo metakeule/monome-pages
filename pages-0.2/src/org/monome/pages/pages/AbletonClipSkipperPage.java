@@ -305,4 +305,9 @@ public class AbletonClipSkipperPage implements Page, Serializable {
 		// TODO Auto-generated method stub
 		
 	}
+	
+    public void handleRecordedPress(int x, int y, int val, int pattNum) {
+        handlePress(x, y, val);
+    }
+
 }
