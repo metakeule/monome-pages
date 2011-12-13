@@ -9,7 +9,8 @@ class LivePage extends GroovyAPI {
     int tickNum = 0
     int measure = -1
     int velocity = 127
-    int[][] velocities = new int[20000][128]
+    int[][] velocities = new int[1000][128]
+    int[][] originalVelocities = new int[1000][128]
     float[] bpms = [ 133.0f, 132.0f, 120.0f, 120.0f, 120.0f, 120.0f, 120.0f, 120.0f ]
 
     void init() {
@@ -64,6 +65,7 @@ class LivePage extends GroovyAPI {
             int pos = patterns.patternPosition[patterns.curPattern]
             if (val == 1) {
                 velocities[pos][note] = velocity
+                originalVelocities[pos][note] = velocity
                 noteOut(note, velocity, channel, val)
             } else {
                 noteOut(note, 0, channel, val)
@@ -123,6 +125,10 @@ class LivePage extends GroovyAPI {
     void sendCommand(Command cmd) {
         if (cmd.getCmd().equalsIgnoreCase("velocity")) {
             velocity = (Integer) cmd.getParam()
+        }
+        if (cmd.getCmd().equalsIgnoreCase("resetPlayhead")) {
+            log("reset playhead")
+            velocities = originalVelocities
         }
         if (cmd.getCmd().equalsIgnoreCase("offsetPattern")) {
             ArrayList<Integer> args = (ArrayList<Integer>) cmd.getParam()
