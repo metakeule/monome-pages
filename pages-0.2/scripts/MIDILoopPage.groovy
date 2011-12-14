@@ -1,6 +1,6 @@
 import org.monome.pages.api.GroovyAPI
 
-class LiveLoopPage extends GroovyAPI {
+class MIDILoopPage extends GroovyAPI {
 
     def buffers = []
     def oldBuffers = []
@@ -8,7 +8,7 @@ class LiveLoopPage extends GroovyAPI {
     int tickNum = -1
 
     void init() {
-        log("LiveLoopPage starting up")
+        log("MIDILoopPage starting up")
         for (int i = 0; i < sizeX(); i++) {
             buffers[i] = new MIDIBuffer()
         }
@@ -16,7 +16,7 @@ class LiveLoopPage extends GroovyAPI {
     }
 
     void stop() {
-        log("LiveLoopPage shutting down")
+        log("MIDILoopPage shutting down")
     }
 
     void press(int x, int y, int val) {
