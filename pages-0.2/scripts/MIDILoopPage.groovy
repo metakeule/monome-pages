@@ -22,7 +22,7 @@ class MIDILoopPage extends GroovyAPI {
     void press(int x, int y, int val) {
         if (val == 1) {
             if (y > sizeY() - 5 && y < sizeY() - 1) {
-                if (oldBuffers[x] != null && oldBuffers[x][y - sizeY() + 4] != null) {
+                if (oldBuffers[x] != null && oldBuffers[x][2 - (y - sizeY() + 4)] != null) {
                     for (int i = 0; i < buffers[activeBuffer].playingNotes.size(); i++) {
                         MIDINote note = buffers[activeBuffer].playingNotes[i]
                         noteOut(note.note, note.velocity, activeBuffer, 0)
@@ -84,9 +84,13 @@ class MIDILoopPage extends GroovyAPI {
 
     void note(int num, int velo, int chan, int on) {
         if (velo < 40) velo = 40
-        buffers[activeBuffer].setNote(tickNum % buffers[activeBuffer].length, new MIDINote(num, velo, on))
-        noteOut(num, velo, activeBuffer, on)
-        redraw()
+        if (activeBuffer >= 0) {
+            buffers[activeBuffer].setNote(tickNum % buffers[activeBuffer].length, new MIDINote(num, velo, on))
+            redraw()
+            noteOut(num, velo, activeBuffer, on)
+        } else {
+            noteOut(num, velo, 0, on)
+        }
     }
 
     void cc(int num, int val, int chan) {
