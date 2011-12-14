@@ -27,10 +27,15 @@ class MIDILoopPage extends GroovyAPI {
                         MIDINote note = buffers[activeBuffer].playingNotes[i]
                         noteOut(note.note, note.velocity, activeBuffer, 0)
                     }
-                    buffers[activeBuffer].playingNotes = []
-                    MIDIBuffer tmpBuffer = buffers[activeBuffer]
-                    buffers[activeBuffer] = oldBuffers[x][2 - (y - sizeY() + 4)]
+                    buffers[x].playingNotes = []
+                    MIDIBuffer tmpBuffer = buffers[x]
+                    buffers[x] = oldBuffers[x][2 - (y - sizeY() + 4)]
                     oldBuffers[x][2 - (y - sizeY() + 4)] = tmpBuffer
+                    if (x == activeBuffer) {
+                        buffers[x].recording = 1
+                    } else {
+                        buffers[x].recording = 0
+                    }
                 }
             }
             if (y == sizeY() - 1) {
@@ -47,6 +52,7 @@ class MIDILoopPage extends GroovyAPI {
                 noteOut(note.note, note.velocity, activeBuffer, 0)
             }
             buffers[activeBuffer].playingNotes = []
+            buffers[activeBuffer].recording = 0
             if (oldBuffers[activeBuffer] == null) {
                 oldBuffers[activeBuffer] = []
             }
@@ -61,6 +67,12 @@ class MIDILoopPage extends GroovyAPI {
     }
 
     void redraw() {
+        // clear top for now
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < sizeY(); y++) {
+                led(x, y, 0)
+            }
+        }
         // old buffers
         for (int x = 0; x < sizeX(); x++) {
             for (int i = 0; i < 3; i++) {
@@ -73,11 +85,18 @@ class MIDILoopPage extends GroovyAPI {
         }
         // bottom row
         for (int x = 0; x < sizeX(); x++) {
-            if (buffers[x].recording) continue
-            if (buffers[x].hasNotes) {
-                led(x, sizeY() - 1, 1)
+            if (buffers[x].recording) {
+                if (tickNum % 24 < 12) {
+                    led(x, sizeY() - 1, 1)
+                } else {
+                    led(x, sizeY() - 1, 0)
+                }
             } else {
-                led(x, sizeY() - 1, 0)
+                if (buffers[x].hasNotes) {
+                    led(x, sizeY() - 1, 1)
+                } else {
+                    led(x, sizeY() - 1, 0)
+                }
             }
         }
     }
