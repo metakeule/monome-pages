@@ -159,6 +159,16 @@ public class GroovyAPI implements GroovyPageInterface {
 		}
         monome.sendMidi(msg, pageIndex);
     }
+    
+    public void programChange(int num, int val, int chan) {
+        ShortMessage msg = new ShortMessage();
+        try {
+            msg.setMessage(ShortMessage.PROGRAM_CHANGE, chan, num, val);
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+        }
+        monome.sendMidi(msg, pageIndex);
+    }
 
     public void clockOut() {
         ShortMessage msg = new ShortMessage();

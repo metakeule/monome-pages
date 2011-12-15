@@ -21,6 +21,11 @@ class MIDILoopPage extends GroovyAPI {
 
     void press(int x, int y, int val) {
         if (val == 1) {
+            if (y < sizeY() - 4) {
+                programChange(y, x, x)
+                buffers[x].instrument = y
+                redraw()
+            }
             if (y > sizeY() - 5 && y < sizeY() - 1) {
                 if (oldBuffers[x] != null && oldBuffers[x][2 - (y - sizeY() + 4)] != null) {
                     for (int i = 0; i < buffers[activeBuffer].playingNotes.size(); i++) {
@@ -67,10 +72,13 @@ class MIDILoopPage extends GroovyAPI {
     }
 
     void redraw() {
-        // clear top for now
-        for (int x = 0; x < 4; x++) {
-            for (int y = 0; y < sizeY(); y++) {
-                led(x, y, 0)
+        for (int x = 0; x < sizeX(); x++) {
+            for (int y = 0; y < 4; y++) {
+                if (buffers[x].instrument == y) {
+                    led(x, y, 1)
+                } else {
+                    led(x, y, 0)
+                }
             }
         }
         // old buffers
@@ -156,6 +164,7 @@ class MIDILoopPage extends GroovyAPI {
         public int length = 96
         public int recording = 0
         public int hasNotes = 0
+        public int instrument = 0
         public notes = []
         public playingNotes = []
         

@@ -249,7 +249,7 @@ public class MIDITriggersPage implements Page, Serializable {
 			}
 			Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 			if (recv != null) {
-				recv.send(note_out, -1);
+				recv.send(note_out, System.currentTimeMillis());
 			}
 		}
 	}

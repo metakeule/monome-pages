@@ -21,6 +21,6 @@ public class NoteEvent implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		this.recv.send(msg, -1);
+		this.recv.send(msg, System.currentTimeMillis());
 	}
 }
