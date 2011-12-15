@@ -190,7 +190,7 @@ public class MIDIFader implements Runnable {
 				msgs += valueDirection;
 				msg.setMessage(ShortMessage.CONTROL_CHANGE, this.channel, this.cc, i);
 				if (this.recv != null) {
-					this.recv.send(msg, -1);
+					this.recv.send(msg, System.currentTimeMillis());
 				}
 				Thread.sleep(this.delayAmount);
 			} catch (InvalidMidiDataException e) {

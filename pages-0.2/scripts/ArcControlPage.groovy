@@ -133,7 +133,7 @@ class ArcControlPage extends GroovyAPI {
                 fingersVelo = newFingersVelo
                 Command cmd = new Command("velocity", fingersVelo)
                 sendCommand(cmd)
-                drawCommandEnc1()
+                drawCommandEnc2()
             }
         } else if (monome.curPage == 1) {
             int newStepVelo = stepVelo  + delta
@@ -143,7 +143,7 @@ class ArcControlPage extends GroovyAPI {
                 stepVelo = newStepVelo
                 Command cmd = new Command("velocity", stepVelo)
                 sendCommand(cmd)
-                drawCommandEnc1()
+                drawCommandEnc2()
             }
         }
     }
@@ -350,7 +350,10 @@ class ArcControlPage extends GroovyAPI {
     }
 
     void clock() {
-        drawCommandEnc1()
+        MonomeConfiguration monome = getMyMonome()
+        if (monome.curPage == 0) {
+            drawCommandEnc1()
+        }
     }
 
     void clockReset() {

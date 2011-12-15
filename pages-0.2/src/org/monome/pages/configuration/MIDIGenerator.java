@@ -73,7 +73,7 @@ public class MIDIGenerator {
 				try {
 					msg.setMessage(ShortMessage.NOTE_ON, midiChannel - 1, noteMap[x][y], 127);
 					if (recv != null) {
-						recv.send(msg, 0);
+						recv.send(msg, System.currentTimeMillis());
 					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
@@ -103,7 +103,7 @@ public class MIDIGenerator {
 			try {
 				msg.setMessage(ShortMessage.NOTE_OFF, midiChannel - 1, noteMap[lastX][lastY], 0);
 				if (recv != null) {
-					recv.send(msg, 0);
+					recv.send(msg, System.currentTimeMillis());
 				}
 			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();

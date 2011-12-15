@@ -874,7 +874,7 @@ public class MIDISequencerPolyPage implements Page, Serializable {
 						Receiver recv = monome
 						.getMidiReceiver(midiOutOptions[j]);
 						if (recv != null) {
-							recv.send(note_out, -1);
+							recv.send(note_out, System.currentTimeMillis());
 						}
 					}
 				} catch (InvalidMidiDataException e) {
@@ -1325,7 +1325,7 @@ public class MIDISequencerPolyPage implements Page, Serializable {
 						Receiver recv = monome
 						.getMidiReceiver(midiOutOptions[j]);
 						if (recv != null) {
-							recv.send(note_out, -1);
+							recv.send(note_out, System.currentTimeMillis());
 						}
 					}
 				}
@@ -1425,7 +1425,7 @@ public class MIDISequencerPolyPage implements Page, Serializable {
 										}
 										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
 										if (recv != null) {
-											recv.send(note_out, -1);
+											recv.send(note_out, System.currentTimeMillis());
 										}
 									}
 								}
@@ -1447,7 +1447,7 @@ public class MIDISequencerPolyPage implements Page, Serializable {
 									}
 									Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
 									if (recv != null) {
-										recv.send(note_out, -1);
+										recv.send(note_out, System.currentTimeMillis());
 									}
 								}
 							} catch (InvalidMidiDataException e) {
@@ -1478,7 +1478,7 @@ public class MIDISequencerPolyPage implements Page, Serializable {
 										}
 										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
 										if (recv != null) {
-											recv.send(note_out, -1);
+											recv.send(note_out, System.currentTimeMillis());
 										}
 									}
 								}
@@ -1502,7 +1502,7 @@ public class MIDISequencerPolyPage implements Page, Serializable {
 										}
 										Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
 										if (recv != null) {
-											recv.send(note_out, -1);
+											recv.send(note_out, System.currentTimeMillis());
 										}
 									}
 								}

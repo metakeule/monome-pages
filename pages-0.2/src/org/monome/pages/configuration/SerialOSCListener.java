@@ -46,6 +46,7 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
 		}
         SerialOSCDevice device = null;
         String deviceName = "unknown";
+        System.out.println("resolved device: " + fullName);
         if (fullName.indexOf("monome\\032arc") != -1) {
             String knobs = fullName.substring(fullName.indexOf("arc") + 7, fullName.indexOf("arc") + 8);
             deviceName = "arc " + knobs;
