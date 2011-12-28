@@ -5,6 +5,7 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.midi.MidiDeviceFactory;
 
 /**
  * A thread that behaves like a MIDI fader being moved up or down.  It sends out MIDI CC messages from
@@ -190,7 +191,7 @@ public class MIDIFader implements Runnable {
 				msgs += valueDirection;
 				msg.setMessage(ShortMessage.CONTROL_CHANGE, this.channel, this.cc, i);
 				if (this.recv != null) {
-					this.recv.send(msg, System.currentTimeMillis());
+					this.recv.send(msg, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 				}
 				Thread.sleep(this.delayAmount);
 			} catch (InvalidMidiDataException e) {

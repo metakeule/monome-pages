@@ -233,4 +233,22 @@ public class MidiDeviceFactory {
             e.printStackTrace();
         }
     }
+    
+    public static MidiDevice getDevice(Receiver recv) {
+        for (int i = 0; i < midiInReceivers.size(); i++) {
+            if (midiInReceivers.get(i).equals(recv)) {
+                return midiOutDevices.get(i);
+            }
+        }
+        return null;
+    }
+    
+    public static MidiDevice getDevice(Transmitter xmitter) {
+        for (int i = 0; i < midiInTransmitters.size(); i++) {
+            if (midiInTransmitters.get(i).equals(xmitter)) {
+                return midiInDevices.get(i);
+            }
+        }
+        return null;
+    }
 }

@@ -3,6 +3,8 @@ package org.monome.pages.configuration;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
+import org.monome.pages.midi.MidiDeviceFactory;
+
 public class NoteEvent implements Runnable {
 	
 	private Receiver recv;
@@ -21,6 +23,6 @@ public class NoteEvent implements Runnable {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		this.recv.send(msg, System.currentTimeMillis());
+		this.recv.send(msg, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 	}
 }

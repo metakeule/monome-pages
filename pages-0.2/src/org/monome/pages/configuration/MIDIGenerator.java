@@ -4,6 +4,8 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
+import org.monome.pages.midi.MidiDeviceFactory;
+
 public class MIDIGenerator {
 
 	private MonomeConfiguration monome;
@@ -73,7 +75,7 @@ public class MIDIGenerator {
 				try {
 					msg.setMessage(ShortMessage.NOTE_ON, midiChannel - 1, noteMap[x][y], 127);
 					if (recv != null) {
-						recv.send(msg, System.currentTimeMillis());
+						recv.send(msg, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 					}
 				} catch (InvalidMidiDataException e) {
 					e.printStackTrace();
@@ -103,7 +105,7 @@ public class MIDIGenerator {
 			try {
 				msg.setMessage(ShortMessage.NOTE_OFF, midiChannel - 1, noteMap[lastX][lastY], 0);
 				if (recv != null) {
-					recv.send(msg, System.currentTimeMillis());
+					recv.send(msg, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 				}
 			} catch (InvalidMidiDataException e) {
 				e.printStackTrace();
