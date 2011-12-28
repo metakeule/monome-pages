@@ -15,7 +15,8 @@ class ArcControlPage extends GroovyAPI {
     int pcSens = 40
     int pageTurn = 0
     int pattSens = 40
-    int pattLength = 0
+    def pattLengths = []
+    int activePattern = 0
 
     int stepVelo = 127
     int swing = 0
@@ -24,12 +25,21 @@ class ArcControlPage extends GroovyAPI {
     int length = 96
     int lengthTurn = 0
     int lengthSens = 40
+    
+    int activeLooper = 0
+    int loopLengthTurn = 0
+    int loopLengthSens = 40
+    def loopLength = []
 
     int cmd1Down = 0
     int cmd2Down = 0
 
     void init() {
         log("ArcControlPage starting up")
+        for (int i = 0; i < 16; i++) {
+            loopLength[i] = 192
+            pattLengths[i] = 192
+        }
     }
 
     void stop() {
@@ -37,117 +47,72 @@ class ArcControlPage extends GroovyAPI {
     }
 
     void delta(int enc, int delta) {
+        MonomeConfiguration monome = getMyMonome()
         if (enc == 0) {
-            handleCommandEnc0(delta)
+            if (monome.curPage == 0) {
+                livePageEnc0(monome, delta)
+            } else if (monome.curPage == 1) {
+                gridStepPageEnc0(monome, delta)
+            } else if (monome.curPage == 2) {
+                midiLoopPageEnc0(monome, delta)
+            }
         }
         if (enc == 1) {
-            handleCommandEnc1(delta)
+            if (monome.curPage == 0) {
+                livePageEnc1(monome, delta)
+            } else if (monome.curPage == 1) {
+                gridStepPageEnc1(monome, delta)
+            } else if (monome.curPage == 2) {
+                midiLoopPageEnc1(monome, delta)
+            }
         }
         if (enc == 2) {
-            handleCommandEnc2(delta)
+            if (monome.curPage == 0) {
+                livePageEnc2(monome, delta)
+            } else if (monome.curPage == 1) {
+                gridStepPageEnc2(monome, delta)
+            } else if (monome.curPage == 2) {
+                midiLoopPageEnc2(monome, delta)
+            }
         }
         if (enc == 3) {
             handlePageChangeDelta(delta)
         }
     }
 
-    void handleCommandEnc0(int delta) {
-        MonomeConfiguration monome = getMyMonome()
-        if (monome.curPage == 0) {
-            pattLength += delta
-            PatternBank patterns = monome.patternBanks.get(0)
-            int length = patterns.patternLengths[patterns.curPattern]
-            if (pattLength < -pattSens) {
-                if (length > 96) {
-                    length -= 96
-                }
-                patterns.patternLengths[patterns.curPattern] = length
-                pattLength = pattSens
-                redrawDevice()
-            } else if (pattLength > pattSens) {
-                if (length < 96 * 4) {
-                    length += 96
-                }
-                patterns.patternLengths[patterns.curPattern] = length
-                pattLength = -pattSens
-                redrawDevice()
+    void livePageEnc0(MonomeConfiguration monome, int delta) {
+        pattLengths[activePattern] += delta
+        PatternBank patterns = monome.patternBanks.get(0)
+        int length = patterns.patternLengths[patterns.curPattern]
+        if (pattLengths[activePattern] < -pattSens) {
+            if (length > 96) {
+                length -= 96
             }
-        } else if (monome.curPage == 1) {
-            swingTurn += delta
-            if (swingTurn < -swingSens) {
-                if (swing > 0) {
-                    swing--
-                    sendCommand(new Command("swing", swing))
-                    swingTurn = swingSens
-                    redrawDevice()
-                }
-            } else if (swingTurn > swingSens) {
-                if (swing < 8) {
-                    swing++
-                    sendCommand(new Command("swing", swing))
-                    swingTurn = -swingSens
-                    redrawDevice()
-                }
+            patterns.patternLengths[patterns.curPattern] = length
+            pattLengths[activePattern] = pattSens
+            redrawDevice()
+        }
+        if (pattLengths[activePattern] > pattSens) {
+            if (length < 96 * 4) {
+                length += 96
+            }
+            patterns.patternLengths[patterns.curPattern] = length
+            pattLengths[activePattern] = -pattSens
+            redrawDevice()
+        }
+    }
+    
+    void livePageEnc1(MonomeConfiguration monome, int delta) {
+        PatternBank patterns = monome.patternBanks.get(0)
+        if (cmd1Down == 0) {
+            movePlayhead(patterns, delta, patterns.curPattern)
+        } else {
+            for (int patternNum = 0; patternNum < patterns.numPatterns; patternNum++) {
+                movePlayhead(patterns, delta, patternNum)
             }
         }
     }
-
-    void handleCommandEnc1(int delta) {
-        MonomeConfiguration monome = getMyMonome()
-        if (monome.curPage == 0) {
-            PatternBank patterns = monome.patternBanks.get(0)
-            if (cmd1Down == 0) {
-                movePlayhead(patterns, delta, patterns.curPattern)
-            } else {
-                for (int patternNum = 0; patternNum < patterns.numPatterns; patternNum++) {
-                    movePlayhead(patterns, delta, patternNum)
-                }
-            }
-        } else if (monome.curPage == 1) {
-            lengthTurn += delta
-            if (lengthTurn < -lengthSens) {
-                if (length > 96) {
-                    length -= 96
-                    lengthTurn = lengthSens
-                    sendCommand(new Command("length", length))
-                    redrawDevice()
-                }
-            } else if (lengthTurn > lengthSens) {
-                if (length < 96 * 4) {
-                    length += 96
-                    lengthTurn = -lengthSens
-                    sendCommand(new Command("length", length))
-                    redrawDevice()
-                }
-            }
-        }
-    }
-
-    void handleCommandEnc2(int delta) {
-        MonomeConfiguration monome = getMyMonome()
-        if (monome.curPage == 0) {
-            int newFingersVelo = fingersVelo  + delta
-            if (newFingersVelo > 127) newFingersVelo = 127
-            if (newFingersVelo < 0) newFingersVelo = 0
-            if (newFingersVelo != fingersVelo) {
-                fingersVelo = newFingersVelo
-                Command cmd = new Command("velocity", fingersVelo)
-                sendCommand(cmd)
-                drawCommandEnc2()
-            }
-        } else if (monome.curPage == 1) {
-            int newStepVelo = stepVelo  + delta
-            if (newStepVelo > 127) newStepVelo = 127
-            if (newStepVelo < 0) newStepVelo = 0
-            if (newStepVelo != stepVelo) {
-                stepVelo = newStepVelo
-                Command cmd = new Command("velocity", stepVelo)
-                sendCommand(cmd)
-                drawCommandEnc2()
-            }
-        }
-    }
-
+    
     void movePlayhead(PatternBank patterns, int delta, int patternNum) {
         int pos = patterns.patternPosition[patternNum]
         int length = patterns.patternLengths[patternNum]
@@ -160,7 +125,7 @@ class ArcControlPage extends GroovyAPI {
         ArrayList<Integer> args = new ArrayList<Integer>()
         args.add(delta)
         args.add(patternNum)
-        sendCommand(new Command("offsetPattern", args))
+        sendCommandToPage(new Command("offsetPattern", args))
         patterns.patternPosition[patternNum] = newPos
         patterns.recordPosition[patternNum] = newPos
     }
@@ -171,6 +136,93 @@ class ArcControlPage extends GroovyAPI {
         for (int patternNum = 0; patternNum < patterns.numPatterns; patternNum++) {
             patterns.resetPlayhead(patternNum)
         }
+    }
+    
+    void livePageEnc2(MonomeConfiguration monome, int delta) {
+        int newFingersVelo = fingersVelo  + delta
+        if (newFingersVelo > 127) newFingersVelo = 127
+        if (newFingersVelo < 0) newFingersVelo = 0
+        if (newFingersVelo != fingersVelo) {
+            fingersVelo = newFingersVelo
+            Command cmd = new Command("velocity", fingersVelo)
+            sendCommandToPage(cmd)
+            drawLivePageEnc2(monome)
+        }
+    }
+
+    void gridStepPageEnc0(MonomeConfiguration monome, int delta) {
+        lengthTurn += delta
+        if (lengthTurn < -lengthSens) {
+            if (length > 96) {
+                length -= 96
+                lengthTurn = lengthSens
+                sendCommandToPage(new Command("length", length))
+                redrawDevice()
+            }
+        } else if (lengthTurn > lengthSens) {
+            if (length < 96 * 4) {
+                length += 96
+                lengthTurn = -lengthSens
+                sendCommandToPage(new Command("length", length))
+                redrawDevice()
+            }
+        }
+    }
+
+    void gridStepPageEnc1(MonomeConfiguration monome, int delta) {
+        swingTurn += delta
+        if (swingTurn < -swingSens) {
+            if (swing > 0) {
+                swing--
+                sendCommandToPage(new Command("swing", swing))
+                swingTurn = swingSens
+                redrawDevice()
+            }
+        } else if (swingTurn > swingSens) {
+            if (swing < 8) {
+                swing++
+                sendCommandToPage(new Command("swing", swing))
+                swingTurn = -swingSens
+                redrawDevice()
+            }
+        }
+    }
+
+    void gridStepPageEnc2(MonomeConfiguration monome, int delta) {
+        int newStepVelo = stepVelo  + delta
+        if (newStepVelo > 127) newStepVelo = 127
+        if (newStepVelo < 0) newStepVelo = 0
+        if (newStepVelo != stepVelo) {
+            stepVelo = newStepVelo
+            Command cmd = new Command("velocity", stepVelo)
+            sendCommandToPage(cmd)
+            drawGridStepPageEnc2(monome)
+        }
+    }
+
+    void midiLoopPageEnc0(MonomeConfiguration monome, int delta) {
+        loopLengthTurn += delta
+        if (loopLengthTurn < -loopLengthSens) {
+            if (loopLength[(int) (activeLooper / 2)] > 192) {
+                loopLength[(int) (activeLooper / 2)] -= 192
+                loopLengthTurn = loopLengthSens
+                sendCommandToPage(new Command("length", loopLength[(int) (activeLooper / 2)]))
+                redrawDevice()
+            }
+        } else if (loopLengthTurn > loopLengthSens) {
+            if (loopLength[(int) (activeLooper / 2)] < 192 * 4) {
+                loopLength[(int) (activeLooper / 2)] += 192
+                loopLengthTurn = -loopLengthSens
+                sendCommandToPage(new Command("length", loopLength[(int) (activeLooper / 2)]))
+                redrawDevice()
+            }
+        }
+    }
+    
+    void midiLoopPageEnc1(MonomeConfiguration monome, int delta) {        
+    }
+    
+    void midiLoopPageEnc2(MonomeConfiguration monome, int delta) {
     }
 
     void handlePageChangeDelta(int delta) {
@@ -196,8 +248,8 @@ class ArcControlPage extends GroovyAPI {
             redrawDevice()
         }
     }
-
-    void sendCommand(Command command) {
+    
+    void sendCommandToPage(Command command) {
         MonomeConfiguration monome = getMyMonome()
         Page page = monome.pages.get(monome.curPage)
         if (page instanceof GroovyPage) {
@@ -214,7 +266,7 @@ class ArcControlPage extends GroovyAPI {
             if (monome.curPage == 0) {
                 if (key == 0) {
                     resetPlayhead()
-                    sendCommand(new Command("resetPlayhead", null))
+                    sendCommandToPage(new Command("resetPlayhead", null))
                 }
             }
             cmd1Down = key
@@ -223,103 +275,127 @@ class ArcControlPage extends GroovyAPI {
     }
 
     void redrawDevice() {
-        drawCommandEnc0()
-        drawCommandEnc1()
-        drawCommandEnc2()
+        MonomeConfiguration monome = getMyMonome()
+        if (monome.curPage == 0) {
+            drawLivePageEnc0(monome);
+            drawLivePageEnc1(monome);
+            drawLivePageEnc2(monome);
+        }
+        if (monome.curPage == 1) {
+            drawGridStepPageEnc0(monome);
+            drawGridStepPageEnc1(monome);
+            drawGridStepPageEnc2(monome);
+        }
+        if (monome.curPage == 2) {
+            drawMidiLoopPageEnc0(monome);
+            drawMidiLoopPageEnc1(monome);
+            drawMidiLoopPageEnc2(monome);
+        }
         drawPageEnc();
     }
     
-    void drawCommandEnc0() {
-        MonomeConfiguration monome = getMyMonome()
-        if (monome.curPage == 0) {
-            PatternBank patterns = monome.patternBanks.get(0)
-            int length = patterns.patternLengths[patterns.curPattern]
-            int endLed = (int) ((float) length / 96.0f * 16.0f)
-            Integer[] levels = new Integer[64]
-            for (int i = 0; i < 64; i++) {
-                if (i <= endLed) {
-                    levels[i] = 15
-                } else {
-                    levels[i] = 0
-                }
+    void drawLivePageEnc0(MonomeConfiguration monome) {        
+        PatternBank patterns = monome.patternBanks.get(0)
+        int length = patterns.patternLengths[patterns.curPattern]
+        int endLed = (int) ((float) length / 96.0f * 16.0f)
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
             }
-            map(0, levels)
-        } else if (monome.curPage == 1) {
-            int endLed = (int) ((float) swing * 8.0f)
-            Integer[] levels = new Integer[64]
-            for (int i = 0; i < 64; i++) {
-                if (i <= endLed) {
-                    levels[i] = 15
-                } else {
-                    levels[i] = 0
-                }
-            }
-            map(0, levels)
-        } else {
-            all(0, 0)
         }
+        map(0, levels)
+    }
+            
+    void drawLivePageEnc1(MonomeConfiguration monome) {
+        // get patterns for page 0
+        PatternBank patterns = monome.patternBanks.get(0)
+        int pos = patterns.patternPosition[patterns.curPattern]
+        int length = patterns.patternLengths[patterns.curPattern]
+        int endLed = (int) ((float) pos / (float) length * 64.0f)
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
+            }
+        }
+        map(1, levels)
     }
     
-    void drawCommandEnc1() {
-        MonomeConfiguration monome = getMyMonome()
-        if (monome.curPage == 0) {
-            // get patterns for page 0
-            PatternBank patterns = monome.patternBanks.get(0)
-            int pos = patterns.patternPosition[patterns.curPattern]
-            int length = patterns.patternLengths[patterns.curPattern]
-            int endLed = (int) ((float) pos / (float) length * 64.0f)
-            Integer[] levels = new Integer[64]
-            for (int i = 0; i < 64; i++) {
-                if (i <= endLed) {
-                    levels[i] = 15
-                } else {
-                    levels[i] = 0
-                }
+    void drawLivePageEnc2(MonomeConfiguration monome) {
+        int endLed = fingersVelo / 2
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
             }
-            map(1, levels)
-        } else if (monome.curPage == 1) {
-            int endLed = (int) ((float) length / 96.0f * 16.0f)
-            Integer[] levels = new Integer[64]
-            for (int i = 0; i < 64; i++) {
-                if (i <= endLed) {
-                    levels[i] = 15
-                } else {
-                    levels[i] = 0
-                }
-            }
-            map(1, levels)
-        } else {
-            all(1, 0)
         }
+        map(2, levels)
+    }
+    
+    void drawGridStepPageEnc0(MonomeConfiguration monome) {
+        int endLed = (int) ((float) length / 96.0f * 16.0f)
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
+            }
+        }
+        map(0, levels)
     }
 
-    void drawCommandEnc2() {
-        MonomeConfiguration monome = getMyMonome()
-        if (monome.curPage == 0) {
-            int endLed = fingersVelo / 2
-            Integer[] levels = new Integer[64]
-            for (int i = 0; i < 64; i++) {
-                if (i <= endLed) {
-                    levels[i] = 15
-                } else {
-                    levels[i] = 0
-                }
+    void drawGridStepPageEnc1(MonomeConfiguration monome) {
+        int endLed = (int) ((float) swing * 8.0f)
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
             }
-            map(2, levels)
-        } else if (monome.curPage == 1) {
-            int endLed = stepVelo / 2
-            Integer[] levels = new Integer[64]
-            for (int i = 0; i < 64; i++) {
-                if (i <= endLed) {
-                    levels[i] = 15
-                } else {
-                    levels[i] = 0
-                }
-            }
-            map(2, levels)
-        } else {
-            all(2, 0)
         }
+        map(1, levels)
+    }
+
+    void drawGridStepPageEnc2(MonomeConfiguration monome) {
+        int endLed = stepVelo / 2
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
+            }
+        }
+        map(2, levels)
+    }
+    
+    void drawMidiLoopPageEnc0(MonomeConfiguration monome) {
+        int endLed = (int) ((float) loopLength[(int) (activeLooper / 2)] / 192.0f * 16.0f)
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
+            }
+        }
+        map(0, levels)
+    }
+    
+    void drawMidiLoopPageEnc1(MonomeConfiguration monome) {
+        all(1, 0)
+    }
+    void drawMidiLoopPageEnc2(MonomeConfiguration monome) {
+        all(2, 0)
     }
 
     void drawPageEnc() {
@@ -343,25 +419,38 @@ class ArcControlPage extends GroovyAPI {
         map(3, levels)
     }
 
-    void note(int num, int velo, int chan, int on) {
-    }
-
-    void cc(int num, int val, int chan) {
-    }
-
     void clock() {
         MonomeConfiguration monome = getMyMonome()
         if (monome.curPage == 0) {
-            drawCommandEnc1()
+            drawLivePageEnc1(monome)
         }
     }
 
     void clockReset() {
         redrawDevice()
     }
+    
+    void sendCommand(Command cmd) {
+        if (cmd.getCmd().equalsIgnoreCase("activeLooper")) {
+            activeLooper = (Integer) cmd.getParam()
+            MonomeConfiguration monome = getMyMonome()
+            if (monome.curPage == 2) {
+                drawMidiLoopPageEnc0(monome)
+            }
+        }
+        if (cmd.getCmd().equalsIgnoreCase("activePattern")) {
+            log("got msg")
+            activePattern = (Integer) cmd.getParam()
+            MonomeConfiguration monome = getMyMonome()
+            if (monome.curPage == 0) {
+                drawLivePageEnc0(monome)
+            }
+        }
+    }
 
     MonomeConfiguration getMyMonome() {
         MonomeConfiguration monome = MonomeConfigurationFactory.getMonomeConfiguration(prefix)
+        return monome
     }
 
 }

@@ -19,6 +19,7 @@ import org.monome.pages.ableton.AbletonState;
 import org.monome.pages.ableton.AbletonTrack;
 import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.gui.MIDITriggersGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -249,7 +250,7 @@ public class MIDITriggersPage implements Page, Serializable {
 			}
 			Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 			if (recv != null) {
-				recv.send(note_out, System.currentTimeMillis());
+				recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 			}
 		}
 	}

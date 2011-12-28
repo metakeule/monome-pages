@@ -14,6 +14,7 @@ import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
 import org.monome.pages.gui.MainGUI;
+import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.gui.MIDIKeyboardGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -592,7 +593,7 @@ public class MIDIKeyboardPage implements Page, Serializable {
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
 							if (recv != null) {
-								recv.send(note_out, System.currentTimeMillis());
+								recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 							}
 						}
 					} catch (InvalidMidiDataException e) {
@@ -625,7 +626,7 @@ public class MIDIKeyboardPage implements Page, Serializable {
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 				if (recv != null) {
-					recv.send(note_out, System.currentTimeMillis());
+					recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 				}
 			}
 			
@@ -653,7 +654,7 @@ public class MIDIKeyboardPage implements Page, Serializable {
 				}
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 				if (recv != null) {
-					recv.send(sustain_out, System.currentTimeMillis());
+					recv.send(sustain_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 				}
 			}
 		} catch (InvalidMidiDataException e) {

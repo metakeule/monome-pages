@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import org.monome.pages.configuration.FakeMonomeConfiguration;
 import org.monome.pages.configuration.LEDBlink;
 import org.monome.pages.configuration.MonomeConfiguration;
+import org.monome.pages.midi.MidiDeviceFactory;
 import org.monome.pages.pages.gui.MIDISequencerGUI;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -623,7 +624,7 @@ public class MIDISequencerPage implements Page, Serializable {
 						}
 						Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
 						if (recv != null) {
-							recv.send(note_out, System.currentTimeMillis());
+							recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 						}
 					}
 				} catch (InvalidMidiDataException e) {
@@ -673,7 +674,7 @@ public class MIDISequencerPage implements Page, Serializable {
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 							if (recv != null) {
-								recv.send(note_out, System.currentTimeMillis());
+								recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 							}
 						}
 					} else if (velocity > 0 && this.heldNotes[y] == 0) {
@@ -686,7 +687,7 @@ public class MIDISequencerPage implements Page, Serializable {
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 							if (recv != null) {
-								recv.send(note_out, System.currentTimeMillis());
+								recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 							}
 						}
 					}
@@ -720,7 +721,7 @@ public class MIDISequencerPage implements Page, Serializable {
 							}
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 							if (recv != null) {
-								recv.send(note_out, System.currentTimeMillis());
+								recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 							}
 						}
 					} catch (InvalidMidiDataException e) {

@@ -1052,7 +1052,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 			}
 			Receiver recv = getMidiReceiver(midiOutOptions[i]);
 			if (recv != null) {
-				recv.send(midiMsg, System.currentTimeMillis());
+				recv.send(midiMsg, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 			}
 		}	
 	}

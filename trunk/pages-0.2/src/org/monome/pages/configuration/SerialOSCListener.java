@@ -61,11 +61,11 @@ public class SerialOSCListener implements BrowseListener, ResolveListener {
             if (fullName.indexOf("extapp") != -1) {
                 return;
             }
-            if (fullName.indexOf("monome") != -1) {
+            if (fullName.indexOf("monome\\032") != -1) {
                 String monomeType = fullName.substring(fullName.indexOf("monome\\032") + 10, fullName.indexOf("\\032("));
                 deviceName = "monome " + monomeType;
             }
-            if (fullName.indexOf("mk") != -1) {
+            if (fullName.indexOf("mk\\032") != -1) {
                 deviceName = "mk";
             }
             if (fullName.indexOf("arduinome") != -1) {

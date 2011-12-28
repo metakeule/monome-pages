@@ -1,6 +1,10 @@
 import org.monome.pages.api.GroovyAPI
 import org.monome.pages.api.Command
 import org.monome.pages.configuration.PatternBank
+import org.monome.pages.pages.ArcPage
+import org.monome.pages.pages.arc.GroovyPage
+import org.monome.pages.configuration.ArcConfiguration
+import org.monome.pages.configuration.ArcConfigurationFactory
 
 class LivePage extends GroovyAPI {
 
@@ -12,6 +16,7 @@ class LivePage extends GroovyAPI {
     int[][] velocities = new int[1000][128]
     int[][] originalVelocities = new int[1000][128]
     float[] bpms = [ 133.0f, 132.0f, 120.0f, 120.0f, 120.0f, 120.0f, 120.0f, 120.0f ]
+    String prefix = "/m0000226"
 
     void init() {
         log("LivePage starting up")
@@ -31,6 +36,7 @@ class LivePage extends GroovyAPI {
         int channel = 0
         if (y > 2) {
             channel = 1
+            note += 12
         }
         if (val == 1) {
             PatternBank patterns = monome().patternBanks.get(0)
@@ -48,6 +54,7 @@ class LivePage extends GroovyAPI {
                 return
             } else {
                 patterns().handlePress(x);
+                sendCommandToArc(new Command("activePattern", x))
                 redraw()
             }
         } else if (y == sizeY() - 2) {
@@ -60,6 +67,7 @@ class LivePage extends GroovyAPI {
             int channel = 0
             if (y > 2) {
                 channel = 1
+                note += 12
             }
             PatternBank patterns = monome().patternBanks.get(0)
             int pos = patterns.patternPosition[patterns.curPattern]
@@ -93,6 +101,8 @@ class LivePage extends GroovyAPI {
         num -= song * 24
         int x = (num) % sizeX()
         int y = (num) / sizeY()
+        if (y > 2 && chan == 0) return
+        log("note")
         if (y == sizeY() - 1 || y == sizeY() - 2) {
             return
         }
@@ -149,5 +159,18 @@ class LivePage extends GroovyAPI {
                 }
             }
         }
+    }
+
+    void sendCommandToArc(Command command) {
+        ArcConfiguration arc = getMyArc()
+        ArcPage page = arc.pages.get(arc.curPage)
+        if (page instanceof GroovyPage) {
+            ((GroovyPage) page).theApp.sendCommand(command)
+        }
+    }
+
+    ArcConfiguration getMyArc() {
+        ArcConfiguration arc = ArcConfigurationFactory.getArcConfiguration(prefix)
+        return arc
     }
 }
