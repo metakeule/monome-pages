@@ -33,5 +33,9 @@ public class Press {
 	public int getPageNum() {
 		return pageNum;
 	}
+
+    public void setPosition(int i) {
+        position = i;
+    }
 	
 }

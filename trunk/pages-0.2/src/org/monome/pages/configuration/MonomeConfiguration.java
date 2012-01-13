@@ -129,7 +129,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 
     private MonomeFrame monomeFrame;
     
-    private ArrayList<Press> pressesInPlayback = new ArrayList<Press>();
+    ArrayList<Press> pressesInPlayback = new ArrayList<Press>();
 
     /**
 	 * @param index the index to assign to this MonomeConfiguration
@@ -394,7 +394,7 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 						for (int k=0; k < presses.size(); k++) {
 							int[] press = presses.get(k).getPress();
 							for (int pb = 0; pb < this.pressesInPlayback.size(); pb++) {
-								if (pressesInPlayback.get(pb) == null) return;
+								if (pressesInPlayback.get(pb) == null) continue;
 								int[] pbPress = pressesInPlayback.get(pb).getPress();
 								if (press[0] == pbPress[0] && press[1] == pbPress[1] && press[2] == 0) {
 									pressesInPlayback.remove(pb);

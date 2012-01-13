@@ -13,9 +13,9 @@ class LivePage extends GroovyAPI {
     int tickNum = 0
     int measure = -1
     int velocity = 127
-    int[][] velocities = new int[1000][128]
-    int[][] originalVelocities = new int[1000][128]
-    float[] bpms = [ 133.0f, 132.0f, 120.0f, 120.0f, 120.0f, 120.0f, 120.0f, 120.0f ]
+    int[][] velocities = new int[768][128]
+    int[][] originalVelocities = new int[768][128]
+    float[] bpms = [ 133.0f, 132.0f, 165.0f, 120.0f, 120.0f, 120.0f, 120.0f, 120.0f ]
     String prefix = "/m0000226"
 
     void init() {
@@ -99,10 +99,10 @@ class LivePage extends GroovyAPI {
 
     void note(int num, int velo, int chan, int on) {
         num -= song * 24
+        if (chan == 1) num -= 12
         int x = (num) % sizeX()
         int y = (num) / sizeY()
         if (y > 2 && chan == 0) return
-        log("note")
         if (y == sizeY() - 1 || y == sizeY() - 2) {
             return
         }
@@ -137,8 +137,11 @@ class LivePage extends GroovyAPI {
             velocity = (Integer) cmd.getParam()
         }
         if (cmd.getCmd().equalsIgnoreCase("resetPlayhead")) {
-            log("reset playhead")
-            velocities = originalVelocities
+            for (int step = 0; step < 768; step++) {
+                for (int note = 0; note < 128; note++) {
+                    velocities[step][note] = originalVelocities[step][note]
+                }
+            }
         }
         if (cmd.getCmd().equalsIgnoreCase("offsetPattern")) {
             ArrayList<Integer> args = (ArrayList<Integer>) cmd.getParam()
@@ -155,7 +158,7 @@ class LivePage extends GroovyAPI {
             }
             for (int note = 0; note < 128; note++) {
                 if (velocities[pos][note] != 0) {
-                    velocities[newPos][note] = velocities[pos][note]
+                    velocities[newPos][note] = originalVelocities[pos][note]
                 }
             }
         }
