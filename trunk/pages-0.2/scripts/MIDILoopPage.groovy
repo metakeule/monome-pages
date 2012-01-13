@@ -35,6 +35,7 @@ class MIDILoopPage extends GroovyAPI {
     void press(int x, int y, int val) {
         if (val == 1) {
             if (y < sizeY() - 4) {
+                sendCommandToArc(new Command("stopCC", x))
                 int oldX = x - (x % 2)
                 if (programNums[(int) (x / 2)] >= 4) {
                     oldX++

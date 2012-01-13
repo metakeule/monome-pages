@@ -67,7 +67,7 @@ class LivePage extends GroovyAPI {
             int channel = 0
             if (y > 2) {
                 channel = 1
-                note += 12
+                note = ((y * sizeY()) + x + 12) % 128
             }
             PatternBank patterns = monome().patternBanks.get(0)
             int pos = patterns.patternPosition[patterns.curPattern]
@@ -98,7 +98,7 @@ class LivePage extends GroovyAPI {
     }
 
     void note(int num, int velo, int chan, int on) {
-        num -= song * 24
+        if (chan == 0) num -= song * 24
         if (chan == 1) num -= 12
         int x = (num) % sizeX()
         int y = (num) / sizeY()
