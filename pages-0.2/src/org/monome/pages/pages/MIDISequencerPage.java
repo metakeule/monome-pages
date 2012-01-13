@@ -1074,7 +1074,7 @@ public class MIDISequencerPage implements Page, Serializable {
 		xml.append("      <holdmode>" + holdmode + "</holdmode>\n");
 		xml.append("      <banksize>" + this.bankSize + "</banksize>\n");
 		xml.append("      <midichannel>" + this.midiChannel + "</midichannel>\n");
-		xml.append("      <quantization>" + this.quantization + "</quantization>\n");
+		xml.append("      <sequencerQuantization>" + this.quantization + "</sequencerQuantization>\n");
 		xml.append("      <muteMode>" + this.muteMode + "</muteMode>\n");
 		xml.append("      <velocityMode>" + this.velocityMode + "</velocityMode>\n");
 		for (int i=0; i < 16; i++) {
@@ -1227,7 +1227,7 @@ public class MIDISequencerPage implements Page, Serializable {
 		this.setHoldMode(this.monome.readConfigValue(pageElement, "holdmode"));
 		this.setBankSize(Integer.parseInt(this.monome.readConfigValue(pageElement, "banksize")));
 		this.setMidiChannel(this.monome.readConfigValue(pageElement, "midichannel"));
-		this.setQuantization(this.monome.readConfigValue(pageElement, "quantization"));
+		this.setQuantization(this.monome.readConfigValue(pageElement, "sequencerQuantization"));
 		String sMuteMode = this.monome.readConfigValue(pageElement, "muteMode");
 		if (sMuteMode != null) {
 			this.muteMode = Integer.parseInt(sMuteMode);
@@ -1256,20 +1256,24 @@ public class MIDISequencerPage implements Page, Serializable {
 	}
 
 	private void setQuantization(String quantization) {
-		this.quantization = Integer.parseInt(quantization);
-		if (this.quantization == 96) {
-			this.gui.quantCB.setSelectedIndex(0);
-		} else if (this.quantization == 48) {
-			this.gui.quantCB.setSelectedIndex(1);
-		} else if (this.quantization == 24) {
-			this.gui.quantCB.setSelectedIndex(2);
-		} else if (this.quantization == 12) {
-			this.gui.quantCB.setSelectedIndex(3);
-		} else if (this.quantization == 6) {
-			this.gui.quantCB.setSelectedIndex(4);
-		} else if (this.quantization == 3) {
-			this.gui.quantCB.setSelectedIndex(5);
-		}
+	    try {
+	        this.quantization = Integer.parseInt(quantization);
+	        if (this.quantization == 96) {
+	            this.gui.quantCB.setSelectedIndex(0);
+	        } else if (this.quantization == 48) {
+	            this.gui.quantCB.setSelectedIndex(1);
+	        } else if (this.quantization == 24) {
+	            this.gui.quantCB.setSelectedIndex(2);
+	        } else if (this.quantization == 12) {
+	            this.gui.quantCB.setSelectedIndex(3);
+	        } else if (this.quantization == 6) {
+	            this.gui.quantCB.setSelectedIndex(4);
+	        } else if (this.quantization == 3) {
+	            this.gui.quantCB.setSelectedIndex(5);
+	        }
+	    } catch (NumberFormatException e) {
+	        return;
+	    }
 	}
 	
 	

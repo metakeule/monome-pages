@@ -235,8 +235,8 @@ public class MidiDeviceFactory {
     }
     
     public static MidiDevice getDevice(Receiver recv) {
-        for (int i = 0; i < midiInReceivers.size(); i++) {
-            if (midiInReceivers.get(i).equals(recv)) {
+        for (int i = 0; i < midiOutReceivers.size(); i++) {
+            if (midiOutReceivers.get(i).equals(recv)) {
                 return midiOutDevices.get(i);
             }
         }

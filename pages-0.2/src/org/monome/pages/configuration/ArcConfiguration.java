@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
+import javax.sound.midi.Receiver;
 import javax.sound.midi.ShortMessage;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -552,6 +553,37 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
             }
         }
     }
+
+    public void sendMidi(ShortMessage midiMsg, int pageIndex) {
+        String[] midiOutOptions = getMidiOutOptions(index);
+        for (int i = 0; i < midiOutOptions.length; i++) {
+            if (midiOutOptions[i] == null) {
+                continue;
+            }
+            Receiver recv = getMidiReceiver(midiOutOptions[i]);
+            if (recv != null) {
+                recv.send(midiMsg, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
+            }
+        }
+    }
+    
+    /**
+     * @return The MIDI outputs that have been enabled in the main configuration.
+     */
+    public String[] getMidiOutOptions(int index) {
+        return this.midiOutDevices[index];
+    }
+
+    /**
+     * The Receiver object for the MIDI device named midiDeviceName. 
+     * 
+     * @param midiDeviceName The name of the MIDI device to get the Receiver for
+     * @return The MIDI receiver
+     */
+    public Receiver getMidiReceiver(String midiDeviceName) {
+        return MidiDeviceFactory.getMIDIReceiverByName(midiDeviceName);
+    }
+
 
 	
 }

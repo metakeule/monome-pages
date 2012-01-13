@@ -30,15 +30,29 @@ class ArcControlPage extends GroovyAPI {
     int loopLengthTurn = 0
     int loopLengthSens = 40
     def loopLength = []
+    def cc1 = []
+    def cc2 = []
+    int[][] cc1Val = new int[768][16]
+    int[][] cc2Val = new int[768][16]
+    int cc1Rec = 0
+    int cc2Rec = 0
+    int cc1RecPos = 0
+    int cc2RecPos = 0
+    int cc1Num = 30
+    int cc2Num = 31
 
     int cmd1Down = 0
     int cmd2Down = 0
+
+    int tickNum = 0
 
     void init() {
         log("ArcControlPage starting up")
         for (int i = 0; i < 16; i++) {
             loopLength[i] = 192
             pattLengths[i] = 192
+            cc1[i] = 0
+            cc2[i] = 0
         }
     }
 
@@ -220,9 +234,27 @@ class ArcControlPage extends GroovyAPI {
     }
     
     void midiLoopPageEnc1(MonomeConfiguration monome, int delta) {        
+        int newCC = cc1[activeLooper] + delta
+        if (newCC > 127) newCC = 127
+        if (newCC < 0) newCC = 0
+        if (newCC != cc1[activeLooper]) {
+            cc1[activeLooper] = newCC
+            int chan = (activeLooper / 2) + 2
+            ccOut(cc1Num, cc1[activeLooper], chan)
+            drawMidiLoopPageEnc1(monome)
+        }
     }
     
     void midiLoopPageEnc2(MonomeConfiguration monome, int delta) {
+        int newCC = cc2[activeLooper] + delta
+        if (newCC > 127) newCC = 127
+        if (newCC < 0) newCC = 0
+        if (newCC != cc2[activeLooper]) {
+            cc2[activeLooper] = newCC
+            int chan = (activeLooper / 2) + 2
+            ccOut(cc2Num, cc2[activeLooper], chan)
+            drawMidiLoopPageEnc2(monome)
+        }
     }
 
     void handlePageChangeDelta(int delta) {
@@ -258,18 +290,33 @@ class ArcControlPage extends GroovyAPI {
     }
 
     void key(int enc, int key) {
+        MonomeConfiguration monome = getMyMonome()
         if (enc == 2) {
             cmd2Down = key
         }
         if (enc == 1) {
-            MonomeConfiguration monome = getMyMonome()
             if (monome.curPage == 0) {
                 if (key == 0) {
                     resetPlayhead()
                     sendCommandToPage(new Command("resetPlayhead", null))
                 }
+            } 
+            if (monome.curPage == 2) {
+                if (key == 1) {
+                    cc1Rec = 1
+                    cc1RecPos = loopLength[activeLooper]
+                    log("rec cc1")
+                }
             }
             cmd1Down = key
+        }
+        if (enc == 2) {
+            if (monome.curPage == 2) {
+                if (key == 1) {
+                    cc2Rec = 1
+                    cc2RecPos = loopLength[activeLooper]
+                }
+            }
         }
         redrawDevice()
     }
@@ -392,10 +439,35 @@ class ArcControlPage extends GroovyAPI {
     }
     
     void drawMidiLoopPageEnc1(MonomeConfiguration monome) {
-        all(1, 0)
+        int endLed = cc1Val[tickNum % loopLength[activeLooper]][activeLooper] / 2
+        if (cc1Rec == 1) {
+            endLed = cc1[activeLooper] / 2
+        }
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
+            }
+        }
+        map(1, levels)
     }
+
     void drawMidiLoopPageEnc2(MonomeConfiguration monome) {
-        all(2, 0)
+        int endLed = cc2Val[tickNum % loopLength[activeLooper]][activeLooper] / 2
+        if (cc2Rec == 1) {
+            endLed = cc2[activeLooper] / 2
+        }
+        Integer[] levels = new Integer[64]
+        for (int i = 0; i < 64; i++) {
+            if (i <= endLed) {
+                levels[i] = 15
+            } else {
+                levels[i] = 0
+            }
+        }
+        map(2, levels)
     }
 
     void drawPageEnc() {
@@ -420,10 +492,34 @@ class ArcControlPage extends GroovyAPI {
     }
 
     void clock() {
+        if (tickNum >= 768) tickNum = 0
         MonomeConfiguration monome = getMyMonome()
         if (monome.curPage == 0) {
             drawLivePageEnc1(monome)
         }
+        if (cc1Rec == 1) {
+            cc1Val[tickNum % loopLength[activeLooper]][activeLooper] = cc1[activeLooper]
+            cc1RecPos--
+            if (cc1RecPos == 0) {
+                cc1Rec = 0
+            }
+        }
+        if (cc2Rec == 1) {
+            cc2Val[tickNum % loopLength[activeLooper]][activeLooper] = cc2[activeLooper]
+            cc2RecPos--
+            if (cc2RecPos == 0) {
+                cc2Rec = 0
+            }
+        }
+        if (monome.curPage == 2) {
+            if (cc1Rec == 0) {
+                drawMidiLoopPageEnc1(monome)
+            }
+            if (cc2Rec == 0) {
+                drawMidiLoopPageEnc2(monome)
+            }
+        }
+        tickNum++
     }
 
     void clockReset() {
@@ -436,6 +532,8 @@ class ArcControlPage extends GroovyAPI {
             MonomeConfiguration monome = getMyMonome()
             if (monome.curPage == 2) {
                 drawMidiLoopPageEnc0(monome)
+                drawMidiLoopPageEnc1(monome)
+                drawMidiLoopPageEnc2(monome)
             }
         }
         if (cmd.getCmd().equalsIgnoreCase("activePattern")) {

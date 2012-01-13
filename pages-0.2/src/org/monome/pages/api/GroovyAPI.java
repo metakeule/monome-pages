@@ -147,7 +147,10 @@ public class GroovyAPI implements GroovyPageInterface {
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
-        monome.sendMidi(msg, pageIndex);
+		if (monome != null)
+		    monome.sendMidi(msg, pageIndex);
+        if (arc != null)
+            arc.sendMidi(msg, pageIndex);
     }
 
     public void ccOut(int num, int val, int chan) {
@@ -157,7 +160,10 @@ public class GroovyAPI implements GroovyPageInterface {
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
-        monome.sendMidi(msg, pageIndex);
+		if (monome != null)
+		    monome.sendMidi(msg, pageIndex);
+		if (arc != null)
+            arc.sendMidi(msg, pageIndex);
     }
     
     public void programChange(int num, int val, int chan) {
@@ -167,7 +173,10 @@ public class GroovyAPI implements GroovyPageInterface {
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
-        monome.sendMidi(msg, pageIndex);
+        if (monome != null)
+            monome.sendMidi(msg, pageIndex);
+        if (arc != null)
+            arc.sendMidi(msg, pageIndex);
     }
 
     public void clockOut() {
@@ -177,7 +186,10 @@ public class GroovyAPI implements GroovyPageInterface {
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
-        monome.sendMidi(msg, pageIndex);
+        if (monome != null)
+            monome.sendMidi(msg, pageIndex);
+        if (arc != null)
+            arc.sendMidi(msg, pageIndex);
     }
 
     public void clockResetOut() {
@@ -187,7 +199,10 @@ public class GroovyAPI implements GroovyPageInterface {
 		} catch (InvalidMidiDataException e) {
 			e.printStackTrace();
 		}
-        monome.sendMidi(msg, pageIndex);
+        if (monome != null)
+            monome.sendMidi(msg, pageIndex);
+        if (arc != null)
+            arc.sendMidi(msg, pageIndex);
     }
 
 	public void init() {

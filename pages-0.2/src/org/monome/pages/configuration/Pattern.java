@@ -3,15 +3,19 @@ package org.monome.pages.configuration;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.monome.pages.pages.Page;
+
 public class Pattern implements Serializable {
     static final long serialVersionUID = 42L;
 	
 	ArrayList<Press> presses = new ArrayList<Press>();
 	ArrayList<Press> queuedPresses = new ArrayList<Press>();
 	int patternNum;
+	PatternBank bank;
 	
-	public Pattern(int patternNum) {
+	public Pattern(int patternNum, PatternBank bank) {
 		this.patternNum = patternNum;
+		this.bank = bank;
 	}
 
 	public void recordPress(int position, int x, int y, int value, int pageNum) {
@@ -34,7 +38,8 @@ public class Pattern implements Serializable {
 			Press press = queuedPresses.get(i);
 			if (press.getPosition() < position && press.getPosition() != 0) {
 				presses.add(press);
-			} else if (press.getPosition() == 0 && position < 96) {
+			} else if (press.getPosition() == 0) {
+			    press.setPosition(bank.getPatternLength() * 96);
 				presses.add(press);
 			} else {
 				tmpQueuedPresses.add(press);
@@ -47,6 +52,16 @@ public class Pattern implements Serializable {
 
 	public void clearPattern() {
 		this.presses = new ArrayList<Press>();
+		for (int i = 0; i < MonomeConfigurationFactory.getNumMonomeConfigurations(); i++) {
+		    MonomeConfiguration monome = MonomeConfigurationFactory.getMonomeConfiguration(i);
+		    for (int j = 0; j < monome.pressesInPlayback.size(); j++) {
+		        Press press = monome.pressesInPlayback.get(j);
+	            Page page = monome.pages.get(monome.curPage);
+	            int[] iPress = press.getPress();
+	            page.handleRecordedPress(iPress[0], iPress[1], iPress[2], press.getPatternNum());
+		    }
+	        monome.pressesInPlayback = new ArrayList<Press>();
+		}
 	}
 
 }

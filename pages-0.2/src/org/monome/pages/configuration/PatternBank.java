@@ -27,7 +27,7 @@ public class PatternBank implements Serializable {
 		this.numPatterns = numPatterns;
 		this.page = page;
 		for (int i=0; i < numPatterns; i++) {
-			patterns.add(i, new Pattern(i));
+			patterns.add(i, new Pattern(i, this));
 		}
 		this.patternState = new int[numPatterns];
 		this.patternPosition = new int[numPatterns];
@@ -78,7 +78,7 @@ public class PatternBank implements Serializable {
 	    }
 		if (this.patternState[curPattern] == PATTERN_STATE_TRIGGERED) {
 			Pattern pattern = this.patterns.get(curPattern);
-			pattern.recordPress(this.recordPosition[curPattern], x, y, value, pageNum);
+            pattern.recordPress(this.recordPosition[curPattern], x, y, value, pageNum);
 		}
 	}
 	
@@ -100,11 +100,9 @@ public class PatternBank implements Serializable {
 	
 	public void handleTick() {
 		for (int i=0; i < this.numPatterns; i++) {
-			this.patternPosition[i]++;
-			this.origPatternPosition[i]++;
-			if ((this.patternPosition[i] % quantify) == (this.quantify / 2)) {
-				this.recordPosition[i] += quantify;
-			}
+            if ((this.patternPosition[i] % quantify) == (this.quantify / 2)) {
+                this.recordPosition[i] += quantify;
+            }
 			if (this.patternPosition[i] >= this.patternLengths[i]) {
 				this.patternPosition[i] = this.patternPosition[i] % this.patternLengths[i];
 			}
@@ -114,6 +112,8 @@ public class PatternBank implements Serializable {
 			if (this.recordPosition[i] >= this.patternLengths[i]) {
 				this.recordPosition[i] = this.recordPosition[i] % this.patternLengths[i];
 			}
+            this.patternPosition[i]++;
+            this.origPatternPosition[i]++;
 		}
 	}
 	
@@ -131,9 +131,11 @@ public class PatternBank implements Serializable {
 	
 	public void setPatternLength(int bars) {
 		for (int i=0; i < this.numPatterns; i++) {
-			this.patternPosition[i] = 0;
-			this.recordPosition[i] = 0;
 			this.patternLengths[i] = 96 * bars;
+			if (this.patternPosition[i] >= 96 * bars) {
+			    this.patternPosition[i] = this.patternPosition[i] % (96 * bars);
+			    this.recordPosition[i] = this.recordPosition[i] % (96 * bars);
+			}
 		}
 	}
 	
@@ -145,6 +147,7 @@ public class PatternBank implements Serializable {
 		for (int i=0; i < this.numPatterns; i++) {
 			this.patternPosition[i] = 0;
 			this.recordPosition[i] = 0;
+			this.origPatternPosition[i] = 0;
 		}
 	}
 	
