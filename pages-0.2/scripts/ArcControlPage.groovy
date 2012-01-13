@@ -36,6 +36,8 @@ class ArcControlPage extends GroovyAPI {
     int[][] cc2Val = new int[768][16]
     int cc1Rec = 0
     int cc2Rec = 0
+    def cc1LastVal = []
+    def cc2LastVal = []
     int cc1RecPos = 0
     int cc2RecPos = 0
     int cc1Num = 30
@@ -53,6 +55,8 @@ class ArcControlPage extends GroovyAPI {
             pattLengths[i] = 192
             cc1[i] = 0
             cc2[i] = 0
+            cc1LastVal[i] = 0
+            cc2LastVal[i] = 0
         }
     }
 
@@ -305,7 +309,6 @@ class ArcControlPage extends GroovyAPI {
                 if (key == 1) {
                     cc1Rec = 1
                     cc1RecPos = loopLength[activeLooper]
-                    log("rec cc1")
                 }
             }
             cmd1Down = key
@@ -497,6 +500,22 @@ class ArcControlPage extends GroovyAPI {
         if (monome.curPage == 0) {
             drawLivePageEnc1(monome)
         }
+        for (int looper = 0; looper < 16; looper++) {
+            if (cc1LastVal[looper] != cc1Val[tickNum % loopLength[looper]][looper]) {
+                if (!(cc1Rec == 1 && activeLooper == looper)) {
+                    int chan = (looper / 2) + 2
+                    ccOut(cc1Num, cc1Val[tickNum % loopLength[looper]][looper], chan)
+                    cc1LastVal[looper] = cc1Val[tickNum % loopLength[looper]][looper]
+                }
+            }
+            if (cc2LastVal[looper] != cc2Val[tickNum % loopLength[looper]][looper]) {
+                if (!(cc2Rec == 1 && activeLooper == looper)) {
+                    int chan = (looper / 2) + 2
+                    ccOut(cc2Num, cc2Val[tickNum % loopLength[looper]][looper], chan)
+                    cc2LastVal[looper] = cc2Val[tickNum % loopLength[looper]][looper]
+                }
+            }
+        }
         if (cc1Rec == 1) {
             cc1Val[tickNum % loopLength[activeLooper]][activeLooper] = cc1[activeLooper]
             cc1RecPos--
@@ -537,11 +556,17 @@ class ArcControlPage extends GroovyAPI {
             }
         }
         if (cmd.getCmd().equalsIgnoreCase("activePattern")) {
-            log("got msg")
             activePattern = (Integer) cmd.getParam()
             MonomeConfiguration monome = getMyMonome()
             if (monome.curPage == 0) {
                 drawLivePageEnc0(monome)
+            }
+        }
+        if (cmd.getCmd().equalsIgnoreCase("stopCC")) {
+            int x = (Integer) cmd.getParam()
+            for (int i = 0; i < 768; i++) {
+                cc1Val[i][x] = 0
+                cc2Val[i][x] = 0
             }
         }
     }
