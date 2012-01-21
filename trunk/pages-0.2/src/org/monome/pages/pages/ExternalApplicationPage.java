@@ -459,6 +459,8 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 					return;
 				}
 			}
+			int_args[0] = int_args[0] % monome.sizeX;
+			int_args[1] = int_args[1] % monome.sizeY;
 			this.monome.led(int_args[0], int_args[1], int_args[2], this.index);
 		}
 		

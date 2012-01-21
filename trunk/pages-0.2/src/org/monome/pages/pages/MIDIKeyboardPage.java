@@ -594,7 +594,6 @@ public class MIDIKeyboardPage implements Page, Serializable {
 							Receiver recv = monome.getMidiReceiver(midiOutOptions[j]);
 							if (recv != null) {
 								recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
-								System.out.println("timestamp is: " + MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 							}
 						}
 					} catch (InvalidMidiDataException e) {
@@ -628,7 +627,6 @@ public class MIDIKeyboardPage implements Page, Serializable {
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 				if (recv != null) {
 					recv.send(note_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
-                    System.out.println("timestamp is: " + MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 				}
 			}
 			
@@ -657,7 +655,6 @@ public class MIDIKeyboardPage implements Page, Serializable {
 				Receiver recv = monome.getMidiReceiver(midiOutOptions[i]);
 				if (recv != null) {
 					recv.send(sustain_out, MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
-                    System.out.println("timestamp is: " + MidiDeviceFactory.getDevice(recv).getMicrosecondPosition());
 				}
 			}
 		} catch (InvalidMidiDataException e) {
