@@ -28,7 +28,6 @@ public class SerialOSCArc implements SerialOSCDevice, OSCListener {
             OSCMessage prefixMsg = new OSCMessage();
             prefixMsg.setAddress("/sys/prefix");
             prefixMsg.addArgument("/" + serial);
-            System.out.println("/sys/prefix /" + serial);
             try {
                 OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(hostName, port);
                 outPort.send(prefixMsg);
@@ -44,7 +43,6 @@ public class SerialOSCArc implements SerialOSCDevice, OSCListener {
         OSCMessage prefixMsg = new OSCMessage();
         prefixMsg.setAddress("/sys/prefix");
         prefixMsg.addArgument("/" + serial);
-        System.out.println("/sys/prefix /" + serial);
         try {
             OSCPortOut outPort = OSCPortFactory.getInstance().getOSCPortOut(hostName, port);
             outPort.send(prefixMsg);

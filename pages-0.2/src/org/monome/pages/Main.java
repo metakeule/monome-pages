@@ -66,7 +66,7 @@ public class Main {
         if (args.length > 0) {
             file = new File(args[0]);
         }
-        logger.error("Pages 0.2.2a29 starting up\n");
+        logger.error("Pages 0.2.2a30 starting up\n");
         main = new Main(file);
     }
     
@@ -106,7 +106,6 @@ public class Main {
         for (int i = 0; i < svcInfos.length; i++) {
             String serial = "unknown";
             String fullName = svcInfos[i].getName();
-            System.out.println("fullName is " + fullName);
             if (fullName.indexOf("(") != -1) {
                 serial = fullName.substring(fullName.indexOf("(")+1, fullName.indexOf(")"));
             }
