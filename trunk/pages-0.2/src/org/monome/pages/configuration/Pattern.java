@@ -20,28 +20,48 @@ public class Pattern implements Serializable {
 	}
 
 	public void recordPress(int position, int x, int y, int value, int pageNum) {
-	    this.queuedPresses.add(new Press(position, x, y, value, patternNum, pageNum));
+		if (value == 0) {
+			int newPosition = position;
+			for (int i = 0; i < presses.size(); i++) {
+				Press rPress = presses.get(i);
+				int[] rp = rPress.getPress();
+				if (rp[0] == x && rp[1] == y && rp[2] == 1) {
+					int posOffset = rPress.getPosition() - rPress.getOrigPosition();
+					newPosition += posOffset;
+					if (newPosition >= bank.patternLengths[patternNum]) {
+						newPosition = newPosition % bank.patternLengths[patternNum];
+					}
+					if (newPosition < 0) {
+						newPosition += bank.patternLengths[patternNum];
+					}
+				}
+			}
+		    this.presses.add(new Press(newPosition, position, x, y, value, patternNum, pageNum));
+		} else {
+			if (bank.getQuantization() > 1) {
+				for (int quantPos = 0; quantPos <= bank.patternLengths[patternNum]; quantPos += bank.getQuantization()) {
+					if (Math.abs(position - quantPos) <= bank.getQuantization() / 2) {
+						lastPosition = quantPos % bank.patternLengths[patternNum];
+					}
+				}
+			}
+		    this.presses.add(new Press(lastPosition, position, x, y, value, patternNum, pageNum));
+		}
 	}
 
 	public ArrayList<Press> getRecordedPress(int position) {
-	    if (lastPosition == position) return null;
-	    lastPosition = position;
 		ArrayList<Press> returnPresses = null;
 		if (this.presses.size() > 0) {
 			returnPresses = new ArrayList<Press>();
 			for (int i=0; i < this.presses.size(); i++) {
+				presses.get(i).seenTicks++;
+				if (presses.get(i).seenTicks < bank.getQuantization()) continue;
 				if (this.presses.get(i).getPosition() % bank.patternLengths[patternNum] == position) {
 					returnPresses.add(this.presses.get(i));
 				}
 			}
 		}
-		
-		ArrayList<Press> tmpQueuedPresses = new ArrayList<Press>();
-		for (int i=0; i < this.queuedPresses.size(); i++) {
-			Press press = queuedPresses.get(i);
-			presses.add(press);
-		}
-		this.queuedPresses = tmpQueuedPresses;
+
 		return returnPresses;
 	}
 

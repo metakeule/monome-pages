@@ -41,15 +41,17 @@ class LivePage extends GroovyAPI {
         if (val == 1) {
             PatternBank patterns = monome().patternBanks.get(0)
             int pos = patterns.patternPosition[pattNum]
-            log("play back at pos " + pos)
             noteOut(note, velocities[pos][note], channel, val)
-            log("send note out velocity="+velocities[pos][note])
         } else {
+            PatternBank patterns = monome().patternBanks.get(0)
+            int pos = patterns.patternPosition[pattNum]
             noteOut(note, 0, channel, val)
         }
     }
 
     void press(int x, int y, int val) {
+        PatternBank pagePatterns = monome().patternBanks.get(0)
+        int pos = pagePatterns.patterns.get(pagePatterns.curPattern).lastPosition
         if (val == 0 && y == sizeY() - 1) return
         if (y == sizeY() - 1) {
             if (x == sizeX() - 1) {
@@ -71,8 +73,6 @@ class LivePage extends GroovyAPI {
                 channel = 1
                 note = ((y * sizeY()) + x + 12) % 128
             }
-            PatternBank patterns = monome().patternBanks.get(0)
-            int pos = patterns.patternPosition[patterns.curPattern]
             if (val == 1) {
                 velocities[pos][note] = velocity
                 originalVelocities[pos][note] = velocity
