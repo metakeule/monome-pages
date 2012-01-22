@@ -101,10 +101,10 @@ public class PatternBank implements Serializable {
             this.patternPosition[i]++;
             this.origPatternPosition[i]++;
             if (this.origPatternPosition[i] >= this.patternLengths[i]) {
-                this.origPatternPosition[i] = 0;
+                this.origPatternPosition[i] = this.origPatternPosition[i] % this.patternLengths[i];
             }
 			if (this.patternPosition[i] >= this.patternLengths[i]) {
-				this.patternPosition[i] = 0;
+				this.patternPosition[i] = this.patternPosition[i] % this.patternLengths[i];
 			}
 		}
 	}
@@ -124,9 +124,12 @@ public class PatternBank implements Serializable {
 	public void setPatternLength(int bars) {
 		for (int i=0; i < this.numPatterns; i++) {
 			this.patternLengths[i] = 96 * bars;
-			if (this.patternPosition[i] >= 96 * bars) {
-			    this.patternPosition[i] = this.patternPosition[i] % (96 * bars);
+			if (this.patternPosition[i] >= this.patternLengths[i]) {
+			    this.patternPosition[i] = this.patternPosition[i] % this.patternLengths[i];
 			}
+            if (this.origPatternPosition[i] >= this.patternLengths[i]) {
+                this.origPatternPosition[i] = this.origPatternPosition[i] % this.patternLengths[i];
+            }
 		}
 	}
 	
