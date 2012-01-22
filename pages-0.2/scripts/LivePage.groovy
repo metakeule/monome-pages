@@ -32,12 +32,8 @@ class LivePage extends GroovyAPI {
     }
 
     void recordedPress(int x, int y, int val, int pattNum) {
-        int note = ((y * sizeY()) + x + (song * 24)) % 128
+        int note = ((y * sizeX()) + x + (song * 24)) % 128
         int channel = 0
-        if (y > 2) {
-            channel = 1
-            note += 12
-        }
         if (val == 1) {
             PatternBank patterns = monome().patternBanks.get(0)
             int pos = patterns.patternPosition[pattNum]
@@ -67,12 +63,8 @@ class LivePage extends GroovyAPI {
             abletonOut().setTempo(bpms[song])
             led(song, y, 1)
         } else {
-            int note = ((y * sizeY()) + x + (song * 24)) % 128
+            int note = ((y * sizeX()) + x + (song * 24)) % 128
             int channel = 0
-            if (y > 2) {
-                channel = 1
-                note = ((y * sizeY()) + x + 12) % 128
-            }
             if (val == 1) {
                 velocities[pos][note] = velocity
                 originalVelocities[pos][note] = velocity
@@ -100,11 +92,9 @@ class LivePage extends GroovyAPI {
     }
 
     void note(int num, int velo, int chan, int on) {
-        if (chan == 0) num -= song * 24
-        if (chan == 1) num -= 12
+        num -= song * 24
         int x = (num) % sizeX()
-        int y = (num) / sizeY()
-        if (y > 2 && chan == 0) return
+        int y = (num) / sizeX()
         if (y == sizeY() - 1 || y == sizeY() - 2) {
             return
         }

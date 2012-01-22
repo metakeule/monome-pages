@@ -44,6 +44,8 @@ public class Pattern implements Serializable {
 						lastPosition = quantPos % bank.patternLengths[patternNum];
 					}
 				}
+			} else {
+				lastPosition = position;
 			}
 		    this.presses.add(new Press(lastPosition, position, x, y, value, patternNum, pageNum));
 		}
@@ -55,7 +57,7 @@ public class Pattern implements Serializable {
 			returnPresses = new ArrayList<Press>();
 			for (int i=0; i < this.presses.size(); i++) {
 				presses.get(i).seenTicks++;
-				if (presses.get(i).seenTicks < bank.getQuantization()) continue;
+				if (presses.get(i).seenTicks <= bank.getQuantization()) continue;
 				if (this.presses.get(i).getPosition() % bank.patternLengths[patternNum] == position) {
 					returnPresses.add(this.presses.get(i));
 				}
@@ -73,7 +75,7 @@ public class Pattern implements Serializable {
 		        Press press = monome.pressesInPlayback.get(j);
 	            Page page = monome.pages.get(monome.curPage);
 	            int[] iPress = press.getPress();
-	            page.handleRecordedPress(iPress[0], iPress[1], iPress[2], press.getPatternNum());
+            	page.handleRecordedPress(iPress[0], iPress[1], 0, press.getPatternNum());
 		    }
 	        monome.pressesInPlayback = new ArrayList<Press>();
 		}
