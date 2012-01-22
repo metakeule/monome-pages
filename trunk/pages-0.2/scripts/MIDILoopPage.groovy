@@ -201,6 +201,7 @@ class MIDILoopPage extends GroovyAPI {
 
     void sendCommandToArc(Command command) {
         ArcConfiguration arc = getMyArc()
+        if (arc == null) return
         ArcPage page = arc.pages.get(arc.curPage)
         if (page instanceof GroovyPage) {
             ((GroovyPage) page).theApp.sendCommand(command)

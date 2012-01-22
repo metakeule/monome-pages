@@ -12,6 +12,8 @@ public class PatternBank implements Serializable {
 	public int[] patternState;
 	public int[] patternPosition;
 	public int[] origPatternPosition;
+    public int[] recordPosition;
+    public int[] origRecordPosition;
 	public static final int PATTERN_STATE_EMPTY = 0;
 	public static final int PATTERN_STATE_RECORDED = 1;
 	public static final int PATTERN_STATE_TRIGGERED = 2;
@@ -19,9 +21,9 @@ public class PatternBank implements Serializable {
 	public int[] patternLengths;
 	private int quantify = 6;
 	public int curPattern = 0;
-	public int[] recordPosition;
 	private ArrayList<Press> ignore = new ArrayList<Press>();
 	Page page;
+	int tickNum = 0;
 	
 	public PatternBank(int numPatterns, Page page) {
 		this.numPatterns = numPatterns;
@@ -30,9 +32,10 @@ public class PatternBank implements Serializable {
 			patterns.add(i, new Pattern(i, this));
 		}
 		this.patternState = new int[numPatterns];
-		this.patternPosition = new int[numPatterns];
 		this.origPatternPosition = new int[numPatterns];
-		this.recordPosition = new int[numPatterns];
+        this.origRecordPosition = new int[numPatterns];
+		this.patternPosition = new int[numPatterns];
+        this.recordPosition = new int[numPatterns];
 		this.patternLengths = new int[numPatterns];
 		for (int i = 0; i < numPatterns; i++) {
 		    patternLengths[i] = 96*4;
@@ -100,21 +103,25 @@ public class PatternBank implements Serializable {
 	
 	public void handleTick() {
 		for (int i=0; i < this.numPatterns; i++) {
-            if ((this.patternPosition[i] % quantify) == (this.quantify / 2)) {
+            if ((tickNum % quantify) == 0) {
+                this.patternPosition[i] += quantify;
+                this.origPatternPosition[i] += quantify;
+            }
+            if ((tickNum % quantify) == (this.quantify / 2)) {
                 this.recordPosition[i] += quantify;
+                this.origRecordPosition[i] += quantify;
+            }
+            if (this.origPatternPosition[i] >= this.patternLengths[i]) {
+                this.origPatternPosition[i] = 0;
+                this.origRecordPosition[i] = 0;
             }
 			if (this.patternPosition[i] >= this.patternLengths[i]) {
-				this.patternPosition[i] = this.patternPosition[i] % this.patternLengths[i];
+				this.patternPosition[i] = 0;
+				this.recordPosition[i] = 0;
 			}
-            if (this.origPatternPosition[i] >= this.patternLengths[i]) {
-                this.origPatternPosition[i] = this.origPatternPosition[i] % this.patternLengths[i];
-            }
-			if (this.recordPosition[i] >= this.patternLengths[i]) {
-				this.recordPosition[i] = this.recordPosition[i] % this.patternLengths[i];
-			}
-            this.patternPosition[i]++;
-            this.origPatternPosition[i]++;
 		}
+		tickNum++;
+		if (tickNum == 3072) tickNum = 0;
 	}
 	
 	public int getPatternState(int patternNum) {
@@ -134,7 +141,7 @@ public class PatternBank implements Serializable {
 			this.patternLengths[i] = 96 * bars;
 			if (this.patternPosition[i] >= 96 * bars) {
 			    this.patternPosition[i] = this.patternPosition[i] % (96 * bars);
-			    this.recordPosition[i] = this.recordPosition[i] % (96 * bars);
+                this.recordPosition[i] = this.recordPosition[i] % (96 * bars);
 			}
 		}
 	}
@@ -148,12 +155,14 @@ public class PatternBank implements Serializable {
 			this.patternPosition[i] = 0;
 			this.recordPosition[i] = 0;
 			this.origPatternPosition[i] = 0;
+			this.origRecordPosition[i] = 0;
 		}
+		tickNum = 0;
 	}
 	
 	public void resetPlayhead(int patternNum) {
-	    this.recordPosition[patternNum] = this.origPatternPosition[patternNum];
 	    this.patternPosition[patternNum] = this.origPatternPosition[patternNum];
+        this.recordPosition[patternNum] = this.origRecordPosition[patternNum];
 	}
 
 }
