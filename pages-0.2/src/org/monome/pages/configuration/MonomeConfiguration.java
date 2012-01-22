@@ -406,8 +406,8 @@ public class MonomeConfiguration extends OSCDeviceConfiguration<Page> {
 							this.pages.get(i).handleRecordedPress(press[0], press[1], press[2], presses.get(k).getPatternNum());
 						}
 					}
+                    this.patternBanks.get(i).handleTick();
 					this.pages.get(i).handleTick();
-					this.patternBanks.get(i).handleTick();
 				}
 			}
 		}

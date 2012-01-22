@@ -12,6 +12,7 @@ public class Pattern implements Serializable {
 	ArrayList<Press> queuedPresses = new ArrayList<Press>();
 	int patternNum;
 	PatternBank bank;
+	int lastPosition = -1;
 	
 	public Pattern(int patternNum, PatternBank bank) {
 		this.patternNum = patternNum;
@@ -19,15 +20,17 @@ public class Pattern implements Serializable {
 	}
 
 	public void recordPress(int position, int x, int y, int value, int pageNum) {
-		this.queuedPresses.add(new Press(position, x, y, value, patternNum, pageNum));
+	    this.queuedPresses.add(new Press(position, x, y, value, patternNum, pageNum));
 	}
 
 	public ArrayList<Press> getRecordedPress(int position) {
+	    if (lastPosition == position) return null;
+	    lastPosition = position;
 		ArrayList<Press> returnPresses = null;
 		if (this.presses.size() > 0) {
 			returnPresses = new ArrayList<Press>();
 			for (int i=0; i < this.presses.size(); i++) {
-				if (this.presses.get(i).getPosition() == position) {
+				if (this.presses.get(i).getPosition() % bank.patternLengths[patternNum] == position) {
 					returnPresses.add(this.presses.get(i));
 				}
 			}
@@ -36,17 +39,9 @@ public class Pattern implements Serializable {
 		ArrayList<Press> tmpQueuedPresses = new ArrayList<Press>();
 		for (int i=0; i < this.queuedPresses.size(); i++) {
 			Press press = queuedPresses.get(i);
-			if (press.getPosition() < position && press.getPosition() != 0) {
-				presses.add(press);
-			} else if (press.getPosition() == 0) {
-			    press.setPosition(bank.getPatternLength() * 96);
-				presses.add(press);
-			} else {
-				tmpQueuedPresses.add(press);
-			}
+			presses.add(press);
 		}
 		this.queuedPresses = tmpQueuedPresses;
-		
 		return returnPresses;
 	}
 

@@ -145,7 +145,6 @@ class ArcControlPage extends GroovyAPI {
         args.add(patternNum)
         sendCommandToPage(new Command("offsetPattern", args))
         patterns.patternPosition[patternNum] = newPos
-        patterns.recordPosition[patternNum] = newPos
     }
 
     void resetPlayhead() {

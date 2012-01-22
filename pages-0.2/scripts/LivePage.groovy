@@ -41,7 +41,9 @@ class LivePage extends GroovyAPI {
         if (val == 1) {
             PatternBank patterns = monome().patternBanks.get(0)
             int pos = patterns.patternPosition[pattNum]
+            log("play back at pos " + pos)
             noteOut(note, velocities[pos][note], channel, val)
+            log("send note out velocity="+velocities[pos][note])
         } else {
             noteOut(note, 0, channel, val)
         }
@@ -166,6 +168,7 @@ class LivePage extends GroovyAPI {
 
     void sendCommandToArc(Command command) {
         ArcConfiguration arc = getMyArc()
+        if (arc == null) return
         ArcPage page = arc.pages.get(arc.curPage)
         if (page instanceof GroovyPage) {
             ((GroovyPage) page).theApp.sendCommand(command)
