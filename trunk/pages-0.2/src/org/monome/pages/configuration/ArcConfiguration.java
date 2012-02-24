@@ -445,6 +445,8 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
 				xml += "      <pageIndex>" + mpcr.getPageIndex() + "</pageIndex>\n";
 				xml += "      <note>" + mpcr.getNote() + "</note>\n";
 				xml += "      <channel>" + mpcr.getChannel() + "</channel>\n";
+				xml += "      <cc>" + mpcr.getCC() + "</cc>\n";
+				xml += "      <ccVal>" + mpcr.getCCVal() + "</ccVal>\n";
 				xml += "    </MIDIPageChangeRule>\n";
 			}
 		}
@@ -531,7 +533,7 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
                         if (this.pageChangeMidiInDevices[j].compareTo(device.getDeviceInfo().getName()) == 0) {
                             for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
                                 MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
-                                if (mpcr.checkRule(note, channel) == true) {
+                                if (mpcr.checkNoteRule(note, channel) == true) {
                                     int switchToPageIndex = mpcr.getPageIndex();
                                     ArcPage page = this.pages.get(switchToPageIndex);
                                     this.switchPage(page, switchToPageIndex, true);
@@ -540,6 +542,26 @@ public class ArcConfiguration extends OSCDeviceConfiguration<ArcPage> {
                         }
                     }
                 }
+				if (msg.getCommand() == ShortMessage.CONTROL_CHANGE) {
+					int cc = msg.getData1();
+					int ccVal = msg.getData2();
+					int channel = msg.getChannel();
+					for (int j = 0; j < this.pageChangeMidiInDevices.length; j++) {
+						if (this.pageChangeMidiInDevices[j] == null) {
+							continue;
+						}
+						if (this.pageChangeMidiInDevices[j].compareTo(device.getDeviceInfo().getName()) == 0) {
+							for (int i = 0; i < this.midiPageChangeRules.size(); i++) {
+								MIDIPageChangeRule mpcr = this.midiPageChangeRules.get(i);
+								if (mpcr.checkCCRule(cc, ccVal, channel) == true) {
+									int switchToPageIndex = mpcr.getPageIndex();
+									ArcPage page = this.pages.get(switchToPageIndex);
+									this.switchPage(page, switchToPageIndex, true);
+								}
+							}
+						}
+					}
+				}
             }
         }
         for (int i = 0; i < this.numPages; i++) {

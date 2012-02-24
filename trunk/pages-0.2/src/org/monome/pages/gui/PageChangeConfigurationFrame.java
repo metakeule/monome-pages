@@ -40,6 +40,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private ArcConfiguration arc;
 	private int[] midiChannels = new int[255];
 	private int[] midiNotes = new int[255];
+	private int[] midiCCs = new int[255];
+	private int[] midiCCVals = new int[255];
 	private int[] pageChangeDelays = new int[255];
 	private String[] linkedDevices = new String[255];
 	private int[] linkedPages = new int[255];
@@ -48,6 +50,10 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField pageChangeDelayTF = null;
     private JComboBox linkedDeviceCB = null;
     private JComboBox linkedPageCB = null;
+	private JLabel midiCCLbl = null;
+	private JTextField midiCCTF = null;
+	private JLabel midiCCValLbl = null;
+	private JTextField midiCCValTF = null;
 
 	/**
 	 * This is the default constructor
@@ -80,6 +86,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
     		for (int i = 0; i < midiPageChangeRules.size(); i++) {
     			midiChannels[i] = midiPageChangeRules.get(i).getChannel();
     			midiNotes[i] = midiPageChangeRules.get(i).getNote();
+    			midiCCs[i] = midiPageChangeRules.get(i).getCC();
+    			midiCCVals[i] = midiPageChangeRules.get(i).getCCVal();
     			pageChangeDelays[i] = monome.pageChangeDelays[i];
     			linkedDevices[i] = midiPageChangeRules.get(i).getLinkedSerial();
     			linkedPages[i] = midiPageChangeRules.get(i).getLinkedPageIndex();
@@ -89,6 +97,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
             for (int i = 0; i < midiPageChangeRules.size(); i++) {
                 midiChannels[i] = midiPageChangeRules.get(i).getChannel();
                 midiNotes[i] = midiPageChangeRules.get(i).getNote();
+    			midiCCs[i] = midiPageChangeRules.get(i).getCC();
+    			midiCCVals[i] = midiPageChangeRules.get(i).getCCVal();
             }
         }
 	}
@@ -100,15 +110,21 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	 */
 	private void initialize() {
 		this.setContentPane(getJContentPane());
-		this.setSize(214, 326);
+		this.setSize(215, 355);
 		this.setTitle("Page Change Configuration");
 		this.setResizable(true);
 	}
 	
 	private JPanel getJContentPane() {
 		if (jContentPane == null) {
+			midiCCValLbl = new JLabel();
+			midiCCValLbl.setBounds(new Rectangle(15, 180, 116, 21));
+			midiCCValLbl.setText("MIDI CC Value");
+			midiCCLbl = new JLabel();
+			midiCCLbl.setBounds(new Rectangle(15, 155, 116, 21));
+			midiCCLbl.setText("MIDI CC #");
 			pageChangeTimerLBL = new JLabel();
-			pageChangeTimerLBL.setBounds(new Rectangle(15, 155, 101, 21));
+			pageChangeTimerLBL.setBounds(new Rectangle(15, 205, 116, 21));
 			pageChangeTimerLBL.setText("PC Button Delay");
 			jContentPane = new JPanel();
 			jContentPane.setLayout(null);
@@ -126,6 +142,10 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			jContentPane.add(getCancelBtn(), null);
 			jContentPane.add(pageChangeTimerLBL, null);
 			jContentPane.add(getPageChangeDelayTF(), null);
+			jContentPane.add(midiCCLbl, null);
+			jContentPane.add(getMidiCCTF(), null);
+			jContentPane.add(midiCCValLbl, null);
+			jContentPane.add(getMidiCCValTF(), null);
 			if (arc == null && monome != null) {
     			jContentPane.add(getLinkedDeviceCB(), null);
     			jContentPane.add(getLinkedPageCB(), null);
@@ -184,6 +204,10 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			midiNotes[pageIndex] = value;
 			value = Integer.parseInt(getPageChangeDelayTF().getText());
 			pageChangeDelays[pageIndex] = value;
+			value = Integer.parseInt(getMidiCCTF().getText());
+			midiCCs[pageIndex] = value;
+			value = Integer.parseInt(getMidiCCValTF().getText());
+			midiCCVals[pageIndex] = value;
 			String device = linkedDeviceCB.getSelectedItem().toString();
 			if (device.compareTo("-- Select Device --") != 0) {
 			    linkedDevices[pageIndex] = device;
@@ -205,6 +229,8 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 			getChannelTF().setText(""+(midiChannels[pageIndex] + 1));
 			getNoteTF().setText(""+midiNotes[pageIndex]);
 			getPageChangeDelayTF().setText("" + pageChangeDelays[pageIndex]);
+			getMidiCCTF().setText("" + midiCCs[pageIndex]);
+			getMidiCCValTF().setText("" + midiCCVals[pageIndex]);
 			if (linkedDevices[pageIndex] != null) {
     			int deviceIdx = 0;
     			for (int i = 0; i < getLinkedDeviceCB().getItemCount(); i++) {
@@ -230,7 +256,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (channelLBL == null) {
 			channelLBL = new JLabel();
 			channelLBL.setText("MIDI Channel");
-			channelLBL.setBounds(new Rectangle(15, 105, 101, 21));
+			channelLBL.setBounds(new Rectangle(15, 105, 116, 21));
 		}
 		return channelLBL;
 	}
@@ -243,7 +269,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getChannelTF() {
 		if (channelTF == null) {
 			channelTF = new JTextField();
-			channelTF.setBounds(new Rectangle(120, 105, 51, 21));
+			channelTF.setBounds(new Rectangle(130, 105, 51, 21));
 		}
 		return channelTF;
 	}
@@ -257,7 +283,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (noteLBL == null) {
 			noteLBL = new JLabel();
 			noteLBL.setText("MIDI Note #");
-			noteLBL.setBounds(new Rectangle(15, 130, 101, 21));
+			noteLBL.setBounds(new Rectangle(15, 130, 116, 21));
 		}
 		return noteLBL;
 	}
@@ -270,7 +296,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getNoteTF() {
 		if (noteTF == null) {
 			noteTF = new JTextField();
-			noteTF.setBounds(new Rectangle(120, 130, 51, 21));
+			noteTF.setBounds(new Rectangle(130, 130, 51, 21));
 		}
 		return noteTF;
 	}
@@ -283,7 +309,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JCheckBox getMonomeChangeCB() {
 		if (monomeChangeCB == null) {
 			monomeChangeCB = new JCheckBox();
-			monomeChangeCB.setBounds(new Rectangle(15, 180, 21, 21));
+			monomeChangeCB.setBounds(new Rectangle(15, 235, 21, 21));
 		}
 		return monomeChangeCB;
 	}
@@ -296,7 +322,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JCheckBox getMidiChangeCB() {
 		if (midiChangeCB == null) {
 			midiChangeCB = new JCheckBox();
-			midiChangeCB.setBounds(new Rectangle(15, 205, 21, 21));
+			midiChangeCB.setBounds(new Rectangle(15, 260, 21, 21));
 		}
 		return midiChangeCB;
 	}
@@ -310,7 +336,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (monomeChangeLBL == null) {
 			monomeChangeLBL = new JLabel();
 			monomeChangeLBL.setText("Page Change Button");
-			monomeChangeLBL.setBounds(new Rectangle(40, 180, 141, 21));
+			monomeChangeLBL.setBounds(new Rectangle(40, 235, 141, 21));
 		}
 		return monomeChangeLBL;
 	}
@@ -324,7 +350,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 		if (midiChangingLBL == null) {
 			midiChangingLBL = new JLabel();
 			midiChangingLBL.setText("MIDI Page Changing");
-			midiChangingLBL.setBounds(new Rectangle(40, 205, 141, 21));
+			midiChangingLBL.setBounds(new Rectangle(40, 260, 141, 21));
 		}
 		return midiChangingLBL;
 	}
@@ -337,7 +363,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getSaveBtn() {
 		if (saveBtn == null) {
 			saveBtn = new JButton();
-			saveBtn.setBounds(new Rectangle(20, 235, 76, 21));
+			saveBtn.setBounds(new Rectangle(20, 290, 76, 21));
 			saveBtn.setText("Save");
 			saveBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -347,7 +373,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
     					monome.usePageChangeButton = getMonomeChangeCB().isSelected();
     					ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
     					for (int i = 0; i < monome.pages.size(); i++) {
-    						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
+    						MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], midiCCs[i], midiCCVals[i], i);
     						midiPageChangeRules.add(mpcr);
     						monome.pageChangeDelays[i] = pageChangeDelays[i];
     						mpcr.setLinkedSerial(linkedDevices[i]);
@@ -359,7 +385,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
                         arc.usePageChangeButton = getMonomeChangeCB().isSelected();
                         ArrayList<MIDIPageChangeRule> midiPageChangeRules = new ArrayList<MIDIPageChangeRule>();
                         for (int i = 0; i < arc.pages.size(); i++) {
-                            MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], i);
+                            MIDIPageChangeRule mpcr = new MIDIPageChangeRule(midiNotes[i], midiChannels[i], midiCCs[i], midiCCVals[i], i);
                             midiPageChangeRules.add(mpcr);
                         }
                         arc.midiPageChangeRules = midiPageChangeRules;
@@ -379,7 +405,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JButton getCancelBtn() {
 		if (cancelBtn == null) {
 			cancelBtn = new JButton();
-			cancelBtn.setBounds(new Rectangle(105, 235, 76, 21));
+			cancelBtn.setBounds(new Rectangle(105, 290, 76, 21));
 			cancelBtn.setText("Cancel");
 			cancelBtn.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -402,7 +428,7 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
 	private JTextField getPageChangeDelayTF() {
 		if (pageChangeDelayTF == null) {
 			pageChangeDelayTF = new JTextField();
-			pageChangeDelayTF.setBounds(new Rectangle(120, 155, 51, 21));
+			pageChangeDelayTF.setBounds(new Rectangle(130, 205, 51, 21));
 		}
 		return pageChangeDelayTF;
 	}
@@ -457,4 +483,30 @@ public class PageChangeConfigurationFrame extends JInternalFrame {
         }
         return linkedPageCB;
     }
+
+	/**
+	 * This method initializes midiCCTF	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getMidiCCTF() {
+		if (midiCCTF == null) {
+			midiCCTF = new JTextField();
+			midiCCTF.setBounds(new Rectangle(130, 155, 51, 21));
+		}
+		return midiCCTF;
+	}
+
+	/**
+	 * This method initializes midiCCValTF	
+	 * 	
+	 * @return javax.swing.JTextField	
+	 */
+	private JTextField getMidiCCValTF() {
+		if (midiCCValTF == null) {
+			midiCCValTF = new JTextField();
+			midiCCValTF.setBounds(new Rectangle(130, 180, 51, 21));
+		}
+		return midiCCValTF;
+	}
 }  //  @jve:decl-index=0:visual-constraint="10,10"

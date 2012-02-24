@@ -7,22 +7,32 @@ public class MIDIPageChangeRule implements Serializable {
 	
 	private int note;
 	private int channel;
+	private int cc;
+	private int ccVal;
 	private int pageIndex;
 	private String linkedSerial;
 	private int linkedPageIndex;
 	
-	public MIDIPageChangeRule(int note, int channel, int pageIndex) {
+	public MIDIPageChangeRule(int note, int channel, int cc, int ccVal, int pageIndex) {
 		this.note = note;
 		this.channel = channel;
+		this.cc = cc;
+		this.ccVal = ccVal;
 		this.pageIndex = pageIndex;
 	}
 	
-	public boolean checkRule(int note, int channel) {
+	public boolean checkNoteRule(int note, int channel) {
 		if (this.note == note && this.channel == channel) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
+	}
+	
+	public boolean checkCCRule(int cc, int val, int channel) {
+		if (this.cc == cc && this.ccVal == val && (this.channel == channel || this.channel == -1)) {
+			return true;
+		}
+		return false;
 	}
 	
 	public int getNote() {
@@ -51,6 +61,14 @@ public class MIDIPageChangeRule implements Serializable {
 	
 	public void setLinkedPageIndex(int newPageIndex) {
 	    linkedPageIndex = newPageIndex; 
+	}
+
+	public int getCC() {
+		return cc;
+	}
+	
+	public int getCCVal() {
+		return ccVal;
 	}
 
 }

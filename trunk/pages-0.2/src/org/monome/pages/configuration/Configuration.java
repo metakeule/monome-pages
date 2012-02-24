@@ -1086,7 +1086,18 @@ public class Configuration implements Serializable {
 							el2 = (Element) nl2.item(0);
 							nl2 = el2.getChildNodes();
 							String channel = ((Node) nl2.item(0)).getNodeValue();
-							MIDIPageChangeRule mpcr = new MIDIPageChangeRule(Integer.valueOf(note).intValue(), Integer.valueOf(channel).intValue(), Integer.valueOf(pageIndex).intValue());
+							
+							nl2 = monomeElement2.getElementsByTagName("cc");
+							el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String cc = ((Node) nl2.item(0)).getNodeValue();
+							
+							nl2 = monomeElement2.getElementsByTagName("ccVal");
+							el2 = (Element) nl2.item(0);
+							nl2 = el2.getChildNodes();
+							String ccVal = ((Node) nl2.item(0)).getNodeValue();
+							
+							MIDIPageChangeRule mpcr = new MIDIPageChangeRule(Integer.valueOf(note).intValue(), Integer.valueOf(channel).intValue(), Integer.valueOf(cc).intValue(), Integer.valueOf(ccVal).intValue(), Integer.valueOf(pageIndex).intValue());
 							midiPageChangeRules.add(mpcr);
 							
                             nl2 = monomeElement2.getElementsByTagName("linkedSerial");
@@ -1327,7 +1338,28 @@ public class Configuration implements Serializable {
 							el2 = (Element) nl2.item(0);
 							nl2 = el2.getChildNodes();
 							String channel = ((Node) nl2.item(0)).getNodeValue();
-							MIDIPageChangeRule mpcr = new MIDIPageChangeRule(Integer.valueOf(note).intValue(), Integer.valueOf(channel).intValue(), Integer.valueOf(pageIndex).intValue());
+							
+							nl2 = monomeElement2.getElementsByTagName("cc");
+							String cc = "-1";
+							if (nl2 != null) {
+								el2 = (Element) nl2.item(0);
+								if (el2 != null) {
+									nl2 = el2.getChildNodes();
+									cc = ((Node) nl2.item(0)).getNodeValue();
+								}
+							}
+							
+							String ccVal = "-1";
+							nl2 = monomeElement2.getElementsByTagName("ccVal");
+							if (nl2 != null) {
+								el2 = (Element) nl2.item(0);
+								if (el2 != null) {
+									nl2 = el2.getChildNodes();
+									ccVal = ((Node) nl2.item(0)).getNodeValue();
+								}
+							}
+							
+							MIDIPageChangeRule mpcr = new MIDIPageChangeRule(Integer.valueOf(note).intValue(), Integer.valueOf(channel).intValue(), Integer.valueOf(cc).intValue(), Integer.valueOf(ccVal).intValue(), Integer.valueOf(pageIndex).intValue());
 							midiPageChangeRules.add(mpcr);
 						}
 					}
