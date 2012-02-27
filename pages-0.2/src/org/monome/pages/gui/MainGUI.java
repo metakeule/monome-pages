@@ -359,7 +359,7 @@ public class MainGUI extends JFrame {
 		return openOldItem;
 	}
 	
-	private void actionOpenOld(File file) {
+	public void actionOpenOld(File file) {
 	    actionClose();
 		Main.main.setConfigurationFile(file);
 		Configuration configuration = new Configuration("Loading");

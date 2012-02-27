@@ -66,7 +66,7 @@ public class Main {
         if (args.length > 0) {
             file = new File(args[0]);
         }
-        logger.error("Pages 0.2.2a34 starting up\n");
+        logger.error("Pages 0.2.2a35 starting up\n");
         main = new Main(file);
     }
     
@@ -94,7 +94,7 @@ public class Main {
                 mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 mainFrame.setVisible(true);
                 if (file != null && file.canRead()) {
-                    mainFrame.actionOpen(file);
+                    mainFrame.actionOpenOld(file);
                 }
             }
         });
