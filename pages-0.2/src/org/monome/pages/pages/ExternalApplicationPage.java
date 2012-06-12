@@ -347,10 +347,17 @@ public class ExternalApplicationPage implements Page, OSCListener, RegisterListe
 			if (gui.getIgnorePrefixCB().isSelected()) {
 				return;
 			}
-			if (args.length == 1) {
+			if (args.length > 0 && args[0] instanceof String) {
 				this.setPrefix((String) args[0]);
-			} else if (args.length == 2) {
-				this.setPrefix((String) args[1]);
+			} else {
+				OSCMessage outmsg = new OSCMessage();
+				outmsg.setAddress("/sys/prefix");
+				outmsg.addArgument(this.prefix);
+				try {
+					oscOut.send(outmsg);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 			addListeners();
 		}

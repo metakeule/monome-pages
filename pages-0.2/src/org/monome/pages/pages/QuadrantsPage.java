@@ -297,7 +297,7 @@ public class QuadrantsPage implements Page, Serializable {
 	}
 	
 	public boolean redrawOnAbletonEvent() {
-		return true;
+		return false;
 	}
 
 	public void onBlur() {
